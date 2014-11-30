@@ -1,0 +1,652 @@
+http://superkuh.com/bitcoin.html
+HTTP/1.1 200 OK
+Server: nginx/1.6.0
+Date: Thu, 24 Jul 2014 14:34:09 GMT
+Content-Type: text/html
+Connection: close
+X-Frame-Options: SAMEORIGIN
+superkuh: (â¯à² _à² )ï¸»â³ãâä¸       -â¢
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>superkuh.com: doing more with less until I can do everything with nothing</title>
+	<link rel="stylesheet" type="text/css" href="/meh.css" />
+</head>
+<body>
+<div id="center" class="column">
+<h1>Bitcoin/Litecoin mining config Ubuntu 10.04 / Single Saphire ATI Radeon 5770</h1>
+
+<p>This page is a semi-organized collection of my notes on setting up background bitcoin miner on an old'ish desktop computer. By background I mean I can have it running and still watch 1080p video fullscreen with dual monitors and have no desktop lag. This is <em>not</em> about achieving absolutely max performance for a dedicated GPU miner.</p>
+
+<h4>Using AMD APP SDK 2.8 and the Catalyst 13.1 drivers</h4>
+<!--<h5>AMD APP SDK2.8 and Catalyst 13.1 setup</h5>-->
+<pre># Resources
+http://wiki.cchtml.com/index.php/Ubuntu_Lucid_Installation_Guide
+http://wiki.cchtml.com/index.php/Troubleshooting#February_15.2C_2013_-_Catalyst_13.1_Install_on_Ubuntu_10.04_.28lucid.29
+http://parallelplusplus.blogspot.ca/2013/01/problems-with-amd-catalyst-131-on-ubuntu.html
+http://support.amd.com/us/gpudownload/linux/Pages/radeon_linux.aspx?type=2.4.1&product=2.4.1.3.42&lang=English
+# Download the driver somewhere
+$ cd ~/app_installs/AMD/13
+# Remove existing drivers.
+$ sudo apt-get remove --purge fglrx fglrx_* fglrx-amdcccle* fglrx-dev* xorg-driver-fglrx
+# Restart the computer.
+# Extract the files from the AMD installer
+$ sh amd-driver-installer-catalyst-13.1-linux-x86.x86_64.run --extract amd
+# Edit the lucid install file
+$ gedit amd/packages/Ubuntu/dists/lucid/rules 
+# In case of Ubuntu 10.04 the following line had to be appended after line 69:
+ SRC_other_arch := x86_64
+# and the following line had to be appended after line 151:
+  -e "s|#SRCOTHERARCH#|$(SRC_other_arch)|g" \
+$ cd amd/
+# make sure the links are auto-updated when new gfx drivers are installed
+$ sudo update-alternatives --auto gl_conf
+# Build the .deb package
+$ sudo ./ati-installer.sh 9.012 --buildpkg Ubuntu/lucid
+$ cd ..
+# Install it. This'll soft link the opencl registration and update gl_conf
+$ sudo dpkg -i fglrx*.deb
+$ sudo aticonfig --initial -f
+# Restart the computer.
+
+# If this error happens to you...
+$ sudo /usr/lib/fglrx/bin/aticonfig
+Unable to open /etc/ati/control, please reinstall the driver.
+/usr/lib/fglrx/bin/aticonfig: No supported adapters detected
+# Then you need to set,
+$ sudo update-alternatives --auto gl_conf
+# And then uninstall everything,
+$ sudo apt-get remove --purge fglrx fglrx_* fglrx-amdcccle* fglrx-dev* xorg-driver-fglrx
+# Restart, and do it over. It'll work this time.</pre>
+
+
+<h5>Using cgminer on Ubuntu 10.04 (lucid) w/AMD APP SDK2.8 and Catalyst 13.1</h5>
+
+<pre>## Using Catalyst 13 and AMD APP SDK 2.8
+# Download the AMD APP SDK 2.8. Extract the tar. You end up with a folder,
+./AMD-APP-SDK-v2.8-RC-lnx64
+# Copy this folder to /opt/ , or wherever you want it.
+$ sudo cp -R AMD-APP-SDK-v2.8-RC-lnx64/ /opt/
+# download cgminer
+$ cd ~/app_installs/litecoin/cgminer/cgminer-2.11.4
+# Download the AMD ADL SDK and upack it. I put it in, 
+/opt/ADL/
+#Copy the ADL *.h files to cgminer's dir
+$ cp /opt/ADL/include/*.h ADL_SDK/
+# configure it with paths to the libs
+$ CFLAGS="-O3 -Wall -march=native -I/opt/AMD-APP-SDK-v2.8-RC-lnx64/include/" LDFLAGS="-L/opt/AMD-APP-SDK-v2.8-RC-lnx64/lib/x86_64/ -Lpdcurses" ./configure --enable-scrypt
+# now compile it
+$ make
+
+# Don't try passing a bunch of configuration options the first few runs. Use cgminer optimal defaults.
+
+# Bitcoin 2.5 Work Units per minute with actual 183 MH/s pool reported rate. Low cpu usage.
+$ ./cgminer -o stratum+tcp://stratum.bitcoin.cz:3333 -u username.worker -p password --intensity 4
+
+# Litecoin 77Kh/s, 60 WU/m , R:0 HW:0 on old 5770 w/catalyst 13 and AMD APP SDK 2.8 on Ubuntu 10.04
+$ ./cgminer --scrypt -o http://newlc.ozco.in:3333 -u username.worker -p password --intensity 10</pre>
+
+<!--<h5>Using the alternative Reaper miner on Ubuntu 10.04 (lucid) w/AMD APP SDK2.8 and Catalyst 13.1</h5>
+
+<pre># download and unpack reaper
+$ cd ~/app_installs/litecoin/reaper/
+$ chmod +x cmake-linux.sh
+$ ./cmake-linux
+CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+Please set them or make sure they are set and tested correctly in the CMake files:
+OPENCL_INCLUDE_DIR (ADVANCED)
+   used as include directory in directory /home/superkuh/app_installs/litecoin/reaper
+-- Configuring incomplete, errors occurred!
+# Now go to ./build/ and open CMakeCache.txt
+# Find the line 160 and 161,
+//Path to a file.
+OPENCL_INCLUDE_DIR:PATH=/
+# Set this path to your AMD APP SDK include directory
+//Path to a file.
+OPENCL_INCLUDE_DIR:PATH=/opt/AMD-APP-SDK-v2.5-RC2-lnx64/include/
+# Run cmake again, but do it by hand (or use the .sh again)
+$ cmake -D CMAKE_BUILD_TYPE=Release ..
+# Now compile
+$ make
+# Now run the program</pre>
+-->
+
+<h4>Using AMD APP SDK 2.4 and Catalyst 13.1</h4>
+<h5>w/cgminer 2.11.4 on Ubuntu 10.04</h5>
+<pre>## Using Catalyst 13 and AMD APP SDK 2.4
+# Download the AMD APP SDK 2.4. Extract it.
+$ wget http://download2-developer.amd.com/amd/APPSDK/AMD-APP-SDK-v2.4-lnx64.tgz
+# You end up with a folder,
+./AMD-APP-SDK-v2.4-lnx64/
+# Copy this folder to /opt/ , or wherever you want it.
+$ sudo cp -R AMD-APP-SDK-v2.4-lnx64/ /opt/
+# Download the AMD ADL SDK and upack it. I put it in, 
+/opt/ADL/
+#Copy the ADL *.h files to cgminer's dir
+$ cp /opt/ADL/include/*.h ADL_SDK/
+# download cgminer
+$ cd /app_installs/litecoin/cgminer/SDK24-2.11.4
+# configure it with paths to the libs
+$ CFLAGS="-O3 -Wall -march=native -I/opt/AMD-APP-SDK-v2.4-lnx64/include/ -I/opt/ADL/include/" LDFLAGS="-L/opt/AMD-APP-SDK-v2.4-lnx64/lib/x86_64/ -Lpdcurses" ./configure --enable-scrypt
+# now compile it
+$ make
+
+# Litecoin 77Kh/s, 72 WU/m , R:0 HW:0
+$ ./cgminer --scrypt -o http://newlc.ozco.in:3333 -u username.worker -p password --intensity 10</pre>
+
+
+<h2>The below section is now outdated. It uses the obsolete ATI Stream SDK 2.1 with Ubuntu lucid repository drivers.</h2>
+<p>
+##<br />
+## lots copied from the below guide, but updated Sept. 01 2011<br />
+## to include new json-rpclib source and information on current<br />
+## git sourced poclbm command line examples.<br />
+##<br />
+## http://foreverrising.wordpress.com/2011/04/16/bitcoin-mining-and-ubuntu-10-10-ati-radeon-5xxx/<br />
+</p>
+
+<p># I used the System->Administration->Hardware Drivers, proprietary driver for ATI.<br />
+# I did not install my video driver manually.</p>
+
+<p>## Setup the ATI SDK<br />
+# download http://developer.amd.com/Downloads/ati-stream-sdk-v2.1-lnx64.tgz to /opt<br />
+# it cannot be wget'd, use a browser to click through the EULA, save to /opt<br />
+cd /opt<br />
+sudo tar xfzv ati-stream-sdk-v2.1-lnx64.tgz</p>
+
+<p>## Setup the ... whatever this is? Registration?<br />
+# download http://developer.amd.com/Downloads/icd-registration.tgz to /<br />
+# it cannot be wget'd, use a browser to click through the EULA, save to /<br />
+sudo tar xfzv icd-registration.tgz<br />
+# It'll make /etc/OpenCL/vendors/</p>
+
+<p>## Add the appropriate env variables to the shell. Test.<br />
+export LD_LIBRARY_PATH=/opt/ati-stream-sdk-v2.1-lnx64/lib/x86_64/:$LD_LIBRARY_PATH<br />
+cd /opt/ati-stream-sdk-v2.1-lnx64/samples/opencl/bin/x86_64<br />
+./CLInfo |grep CL_DEVICE_TYPE_GPU</p>
+
+<p>## Setup and install pyOpenCl<br />
+cd /some/tmp/dir<br />
+wget http://pypi.python.org/packages/source/p/pyopencl/pyopencl-0.92.tar.gz<br />
+tar zxfv pyopencl-0.92.tar.gz<br />
+cd pyopencl-0.92<br />
+./configure.py --cl-inc-dir=/opt/ati-stream-sdk-v2.1-lnx64/include/ --cl-lib-dir=/opt/ati-stream-sdk-v2.1-lnx64/lib/x86_64<br />
+make<br />
+# if you don't have checkinstall to make .debs, then<br />
+# sudo apt-get install checkinstall<br />
+sudo checkinstall -D --install=no<br />
+sudo dpkg -i pyopencl_0.92-1_amd64.deb</p>
+
+<p>## Setup and install json-rpclib<br />
+sudo apt-get install g++ libboost-all-dev subversion git-core python-numpy<br />
+# not really needed, but it's what I did because I thought I was going to<br />
+# compile the svn, but the svn server disapeared mid-July 2011, so I took<br />
+# an alternative route.<br />
+# the replacement for the svn version<br />
+# https://github.com/joshmarshall/jsonrpclib<br />
+sudo apt-get install python-setuptools<br />
+sudo easy_install jsonrpclib</p>
+
+<p>## Setup and install bitcoin itself<br />
+## http://bitcointalk.org/?topic=2623.0<br />
+# https://launchpad.net/~stretch/+archive/bitcoin<br />
+sudo apt-add-repository ppa:stretch/bitcoin<br />
+sudo apt-get update<br />
+sudo apt-get install bitcoin<br />
+# please note that bitcoin client cpu usage will be high until you've<br />
+# downloaded the full block chain for that date. It'll take a couple<br />
+# hours at max.</p>
+
+<!--<p>## recommended bitcoin pools: <br />
+# don't use deepbit. btcguild has 0% fees and deepbit 3% (depending) <br />
+# btcguild offers merged mining (reuse of nonces) for namecoin at the same time. A plus.<br />
+# Eligius requires no accounts, can't be redirected, and is attributed as direct mining.<br />
+# https://www.btcguild.com/<br />
+# http://eligius.st/</p>-->
+
+<p>## install poclbm bitcoin miner<br />
+# poclbm is faster and uses less cpu than phoenix miner for me.<br />
+git clone https://github.com/m0mchil/poclbm.git<br />
+# examples of options to run with a bitcoin pool, I never ran it in single mode, but<br />
+# I imagine you'd just use localhost instead.<br />
+# export the opencl library paths before starting the client<br />
+export LD_LIBRARY_PATH=/opt/ati-stream-sdk-v2.1-lnx64/lib/x86_64/:$LD_LIBRARY_PATH<br />
+# f60, width 128, no desktop lag, 200 MH/s, Fan Speed: 44%, Temp: 73C (idle is 45C)<br />
+./poclbm.py -d 1 -v -f60 -w128 user:password@somegetworkserver.com:8332 <br />
+./poclbm.py -d 1 -v -f60 -w128 1JRGrUdT6wFn1A5r6sW21dJQwtvC742cQv:x@mining.eligius.st:8337<br />
+# f60, width 256, no desktop lag, 200 MH/s, etc, etc<br />
+./poclbm.py -d 1 -f60 -v -w 256 user:password@btcguild.com:8332<br />
+# f10, some desktop lag, fastest, ~ 220 MH/s<br />
+./poclbm.py -d 1 -v -f10 -w128 user:password@pit.deepbit.net:8332</p>
+
+<p># show core temp<br />
+aticonfig --od-gettemperature<br />
+# shows fan speed<br />
+aticonfig --pplib-cmd "get fanspeed 0"<br />
+# sets fan speed to 100%<br />
+aticonfig --pplib-cmd "set fanspeed 0 100"<br />
+# show current clockspeeds<br />
+aticonfig --odgc<br />
+# overclock core to 900Mhz, memory at 1200Mhz<br />
+aticonfig --odsc=900,1200</p>
+
+
+<p> example phoenix miner command line, desktop lag, high CPU usage, ~170 MH/s<br />
+./phoenix.py -u http://user:password@btcguild.com:8332/ -v -k phatk VECTORS BFI_INT FASTLOOP=false WORKSIZE=128 AGGRESSION=5 PLATFORM=0 DEVICE=1<br />
+# extreme desktop lag, very high CPU usage, 190 MH/s<br />
+./phoenix.py -u http://user:password@btcguild.com:8332/ -v -k phatk VECTORS BFI_INT FASTLOOP=false WORKSIZE=128 AGGRESSION=10 PLATFORM=0 DEVICE=1<br />
+</p>
+
+</div>
+	<div id="left" class="column">
+
+		<a href="/"><img src="/tech_avatar.jpeg"/></a>	
+
+		<h4>Spaceweather</h4>
+		<ul class="navlist">
+		
+		<li><a href="http://erewhon.superkuh.com/spaceweather/">Aggregator</a>
+			<ul class="navlist">
+			<li><a href="http://erewhon.superkuh.com/spaceweather/load.html">&lt;Load only on Scroll&gt;</a></li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/quicklook.html">Quicklook</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/heliosphere.html">Heliosphere/Magnetosphere</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/lightandparticle.html">Light/Particle fluxes</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/irradiancetrends.html">Irradiance and Trends</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/radio.html">Radio</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/geomagnetic.html">Geomagnetic</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/geomagnetic2.html">Geomagnetic 2</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/solarmagnetic.html">Solar Magnetic/Spots</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/solardisk.html">Solar Disk/Corona Imaging</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/sdoaia.html">SDO AIA and HMI</li>
+			<li><a href="http://erewhon.superkuh.com/spaceweather/unsorted.html">Unsorted</a></li>
+			</ul>		
+		</li>
+<!--
+		<li><a href="/spaceweather/">Aggregator (slow)</a>
+			<ul class="navlist">
+				<li><a href="/spaceweather/load.html">&lt;Load only on Scroll&gt;</a></li>
+				<li><a href="/spaceweather/quicklook.html">Quicklook</li>
+				<li><a href="/spaceweather/heliosphere.html">Heliosphere/Magnetosphere</li>
+				<li><a href="/spaceweather/lightandparticle.html">Light/Particle fluxes</li>
+				<li><a href="/spaceweather/irradiancetrends.html">Irradiance and Trends</li>
+				<li><a href="/spaceweather/radio.html">Radio</li>
+				<li><a href="/spaceweather/geomagnetic.html">Geomagnetic</li>
+				<li><a href="/spaceweather/geomagnetic2.html">Geomagnetic 2</li>
+				<li><a href="/spaceweather/solarmagnetic.html">Solar Magnetic/Spots</li>
+				<li><a href="/spaceweather/solardisk.html">Solar Disk/Corona Imaging</li>
+				<li><a href="/spaceweather/sdoaia.html">SDO AIA and HMI</li>
+				<li><a href="/spaceweather/unsorted.html">Unsorted</li>
+			</ul>
+		</li>
+-->
+
+		<li>Source Code
+			<ul class="navlist">
+			<li><a href="/spaceweather.pl">spaceweather.pl</a></li>
+			<li><a href="/spaceweather_oncedaily.pl">spaceweather_oncedaily.pl</a></li>
+			<li><a href="/arforecastmovie.pl">arforecastmovie.pl</a></li>
+			<li><a href="/solisarmirror.pl">solisarmirror.pl</a></li>
+			</ul>
+		</li>
+
+<!--
+		<li><a href="http://erewhon.superkuh.com/gnuradio/live/load.html">52-2200 Mhz Radio Monitor</a>
+			<ul class="navlist">
+			<li><a href="http://superkuh.com/rtlsdr.html#pyrtlsdr_logger">Explanation and Code</a></li>
+			<li><a href="http://superkuh.com/gnuplottimeseries.html#realdata">Learning Gnuplot</a>
+			</ul>
+		</li>
+-->
+
+
+<!--		<li>Sunspot Photos
+		<ul class="navlist">
+			<li><a href="/sunspot.jpg">2011-09-28 4:45pm CST</a></li>
+		</ul>
+		</li> -->
+		<li><a href="/solarandspaceweather.html">Links</a></li>
+		<li><a href="/library/Space/Solar">Resources</a></li>
+		</ul>
+
+
+
+		<h4>Interests</h4>
+		<ul class="navlist">
+		<li><a href="/rtlsdr.html">RTLSDR/GNU Radio</a>
+			<ul class="navlist">
+			<li><a href="http://erewhon.superkuh.com/gnuradio/live/">(Not)Live Frequency Monitor</a></li>
+			</ul>
+
+		</li>
+		<li><a href="/rtlsdrinterferometer.html">11 GHz Interferometer</a>
+			<ul class="navlist">
+			<li><a href="/library/Space/Radio%20Astronomy/">Resources</a></li>
+			</ul>
+		</li>
+		<li><a href="/spiralantenna.html">Spiral Antenna</a>
+			<ul class="navlist">
+			<li><a href="/library/Electromagnetics/Spiral%20Antenna/">Resources</a></li>
+			</ul>
+		</li>
+
+		<li><a href="/pyroelectricacceleration.html">Pyroelectric Particle Acceleration</a>
+			<ul class="navlist">
+			<!-- <li>Theory</li>
+			<li><a href="http://superkuh.com/pyroelectricacceleration.html">Build Log</a></li> -->
+			<li><a href="/library/Physics/Pyroelectric%20Acceleration/">Resources</a></li>
+			</ul>
+		</li>
+		<li><a href="/dpf.html">Dense Plasma Focus</a>
+			<ul class="navlist">
+			<li><a href="/library/Physics/Dense%20Plasma%20Focus/">Resources</a></li>
+			</ul>
+		</li>
+<!--		<li><a href="/cloudchamber.html">Cloud Chamber Particle Detector</a></li> -->
+<!--		<li><a href="/solarpolarimeter.html">Infrared Solar Polarimeter</a>
+			<ul class="navlist">
+			<li><a href="/library/Space/Solar%20Polarimeter%20Design/">Resources</a></li>
+			</ul>
+		</li>
+-->
+<!--		<li>TEA CO2 Laser
+			<ul class="navlist">
+			<li><a href="/library/Light/TEA%20CO2/co2laser_build.jpg">recovered pic</a></li>
+			<li><a href="/library/Light/TEA%20CO2/">Resources</a></li>
+			</ul>
+		</li>
+		<li>20.1Mhz Radio Telescope
+			<ul class="navlist">
+			<li>Ten-tec 1056</li>
+			<li>Useful Programs</li>
+			<li><a href="/library/Space/Radio%20Astronomy/">Resources</a></li>
+			</ul>
+		</li>
+		<li>Gas Electron Multiplier Particle Detector
+			<ul class="navlist">
+			<li><a href="/library/Physics/Particle%20Detection/">Resources</a></li>
+			</ul>
+		</li>
+
+		<li>Air Vortex Cannon
+			<ul class="navlist">
+			<li>Resources</li>
+			</ul>
+		</li>
+		<li>Galvanic Vestibular Stimulation
+			<ul class="navlist">
+			<li><a href="/library/Neuroscience/Vestibular%20Stimulation/">Resources</a></li>
+			</ul>
+		</li>
+		<li>Transcranial Magnetic Stimulation
+			<ul class="navlist">
+			<li>Electrical Design</li>
+			<li><a href="/library/Neuroscience/Magnetic%20Stimulation/">Resources</a></li>
+			</ul>
+		</li>
+		<li>Agrobacterium
+			<ul class="navlist">
+			<li><a href="/library/Biology/Agrobacterium/">Resources</a></li>
+			</ul>
+		</li>
+		</ul>
+
+		<li>Electrotactile Interfaces
+			<ul class="navlist">
+			<li>Theory</li>
+			<li><a href="/library/">Resources</a></li>
+			</ul>
+		</li>
+-->
+		</ul> 
+
+		<h4>Other</h4>
+		<ul class="navlist">
+		<li><a href="/tktts.html">TkTTS</a>
+			<ul class="navlist">A Gnome2/Nautilus-script GUI frontend for text to speech apps. Includes a few extra text processing utilities. <a href="/TkTTS.png">Screenshot</a>.</ul>
+		</li>
+		<li><a href="/epub2text.pl">epub2text</a>
+			<ul class="navlist">I wrote this because I didn't know about calibre's <a href="http://manual.calibre-ebook.com/cli/ebook-convert.html">ebook-convert cli functionality</a>. It is not good at what it does. Use ebook-covert.</ul>
+		</li>
+		<!-- http://www.1001skins.com/skin_details.html?skin_id=1633 -->
+		<li><a href="/ajaxgoogleapis.html">Host googleapis ajax locally</a></li>
+		<li><a href="/simulatedwoodtype.html">Skins and Scrobbling with Audacious 2.x</a></li>
+		<li><a href="/bitcoin.html">Ubuntu 10.04 ATI Bitcoin mining guide</a></li>
+		<li><a href="/openparsec.html">Compile OpenParsec on Ubuntu 10.04</a></li>
+		<li><a href="/operadnstunnel.html">Tunnel DNS over SSH w/Opera on linux</a></li>
+		<li><a href="/btfihkal.html">nginx bandwidth throttling</a></li>
+		<li><a href="/mate-debian-menu.html">Debian menu on MATE</a></li>
+<!--		<li><a href="http://hennigbuam.de/georg/gimp.html">Gimp Astronomy Plugin</a>, <a href="/gimp-plugin-astronomy_0.6-1_amd64.deb">Ubuntu 10.04 AMD64 deb</a></li> -->
+		<li><a href="/ath-ad700-cable.html">ATH-AD700 Stiff Cable</a></li>
+		<li><a href="/opticsplanetinc.html">OpticsPlanet, Inc: Scammers</a></li>
+
+		</ul>
+
+		<h4>Photos</h4>
+		<ul class="navlist">
+		<li><a href="http://superkuh.com/photos/web/">Gallery</a> (small size)</li>
+		<li><a href="http://superkuh.com/photos/">Index List</a> (full size)</li>
+		</ul>
+
+	
+		<h4>Good Books</h4>	
+		<ul class="navlist"><li><a href="/library/MiscText/Douglas%20Hofstadter%20-%20Godel,%20Escher,%20Bash_%20An%20Eternal%20Golden%20Braid.pdf" >Douglas Hofstadter - G&ouml;del, Escher, Bach: An Eternal Golden Braid</a></li>
+		<li><a href="/library/Neuroscience/I%20of%20the%20Vortex_%20From%20Neurons%20to%20Self_%20Rodolfo%20R%20Llinas.pdf">Rodolfo R Llin&aacute;s - I of the Vortex: From Neurons to Self</a>
+		<!--<li><a href="/library/Physics/The%20Versatile%20Soliton_%20Alexandre%20T%20Filippov_%202000.pdf">Alexandre T Filippov - The Versatile Soliton</a></li>-->
+		<li><a href="/library/Physics/The%20Versatile%20Soliton_%20Alexandre%20T%20Filippov_%202010.djvu">Alexandre T Filippov - The Versatile Soliton</a></li>
+		<li><a href="/library/Chemistry/Crystals_%20Growth,%20Morphology,%20and%20Perfection_%20Ichiro%20Sunagawa.pdf">Ichiro Sunagawa - Crystals: Growth, Morphology, and Perfection</a>
+		</ul>
+
+<a href="http://internetdefenseleague.org"><img src="/idl.png" alt="Member of The Internet Defense League" /></a>
+<iframe src="//crypto.stanford.edu/flashproxy/embed.html" width="80" height="15" frameborder="0" scrolling="no"></iframe>
+
+	<h4>Legal Bullshit</h4>
+	<p class="smalltext"><a href="/dmca.txt">DMCA Requests</a></p>
+
+	<h5>Terms of Use:</h5>
+	<p class="smalltext"> You may not access or use the site superkuh.com unless you are under 7 years of age. If you do not agree then you must leave now.</p> 
+
+	<p class="smalltext">The US Dept. of Justice has <a href="https://www.eff.org/deeplinks/2013/04/are-you-teenager-who-reads-news-online-according-justice-department-you-may-be">determined</a> that violating a website's terms of service is a felony under CFAA <a href="http://www.law.cornell.edu/uscode/text/18/1030#a_2">1030(a)2</a>(c). Under this same law I can declare that you may only use one IP address to access this site; circumvention <a href="http://www.volokh.com/2013/08/18/district-court-holds-that-intentionally-circumventing-ip-address-block-is-unauthorized-access-under-the-cfaa/">is a felony</a>. <a href="http://cfaadefensefund.com/">Absurd</a>, isn't <a href="/pictures/computer-criminal.jpg">it</a>?</p>
+
+<p class="smalltext">It is my policy to regularly delete server logs.</p>
+
+	</div>
+
+
+		<!-- <li><a href="/processactogram.pl">ProcessActogram</a>
+			<ul class="navlist">Generates a color coded activity graph of which xwindows were focused/being used at any given second of the day. A visualization of what you do on your graphical shell.</ul></li> -->
+		<!-- <li>xchat2megahal</li> -->
+		<!--<li><a href="/zoneplate.pl">zoneplate.pl</a></li>-->
+
+
+	<div id="right" class="column">
+		<img src="/xraykuh.jpg"/>
+		<h4>About</h4>
+		<p>I enjoy recursion, dissipating local energy gradients, lipid bilayers, particle acceleration, heliophysics instrumentation and generally anything with a high rate of change in electrical current. This site is a combination of my efforts to archive what I find interesting and my shoddy attempts to implement the aformentioned without a budget.</p>
+
+<!-- <p>I believe the nerve action potential is an electrical manipulation of reversible abrupt phase changes in the lipid bilayer of neurons.</p><p>This is an example of the electrocaloric effect in which a change in an applied electric field produces a change in entropy and, consequently, a change in temperature. The electrical field is produced by changes in the concentration of divalent calcium_2+ ions. The entropy is reduced in the phospholipid bilayer because of their carboxyl head's affinity for the Ca2+ ion over the sodium Na+1. The exchange creates ordering because multiple lipids (~3) bond to Ca2+ but only one bonds to Na+.</p> -->
+
+
+		<h4>Recent Music</h4>
+<!--		<h4><a href="/np.html">Recent Music</a></h4>-->
+		np: <html><head><title>superkuh is listening to Guano Apes - Secret Song, http://superkuh.com/mp3/Guano%20Apes%20-%20Secret%20Song.mp3</title></head><body>
+Guano Apes - Secret Song
+		<ul class="navlist">
+		<li><a href="http://alpha.libre.fm/user/superkuh2">Libre.fm</a> (old)</li>
+		<li><a href="http://www.last.fm/user/superkuh">Last.fm</a> (old)</li>
+		</ul>
+		<h4>Recently Read</h4>
+		<ul class="navlist">
+<!--		<li>Instrumentation for Astrophysical Spectropolarimetry_ Christopher U Keller</li>
+		<li>Fundamentals of Solar Astronomy_ Arvind Bhatnagar_ William Livingston</li>
+		<li>Astrophysical Spectropolarimetry_ J Trujillo-Bueno_ F Moreno-Insertis_ F Sanchez</li>
+		<li>Ken Macleod - The Execution Channel</li>
+		<li>Exploring the Thalamus and Its Role in Cortical Function_ S Murray Sherman_ R W Guillery</li>
+		<li>The Hippocampus_ Neurotransmission and Plasticity in the Nervous System_ Philippe Taupin_ 2007</li>
+		<li>The Hippocampus Book_ Per Andersen_ Richard Morris_ David Amaral_ Tim Bliss_ John OKeefe_ 2006</li>
+		<li><a href="/library/Physics/Dense%20Plasma%20Focus/Studies%20on%20the%20scalability%20and%20scaling%20laws%20for%20the%20plasma%20focus_%20similarities%20and%20differences%20in%20devices%20from%201%20MJ%20to%200.1%20J_%20Soto%20et%20al_%20PSST_%202010.pdf">Studies on the scalability and scaling laws for the plasma focus_ similarities and differences in devices from 1 MJ to 0.1 J_ Soto et al_ PSST_ 2010</a></li>-->
+		<!-- <li>Paul J McAuley - 'The Quiet War' series</li>
+		<li>Ken MacLeod - Intrusion</li> -->
+		<!-- <li><a href="http://superkuh.bit/library/Space/Heliophysics_%20Evolving%20Solar%20Activity%20and%20the%20Climates%20of%20Space%20and%20Earth_%20Carolus%20J%20Schrijver_%20George%20L%20Siscoe_%202010.pdf">Heliophysics_ Evolving Solar Activity and the Climates of Space and Earth_ Carolus J Schrijver_ George L Siscoe_ 2010</a></li> -->
+		<!--<li>Margaret Atwood - Oryx And Crake</li>-->
+		<!--<li>Gregory Benford, David Brin - Heart of the Comet</li>-->
+		<!--<li>Robert Zubrin - First Landing</li>-->
+		<!--<li>Greg Egan - The Clockwork Rocket</li>-->
+		<!-- <li><a href="/library/Space/Spacecraft/Dusty%20Plasma%20Based%20Fission%20Fragment%20Nuclear%20Reactor_%20Rodney%20A%20Clark_%20Robert%20B%20Sheldon_%20aiaa%202005.pdf">Dusty Plasma Based Fission Fragment Nuclear Reactor_ Rodney A Clark_ Robert B Sheldon_ aiaa 2005</a></li> -->
+		<!--<li>Ben Bova - "Asteroid Wars" series</li>
+		<li>Alastair Reynolds - Blue Remembered Earth</li> -->
+		<!--<li>Arkady & Boris Strugatsky - Roadside Picnic</li>
+		<li>Kim Stanley Robinson - 2312</li>-->
+		<!--<li>Frank Close - Neutrino</li>
+		<li>Kim Stanley Robinson - A Short, Sharp Shock</li>
+		<li>Stephen R Donaldson - "The Gap Cycle" series</li>-->
+		<!--<li>Terry Pratchett & Stephen Baxter - The Long Earth</li>-->
+		<!--<li>Ernest Cline - Ready Player One</li>-->
+		<!--<li>L E Modesitt Jr - Gravity Dreams</li>-->
+		<!--<li>Hannu Rajaniemi - The Quantum Thief</li>-->
+		<!--<li>Chang Goon Chung - The Fat Years</li>-->
+		<!--<li>James SA Corey - Leviathan Wakes</li>-->
+		<!--<li>Project Itoh - Harmony</li>-->
+		<!--<li>Richard Morgan - Altered Carbon</li>-->
+		<!--<li>James SA Corey - Caliban's War</li>-->
+		<!--<li>George R Stewart - Earth Abides</li>-->
+		<!--<li>Joe Haldeman - Forever Peace</li>-->
+		<!--<li>Joe Haldeman - Forever Free</li>-->
+		<!--<li>Charles Yu - How to Live Safely in a Science Fictional Universe</li>-->
+		<!--<li>Frank Herbert - The Jesus Incident</li>-->
+		<!--<li>Iain Banks - The Hydrogen Sonata</li>-->
+		<!--<li>Greg Egan - The Clockwork Rocket</li>-->
+		<!--<li>Greg Egan - The Eternal Flame</li>-->
+		<!--<li>Ken Macleod - The Cassini Division</li>-->
+		<!--<li>Spider Robinson - Mindkiller</li>-->
+		<!--<li>Spider Robinson - Time Pressure</li>-->
+		<!--<li>Richard Paul Russo - Ship of Fools</li>-->
+		<!--<li>Frederik Pohl - JEM</li>-->
+		<!--<li>William Gibson - Count Zero</li>-->
+		<!--<li>Gregory Benford - Bowl of Heaven</li>-->
+		<!--<li>Jyouji Hayashi - The Ouroboros Wave</li>-->
+		<!--<li>Hannu Rajaniemi - The Fractal Prince</li>-->
+		<!--<li>Housuke Nojiri - Usurper of the Sun</li>-->
+		<!--<li>Cory Doctorow - Pirate Cinema</li>-->
+		<!--<li>Alastair Reynolds - Great Wall Of Mars, Glacial, A Spy In Europa</li>-->
+		<!--<li>Alastair Reynolds - Beyond the Aquila Rift </li>-->
+		<!--<li>Gregory Benford - Beyond Infinity</li>-->
+		<!--<li>Charles Stross - Scratch Monkey</li>-->
+		<!--<li>Rudy Rucker - Mathematicians in Love</li>-->
+		<!--<li>Cory Doctorow - Homeland</li>-->
+ 		<!--<li>Roger Zelazny - For a Breath I Tarry</li>-->
+ 		<!--<li>Carl Sagan - Contact</li>-->
+ 		<!--<li>Philip K Dick - Solar Lottery</li>-->
+ 		<!--<li>Frank Herbert - Hellstroms Hive</li>-->
+ 		<!--<li>Stanislaw Lem - Solaris</li> -->
+ 		<!--<li>Frank Herbert - Destination Void</li>-->
+  		<!--<li>Frank Herbert and Bill Ransom - The Lazarus Effect</li>-->
+  		<!--<li>Frank Herbert and Bill Ransom - The Ascension Factor</li>-->
+		<!--<li>Philip K Dick - The Game-players of Titan</li>-->
+		<!--<li>Bruce Sterling - Schismatrix Plus</li>-->
+		<!--<li>David Brin - Existence</li>-->
+
+		<!--<li>Greg Bear - Blood Music</li>-->
+		<!--<li>Karl Schroeder - Lady of Mazes</li>-->
+		<!--<li>Terry Pratchett & Stephen Baxter - The Long War</li>-->
+		<!--<li>Charles Stross - Neptunes Brood</li>-->
+		<!--<li>Peter Watts - The Island</li>-->
+		<!--<li>M J Locke - Up Against It</li>-->
+		<!--<li>David Brin - Sundiver</li>-->
+		<!--<li>Fredrick Pohl - The World at the End of Time</li>-->
+		<!--<li>Robert McCammon - Swan Song</li>-->
+		<!--<li>Cory Doctorow - Lawful Interception</li>-->
+		<!--<li>Ted Chiang - The Truth of Fact, the Truth of Feeling</li>-->
+		<!--<li>Ted Chiang - Understand</li>-->
+		<!--<li>Robert McCammon - Swan Song</li>-->
+		<!--<li>Ramez Naam - Nexus</li>-->
+		<!--<li>Ramez Naam - Crux</li>-->
+		<!--<li>Robert Silverberg - The World Inside</li>-->
+		<!--<li>Ted Chiang - The Lifecycle of Software Objects</li>-->
+		<!--<li>Ted Chiang - Exhalation</li>-->
+		<!--<li>Poul Anderson - Starfarers</li>-->
+		<!--<li>Christopher Priest - The Inverted World</li>-->
+		<!--<li>Chris Beckett - Dark Eden</li>-->
+		<!--<li>Sheri S Tepper - Grass</li>-->
+		<!--<li>Niven and Pournelle - Footfall</li>-->
+		<!--<li>James S A Corey - Abaddons Gate</li>-->
+		<!--<li>William Hertling - Avogadro Corp</li>-->
+		<!--<li>William Hertling - AI Apocalypse</li>-->
+<!--
+		<li>Robert Anton Wilson - Prometheus Rising</li>
+		<li>Bruce Sterling et al - Mirrorshades</li>
+		<li>Robert Charles Wilson - Burning Paradise</li>
+		<li>William Hertling - The Last Firewall</li>
+		<li>Dan Simmons - Hyperion series</li>
+		<li>Max Barry - Machine Man</li>
+		<li>Cory Doctorow - True Names</li>
+		<li>Andy Weir - The Martian</li>
+		<li>Clarke / Stephen Baxter - The Light of Other Days</li>
+		<li>Joe Haldeman - Accidental Time Machine</li>
+		<li>Ursula K Le Guin - The Dispossessed</li>
+		<li>John Ringo - Into the Looking Glass</li>
+		<li>Charles Stross - Duat</li>
+		<li>Katherine Maclean - The Missing Man</li>
+-->
+
+		<li>Linda Nagata - The Bohr Maker</li>
+		<li>Karl Schroeder - Jubilee</li>
+		<li>Robert Charles Wilson - Fireborn</li>
+		<li>Ramez Naam - Water</li>
+		<li>Kim Stanley Robinson - The Lucky Strike</li>
+		<li>Ann Leckie - Ancillary Justice</li>
+		<li>Evan Curries - Odyssey One Trilogy</li>
+		<li>Robert J Sawyer - Calculating God</li>
+		<li>John Steakly - Armor</li>
+		<li>Ken MacLeod - Learning the World</li>
+		<li>Octavia Butler - Lilith's Brood</li>
+
+
+		<li>Daniel Suarez - Influx</li>
+		<li>Alastair Reynolds - On the Steel Breeze</li>
+		<li>Karl Schroeder - Lockstep</li>
+		<li>L Niven, J Pournelle - Lucifers Hammer</li>
+		<li>Thomas Pynchon - The Crying of Lot 49</li>
+		<li>Daryl Gregory - Afterparty</li>
+		<li>Ben H Winters - The Last Policeman</li>
+		<li>Greg Egan - Bit Players</li>
+		<li>Robert Silverberg - Tower of Glass</li>
+		<li>G Benford, L Niven - Shipstar</li>
+		<li>J G Ballard - The Crystal World</li>
+		<li>Larry Niven - One Face</li>
+		<li>James Tiptree Jr - The Screwfly Solution, The Girl Who Was Plugged In, A Momentary Taste of Being</li>
+		<li>Raymond Vogel - Matter of Resistance</li>
+		<li>Allen Steele - Orbital Decay</li>
+
+
+ 		</ul>
+
+		<h4>Contact</h4>
+		<p>I get all email sent to @superkuh.com</p>
+		<p>Make-up any address *@superkuh.com</p>
+		<!-- <p><a href="https://www.superkuh.com/pubkey.asc">PGP Key</a></p> -->
+		<a href="/bitcoin.txt"><img src="/bitcoin.png" /></a>
+		<p><a href="https://github.com/prof7bit/TorChat">TorChat</a>: fri6mj44l5bujjyp</p>
+		<p>I also use Retroshare.</p>
+		<h5>IRC as 'superkuh'</h5>
+		<ul class="indenterwtfimeanwhonamestheircssclassesshitlikethisreally">
+		<li>Freenode</li>
+		<li>OFTC</li>
+		<li>ShadowWorld</li>
+		<li>SlashNET</li>
+		<li>Quakenet</li>
+		</ul>
+
+		<h4>History</h4>
+		<p>This site was previously located at superkuh.ath.cx, but that subdomain system was shut down.</p>
+		<p>Then it was at superkuh.com for a while until all data was lost. Now it's back, same place, much less content.</p>
+		<p><a href="http://superkuh.bit/">superkuh.bit</a> on <a href="http://dot-bit.org/Main_Page">namecoin</a> DNS.</p>
+
+		
+	</div>
+
+</body>
+</html>
+
+

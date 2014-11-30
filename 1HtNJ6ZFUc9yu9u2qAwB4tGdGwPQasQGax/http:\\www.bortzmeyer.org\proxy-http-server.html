@@ -1,0 +1,247 @@
+http://www.bortzmeyer.org/proxy-http-server.html
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 12:25:29 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Wed, 02 Jul 2014 19:02:27 GMT
+ETag: "23aac-3f86-4fd3a888216c0"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 5761
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-07-02T21:02 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Configurer un serveur relais pour accéder à des sites Web filtrés
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Configurer un serveur relais pour accéder à des sites Web filtrés</h2><p>Première rédaction de cet article le 1 novembre 2008<br/>Dernière mise à jour le 3 novembre 2008<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Il arrive que certains <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/sites%20Web" title="Consultez l'article &quot;sites Web&quot; de l'encyclopédie libre Wikipedia">sites Web</a></b> soient
+filtrés et interdits d'accès, soit par l'État (cas de <a href="censure-a-dubai.html" title="Consultez ce blog à propos de &quot;censure-a-dubai&quot;">Dubaï</a>), soit par une entreprise qui ne
+veut pas laisser ses employés aller sur certains sites. Une technique
+courante pour contourner ces filtres est le <b class="emphasis">relais
+HTTP</b>.</p></div>
+<div class="para"><p>Avant de voir comment en configurer un, un sérieux
+avertissement. Les gens qui filtrent n'aiment pas qu'on contourne
+leurs filtres. Si le filtrage est le fait de l'État, le contourner
+peut être illégal et vous valoir de gros ennuis, notamment dans des
+pays comme la <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/R%C3%A9publique%20populaire%20de%20Chine" title="Consultez l'article &quot;République populaire de Chine&quot; de l'encyclopédie libre Wikipedia">Chine</a></b> ou la <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Tunisie" title="Consultez l'article &quot;Tunisie&quot; de l'encyclopédie libre Wikipedia">Tunisie</a></b>. Si le
+filtrage est le fait de votre patron, celui-ci a pu indiquer dans le
+réglement intérieur ou bien à un endroit similaire que les tentatives
+de contournement étaient également interdites et pouvaient vous
+valoir un <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/licenciement" title="Consultez l'article &quot;licenciement&quot; de l'encyclopédie libre Wikipedia">licenciement</a></b>. Donc, soyez
+prévenu...</p></div>
+<div class="para"><p>Il existe plein de façons de configurer un relais
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Hypertext%20Transfer%20Protocol" title="Consultez l'article &quot;Hypertext Transfer Protocol&quot; de l'encyclopédie libre Wikipedia">HTTP</a></b> et plein de logiciels pour cela. Je ne
+vais pas me lancer dans la comparaison détaillée de toutes ces
+méthodes, simplement indiquer comment je l'ai fait pour moi.</p></div>
+<div class="para"><p>Il faut d'abord une machine, le relais, allumée en permanence et
+connectée à <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Internet" title="Consultez l'article &quot;Internet&quot; de l'encyclopédie libre Wikipedia">Internet</a></b>, <code>proxy.bortzmeyer.org</code> dans les exemples qui suivent. Aujourd'hui, de telles
+machines se trouvent pour moins de dix € par mois.</p></div>
+<div class="para"><p>J'ai choisi le logiciel <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Apache%20HTTP%20Server" title="Consultez l'article &quot;Apache HTTP Server&quot; de l'encyclopédie libre Wikipedia">Apache</a></b>, qui était
+déjà installé sur la machine. Il faut qu'il inclue l'option de
+relayage (<i class="foreign" xml:lang="en">proxy</i>) ce qui, sur ma
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Gentoo" title="Consultez l'article &quot;Gentoo&quot; de l'encyclopédie libre Wikipedia">Gentoo</a></b>, est le cas si, dans
+<code>/etc/make.conf</code>, on a dans la définition de
+<code>APACHE2_MODULES</code> les modules <code>proxy
+proxy_ajp proxy_balancer proxy_connect proxy_http</code> (avant de
+compiler Apache, bien sûr).</p></div>
+<div class="para"><p>Il faut ensuite configurer Apache en relais. Pour simplifier, je
+mets les directives nécessaires dans un fichier de <i class="foreign" xml:lang="en">Virtual
+Host</i>, ici
+<code>/etc/apache2/vhosts.d/proxy.conf</code> :
+</p><pre>
+
+&lt;IfDefine PROXY&gt;
+Listen [::1]:8080
+&lt;VirtualHost [::1]:8080&gt;
+ProxyRequests On
+&lt;Proxy *&gt; # Do not delete!
+Order Deny,Allow
+Deny from all
+Allow from ::1
+&lt;/Proxy&gt;
+&lt;/VirtualHost&gt;
+&lt;/IfDefine&gt;
+
+</pre><p>
+Ici, on dit à Apache, si la variable <code>PROXY</code> est
+définie (sur une Gentoo, c'est dans <code>/etc/conf.d/apache2</code>), il doit écouter sur le <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Port%20(logiciel)" title="Consultez l'article &quot;Port (logiciel)&quot; de l'encyclopédie libre Wikipedia">port</a></b> 8080 et
+autoriser le relais.</p></div>
+<div class="para"><p><b class="emphasis">Attention</b>, les lignes qui suivent (celles qui commencent par <code>&lt;Proxy *&gt;</code>) restreignent
+l'usage du relais à la machine locale et elles sont
+<b class="emphasis">indispensables</b> sinon votre relais est un <b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/Open%20proxy" title="Consultez l'article &quot;Open proxy&quot; de l'encyclopédie libre Wikipedia (en anglais)">relais
+ouvert</a></b> (n'importe qui peut l'utiliser) et les méchants détectent en
+quelques heures un relais ouvert - c'est ce qui m'est arrivé - et
+l'exploitent pour cacher leurs traces.</p></div>
+<div class="para"><p>Rechargez Apache et, pour tester si tout va bien, depuis la machine
+Apache, par exemple avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/cURL" title="Consultez l'article &quot;cURL&quot; de l'encyclopédie libre Wikipedia">curl</a></b> :
+</p><pre>
+% curl -v --proxy localhost:80 http://www.ras.eu.org/ &gt; /dev/null
+...
+&lt; HTTP/1.1 200 OK
+&lt; Date: Sat, 01 Nov 2008 12:36:03 GMT
+&lt; Server: Apache
+...
+</pre><p>
+Ici, tout s'est bien passé. Depuis une autre machine, testez que
+l'accès est refusé :
+</p><pre>
+% curl -v --proxy proxy.bortzmeyer.org:80 http://www.ras.eu.org/ &gt; /dev/null 
+...
+&lt; HTTP/1.1 403 Forbidden
+</pre><p> (On a testé le port 80 car, précaution supplémentaire, le
+<i class="foreign" xml:lang="en">Virtual Host</i> Apache qui fait le relais n'écoute que
+sur l'adresse locale <code>::1</code>.) La documentation
+d'Apache insiste bien sur la nécessité de ne pas ouvrir complètement
+le relais (<i class="foreign" xml:lang="en"><a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy.html#access" hreflang="en">Controlling
+access to your proxy</a></i>).</p></div>
+<div class="para"><p>Mais, si le relais n'est accessible que depuis la machine relais
+elle-même, comment l'utiliser depuis ma machine située derrière le
+filtre ? Comme on souhaite en plus que le fait que l'accès au relais
+soit discret (rappelez vous les avertissements au début), on va
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Chiffrement" title="Consultez l'article &quot;Chiffrement&quot; de l'encyclopédie libre Wikipedia">chiffrer</a></b> la
+communication. L'idéal serait que les clients
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Hypertext%20Transfer%20Protocol" title="Consultez l'article &quot;Hypertext Transfer Protocol&quot; de l'encyclopédie libre Wikipedia">HTTP</a></b> puissent accéder au relais avec
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Transport%20Layer%20Security" title="Consultez l'article &quot;Transport Layer Security&quot; de l'encyclopédie libre Wikipedia">TLS</a></b>. Mais, apparemment, ni
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Mozilla%20Firefox" title="Consultez l'article &quot;Mozilla Firefox&quot; de l'encyclopédie libre Wikipedia">Firefox</a></b>, ni <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Opera" title="Consultez l'article &quot;Opera&quot; de l'encyclopédie libre Wikipedia">Opera</a></b>, ni
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/wget" title="Consultez l'article &quot;wget&quot; de l'encyclopédie libre Wikipedia">wget</a></b> ne savent le faire. Donc, on va créer un
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Tunnel%20(r%C3%A9seau%20informatique)" title="Consultez l'article &quot;Tunnel (réseau informatique)&quot; de l'encyclopédie libre Wikipedia">tunnel</a></b> <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/ssh" title="Consultez l'article &quot;ssh&quot; de l'encyclopédie libre Wikipedia">ssh</a></b> depuis la
+machine de l'utilisateur, vers le relais :
+</p><pre>
+% ssh -f -N -v -L localhost:6666:\[::1\]:8080 proxy.bortzmeyer.org
+</pre><p>
+(si on trouve cette commande trop longue à taper à chaque fois, on
+peut utiliser un <a href="shell-alias.html" title="Consultez ce blog à propos de &quot;shell-alias&quot;">alias</a>, ou bien la
+mettre automatiquement en route à la connexion, par exemple dans le
+fichier <code>~/.xsession</code> ; on peut aussi utiliser <a href="http://www.harding.motd.ca/autossh/">autossh</a>). Cette commande fait
+suivre tout message envoyé au port 6666 de la machine locale vers le
+relais, puis au port 8080 de ce dernier (notez l'utilisation de la
+syntaxe du <a href="http://www.rfc-editor.org/rfc/rfc2732.txt" class="rfc" title="Consultez le texte intégral du RFC 2732">RFC 2732</a>, <code>[::1]:8080</code>, pour
+distinguer l'adresse IP du numéro de port). <code>-f</code> fait
+s'exécuter la commande de manière non-interactive.</p></div>
+<div class="para"><p>Il ne reste plus alors qu'à dire au navigateur Web d'utiliser
+<code>http://localhost:6666/</code> comme relais. Ici, avec
+curl et la variable d'environnement <code>http_proxy</code> :
+</p><pre>
+% export http_proxy=http://localhost:6666/
+% curl -v http://www.ras.eu.org/ &gt; /dev/null
+</pre><p>
+Avec Firefox, il est sans doute préférable d'utiliser l'extension
+<a href="http://foxyproxy.mozdev.org/">FoxyProxy</a>, qui permet
+de jongler facilement avec les différentes options pour les relais.</p></div>
+<div class="para"><p>Merci à 
+Pascal Courtois, Thomas Quinot et 
+Bertrand Petit pour leur aide.
+</p></div>
+<div class="para"><p>Il existe une alternative à la solution « tunnel SSH + logiciel
+relais HTTP » présentée ici (avec Apache comme logiciel relais). Cette
+solution m'a été proposée par Samuel Tardieu, Ollivier Robert, Yannick
+Palanque ou Eon Knight : elle consiste en un tunnel SSH plus le
+protocole <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Socks" title="Consultez l'article &quot;Socks&quot; de l'encyclopédie libre Wikipedia">Socks</a></b> pour éviter d'installer un
+relais explicite derrière le tunnel. On lance le tunnel SSH avec
+l'option <code>-D</code> pour relayer le Socks :
+</p><pre>
+% ssh -f -N -v -D localhost:6667 proxy.bortzmeyer.org
+</pre><p>
+et on peut alors dire aux navigateurs Web d'utiliser le relais Socks
+<code>localhost:6667</code>. Par exemple, avec curl :
+</p><pre>
+curl -v --socks5 localhost:6667 http://www.ras.eu.org/
+</pre><p>
+Mais attention : tous les logiciels ne parlent pas forcément le
+Socks. curl ou Firefox le font, mais ni wget, ni <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Lynx%20(navigateur)" title="Consultez l'article &quot;Lynx (navigateur)&quot; de l'encyclopédie libre Wikipedia">lynx</a></b>. Même chose pour les
+bibliothèques d'accès au Web comme <a href="http://docs.python.org/library/httplib.html">httplib</a> qui
+nécessitent du code supplémentaire pour utiliser Socks :
+</p><pre>
+proxy = socks.socksocket()
+proxy.setproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 6667)
+conn = httplib.HTTPConnection("www.ras.eu.org", 80)
+conn.sock = proxy
+</pre><p>
+On peut certes utiliser une bibliothèque comme
+<a href="http://tsocks.sourceforge.net/">tsocks</a> pour « socksifier » les applications
+non-Socks mais ma solution avec Apache me paraît plus claire.</p></div>
+<div class="para"><p>Au fait, petit avertissement à propos de Socks et Firefox (merci à
+Yannick Palanque). Par défaut, Firefox fait la résolution DNS en local (cf. réglage
+<code>network.proxy.socks_remote_dns</code>). Il faut y penser si on veut rester
+discret en utilisant un tunnel SSH.</p></div>
+
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="proxy-http-server.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="proxy-http-server.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Fproxy-http-server.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

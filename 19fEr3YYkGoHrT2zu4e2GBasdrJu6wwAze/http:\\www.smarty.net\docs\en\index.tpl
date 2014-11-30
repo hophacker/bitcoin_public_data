@@ -1,0 +1,1450 @@
+http://www.smarty.net/docs/en/index.tpl
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 11:41:31 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.3.10-1ubuntu3.13
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 16678
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Smarty 3 Manual | Smarty</title>
+    <meta name="description" content="Smarty 3 Manual">
+    <meta name="keywords" content="smarty, 3, manual">
+    <style type="text/css" media="screen">
+    @import "/css/screen/global.css";
+    @import "/css/typography.css";
+    </style>
+    
+    <!--[if lt IE 7]>
+    <style type="text/css" media="screen">
+    @import "/css/screen/fix_ie.css";
+    </style>
+    <![endif]-->
+    
+    <!--[if IE 7]>
+    <style type="text/css" media="screen">
+    @import "/css/screen/fix_ie7.css";
+    </style>
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" media="print" href="/css/typography.css">
+    <link rel="stylesheet" type="text/css" media="print" href="/css/print/global.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/js/bbedit.css">
+    
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAtNLTcaiYcFN-f4XrzpVY_RSkE6bExsEa6fcoWABjZpep9Iy-rxQHKn32rDn2QOaRGdO78OCTegXQvw"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.bbedit.min.js"></script>
+
+    <link href="/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="/js/prettify/prettify.js"></script>    
+    
+    <script type="text/JavaScript"> 
+     $(document).ready(function(){
+       prettyPrint();
+              $("#commentFormBodyText").bbedit({
+           highlight: true,
+           enableSmileybar: false,
+           tags: 'b,i,url,code,quote'
+       });
+       $("#commentPreviewText").hide();
+       $("#commentPostedText").hide();
+       $("#commentBusyIcon").hide();
+       $("#commentForm").submit(function() { return false; });
+       $("#commentFormPreviewButton").click(function(){
+         $("#commentBusyIcon").show();
+         $.post("/comments/preview", { body: $("#commentFormBodyText").val(), author: $("#commentFormAuthorText").val() },
+            function(data){
+              var options = {};
+              if($("#commentPreviewText").is(":visible")) {
+                $("#commentPreviewText").hide('blind',options,500,function() {
+                  $("#commentPreviewText").html(data);
+                  $("#commentPreviewText").show('blind',options,500,function() {
+                    $("#commentBusyIcon").hide();
+                  });                  
+                });
+              } else {
+                $("#commentPreviewText").html(data);
+                $("#commentPreviewText").show('blind',options,500,function() {
+                  $("#commentBusyIcon").hide();
+                });                  
+              }
+            });
+       }); 
+       $("#commentFormPostButton").click(function(){
+         $("#commentBusyIcon").show();
+         $.post("/comments/post", { body: $("#commentFormBodyText").val(), author: $("#commentFormAuthorText").val(), page_id: $("#commentFormPageID").val(), email: $("#commentFormEmailText").val(), challenge: $("#commentFormChallengeText").val(), obf: $("#commentFormChallengeObf").val()},
+            function(data){
+              var options = {};
+              $("#commentPostedText").html(data);
+              if($("#commentPreviewText").is(":visible")) {
+                $("#commentPreviewText").hide('blind',options,500,function() {
+                  $("#commentPostedText").show('blind',options,500,function() {
+                    $("#commentBusyIcon").hide();
+                    $("#commentFormPostButton").attr('disabled','true'); 
+                    $("#commentFormPreviewButton").attr('disabled','true'); 
+                  });
+                });
+              } else {
+                $("#commentPostedText").show('blind',options,500,function() {
+                  $("#commentBusyIcon").hide();
+                  $("#commentFormPostButton").attr('disabled','true'); 
+                  $("#commentFormPreviewButton").attr('disabled','true'); 
+                });
+              }                  
+            });
+       });
+            });
+          function clearDefaultandCSS(el) {
+     	if (el.defaultValue==el.value) el.value = ""
+     	// If Dynamic Style is supported, clear the style
+     	if (el.style) el.style.cssText = ""
+     }
+         </script>
+    
+    <script type="text/javascript" src="/js/smarty.js"></script>
+  	<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"> 
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GS_googleAddAdSenseService("ca-pub-8878956630941543");
+  	  GS_googleEnableAllServices();
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_footer");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_left_box");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_right_skyscraper");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_top_banner");
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GA_googleFetchAds();
+  	</script>
+  </head>
+  <body>
+  <a class="skiplink" accesskey="S" href="#mainContent">Skip over navigation</a>
+  <div id="wrapper">
+      <div id="header">
+        <div id="header_logo">
+          <div id="logo"><a href="/"><img src="/images/logo_print.gif" width="249" height="74" alt="Smarty Template Engine"></a></div>
+        </div>
+        <div id="header_ad" style="float: right;">
+      		<script type="text/javascript"> 
+      		  GA_googleFillSlot("smarty_footer");
+      		</script>
+      	</div>
+        <div class="clear"></div>
+      </div>
+      <div id="nav">
+        <ul class="nav navHorz">
+		  		  		  		  		  		              		<li><a href="/" accesskey="1">Home</a></li>
+					  		              		<li><a href="/download" >Download</a></li>
+					  		              		<li><a href="/documentation" accesskey="6">Documentation</a></li>
+					  		              		<li><a href="http://smarty.incutio.com/?page=SmartyFrequentlyAskedQuestions" >FAQ</a></li>
+					  		              		<li><a href="/forums/" >Forum</a></li>
+					  		              		<li><a href="/mailinglists" >Mailing Lists</a></li>
+					          </ul>
+        
+        <form action="/search" method="get">
+          <p>
+            <input type="text" name="q" size="30" value="Search..." accesskey="4" class="field" onclick="smarty.removeDefaultValue(this, 'Search...');" onfocus="smarty.removeDefaultValue(this, 'Search...');" onblur="smarty.restoreDefaultValue(this, 'Search...');">
+            in
+            <select name="show" class="field">
+              <optgroup label="Documentation">
+                <option value="manual-en">English</option>
+                <option value="manual-de">German</option>
+                <option value="manual-es">Spanish</option>
+                <option value="manual-fr">French</option>
+                <option value="manual-it">Italian</option>
+                <option value="manual-ja">Japanese</option>
+                <option value="manual-pt_BR">Portuguese</option>
+                <option value="manual-ru">Russian</option>
+              </optgroup>
+              <optgroup label="Mailing Lists">
+                <option value="smarty-general-list">General</option>
+                <option value="smarty-dev-list">Development</option>
+              </optgroup>
+            </select>
+            <input type="image" src="/images/search.png" alt="Submit Search" class="button">
+          </p>
+        </form>
+        <div class="clear"></div>
+      </div>
+     
+      <div class="col colSecondary">
+        <div class="box box1">
+          <h1 class="boxHead">Get Smarty</h1>
+          <ul class="nav navVert"
+            ><li><a href="/download">Download</a></li
+          ></ul>
+        </div>
+        
+        <div class="box box1">
+          <h1 class="boxHead">About Smarty</h1>
+          <ul class="nav navVert"
+          ><li><a href="/about_smarty">All About Smarty</a></li
+            ><li><a href="/why_use">Why use it?</a></li
+              ><li><a href="/use_cases">Use Cases and Work Flow</a></li
+            ><li><a href="/syntax_comparison">Syntax Comparison</a></li
+            ><li><a href="/inheritance">Template Inheritance</a></li
+            ><li><a href="/best_practices">Best Practices</a></li
+            ><li><a href="/crash_course">Crash Course</a></li
+            ><li><a href="/v3_overview">Version 3 Overview</a></li
+            ><li><a href="/forums/viewforum.php?f=12">Testimonials</a></li
+              ><li><a href="http://smarty.incutio.com/?page=SitesUsingSmarty">Sites Using Smarty</a></li
+          ></ul>
+        </div>
+        
+        <div class="box box1">
+          <h1 class="boxHead">Resources</h1>
+          <ul class="nav navVert"
+          ><li><a href="http://smarty-php.googlecode.com/svn/trunk/distribution/SMARTY_2_BC_NOTES.txt">Smarty 2-&gt;3 upgrade notes</a></li
+            ><li><a href="http://smarty-php.googlecode.com/svn/trunk/distribution/README">README (from distro)</a></li
+          ><li><a href="/quick_install">Quick Install</a></li
+	      ><li><a href="/documentation">Documentation</a></li
+		  ><li><a href="/forums/">Discussion Forums</a></li
+	      ><li><a href="/sampleapp1">Example App</a></li
+          ><li><a href="irc://irc.freenode.net/smarty">IRC (chat)</a></li
+          ><li><a href="/mailinglists">Mailing Lists</a></li
+          ><li><a href="http://smarty.incutio.com/">Community Wiki</a></li
+          ><li><a href="http://smarty.incutio.com/?page=SmartyFrequentlyAskedQuestions">FAQ (wiki)</a></li
+          ><li><a href="http://www.smarty.net/forums/viewforum.php?f=23" accesskey="5">FAQ (forums)</a></li
+          ><li><a href="http://www.jdoqocy.com/click-4355642-10718312?url=http%3A%2F%2Fwww.odesk.com%2Fcontractors%2Fskill%2Fsmarty%2Ffb%2F4.5-5.0-stars.4.0-4.5-stars%2Fsort%2Fadjusted-score%2Bdesc?vt_cmp=smarty">Hire Smarty Developers</a></li
+          ></ul>
+        </div>
+        <div class="box box1">
+          <h1 class="boxHead">Links</h1>
+          <ul class="nav navVert"
+          ><li><a href="http://www.php.net/">www.php.net</a></li
+            ><li><a href="http://www.phpinsider.com/">www.phpinsider.com</a></li
+            ><li><a href="http://www.ellysdirectory.com/">www.ellysdirectory.com</a></li
+              
+              
+          ></ul>
+        </div>
+        <div class="box box1" id="bitcoin">
+          <h1 class="boxHead">Donate</h1>
+          <div align="center" class="boxContent">
+            <div>
+            <a href="javascript:void(0);" onclick="javascript:window.prompt ('Copy and paste address to your bitcoin software:', '19fEr3YYkGoHrT2zu4e2GBasdrJu6wwAze');"><img src="/images/bitcoin.png" width="25" height="25" alt="Donate Bitcoin" style="vertical-align:middle"> Bitcoin</a>
+            </div>
+            <div>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="AK2ZWFVSNJEDE">
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal Donate" style="vertical-align:middle"> Paypal
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
+            </div>
+          </div>
+        </div>
+        <div class="box box1" id="smartyIcons">
+          <h1 class="boxHead">Smarty Icon</h1>
+          <div align="center" class="boxContent">
+            <p style="text-align: left">You may use the Smarty logo according to the <a href="/copyright">trademark notice</a>.</p>
+            <p>
+              <img src="/images/icons/smarty_icon.gif" width="88" height="31" alt="Smarty Template Engine">
+              <img src="/images/icons/smarty-80x15.png" width="80" height="15" alt="Smarty Template Engine">
+            </p>
+            <p style="text-align: left">
+              For sponsorship, advertising, news or other inquiries, contact us at: <script type="text/javascript" language="javascript">
+{document.write(String.fromCharCode(60,97,32,104,114,101,102,61,34,109,97,105,108,116,111,58,119,101,98,109,97,115,116,101,114,64,115,109,97,114,116,121,46,110,101,116,34,32,62,119,101,98,109,97,115,116,101,114,64,115,109,97,114,116,121,46,110,101,116,60,47,97,62))}
+</script>
+
+            </p>
+          </div>
+        </div>        
+        <div class="box box1" id="sitesUsingSmarty">
+          <h1 class="boxHead">Sites Using Smarty</h1>
+          <div align="center" class="boxContent">
+               <p>Largest classified with thousands of ads at <a href="http://www.shoppok.com">Shoppok</a></p>
+			   <p>Buy <a href="http://www.cheapglasses123.com/">cheap eyeglasses</a> from <a href="http://www.cheapglasses123.com/">Cheapglasses123.com</a> and save up to 80%.</p>
+			   <p>Buy wedding dresses on SiteSteer.com - <a href="http://www.sitesteer.com/">Best Online Wedding Dress Store</a></p>
+      			<p>
+      			  Buy <a href="http://www.australiaglasses.com/">prescription glasses</a> from <a href="http://www.australiaglasses.com/">www.australiaglasses.com</a> and save.
+				</p>
+				<p>
+  					<a href="http://www.glassespeople.com/">Cheap Glasses</a> Now On Sale at <a href="http://www.glassespeople.com/">GlassesPeople.com</a>. Starts At $7.95.
+      			</p>
+      			<p>
+      			Where to buy <a href="http://www.weddingdresstrend.com/">discount wedding dresses</a> and cheap smart dresses free shipping - <a href="http://www.weddingdresstrend.com/">Weddingdresstrend.com</a>
+      			</p>
+      			<p>
+                	<script type="text/javascript"> 
+      			  GA_googleFillSlot("smarty_left_box");
+      			</script>
+      			</p>
+          </div>
+        </div>        
+
+      </div><!-- end colSecondary -->
+      
+      <div class="col colMain" id="mainContent">
+      
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Smarty 3 Manual</th></tr>
+<tr>
+<td width="20%" align="left"> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="preface.tpl">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div lang="en" class="book" title="Smarty 3 Manual">
+<div class="titlepage">
+<div>
+<div><h1 class="title">
+<a name="manual"></a>Smarty - the compiling PHP template engine</h1></div>
+<div><div class="authorgroup">
+<a name="authors"></a><div class="author"><h3 class="author">
+<span class="firstname">Monte</span> <span class="surname">Ohrt &lt;monte at ohrt dot com&gt;</span>
+</h3></div>
+<div class="author"><h3 class="author">
+<span class="firstname">Uwe</span> <span class="surname">Tews &lt;uwe dot tews at googlemail dot com&gt;</span>
+</h3></div>
+</div></div>
+<div><p class="copyright">Copyright © 2001-2011 New Digital Group, Inc.</p></div>
+<div><p class="pubdate">2013-06-28</p></div>
+</div>
+<hr>
+</div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="preface"><a href="preface.tpl">Preface</a></span></dt>
+<dt><span class="part"><a href="getting.started.tpl">I. Getting Started</a></span></dt>
+<dd><dl>
+<dt><span class="chapter"><a href="what.is.smarty.tpl">1. What is Smarty?</a></span></dt>
+<dt><span class="chapter"><a href="installation.tpl">2. Installation</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="installation.tpl#installation.requirements">Requirements</a></span></dt>
+<dt><span class="sect1"><a href="installing.smarty.basic.tpl">Basic Installation</a></span></dt>
+<dt><span class="sect1"><a href="installing.smarty.extended.tpl">Extended Setup</a></span></dt>
+</dl></dd>
+</dl></dd>
+<dt><span class="part"><a href="smarty.for.designers.tpl">II. Smarty For Template Designers</a></span></dt>
+<dd><dl>
+<dt><span class="chapter"><a href="language.basic.syntax.tpl">3. Basic Syntax</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="language.basic.syntax.tpl#language.syntax.comments">Comments</a></span></dt>
+<dt><span class="sect1"><a href="language.syntax.variables.tpl">Variables</a></span></dt>
+<dt><span class="sect1"><a href="language.syntax.functions.tpl">Functions</a></span></dt>
+<dt><span class="sect1"><a href="language.syntax.attributes.tpl">Attributes</a></span></dt>
+<dt><span class="sect1"><a href="language.syntax.quotes.tpl">Embedding Vars in Double Quotes</a></span></dt>
+<dt><span class="sect1"><a href="language.math.tpl">Math</a></span></dt>
+<dt><span class="sect1"><a href="language.escaping.tpl">Escaping Smarty Parsing</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="language.variables.tpl">4. Variables</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="language.variables.tpl#language.assigned.variables">Variables assigned from PHP</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="language.variables.tpl#language.variables.assoc.arrays">Associative arrays</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.tpl#language.variables.array.indexes">Array indexes</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.tpl#language.variables.objects">Objects</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="language.variable.scopes.tpl">Variable scopes</a></span></dt>
+<dt><span class="sect1"><a href="language.config.variables.tpl">Variables loaded from config files</a></span></dt>
+<dt><span class="sect1"><a href="language.variables.smarty.tpl">{$smarty} reserved variable</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.request">Request variables</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.now">{$smarty.now}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.const">{$smarty.const}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.capture">{$smarty.capture}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.config">{$smarty.config}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.loops">{$smarty.section}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.template">{$smarty.template}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.template_object">{$smarty.template_object}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.current_dir">{$smarty.current_dir}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.version">{$smarty.version}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.block.child">{$smarty.block.child}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.block.parent">{$smarty.block.parent}</a></span></dt>
+<dt><span class="sect2"><a href="language.variables.smarty.tpl#language.variables.smarty.ldelim">{$smarty.ldelim}, {$smarty.rdelim}</a></span></dt>
+</dl></dd>
+</dl></dd>
+<dt><span class="chapter"><a href="language.modifiers.tpl">5. Variable Modifiers</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="language.modifiers.tpl#language.modifier.capitalize">capitalize</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.cat.tpl">cat</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.count.characters.tpl">count_characters</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.count.paragraphs.tpl">count_paragraphs</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.count.sentences.tpl">count_sentences</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.count.words.tpl">count_words</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.date.format.tpl">date_format</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.default.tpl">default</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.escape.tpl">escape</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.from_charset.tpl">from_charset</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.indent.tpl">indent</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.lower.tpl">lower</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.nl2br.tpl">nl2br</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.regex.replace.tpl">regex_replace</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.replace.tpl">replace</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.spacify.tpl">spacify</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.string.format.tpl">string_format</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.strip.tpl">strip</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.strip.tags.tpl">strip_tags</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.to_charset.tpl">to_charset</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.truncate.tpl">truncate</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.unescape.tpl">unescape</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.upper.tpl">upper</a></span></dt>
+<dt><span class="sect1"><a href="language.modifier.wordwrap.tpl">wordwrap</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="language.combining.modifiers.tpl">6. Combining Modifiers</a></span></dt>
+<dt><span class="chapter"><a href="language.builtin.functions.tpl">7. Built-in Functions</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="language.builtin.functions.tpl#language.function.shortform.assign">{$var=...}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.append.tpl">{append}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.assign.tpl">{assign}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.block.tpl">{block}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.call.tpl">{call}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.capture.tpl">{capture}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.config.load.tpl">{config_load}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.debug.tpl">{debug}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.extends.tpl">{extends}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.for.tpl">{for}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.foreach.tpl">{foreach},{foreachelse}</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.index">@index</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.iteration">@iteration</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.first">@first</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.last">@last</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.show">@show</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.property.total">@total</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.construct.break">{break}</a></span></dt>
+<dt><span class="sect2"><a href="language.function.foreach.tpl#foreach.construct.continue">{continue}</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="language.function.function.tpl">{function}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.if.tpl">{if},{elseif},{else}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.include.tpl">{include}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.include.php.tpl">{include_php}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.insert.tpl">{insert}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.ldelim.tpl">{ldelim},{rdelim}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.literal.tpl">{literal}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.nocache.tpl">{nocache}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.php.tpl">{php}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.section.tpl">{section},{sectionelse}</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.index">.index</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.index.prev">.index_prev</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.index.next">.index_next</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.iteration">.iteration</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.first">.first</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.last">.last</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.rownum">.rownum</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.loop">.loop</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.show">.show</a></span></dt>
+<dt><span class="sect2"><a href="language.function.section.tpl#section.property.total">.total</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="language.function.setfilter.tpl">{setfilter}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.strip.tpl">{strip}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.while.tpl">{while}</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="language.custom.functions.tpl">8. Custom Functions</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="language.custom.functions.tpl#language.function.counter">{counter}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.cycle.tpl">{cycle}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.eval.tpl">{eval}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.fetch.tpl">{fetch}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.checkboxes.tpl">{html_checkboxes}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.image.tpl">{html_image}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.options.tpl">{html_options}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.radios.tpl">{html_radios}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.select.date.tpl">{html_select_date}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.select.time.tpl">{html_select_time}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.html.table.tpl">{html_table}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.mailto.tpl">{mailto}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.math.tpl">{math}</a></span></dt>
+<dt><span class="sect1"><a href="language.function.textformat.tpl">{textformat}</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="config.files.tpl">9. Config Files</a></span></dt>
+<dt><span class="chapter"><a href="chapter.debugging.console.tpl">10. Debugging Console</a></span></dt>
+</dl></dd>
+<dt><span class="part"><a href="smarty.for.programmers.tpl">III. Smarty For Programmers</a></span></dt>
+<dd><dl>
+<dt><span class="chapter"><a href="charset.tpl">11. Charset Encoding</a></span></dt>
+<dd><dl><dt><span class="sect1"><a href="charset.tpl#charset.encoding">Charset Encoding</a></span></dt></dl></dd>
+<dt><span class="chapter"><a href="smarty.constants.tpl">12. Constants</a></span></dt>
+<dd><dl><dt><span class="sect1"><a href="smarty.constants.tpl#constant.smarty.dir">SMARTY_DIR</a></span></dt></dl></dd>
+<dt><span class="chapter"><a href="api.variables.tpl">13. Smarty Class Variables</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="api.variables.tpl#variable.allow.php.templates">$allow_php_templates</a></span></dt>
+<dt><span class="sect1"><a href="variable.auto.literal.tpl">$auto_literal</a></span></dt>
+<dt><span class="sect1"><a href="variable.autoload.filters.tpl">$autoload_filters</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.dir.tpl">$cache_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.id.tpl">$cache_id</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.lifetime.tpl">$cache_lifetime</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.locking.tpl">$cache_locking</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.modified.check.tpl">$cache_modified_check</a></span></dt>
+<dt><span class="sect1"><a href="variable.caching.tpl">$caching</a></span></dt>
+<dt><span class="sect1"><a href="variable.caching.type.tpl">$caching_type</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.check.tpl">$compile_check</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.dir.tpl">$compile_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.id.tpl">$compile_id</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.locking.tpl">$compile_locking</a></span></dt>
+<dt><span class="sect1"><a href="variable.compiler.class.tpl">$compiler_class</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.booleanize.tpl">$config_booleanize</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.dir.tpl">$config_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.overwrite.tpl">$config_overwrite</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.read.hidden.tpl">$config_read_hidden</a></span></dt>
+<dt><span class="sect1"><a href="variable.debug_template.tpl">$debug_tpl</a></span></dt>
+<dt><span class="sect1"><a href="variable.debugging.tpl">$debugging</a></span></dt>
+<dt><span class="sect1"><a href="variable.debugging.ctrl.tpl">$debugging_ctrl</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.config.type.tpl">$default_config_type</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.modifiers.tpl">$default_modifiers</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.resource.type.tpl">$default_resource_type</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.config.handler.func.tpl">$default_config_handler_func</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.template.handler.func.tpl">$default_template_handler_func</a></span></dt>
+<dt><span class="sect1"><a href="variable.direct.access.security.tpl">$direct_access_security</a></span></dt>
+<dt><span class="sect1"><a href="variable.error.reporting.tpl">$error_reporting</a></span></dt>
+<dt><span class="sect1"><a href="variable.escape.html.tpl">$escape_html</a></span></dt>
+<dt><span class="sect1"><a href="variable.force.cache.tpl">$force_cache</a></span></dt>
+<dt><span class="sect1"><a href="variable.force.compile.tpl">$force_compile</a></span></dt>
+<dt><span class="sect1"><a href="variable.left.delimiter.tpl">$left_delimiter</a></span></dt>
+<dt><span class="sect1"><a href="variable.locking.timeout.tpl">$locking_timeout</a></span></dt>
+<dt><span class="sect1"><a href="variable.merge.compiled.includes.tpl">$merge_compiled_includes</a></span></dt>
+<dt><span class="sect1"><a href="variable.php.handling.tpl">$php_handling</a></span></dt>
+<dt><span class="sect1"><a href="variable.plugins.dir.tpl">$plugins_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.right.delimiter.tpl">$right_delimiter</a></span></dt>
+<dt><span class="sect1"><a href="variable.smarty.debug.id.tpl">$smarty_debug_id</a></span></dt>
+<dt><span class="sect1"><a href="variable.template.dir.tpl">$template_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.trusted.dir.tpl">$trusted_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.use.include.path.tpl">$use_include_path</a></span></dt>
+<dt><span class="sect1"><a href="variable.use.sub.dirs.tpl">$use_sub_dirs</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="api.functions.tpl">14. Smarty Class Methods</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="api.add.config.dir.tpl">addConfigDir()</a></span><span class="refpurpose"> — add a directory to the list of directories where config files are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.add.plugins.dir.tpl">addPluginsDir()</a></span><span class="refpurpose"> — add a directory to the list of directories where plugins are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.add.template.dir.tpl">addTemplateDir()</a></span><span class="refpurpose"> — add a directory to the list of directories where templates are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.append.tpl">append()</a></span><span class="refpurpose"> — append an element to an assigned array</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.append.by.ref.tpl">appendByRef()</a></span><span class="refpurpose"> — append values  by reference</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.assign.tpl">assign()</a></span><span class="refpurpose"> — assign variables/objects to the templates</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.assign.by.ref.tpl">assignByRef()</a></span><span class="refpurpose"> — assign values by reference</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.all.assign.tpl">clearAllAssign()</a></span><span class="refpurpose"> — clears the values of all assigned variables</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.all.cache.tpl">clearAllCache()</a></span><span class="refpurpose"> — clears the entire template cache</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.assign.tpl">clearAssign()</a></span><span class="refpurpose"> — clears the value of an assigned variable</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.cache.tpl">clearCache()</a></span><span class="refpurpose"> — clears the cache for a specific template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.compiled.tpl.tpl">clearCompiledTemplate()</a></span><span class="refpurpose"> — clears the compiled version of the specified template resource</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.config.tpl">clearConfig()</a></span><span class="refpurpose"> — clears assigned config variables</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.compile.all.config.tpl">compileAllConfig()</a></span><span class="refpurpose"> — compiles all known config files</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.compile.all.templates.tpl">compileAllTemplates()</a></span><span class="refpurpose"> — compiles all known templates</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.config.load.tpl">configLoad()</a></span><span class="refpurpose"> —  loads config file  data and assigns it to the template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.create.data.tpl">createData()</a></span><span class="refpurpose"> — creates a data object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.create.template.tpl">createTemplate()</a></span><span class="refpurpose"> — returns a template object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.disable.security.tpl">disableSecurity()</a></span><span class="refpurpose"> — disables template security</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.display.tpl">display()</a></span><span class="refpurpose"> — displays the template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.enable.security.tpl">enableSecurity()</a></span><span class="refpurpose"> — enables template security</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.fetch.tpl">fetch()</a></span><span class="refpurpose"> — returns the template output</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.cache.dir.tpl">getCacheDir()</a></span><span class="refpurpose"> — return the directory where the rendered template's output is stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.compile.dir.tpl">getCompileDir()</a></span><span class="refpurpose"> — returns the directory where compiled templates are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.config.dir.tpl">getConfigDir()</a></span><span class="refpurpose"> — return the directory where config files are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.config.vars.tpl">getConfigVars()</a></span><span class="refpurpose"> — returns the given loaded config variable value</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.plugins.dir.tpl">getPluginsDir()</a></span><span class="refpurpose"> — return the directory where plugins are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.registered.object.tpl">getRegisteredObject()</a></span><span class="refpurpose"> — returns a reference to a registered object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.tags.tpl">getTags()</a></span><span class="refpurpose"> — return tags used by template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.template.dir.tpl">getTemplateDir()</a></span><span class="refpurpose"> — return the directory where templates are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.template.vars.tpl">getTemplateVars()</a></span><span class="refpurpose"> — returns  assigned variable value(s)</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.is.cached.tpl">isCached()</a></span><span class="refpurpose"> — returns true if there is a valid cache for this template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.load.filter.tpl">loadFilter()</a></span><span class="refpurpose"> — load a filter plugin</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.mute.expected.errors.tpl">Smarty::muteExpectedErrors()</a></span><span class="refpurpose"> — mutes expected warnings and notices deliberately generated by Smarty</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.cacheresource.tpl">registerCacheResource()</a></span><span class="refpurpose"> — dynamically register CacheResources</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.class.tpl">registerClass()</a></span><span class="refpurpose"> — register a class for use in the templates</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.default.plugin.handler.tpl">registerDefaultPluginHandler()</a></span><span class="refpurpose"> — register a function which gets called on undefined tags</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.filter.tpl">registerFilter()</a></span><span class="refpurpose"> — dynamically register filters</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.plugin.tpl">registerPlugin()</a></span><span class="refpurpose"> — dynamically register plugins</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.object.tpl">registerObject()</a></span><span class="refpurpose"> — register an object for use in the templates</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.resource.tpl">registerResource()</a></span><span class="refpurpose"> — dynamically register resources</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.set.cache.dir.tpl">setCacheDir()</a></span><span class="refpurpose"> — set the directory where the rendered template's output is stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.set.compile.dir.tpl">setCompileDir()</a></span><span class="refpurpose"> — set the directory where compiled templates are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.set.config.dir.tpl">setConfigDir()</a></span><span class="refpurpose"> — set the directories where config files are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.set.plugins.dir.tpl">setPluginsDir()</a></span><span class="refpurpose"> — set the directories where plugins are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.set.template.dir.tpl">setTemplateDir()</a></span><span class="refpurpose"> — set the directories where templates are stored</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.template.exists.tpl">templateExists()</a></span><span class="refpurpose"> — checks whether the specified template exists</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.cacheresource.tpl">unregisterCacheResource()</a></span><span class="refpurpose"> — dynamically unregister a CacheResource plugin</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.filter.tpl">unregisterFilter()</a></span><span class="refpurpose"> — dynamically unregister a filter</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.plugin.tpl">unregisterPlugin</a></span><span class="refpurpose"> — dynamically unregister plugins</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.object.tpl">unregisterObject()</a></span><span class="refpurpose"> — dynamically unregister an object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.resource.tpl">unregisterResource()</a></span><span class="refpurpose"> — dynamically unregister a resource plugin</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.test.install.tpl">testInstall()</a></span><span class="refpurpose"> — checks Smarty installation</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="caching.tpl">15. Caching</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="caching.tpl#caching.setting.up">Setting Up Caching</a></span></dt>
+<dt><span class="sect1"><a href="caching.multiple.caches.tpl">Multiple Caches Per Page</a></span></dt>
+<dt><span class="sect1"><a href="caching.groups.tpl">Cache Groups</a></span></dt>
+<dt><span class="sect1"><a href="caching.cacheable.tpl">Controlling Cacheability of Output</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="caching.cacheable.tpl#cacheability.sections">Cacheability of Template Section</a></span></dt>
+<dt><span class="sect2"><a href="caching.cacheable.tpl#cacheability.tags">Cacheability of Tags</a></span></dt>
+<dt><span class="sect2"><a href="caching.cacheable.tpl#cacheability.variables">Cacheability of Variables</a></span></dt>
+<dt><span class="sect2"><a href="caching.cacheable.tpl#cacheability.plugins">Cacheability of Plugins</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="caching.custom.tpl">Custom Cache Implementation</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="resources.tpl">16. Resources</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="resources.tpl#resources.file">File Template Resources</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="resources.tpl#templates.from.template.dir">Templates from $template_dir</a></span></dt>
+<dt><span class="sect2"><a href="resources.tpl#templates.from.specified.template.dir">Templates from a specific $template_dir</a></span></dt>
+<dt><span class="sect2"><a href="resources.tpl#templates.from.any.dir">Templates from any directory</a></span></dt>
+<dt><span class="sect2"><a href="resources.tpl#templates.windows.filepath">Windows Filepaths</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="resources.string.tpl">String Template Resources</a></span></dt>
+<dt><span class="sect1"><a href="resources.streams.tpl">Stream Template Resources</a></span></dt>
+<dt><span class="sect1"><a href="resources.extends.tpl">Extends Template Resources</a></span></dt>
+<dt><span class="sect1"><a href="resources.custom.tpl">Custom Template Resources</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="advanced.features.tpl">17. Advanced Features</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="advanced.features.tpl#advanced.features.security">Security</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.template.settings.tpl">Changing settings by template</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.template.inheritance.tpl">Template Inheritance</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.streams.tpl">Streams</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.objects.tpl">Objects</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.static.classes.tpl">Static Classes</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.prefilters.tpl">Prefilters</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.postfilters.tpl">Postfilters</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.outputfilters.tpl">Output Filters</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="plugins.tpl">18. Extending Smarty With Plugins</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="plugins.tpl#plugins.howto">How Plugins Work</a></span></dt>
+<dt><span class="sect1"><a href="plugins.naming.conventions.tpl">Naming Conventions</a></span></dt>
+<dt><span class="sect1"><a href="plugins.writing.tpl">Writing Plugins</a></span></dt>
+<dt><span class="sect1"><a href="plugins.functions.tpl">Template Functions</a></span></dt>
+<dt><span class="sect1"><a href="plugins.modifiers.tpl">Modifiers</a></span></dt>
+<dt><span class="sect1"><a href="plugins.block.functions.tpl">Block Functions</a></span></dt>
+<dt><span class="sect1"><a href="plugins.compiler.functions.tpl">Compiler Functions</a></span></dt>
+<dt><span class="sect1"><a href="plugins.prefilters.postfilters.tpl">Prefilters/Postfilters</a></span></dt>
+<dt><span class="sect1"><a href="plugins.outputfilters.tpl">Output Filters</a></span></dt>
+<dt><span class="sect1"><a href="plugins.resources.tpl">Resources</a></span></dt>
+<dt><span class="sect1"><a href="plugins.inserts.tpl">Inserts</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="bc.tpl">19. SmartyBC - Backwards Compatibility Wrapper</a></span></dt>
+<dd><dl><dt><span class="sect1"><a href="bc.tpl#bc.class">SmartyBC class</a></span></dt></dl></dd>
+</dl></dd>
+<dt><span class="part"><a href="appendixes.tpl">IV. Appendixes</a></span></dt>
+<dd><dl>
+<dt><span class="chapter"><a href="troubleshooting.tpl">20. Troubleshooting</a></span></dt>
+<dd><dl><dt><span class="sect1"><a href="troubleshooting.tpl#smarty.php.errors">Smarty/PHP errors</a></span></dt></dl></dd>
+<dt><span class="chapter"><a href="tips.tpl">21. Tips &amp; Tricks</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="tips.tpl#tips.blank.var.handling">Blank Variable Handling</a></span></dt>
+<dt><span class="sect1"><a href="tips.default.var.handling.tpl">Default Variable Handling</a></span></dt>
+<dt><span class="sect1"><a href="tips.passing.vars.tpl">Passing variable title to header template</a></span></dt>
+<dt><span class="sect1"><a href="tips.dates.tpl">Dates</a></span></dt>
+<dt><span class="sect1"><a href="tips.wap.tpl">WAP/WML</a></span></dt>
+<dt><span class="sect1"><a href="tips.componentized.templates.tpl">Componentized Templates</a></span></dt>
+<dt><span class="sect1"><a href="tips.obfuscating.email.tpl">Obfuscating E-mail Addresses</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="inforesources.tpl">22. Resources</a></span></dt>
+<dt><span class="chapter"><a href="bugs.tpl">23. BUGS</a></span></dt>
+</dl></dd>
+</dl>
+</div>
+<div class="list-of-examples">
+<p><b>List of Examples</b></p>
+<dl>
+<dt>2.1. <a href="installing.smarty.basic.tpl#idp5104720">Required Smarty library files</a>
+</dt>
+<dt>2.2. <a href="installing.smarty.basic.tpl#idp5116928">Set SMARTY_DIR constant manually</a>
+</dt>
+<dt>2.3. <a href="installing.smarty.basic.tpl#idp5118560">Supply absolute path to library file</a>
+</dt>
+<dt>2.4. <a href="installing.smarty.basic.tpl#idp5121184">Add the library path to the <code class="filename">php.ini</code> file</a>
+</dt>
+<dt>2.5. <a href="installing.smarty.basic.tpl#idp5124656">Appending the include path in a php script with
+    ini_set()</a>
+</dt>
+<dt>2.6. <a href="installing.smarty.basic.tpl#idp5139952">What the file structure looks like</a>
+</dt>
+<dt>2.7. <a href="installing.smarty.basic.tpl#idp5153952">Permissions and making directories writable</a>
+</dt>
+<dt>2.8. <a href="installing.smarty.basic.tpl#idp5161728">/web/www.example.com/guestbook/templates/index.tpl</a>
+</dt>
+<dt>2.9. <a href="installing.smarty.basic.tpl#idp5169072">Editing /web/www.example.com/docs/guestbook/index.php</a>
+</dt>
+<dt>2.10. <a href="installing.smarty.extended.tpl#idp5182704">/php/includes/guestbook/setup.php</a>
+</dt>
+<dt>2.11. <a href="installing.smarty.extended.tpl#idp5187792">/web/www.example.com/guestbook/htdocs/index.php</a>
+</dt>
+<dt>3.1. <a href="language.basic.syntax.tpl#idp5376608">Comments within a template</a>
+</dt>
+<dt>3.2. <a href="language.syntax.variables.tpl#idp5370992">Variables</a>
+</dt>
+<dt>3.3. <a href="language.syntax.functions.tpl#idp5384784">function syntax </a>
+</dt>
+<dt>3.4. <a href="language.syntax.attributes.tpl#idp5420768">function attribute syntax</a>
+</dt>
+<dt>3.5. <a href="language.syntax.quotes.tpl#idp5452224">Syntax examples</a>
+</dt>
+<dt>3.6. <a href="language.syntax.quotes.tpl#idp5495616">Examples</a>
+</dt>
+<dt>3.7. <a href="language.math.tpl#idp5466640">math examples</a>
+</dt>
+<dt>3.8. <a href="language.escaping.tpl#idp5488000">Using the auto-literal feature</a>
+</dt>
+<dt>3.9. <a href="language.escaping.tpl#idp5546208">changing delimiters example</a>
+</dt>
+<dt>4.1. <a href="language.variables.tpl#idp5636720">Example variables</a>
+</dt>
+<dt>4.2. <a href="language.variables.tpl#idp5642976">Assigned variables</a>
+</dt>
+<dt>4.3. <a href="language.variables.tpl#idp5688032">Accessing associative array variables</a>
+</dt>
+<dt>4.4. <a href="language.variables.tpl#idp5695152">Accessing arrays by index</a>
+</dt>
+<dt>4.5. <a href="language.variables.tpl#idp5703504">Accessing object properties</a>
+</dt>
+<dt>4.6. <a href="language.variable.scopes.tpl#idp5744192">Variable scope examples</a>
+</dt>
+<dt>4.7. <a href="language.config.variables.tpl#idp5771456">config variables</a>
+</dt>
+<dt>4.8. <a href="language.variables.smarty.tpl#idp5812288">Displaying request variables</a>
+</dt>
+<dt>5.1. <a href="language.modifiers.tpl#idp6012736">Modifier examples</a>
+</dt>
+<dt>5.2. <a href="language.modifiers.tpl#idp6087904">capitalize</a>
+</dt>
+<dt>5.3. <a href="language.modifier.cat.tpl#idp6132704">cat</a>
+</dt>
+<dt>5.4. <a href="language.modifier.count.characters.tpl#idp6168768">count_characters</a>
+</dt>
+<dt>5.5. <a href="language.modifier.count.paragraphs.tpl#idp6149040">count_paragraphs</a>
+</dt>
+<dt>5.6. <a href="language.modifier.count.sentences.tpl#idp6200048">count_sentences</a>
+</dt>
+<dt>5.7. <a href="language.modifier.count.words.tpl#idp6195712">count_words</a>
+</dt>
+<dt>5.8. <a href="language.modifier.date.format.tpl#idp6286592">date_format</a>
+</dt>
+<dt>5.9. <a href="language.modifier.default.tpl#idp6395344">default</a>
+</dt>
+<dt>5.10. <a href="language.modifier.escape.tpl#idp6457728">escape</a>
+</dt>
+<dt>5.11. <a href="language.modifier.escape.tpl#idp6461472">Other examples</a>
+</dt>
+<dt>5.12. <a href="language.modifier.indent.tpl#idp6579488">indent</a>
+</dt>
+<dt>5.13. <a href="language.modifier.lower.tpl#idp6566128">lower</a>
+</dt>
+<dt>5.14. <a href="language.modifier.nl2br.tpl#idp6597536">nl2br</a>
+</dt>
+<dt>5.15. <a href="language.modifier.regex.replace.tpl#idp6677072">regex_replace</a>
+</dt>
+<dt>5.16. <a href="language.modifier.replace.tpl#idp6727152">replace</a>
+</dt>
+<dt>5.17. <a href="language.modifier.spacify.tpl#idp6772416">spacify</a>
+</dt>
+<dt>5.18. <a href="language.modifier.string.format.tpl#idp6814736">string_format</a>
+</dt>
+<dt>5.19. <a href="language.modifier.strip.tpl#idp6845872">strip</a>
+</dt>
+<dt>5.20. <a href="language.modifier.strip.tags.tpl#idp6878448">strip_tags</a>
+</dt>
+<dt>5.21. <a href="language.modifier.truncate.tpl#idp6975184">truncate</a>
+</dt>
+<dt>5.22. <a href="language.modifier.unescape.tpl#idp7036528">escape</a>
+</dt>
+<dt>5.23. <a href="language.modifier.upper.tpl#idp7046624">upper</a>
+</dt>
+<dt>5.24. <a href="language.modifier.wordwrap.tpl#idp7120048">wordwrap</a>
+</dt>
+<dt>6.1. <a href="language.combining.modifiers.tpl#idp7684592">combining modifiers</a>
+</dt>
+<dt>7.1. <a href="language.builtin.functions.tpl#idp7804704">Simple assignment</a>
+</dt>
+<dt>7.2. <a href="language.builtin.functions.tpl#idp7807632">Assignment with math</a>
+</dt>
+<dt>7.3. <a href="language.builtin.functions.tpl#idp7809264">Assignment of an array element</a>
+</dt>
+<dt>7.4. <a href="language.builtin.functions.tpl#idp7810784">Assignment of an multidimensional array element</a>
+</dt>
+<dt>7.5. <a href="language.builtin.functions.tpl#idp7812368">Appending an array</a>
+</dt>
+<dt>7.6. <a href="language.builtin.functions.tpl#idp7813904">Assigment in the scope of calling template</a>
+</dt>
+<dt>7.7. <a href="language.function.append.tpl#idp7893312">{append}</a>
+</dt>
+<dt>7.8. <a href="language.function.assign.tpl#idp7967696">{assign}</a>
+</dt>
+<dt>7.9. <a href="language.function.assign.tpl#idp7970784">{assign} as a nocache variable</a>
+</dt>
+<dt>7.10. <a href="language.function.assign.tpl#idp7973760">{assign} with some maths</a>
+</dt>
+<dt>7.11. <a href="language.function.assign.tpl#idp7975424">{assign} in the scope of calling template</a>
+</dt>
+<dt>7.12. <a href="language.function.assign.tpl#idp7979376">{assign} a variable to current scope tree</a>
+</dt>
+<dt>7.13. <a href="language.function.assign.tpl#idp7982112">{assign} a global variable</a>
+</dt>
+<dt>7.14. <a href="language.function.assign.tpl#idp7984240">Accessing {assign} variables from a PHP script</a>
+</dt>
+<dt>7.15. <a href="language.function.block.tpl#idp8108864">Simple <code class="varname">{block}</code> example</a>
+</dt>
+<dt>7.16. <a href="language.function.block.tpl#idp8114208">Prepend <code class="varname">{block}</code> example</a>
+</dt>
+<dt>7.17. <a href="language.function.block.tpl#idp8119248">Append <code class="varname">{block}</code> example</a>
+</dt>
+<dt>7.18. <a href="language.function.block.tpl#idp8124288"><code class="varname">{$smarty.block.child}</code> example</a>
+</dt>
+<dt>7.19. <a href="language.function.block.tpl#idp8129232"><code class="varname">{$smarty.block.parent}</code> example</a>
+</dt>
+<dt>7.20. <a href="language.function.call.tpl#idp8239520">Calling a recursive menu example</a>
+</dt>
+<dt>7.21. <a href="language.function.capture.tpl#idp8324208">{capture} with the name attribute</a>
+</dt>
+<dt>7.22. <a href="language.function.capture.tpl#idp8325664">{capture} into a template variable</a>
+</dt>
+<dt>7.23. <a href="language.function.capture.tpl#idp8328128">{capture} into a template array variable</a>
+</dt>
+<dt>7.24. <a href="language.function.config.load.tpl#idp8413696">{config_load}</a>
+</dt>
+<dt>7.25. <a href="language.function.config.load.tpl#idp8423104">function {config_load} with section</a>
+</dt>
+<dt>7.26. <a href="language.function.extends.tpl#idp8514880">Simple {extends} example</a>
+</dt>
+<dt>7.27. <a href="language.function.for.tpl#idp8575568">A simple <code class="varname">{for}</code> loop</a>
+</dt>
+<dt>7.28. <a href="language.function.for.tpl#idp8579200">Using the <code class="varname">max</code> attribute</a>
+</dt>
+<dt>7.29. <a href="language.function.for.tpl#idp8583648">Excution of <code class="varname">{forelse}</code></a>
+</dt>
+<dt>7.30. <a href="language.function.foreach.tpl#idp8676752">A simple <code class="varname">{foreach}</code> loop</a>
+</dt>
+<dt>7.31. <a href="language.function.foreach.tpl#idp8682432">Demonstrates the an additional <em class="parameter"><code>key</code></em> variable</a>
+</dt>
+<dt>7.32. <a href="language.function.foreach.tpl#idp8688400">{foreach} with nested <em class="parameter"><code>item</code></em> and <em class="parameter"><code>key</code></em></a>
+</dt>
+<dt>7.33. <a href="language.function.foreach.tpl#idp8696576">Database example with {foreachelse}</a>
+</dt>
+<dt>7.34. <a href="language.function.foreach.tpl#idp8705536"><em class="parameter"><code>index</code></em> example</a>
+</dt>
+<dt>7.35. <a href="language.function.foreach.tpl#idp8711728"><em class="parameter"><code>iteration</code></em> example: is div by</a>
+</dt>
+<dt>7.36. <a href="language.function.foreach.tpl#idp8715056"><em class="parameter"><code>iteration</code></em> example: is even/odd by</a>
+</dt>
+<dt>7.37. <a href="language.function.foreach.tpl#idp8724240"><em class="parameter"><code>first</code></em> property example</a>
+</dt>
+<dt>7.38. <a href="language.function.foreach.tpl#idp8730000"><em class="parameter"><code>last</code></em> property example</a>
+</dt>
+<dt>7.39. <a href="language.function.foreach.tpl#idp8735968"><em class="parameter"><code>show</code></em> property example</a>
+</dt>
+<dt>7.40. <a href="language.function.foreach.tpl#idp8741600"><em class="parameter"><code>total</code></em> property example</a>
+</dt>
+<dt>7.41. <a href="language.function.foreach.tpl#idp8749424"><code class="varname">{break}</code> example</a>
+</dt>
+<dt>7.42. <a href="language.function.foreach.tpl#idp8753760"><code class="varname">{continue}</code> example</a>
+</dt>
+<dt>7.43. <a href="language.function.function.tpl#idp8899200">Recursive menu {function} example</a>
+</dt>
+<dt>7.44. <a href="language.function.if.tpl#idp8988272">{if} statements</a>
+</dt>
+<dt>7.45. <a href="language.function.if.tpl#idp8989760">{if} with more examples</a>
+</dt>
+<dt>7.46. <a href="language.function.include.tpl#idp9106432">Simple {include} example</a>
+</dt>
+<dt>7.47. <a href="language.function.include.tpl#idp9107936">{include} passing variables</a>
+</dt>
+<dt>7.48. <a href="language.function.include.tpl#idp9112464">{include} using parent scope</a>
+</dt>
+<dt>7.49. <a href="language.function.include.tpl#idp9116720">{include} with disabled caching</a>
+</dt>
+<dt>7.50. <a href="language.function.include.tpl#idp9118736">{include} with individual cache lifetime</a>
+</dt>
+<dt>7.51. <a href="language.function.include.tpl#idp9120848">{include} with forced caching</a>
+</dt>
+<dt>7.52. <a href="language.function.include.tpl#idp9122960">{include} and assign to variable</a>
+</dt>
+<dt>7.53. <a href="language.function.include.tpl#idp9126464">{include} with relative paths</a>
+</dt>
+<dt>7.54. <a href="language.function.include.tpl#idp9128768">Various {include} resource examples</a>
+</dt>
+<dt>7.55. <a href="language.function.include.php.tpl#idp9258880">function {include_php}</a>
+</dt>
+<dt>7.56. <a href="language.function.insert.tpl#idp9350112">function {insert}</a>
+</dt>
+<dt>7.57. <a href="language.function.ldelim.tpl#idp9426800">{ldelim}, {rdelim}</a>
+</dt>
+<dt>7.58. <a href="language.function.ldelim.tpl#idp9432352">Another Javascript example</a>
+</dt>
+<dt>7.59. <a href="language.function.literal.tpl#idp9396784">{literal} tags</a>
+</dt>
+<dt>7.60. <a href="language.function.nocache.tpl#idp9439632">Preventing a template section from being cached</a>
+</dt>
+<dt>7.61. <a href="language.function.php.tpl#idp9457168">php code within {php} tags</a>
+</dt>
+<dt>7.62. <a href="language.function.php.tpl#idp9458672">{php} tags with global and assigning a variable</a>
+</dt>
+<dt>7.63. <a href="language.function.section.tpl#idp9600608">Looping a simple array with {section}</a>
+</dt>
+<dt>7.64. <a href="language.function.section.tpl#idp9607104">{section} without an assigned array</a>
+</dt>
+<dt>7.65. <a href="language.function.section.tpl#idp9610176">Naming a {section}</a>
+</dt>
+<dt>7.66. <a href="language.function.section.tpl#idp9614656">Looping an associative array with {section}</a>
+</dt>
+<dt>7.67. <a href="language.function.section.tpl#idp9622176">{section} demonstrating the <code class="varname">loop</code> variable</a>
+</dt>
+<dt>7.68. <a href="language.function.section.tpl#idp9632240">Nested {section}'s</a>
+</dt>
+<dt>7.69. <a href="language.function.section.tpl#idp9640416">Database example with a {sectionelse}</a>
+</dt>
+<dt>7.70. <a href="language.function.section.tpl#idp9653536">{section} <code class="varname">index</code> property</a>
+</dt>
+<dt>7.71. <a href="language.function.section.tpl#idp9665120"><code class="varname">index</code>, <code class="varname">index_next</code>
+ and <code class="varname">index_prev</code> properties </a>
+</dt>
+<dt>7.72. <a href="language.function.section.tpl#idp9682288">A section's <code class="varname">iteration</code> property </a>
+</dt>
+<dt>7.73. <a href="language.function.section.tpl#idp9702832">{section} property <code class="varname">first</code> and <code class="varname">last</code></a>
+</dt>
+<dt>7.74. <a href="language.function.section.tpl#idp9714496">{section} property <code class="varname">loop</code></a>
+</dt>
+<dt>7.75. <a href="language.function.section.tpl#idp9721184"><code class="varname">show</code> property </a>
+</dt>
+<dt>7.76. <a href="language.function.section.tpl#idp9728880"><code class="varname">total</code> property example</a>
+</dt>
+<dt>7.77. <a href="language.function.setfilter.tpl#idp9946672">{setfilter} tags</a>
+</dt>
+<dt>7.78. <a href="language.function.strip.tpl#idp9911712">{strip} tags</a>
+</dt>
+<dt>7.79. <a href="language.function.while.tpl#idp10032752">{while} loop</a>
+</dt>
+<dt>8.1. <a href="language.custom.functions.tpl#idp11298640">{counter}</a>
+</dt>
+<dt>8.2. <a href="language.function.cycle.tpl#idp11375584">{cycle}</a>
+</dt>
+<dt>8.3. <a href="language.function.eval.tpl#idp11447232">{eval}</a>
+</dt>
+<dt>8.4. <a href="language.function.eval.tpl#idp11453184">Another {eval} example</a>
+</dt>
+<dt>8.5. <a href="language.function.fetch.tpl#idp11518800">{fetch} examples</a>
+</dt>
+<dt>8.6. <a href="language.function.html.checkboxes.tpl#idp11607776">{html_checkboxes}</a>
+</dt>
+<dt>8.7. <a href="language.function.html.checkboxes.tpl#idp11616048">
+      Database example (eg PEAR or ADODB):
+  </a>
+</dt>
+<dt>8.8. <a href="language.function.html.image.tpl#idp11732448">{html_image} example</a>
+</dt>
+<dt>8.9. <a href="language.function.html.options.tpl#idp11827632">Associative array with the <code class="varname">options</code> attribute</a>
+</dt>
+<dt>8.10. <a href="language.function.html.options.tpl#idp11834688">Dropdown with separate arrays for <code class="varname">values</code> and
+<code class="varname">ouptut</code></a>
+</dt>
+<dt>8.11. <a href="language.function.html.options.tpl#idp11841184">Database example (eg ADODB or PEAR)</a>
+</dt>
+<dt>8.12. <a href="language.function.html.options.tpl#idp11846496">Dropdown's with &lt;optgroup&gt; </a>
+</dt>
+<dt>8.13. <a href="language.function.html.radios.tpl#idp11971568">{html_radios} first example</a>
+</dt>
+<dt>8.14. <a href="language.function.html.radios.tpl#idp11975456">{html_radios} second example</a>
+</dt>
+<dt>8.15. <a href="language.function.html.radios.tpl#idp11980112">{html_radios} - Database example (eg PEAR or ADODB):</a>
+</dt>
+<dt>8.16. <a href="language.function.html.select.date.tpl#idp12156336">{html_select_date}</a>
+</dt>
+<dt>8.17. <a href="language.function.html.select.date.tpl#idp12159392">{html_select_date} second example</a>
+</dt>
+<dt>8.18. <a href="language.function.html.select.time.tpl#idp12396512">{html_select_time}</a>
+</dt>
+<dt>8.19. <a href="language.function.html.table.tpl#idp12586208">{html_table}</a>
+</dt>
+<dt>8.20. <a href="language.function.mailto.tpl#idp12700240">{mailto} example lines followed by the result</a>
+</dt>
+<dt>8.21. <a href="language.function.math.tpl#idp12790336">{math}</a>
+</dt>
+<dt>8.22. <a href="language.function.textformat.tpl#idp12888480">{textformat}</a>
+</dt>
+<dt>9.1. <a href="config.files.tpl#idp13746416">Example of config file syntax</a>
+</dt>
+<dt>11.1. <a href="charset.tpl#idp13888592">Setting a different Charset Encoding</a>
+</dt>
+<dt>12.1. <a href="smarty.constants.tpl#idp13866320">SMARTY_DIR</a>
+</dt>
+<dt>13.1. <a href="variable.compile.id.tpl#idp14263504">$compile_id in a virtual host environment</a>
+</dt>
+<dt>13.2. <a href="variable.config.overwrite.tpl#idp14301824">Array of config #variables#</a>
+</dt>
+<dt>13.3. <a href="variable.debugging.ctrl.tpl#idp14431984">$debugging_ctrl on localhost</a>
+</dt>
+<dt>13.4. <a href="variable.default.config.handler.func.tpl#idp14475392">$default_config_handler_func</a>
+</dt>
+<dt>13.5. <a href="variable.default.template.handler.func.tpl#idp14480416">$default_template_handler_func</a>
+</dt>
+<dt>14.1. <a href="api.add.config.dir.tpl#idp15298032">addConfigDir()</a>
+</dt>
+<dt>14.2. <a href="api.add.plugins.dir.tpl#idp15325744">addPluginsDir()</a>
+</dt>
+<dt>14.3. <a href="api.add.template.dir.tpl#idp15352896">addTemplateDir()</a>
+</dt>
+<dt>14.4. <a href="api.append.tpl#idp15389648">append</a>
+</dt>
+<dt>14.5. <a href="api.append.by.ref.tpl#idp15436928">appendByRef</a>
+</dt>
+<dt>14.6. <a href="api.assign.tpl#idp15481712">assign()</a>
+</dt>
+<dt>14.7. <a href="api.assign.by.ref.tpl#idp15533744">assignByRef()</a>
+</dt>
+<dt>14.8. <a href="api.clear.all.assign.tpl#idp15514208">clearAllAssign()</a>
+</dt>
+<dt>14.9. <a href="api.clear.all.cache.tpl#idp15594272">clearAllCache</a>
+</dt>
+<dt>14.10. <a href="api.clear.assign.tpl#idp15620880">clearAssign()</a>
+</dt>
+<dt>14.11. <a href="api.clear.cache.tpl#idp15661824">clearCache()</a>
+</dt>
+<dt>14.12. <a href="api.clear.compiled.tpl.tpl#idp15704496">clearCompiledTemplate()</a>
+</dt>
+<dt>14.13. <a href="api.clear.config.tpl#idp15686384">clearConfig()</a>
+</dt>
+<dt>14.14. <a href="api.compile.all.config.tpl#idp15778400">compileAllConfig()</a>
+</dt>
+<dt>14.15. <a href="api.compile.all.templates.tpl#idp15826496">compileAllTemplates()</a>
+</dt>
+<dt>14.16. <a href="api.config.load.tpl#idp15871248">configLoad()</a>
+</dt>
+<dt>14.17. <a href="api.create.data.tpl#idp15912112">createData()</a>
+</dt>
+<dt>14.18. <a href="api.create.template.tpl#idp15976016">createTemplate()</a>
+</dt>
+<dt>14.19. <a href="api.display.tpl#idp16062672">display()</a>
+</dt>
+<dt>14.20. <a href="api.display.tpl#idp16065824">Other display() template resource examples</a>
+</dt>
+<dt>14.21. <a href="api.fetch.tpl#idp16154928">fetch()</a>
+</dt>
+<dt>14.22. <a href="api.fetch.tpl#idp16157696">Using fetch() to send an email</a>
+</dt>
+<dt>14.23. <a href="api.get.cache.dir.tpl#idp16141024">getCacheDir()</a>
+</dt>
+<dt>14.24. <a href="api.get.compile.dir.tpl#idp16177760">getCompileDir()</a>
+</dt>
+<dt>14.25. <a href="api.get.config.dir.tpl#idp16191920">getConfigDir()</a>
+</dt>
+<dt>14.26. <a href="api.get.config.vars.tpl#idp16271296">getConfigVars()</a>
+</dt>
+<dt>14.27. <a href="api.get.plugins.dir.tpl#idp16297360">getPluginsDir()</a>
+</dt>
+<dt>14.28. <a href="api.get.registered.object.tpl#idp16323216">getRegisteredObject()</a>
+</dt>
+<dt>14.29. <a href="api.get.tags.tpl#idp16352672">getTags()</a>
+</dt>
+<dt>14.30. <a href="api.get.template.dir.tpl#idp16374704">getTemplateDir()</a>
+</dt>
+<dt>14.31. <a href="api.get.template.vars.tpl#idp16401104">getTemplateVars</a>
+</dt>
+<dt>14.32. <a href="api.is.cached.tpl#idp16456784">isCached()</a>
+</dt>
+<dt>14.33. <a href="api.is.cached.tpl#idp16458960">isCached() with multiple-cache template</a>
+</dt>
+<dt>14.34. <a href="api.load.filter.tpl#idp16514240">Loading filter plugins</a>
+</dt>
+<dt>14.35. <a href="api.register.cacheresource.tpl#idp16570672">registerCacheResource()</a>
+</dt>
+<dt>14.36. <a href="api.register.class.tpl#idp16603168">Register class for use within a template</a>
+</dt>
+<dt>14.37. <a href="api.register.class.tpl#idp16606048">Register namespaced class for use within a template</a>
+</dt>
+<dt>14.38. <a href="api.register.default.plugin.handler.tpl#idp16637296">Default Plugin Handler Example</a>
+</dt>
+<dt>14.39. <a href="api.register.plugin.tpl#idp16782656">register a function plugin</a>
+</dt>
+<dt>14.40. <a href="api.register.plugin.tpl#idp16786208">register block function plugin</a>
+</dt>
+<dt>14.41. <a href="api.register.plugin.tpl#idp16789760">register modifier plugin</a>
+</dt>
+<dt>14.42. <a href="api.register.resource.tpl#idp16894864">registerResource()</a>
+</dt>
+<dt>14.43. <a href="api.set.cache.dir.tpl#idp16925152">setCacheDir()</a>
+</dt>
+<dt>14.44. <a href="api.set.compile.dir.tpl#idp16903712">setCompileDir()</a>
+</dt>
+<dt>14.45. <a href="api.set.config.dir.tpl#idp16917664">setConfigDir()</a>
+</dt>
+<dt>14.46. <a href="api.set.plugins.dir.tpl#idp16997376">setPluginsDir()</a>
+</dt>
+<dt>14.47. <a href="api.set.template.dir.tpl#idp17023264">setTemplateDir()</a>
+</dt>
+<dt>14.48. <a href="api.template.exists.tpl#idp17049792">templateExists()</a>
+</dt>
+<dt>14.49. <a href="api.unregister.cacheresource.tpl#idp17086800">unregisterCacheResource()</a>
+</dt>
+<dt>14.50. <a href="api.unregister.plugin.tpl#idp17159936">unregister function plugin</a>
+</dt>
+<dt>14.51. <a href="api.unregister.resource.tpl#idp17166784">unregisterResource()</a>
+</dt>
+<dt>14.52. <a href="api.test.install.tpl#idp17181712">testInstall()</a>
+</dt>
+<dt>15.1. <a href="caching.tpl#idp18223760">Enabling caching</a>
+</dt>
+<dt>15.2. <a href="caching.tpl#idp18237632">Setting $cache_lifetime per cache</a>
+</dt>
+<dt>15.3. <a href="caching.tpl#idp18244816">Disabling $compile_check</a>
+</dt>
+<dt>15.4. <a href="caching.tpl#idp18254064">Using isCached()</a>
+</dt>
+<dt>15.5. <a href="caching.tpl#idp18265600">Clearing the cache</a>
+</dt>
+<dt>15.6. <a href="caching.multiple.caches.tpl#idp18321360">Passing a $cache_id to display()</a>
+</dt>
+<dt>15.7. <a href="caching.multiple.caches.tpl#idp18335072">Passing a cache_id to isCached()</a>
+</dt>
+<dt>15.8. <a href="caching.multiple.caches.tpl#idp18340160">Clearing all caches for a particular $cache_id</a>
+</dt>
+<dt>15.9. <a href="caching.groups.tpl#idp18393712">$cache_id groups</a>
+</dt>
+<dt>15.10. <a href="caching.cacheable.tpl#idp18375760">Preventing a template section from being cached</a>
+</dt>
+<dt>15.11. <a href="caching.cacheable.tpl#idp18432496">Preventing tag output from being cached</a>
+</dt>
+<dt>15.12. <a href="caching.cacheable.tpl#idp18439456">Nocache Variables</a>
+</dt>
+<dt>15.13. <a href="caching.cacheable.tpl#idp18452640">Preventing a plugin's output from being cached</a>
+</dt>
+<dt>15.14. <a href="caching.cacheable.tpl#idp18458736">Preventing a whole passage of a template from being cached</a>
+</dt>
+<dt>15.15. <a href="caching.custom.tpl#idp18532816">Smarty_CacheResource_Mysql</a>
+</dt>
+<dt>15.16. <a href="caching.custom.tpl#idp18534560">Smarty_CacheResource_Memcache</a>
+</dt>
+<dt>16.1. <a href="resources.tpl#idp18778768">Using templates from the $template_dir</a>
+</dt>
+<dt>16.2. <a href="resources.tpl#idp18786176">Specifying the $template_dir to use</a>
+</dt>
+<dt>16.3. <a href="resources.tpl#idp18799024">Using templates from any directory</a>
+</dt>
+<dt>16.4. <a href="resources.tpl#idp18804880">Using templates from windows file paths</a>
+</dt>
+<dt>16.5. <a href="resources.string.tpl#idp18861344">Using templates from strings</a>
+</dt>
+<dt>16.6. <a href="resources.string.tpl#idp18871216">Using templates from encoded strings</a>
+</dt>
+<dt>16.7. <a href="resources.streams.tpl#idp18835840">Stream from PHP</a>
+</dt>
+<dt>16.8. <a href="resources.streams.tpl#idp18841248">Stream from Template</a>
+</dt>
+<dt>16.9. <a href="resources.extends.tpl#idp18928576">Using template inheritance from the PHP script</a>
+</dt>
+<dt>16.10. <a href="resources.custom.tpl#idp18892688">Using custom resources</a>
+</dt>
+<dt>17.1. <a href="advanced.features.tpl#idp19138416">Setting security policy by extending the Smarty_Security class</a>
+</dt>
+<dt>17.2. <a href="advanced.features.tpl#idp19140192">Setting security policy by instance of the Smarty_Security class</a>
+</dt>
+<dt>17.3. <a href="advanced.features.tpl#idp19142704">Enable security with the default settings</a>
+</dt>
+<dt>17.4. <a href="advanced.features.template.settings.tpl#idp19212624">changing Smarty settings by template</a>
+</dt>
+<dt>17.5. <a href="advanced.features.template.settings.tpl#idp19215136">register plugins by template</a>
+</dt>
+<dt>17.6. <a href="advanced.features.template.inheritance.tpl#idp19254320">Template inheritance example</a>
+</dt>
+<dt>17.7. <a href="advanced.features.template.inheritance.tpl#idp19262112">Template inheritance by template resource <code class="literal">extends:</code></a>
+</dt>
+<dt>17.8. <a href="advanced.features.streams.tpl#idp19280720">Stream Variable</a>
+</dt>
+<dt>17.9. <a href="advanced.features.objects.tpl#idp19349728">Using a registered or assigned object</a>
+</dt>
+<dt>17.10. <a href="advanced.features.static.classes.tpl#idp19331120">static class access syntax </a>
+</dt>
+<dt>17.11. <a href="advanced.features.prefilters.tpl#idp19405328">Using a template prefilter</a>
+</dt>
+<dt>17.12. <a href="advanced.features.postfilters.tpl#idp19432336">Using a template postfilter</a>
+</dt>
+<dt>17.13. <a href="advanced.features.outputfilters.tpl#idp19466256">Using a template outputfilter</a>
+</dt>
+<dt>18.1. <a href="plugins.functions.tpl#idp19798976">function plugin with output</a>
+</dt>
+<dt>18.2. <a href="plugins.functions.tpl#idp19803584">function plugin without output</a>
+</dt>
+<dt>18.3. <a href="plugins.modifiers.tpl#idp19841168">A simple modifier plugin</a>
+</dt>
+<dt>18.4. <a href="plugins.modifiers.tpl#idp19844368">More complex modifier plugin</a>
+</dt>
+<dt>18.5. <a href="plugins.block.functions.tpl#idp19894944">block function</a>
+</dt>
+<dt>18.6. <a href="plugins.compiler.functions.tpl#idp19940368">A simple compiler function</a>
+</dt>
+<dt>18.7. <a href="plugins.prefilters.postfilters.tpl#idp19976704">prefilter plugin</a>
+</dt>
+<dt>18.8. <a href="plugins.prefilters.postfilters.tpl#idp19978688">postfilter plugin</a>
+</dt>
+<dt>18.9. <a href="plugins.outputfilters.tpl#idp20012704">An output filter plugin</a>
+</dt>
+<dt>18.10. <a href="plugins.resources.tpl#idp20044000">Using custom resources</a>
+</dt>
+<dt>18.11. <a href="plugins.inserts.tpl#idp20085024">insert plugin</a>
+</dt>
+<dt>19.1. <a href="bc.tpl#idp20233520">Using SmartyBC</a>
+</dt>
+<dt>20.1. <a href="troubleshooting.tpl#idp20238848">Smarty errors</a>
+</dt>
+<dt>20.2. <a href="troubleshooting.tpl#idp20258816">PHP parsing errors</a>
+</dt>
+<dt>20.3. <a href="troubleshooting.tpl#idp20293680">Other common errors</a>
+</dt>
+<dt>21.1. <a href="tips.tpl#idp20390464">Printing &amp;nbsp; when a variable is empty</a>
+</dt>
+<dt>21.2. <a href="tips.default.var.handling.tpl#idp20398640">Assigning a template variable its default value</a>
+</dt>
+<dt>21.3. <a href="tips.passing.vars.tpl#idp20406736">Passing the title variable to the header template</a>
+</dt>
+<dt>21.4. <a href="tips.dates.tpl#idp20423824">Using date_format</a>
+</dt>
+<dt>21.5. <a href="tips.dates.tpl#idp20431328">Converting form date elements back to a timestamp</a>
+</dt>
+<dt>21.6. <a href="tips.wap.tpl#idp20444096">Using {insert} to write a WML Content-Type header</a>
+</dt>
+<dt>21.7. <a href="tips.componentized.templates.tpl#idp20453824">componentized template</a>
+</dt>
+<dt>21.8. <a href="tips.obfuscating.email.tpl#idp20376512">Example of template the Obfuscating an email address</a>
+</dt>
+</dl>
+</div>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left"> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="preface.tpl">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top"> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right" valign="top"> Preface</td>
+</tr>
+</table>
+</div>
+
+		
+		  <div class="comments">
+      
+                  <div id="commentHeader"><strong>Comments</strong></div>
+          <div class="commentInfo">
+          
+                                <div class="commentWrapperEven">
+              <div class="commentBody"><emphasis>No comments for this page.</emphasis></div>
+            </div>          
+                    </div>
+          <div id="commentFormWrapper">
+            <div id="commentFormHeader"><strong>Post a Comment</strong></div>
+            <div id="commentFormElements">
+            <form id="commentForm" method="post" action="/comments/post">
+              <div id="commentText" style="font-style: italic; color:#f00">All comments are moderated. Support questions are ignored, use the <a href="/forums/">forums</a> instead.</div>
+              <div id="commentFormAuthor">Author: <input id="commentFormAuthorText" type="text" name="author" size="40" value="anonymous" style="color: grey" onFocus="clearDefaultandCSS(this)"></div>
+              <div id="commentFormEmail">Email: <input id="commentFormEmailText" type="text" name="email" size="30" value="your@email.com" style="color: grey" onFocus="clearDefaultandCSS(this)"> <span style="font-style: italic">(not shown)</span></div>
+              
+              <div id="commentFormChallenge">What is 5 plus 12? <input id="commentFormChallengeText" type="text" name="challenge" size="30" value="" style="color: grey"> <span style="font-style: italic">(Are you human?)</span></div>
+              <input id="commentFormChallengeObf" type="hidden" name="obf" value="f00a5afec7fbab8927564abea135b4f8">
+              <div id="commentFormBody"><textarea id="commentFormBodyText" name="body" rows="8" cols="60"></textarea></div>
+              <div id="commentFormSubmitButtons">
+                <input id="commentFormPostButton" type="submit" value="Post Comment">
+                <input id="commentFormPreviewButton" type="submit" value="Preview">
+                <img id="commentBusyIcon" src="/images/busy.gif">
+              </div>
+              <input id="commentFormPageID" type="hidden" name="page_id" value="docs/en/index.tpl">
+            </form>
+            </div>
+          </div>
+          <div id="commentPreviewText">
+          </div>
+          <div id="commentPostedText">
+          </div>
+              
+      </div>
+      
+      </div><!-- end colMain -->
+      
+      <div class="col colAdditional" align="left">
+        <div id="skyscraper">
+    		<script type="text/javascript"> 
+    		  GA_googleFillSlot("smarty_right_skyscraper");
+    		</script>
+    		</div>
+  		  <div class="box box1" id="smartySponsors">
+          <h1 class="boxHead">Sponsors <a href="/sponsors">[info]</a></h1>
+          <div class="boxContent">
+						  <a href="http://www.webhost.uk.net/">UK Web Hosting</a> <span style="font-size: .7em">@webhost.uk.net</span><br>
+						  <a href="http://www.rshosting.com/">Best Web Hosting</a> <span style="font-size: .7em">@rshosting.com</span><br>
+						  <a href="http://www.webhostinguk.com/">Web Hosting UK</a> <span style="font-size: .7em">@webhostinguk.com</span><br>
+						  <a href="http://www.infrenion.com/">Unlimited Web Hosting</a> <span style="font-size: .7em">@infrenion.com</span><br>
+						  <a href="http://www.morphodo.com/de/app-entwicklung.html">App Entwicklung</a> <span style="font-size: .7em">@morphodo.com</span><br>
+						  <a href="http://www.dhgate.com/">Buy from China</a> <span style="font-size: .7em">@dhgate.com</span><br>
+						  <a href="http://www.fcinternetmarketing.com/">First Click Internet Marketing</a> <span style="font-size: .7em">@fcinternetmarketing.com</span><br>
+						
+			
+          </div>
+        </div>
+  		  <div class="box box1" id="smartyAds">
+  		    <h1 class="boxHead">Using Smarty</h1>
+          <div class="boxContent">
+			      <a href="http://www.dissertationteam.com/">dissertationteam.com</a><br>
+			      <a href="http://jackpot4me.com/super-lig/galatasaray_istanbul.html">galatasaray</a><br>
+			      <a href="http://www.dresses1000.com/">Quinceanera Dresses</a><br>
+			      <a href="http://www.magicquinceanera.com/">quinceanera gowns</a><br>
+			      <a href="http://www.besthochzeit.com/Bridesmaid-Dresses-c7/">Dresses for Bridesmaid</a><br>
+			      <a href="http://www.dressfirst.fr/Robes-De-Bal-c18/">robes de bal</a><br>
+			      <a href="http://skincareinsight.com/">skin care</a><br>
+      			
+      			
+          </div>
+  		    <h1 class="boxHead">I.T Certifications</h1>
+          <div class="boxContent">
+			      <a href="http://www.pass-guaranteed.com/">I.T Certification Exams</a><br>
+			      <a href="http://www.firsttrycertify.com/">Certification Practice Tests</a><br>
+          </div>
+        </div>
+      </div><!-- end colAdditional -->    
+      <div class="clear"></div>
+    </div><!-- end wrapper -->
+
+  <div id="footer">
+    <div id="colTopFooter">
+      <a href="/credits" class="rightMar">credits</a>
+      <a href="/copyright" accesskey="8" class="rightMar">copyright</a>
+      <a href="/accessibility" accesskey="0">accessibility</a>
+    </div>
+    <p>Smarty Copyright &copy; 2002 &ndash; 2014 New Digital Group, Inc. All rights reserved.</p>
+    <p>This page generated in 0.03492 secs with <a href="http://www.tinymvc.com/">TinyMVC</a> and Smarty 3.</p>
+  </div>    
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"> 
+</script> 
+<script type="text/javascript"> 
+_uacct = "UA-638513-4";
+urchinTracker();
+</script>
+<script type="text/javascript">
+    var GoSquared={};
+    GoSquared.acct = "GSN-138769-Y";
+    (function(w){
+        function gs(){
+            w._gstc_lt=+(new Date); var d=document;
+            var g = d.createElement("script"); g.type = "text/javascript"; g.async = true; g.src = "//d1l6p2sc9645hc.cloudfront.net/tracker.js";
+            var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(g, s);
+        }
+        w.addEventListener?w.addEventListener("load",gs,false):w.attachEvent("onload",gs);
+    })(window);
+</script>
+</body>
+</html>
+

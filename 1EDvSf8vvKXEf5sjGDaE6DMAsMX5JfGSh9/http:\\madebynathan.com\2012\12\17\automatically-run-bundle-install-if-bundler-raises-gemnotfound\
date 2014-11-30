@@ -1,0 +1,456 @@
+http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Date: Wed, 23 Jul 2014 20:07:53 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Last-Modified: Thu, 30 Jan 2014 09:01:18 GMT
+Expires: Wed, 23 Jul 2014 20:17:53 GMT
+Cache-Control: max-age=600
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Vary: Accept-Encoding
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Automatically run 'bundle install' when Bundler can't find a gem - Made by Nathan</title>
+  <meta name="author" content="Nathan Broadbent">
+
+  
+  <meta name="description" content="Every Rails developer has probably experienced the following error: Could not find &lt;gem&gt; in any of the sources
+Run `bundle install` to install &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/jquery.fancybox.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Made by Nathan" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/jquery.fancybox.pack.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-19054098-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Made by Nathan</a></h1>
+  
+    <h2>programming and projects</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation">  
+<form class="google_search_form" action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:madebynathan.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search" style="width: 150px;"/>
+  </fieldset>
+</form>
+  
+
+<ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+<ul class="profile-icons">
+  <li>
+    <a href='http://github.com/ndbroadbent' target='_blank' title='Fork me on Github'>
+      <div class='icon icons-github'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://www.linkedin.com/profile/view?id=74450241' target='_blank' title='LinkedIn'>
+      <div class='icon icons-linkedin'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://twitter.com/ndbroadbent' target='_blank' title='Twitter'>
+      <div class='icon icons-twitter'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://stackoverflow.com/users/304706/nathan-f77' target='_blank' title='Stack Overflow'>
+      <div class='icon icons-stackoverflow'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://www.youtube.com/user/nathanf77' target='_blank' title='Youtube'>
+      <div class='icon icons-youtube'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://grooveshark.com/#/nathanf77' target='_blank' title='Grooveshark'>
+      <div class='icon icons-grooveshark'></div>
+    </a>
+  </li>
+  <li>
+    <a href='http://www.last.fm/user/nathan_f77' target='_blank' title='Last.fm'>
+      <div class='icon icons-lastfm'></div>
+    </a>
+  </li>
+</ul>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/contact">Contact</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Automatically Run 'Bundle Install' When Bundler Can't Find a Gem</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-17T22:56:01-08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Every Rails developer has probably experienced the following error:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="sb">Could not find &lt;gem&gt; in any of the sources</span>
+<span style="color: #FD0;">Run `bundle install` to install missing gems.</span>
+</code></pre>
+</div>
+
+
+<p>This happens if you or someone else adds a gem to your <code>Gemfile</code>, or if a gem version is updated in <code>Gemfile.lock</code>,
+and you forget to run <code>bundle install</code> before running a Rails command.</p>
+
+<p>Here&rsquo;s a simple function that handles this automatically, called <code>bundle_install_wrapper()</code>. It first tries to execute the command you pass to it.
+However, if Bundler exits with status code <code>7</code> (<code>GemNotFound</code>), then it will run <code>bundle install</code>. Finally, it retries the original command.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">bundle_install_wrapper</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1"># Run command</span>
+  <span class="nb">eval</span> <span class="s2">&quot;$@&quot;</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="vg">$?</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="c1"># If command crashes, try a bundle install</span>
+    <span class="n">echo</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1;31m&#39;$@&#39; failed with exit code 7.&quot;</span>
+    <span class="n">echo</span>    <span class="s2">&quot;This probably means that your system is missing gems defined in your Gemfile.&quot;</span>
+    <span class="n">echo</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;Executing &#39;bundle install&#39;...</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+    <span class="n">bundle</span> <span class="n">install</span>
+    <span class="c1"># If bundle install was successful, try running command again.</span>
+    <span class="k">if</span> <span class="o">[</span> <span class="vg">$?</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+      <span class="n">echo</span> <span class="s2">&quot;&#39;bundle install&#39; was successful. Retrying &#39;$@&#39;...&quot;</span>
+      <span class="nb">eval</span> <span class="s2">&quot;$@&quot;</span>
+    <span class="n">fi</span>
+  <span class="n">fi</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<h2>Usage</h2>
+
+<p>Drop the function in your <code>~/.bashrc</code>, and add aliases for rails commands:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">alias</span> <span class="n">rs</span><span class="o">=</span><span class="s2">&quot;bundle_install_wrapper rails server&quot;</span>
+<span class="k">alias</span> <span class="n">rc</span><span class="o">=</span><span class="s2">&quot;bundle_install_wrapper rails console&quot;</span>
+<span class="c1"># etc.</span>
+</code></pre></div>
+
+
+<p>If you want aliases that support any Rails application, you can use something like this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># Run Rails commands on any version</span>
+<span class="n">rails_cmd</span><span class="p">(){</span>
+  <span class="c1"># Rails 3</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="n">/script</span><span class="o">/</span><span class="n">rails</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="n">bundle_install_wrapper</span> <span class="n">rails3_with_editor</span> <span class="vg">$@</span>
+  <span class="c1"># Rails &lt;= 2</span>
+  <span class="n">elif</span> <span class="o">[</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="n">/script</span><span class="o">/</span><span class="vg">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="n">bundle_install_wrapper</span> <span class="o">.</span><span class="n">/script</span><span class="o">/</span><span class="vg">$@</span>
+  <span class="c1"># Rails 4</span>
+  <span class="n">elif</span> <span class="o">[</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="n">/config</span><span class="o">.</span><span class="n">ru</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="n">grep</span> <span class="o">-</span><span class="n">q</span> <span class="no">Rails</span> <span class="n">config</span><span class="o">.</span><span class="n">ru</span><span class="p">;</span> <span class="k">then</span> <span class="n">bundle_install_wrapper</span> <span class="n">rails</span> <span class="vg">$@</span>
+  <span class="k">else</span> <span class="n">echo</span> <span class="s2">&quot;== I don&#39;t think this is a Rails application!&quot;</span>
+  <span class="n">fi</span>
+<span class="p">}</span>
+<span class="k">alias</span>   <span class="n">rs</span><span class="o">=</span><span class="s2">&quot;rails_cmd server&quot;</span>
+<span class="k">alias</span>  <span class="n">rsd</span><span class="o">=</span><span class="s2">&quot;rails_cmd server -u&quot;</span>
+<span class="k">alias</span>   <span class="n">rc</span><span class="o">=</span><span class="s2">&quot;rails_cmd console&quot;</span>
+<span class="k">alias</span>   <span class="n">rg</span><span class="o">=</span><span class="s2">&quot;rails_cmd generate&quot;</span>
+</code></pre></div>
+
+
+<p>See the <a href="https://github.com/ndbroadbent/dotfiles/blob/master/bashrc/ruby_on_rails.sh">Ruby on Rails section in my .bashrc</a> if you&rsquo;re interested in more aliases,
+and please leave a comment if you have any tips to share.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Nathan Broadbent</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-17T22:56:01-08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/" data-via="ndbroadbent" data-counturl="http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+
+  <script id='flattrbtn-post'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=nathan.f77&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('flattrbtn-post');</script>
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/11/07/capistrano_colors-has-been-merged-into-capistrano/" title="Previous Post: capistrano_colors has been merged into capistrano">&laquo; capistrano_colors has been merged into capistrano</a>
+      
+      
+        <a class="basic-alignment right" href="/2012/12/19/open-files-generated-by-rails-generate-in-your-editor/" title="Next Post: Open files generated by 'rails generate' in your editor">Open files generated by 'rails generate' in your editor &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+<div class='adsense post-bottom'>
+  <script type="text/javascript"><!--
+  google_ad_client = "ca-pub-9148977051946590";
+  <!-- * Post Bottom Leaderboard */ -->
+  google_ad_slot = "7628134569";
+  google_ad_width = 728;
+  google_ad_height = 90;
+  <!-- /--> -->
+  </script>
+  <script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  </script>
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="about">
+  <h1>About</h1>
+  <p>
+    <img align="left" alt="1" src="http://www.gravatar.com/avatar/4931eceec58528529fd004e56af197c4.png" class="avatar">
+    Hi, I'm Nathan Broadbent. I develop web applications with <a href="http://rubyonrails.org/" target="_blank">Ruby on Rails</a>.
+    I'm currently working at <a href="https://zenpayroll.com/" target="_blank">ZenPayroll</a>.
+    This blog is where I post things about Ruby on Rails development, and the projects I do in my spare time.
+  </p>
+</section>
+ <section id="donate">
+  <script id='flattrbtn-sidebar'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=nathan.f77&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('flattrbtn-sidebar');</script>
+
+  <div id="bitcoin-donation">
+    <a href="bitcoin:1EDvSf8vvKXEf5sjGDaE6DMAsMX5JfGSh9?amount=0.2&label=MadeByNathan%20Donation">
+      <img src="/images/bitcoin-qr.png" width="100">
+    </a>
+    <span>1EDvSf8vvKXEf5sjGDaE6DMAsMX5JfGSh9</span>
+  </div>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/07/10/raspberry-pi-powered-microwave/">Raspberry Pi Microwave</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/29/keyboard-shortcut-to-open-selected-file-in-sublime-text-2/">Ubuntu Keyboard Shortcut: Open a Selected File in Sublime Text 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/12/19/open-files-generated-by-rails-generate-in-your-editor/">Open Files Generated by 'Rails Generate' in Your Editor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/">Automatically Run 'Bundle Install' When Bundler Can't Find a Gem</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/11/07/capistrano_colors-has-been-merged-into-capistrano/">Capistrano_colors Has Been Merged Into Capistrano</a>
+      </li>
+    
+  </ul>
+</section>
+<section id="gpg">
+  <h1>GPG Public Key</h1>
+  <a href="/pubkey_38E63C0A.txt">38E63C0A</a>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ndbroadbent">@ndbroadbent</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ndbroadbent',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+ <section>
+    <h1>Stack Overflow</h1>
+    <a href="http://stackoverflow.com/users/304706/nathan-f77" style="text-decoration: none;">
+    <img class="badge" src="http://stackoverflow.com/users/flair/304706.png" alt="Stack Overflow profile for nathan.f77 at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Stack Overflow profile for nathan.f77 at Stack Overflow, Q&amp;A for professional and enthusiast programmers" height="58" width="208">
+    </a>
+ </section> <section>
+  <a class="twitter-timeline" href="https://twitter.com/ndbroadbent" data-widget-id="356018519311253505">Tweets by @ndbroadbent</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ </section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Nathan Broadbent -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'madebynathan';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/';
+        var disqus_url = 'http://madebynathan.com/2012/12/17/automatically-run-bundle-install-if-bundler-raises-gemnotfound/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+

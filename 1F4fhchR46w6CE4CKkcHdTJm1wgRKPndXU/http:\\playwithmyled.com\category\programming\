@@ -1,0 +1,522 @@
+http://playwithmyled.com/category/programming/
+Programming | Playwithmyled.com
+Playwithmyled.com
+Menu
+Skip to content
+Blog
+Projects
+Smart Garden
+Marvin
+LILA
+Kid’s Buttons Box
+Internet to Serial Proxy
+Search for:
+Category Archives: Programming
+Blink a led with style
+November 10, 2013ProgrammingKevin Filteau	Basically, when we want to make a LED blink with an Arduino, the program will stick in a loop and hang on delays. Imagine if we want this LED to fade in and out. The program could take all the process time to do it, and the processor won’t be able to do something else. So I imagined a little piece of code that work like this: a list of commands is sent to the program and the LED will turn OFF and ON following these commands. The list of commands is executed, but he program can continue polling other methods. When the program has nothing else to do, it goes back blinking the LED. The timing is respected, but the number of steps to go from the start point to the stop point may vary when the micro-controller is busy doing something else.
+The following steps explains how to use the program.
+First, list the commands you want the LED do
+Create an array containing the scheme that will be played by LED. Each row of this array contains four parameters:
+Start brightness;
+Stop brightness;
+Duration;
+Easying (not yet implemented).
+The array look like this:
+const int commandCount = 4;
+int commands[commandCount][4] = {
+    {0,255,1000,0}, // 1st command: Start with the LED off then go to full brightness progressively in 1 second.
+    {255,255,5000,0}, // 2nd command: Keep the LED at full brightness for 5 seconds.
+    {255,0,1000,0}, // 3rd command: Turn the LED off progressively in 1 second.
+    {0,0,3000,0} // 4th command: Keep the LED off for 3 seconds.
+};
+Second, declare your LED
+LED myled (LED_PIN, &amp;commands[0][0], commandCount);
+The first argument is the pin number where the LED is connected.
+The second argument is the address of the first item of the array.
+The third argument is the number of commands.
+Finally, call the LED loop method in the Arduino loop method
+void loop() {
+    myled.loop();
+}
+You can also declare multiple LEDs. They will blink together accordingly to the timing you set.
+You can get the source code on my Git account.
+The Adobe Flash Player is required for video playback.Get the latest Flash Player or Watch this video on YouTube.
+Leave a comment	Looping without breaking the code with the Millis function
+March 25, 2012ProgrammingKevin Filteau	Has I also use my blog as a reference for myself, I mainly put this there for further reference. I usually use this lines of code to loop without stopping other functions from being executed or to time certain events.
+void myFunc()
+{
+	unsigned long interval = 60 * 1000; // 60 seconds.
+	static unsigned long previousMillis;
+
+	if( millis() - previousMillis &gt; interval ) {
+		previousMillis = millis();
+
+		/*
+			Timed code here.
+		*/
+	}
+}
+This function can be called in the main loop() function. Every time it be called, the function checks if the interval of time is reached. If so, the code within the condition is executed. The Millis() function counts the milliseconds since the Arduino is booted.
+Leave a comment	Please follow the protocol
+November 6, 2010Arduino, Glowing Marquee, Internet to Serial Proxy, ProgrammingKevin Filteau	As you have seen, the hardware part of the Glowing Marque prototype, build from an old scanner, is functioning. The last step I did is the programming of a protocol to communicate with the Arduino by the Insek Proxy Internet to Serial Proxy app.
+The first issue is that I want to send a string of hexadecimal values and then convert it to real hex in the Arduino for displaying this data. The second problem to solve is to send a longer string that the serial buffer and the buffer of the Messenger library.
+There is the piece of code I did for the protocol:
+#include &lt;Messenger.h&gt;
+
+#define DATASIZE 70
+unsigned char data[DATASIZE+1]; // + 1 space for the closing \0 char.
+
+Messenger message = Messenger();
+
+/*
+	2010-11-03: Append data.
+	Args: source, target, position to start from zero to DATASIZE.
+*/
+void appendData(char * s, unsigned char * dp, int pos) {
+
+	// Create and reset the pointer to display data.
+	dp = dp + pos; // Move to starting position.
+
+	char monkey[3];
+	long chimp;
+	for (int i=0; i&lt;strlen(s); i=i+2) {
+		monkey[0] = s[i];
+		monkey[1] = s[i+1];
+		monkey[2] = '\0';
+
+		// Convert the monkey string to long int.
+		chimp = strtol(monkey, NULL, 16);
+
+		// Append chimp to displayData;
+		*dp++ = (unsigned char)chimp; // Cast the long to an unsigned char.
+
+		//Serial.print(chimp, BYTE);
+	}
+
+	*dp = '\0'; // Close the string.
+
+}
+
+void messageCompleted() {
+
+	//Serial.println("Message completed.");
+
+	while ( message.available() ) {
+		//Serial.print(".");
+		if ( message.checkString("data") ) { // Show text.
+
+			if( message.checkString("flush")) {
+				flushData();
+				Serial.println("\nData flushed.");
+
+			} else {
+				// 1st get position
+				int pos = message.readInt();
+
+				// 2nd get length
+				int length = message.readInt();
+
+				// 3rd get data
+				char tmp_data[128];
+
+				// Move data to the temps string.
+				message.copyString(tmp_data, 128);
+
+				// Check if data length
+				// Find the first position of the \0.
+				int data_length = strlen(tmp_data);
+
+				// Data are always 2 char to build one hex value.
+				if( length*2 == data_length) {
+
+						if( pos + data_length - 1 &gt; DATASIZE) {
+							Serial.println("\nData overflow.");
+						} else {
+
+						//Serial.println(strlen(tmp_data));
+
+						//Serial.println(tmp_data);
+
+						appendData(tmp_data, &amp;data[0], pos);
+
+						Serial.println("");
+						Serial.println("Data:");
+
+						for(int a=0; a &lt; DATASIZE; a++) {
+							if( data[a] == '\0' ) {
+								Serial.print("-");
+							} else {
+								Serial.print(data[a], BYTE);
+							}
+						}
+					}
+				} else {
+					Serial.println("Bad checksum.");
+				}
+
+			} // End append data.
+
+		} else {
+			message.readChar(); // Flush the rest of the message buffer.
+		}
+
+	}
+}
+
+void flushData() {
+	for(int i=0; i&lt;DATASIZE+1; i++) {
+		data[i] = '\0';
+	}
+}
+
+void setup() {
+
+	Serial.begin(9600);
+	message.attach(messageCompleted);
+
+}
+void loop() {
+	while ( Serial.available( ) ) message.process(Serial.read( ) );
+}
+The protocol is relatively simple, there is the structure:
+header position length data
+The ‘header’ is the command, what the Arduino have to do with that string. I use ‘data’ as the header to send data.
+The ‘position’ is the position in the array the data will be copied.
+The ‘length’ is the quantity of numbers to send. It’s used to check if the Arduino received the right length of data and to verify if the data will not overflow the data array.
+There is an example to send a first packet of data:
+data 0 4 ff00ff00
+Here I send four numbers build with two hexadecimal characters (from 00 to ff). They will be placed at the beginning of the array.
+If I want to append ‘ddee33′ to this value in the array, I shall use this call:
+data 4 3 ddee
+So this way I can send many blocks of data and built an array longer than the serial buffer.
+After that I can implement other calls to work with this data. A sample call can be (not built in this sample code): show data. I did that in code of the Glowing Marquee project, so I send packets of hex data, and ask the Arduino to show it. I will be back with more on this project in my next posts.
+View all 5 comments	Array of function pointers with mixed parameters
+October 18, 2010Arduino, ProgrammingKevin Filteau	This is my work to create an array of function pointers which they can accept one parameter of any kind.
+
+/*
+	2010-10-18: Basics of array of function pointers.
+	The trick here is to make these functions accept different
+	types of parameters using a void pointer.
+*/
+
+// Define the function pointer type.
+// The void pointer can be casted to any type of value.
+typedef void(*fctPtr)(void *);
+
+// Declare the functions.
+void fA(void *arg);
+void fB(void *arg);
+void fC(void *arg);
+
+// Declare an array of functions pointers.
+fctPtr f[3] = {fA,fB,fC}; // Array of function name (the pointer to that name).
+
+// The functions.
+void fA(void *arg) {
+
+	// Cast as a pointer to an int and assign it's value to r.
+	int r = *(int*)arg;
+	
+	Serial.print(&quot;fA:&quot;);
+	Serial.println(r);
+}
+void fB(void *arg) {
+
+	// Cast as a pointer to a string of chars.
+	char * str = (char*)arg;
+	
+	Serial.print(&quot;fB:&quot;);
+	Serial.println(str);
+}
+void fC(void *arg) {
+	Serial.println(&quot;fC:Called with no parameter.&quot;);
+}
+
+
+void setup() {
+	Serial.begin(9600);
+	delay(1000); // Wait a second.
+
+	int a = 123;
+	(*f[0])(&amp;a); // Call the first function of the array of functions.
+
+	char b[] = &quot;This is a test!&quot;;
+	(*f[1])(&amp;b);
+	
+	// Calling a function with no parameter.
+	(*f[2])(NULL);
+	// This call also work : (*f[2])(0).
+}
+
+void loop() {}
+Leave a comment	Stepper motor controller circuit and code
+May 30, 2010Arduino, Glowing Marquee, ProgrammingKevin Filteau	I build a step motor controller based on the schematics found on the Arduino Web site. First I try the 2 pins one for bipolar stepper motor. I wont be able to make it work, even less with the library available on the site. Maybe I’m dumb and I really dont understand something, but this circuit keeps both coils active at the same time.
+So I tried the second circuit, the 4 pins one. With the same library I wasn’t able to make it work either. So I create a piece of code of my own and I finally managed to make the motor run correctly.
+After that, I realize that I can merge the to circuits to possibly create a PWM abled bipolar motor controller with the L297D. A somewhat bizzare idea, but I think it’s possible if we can program the Arduino to send 4 synced PWM signals. I’ll come back later (maybe never) with this thought. After some research I found that the TI DRV8811 and the Allegro A3977 are much more appropriate chips to do microstepping.
+But for now, there is my circuit. It’s advantage is that it can release the coils. Download the schematics (Fritzing format).
+The two PNP transistors are connected like the circuit proposed on the Arduino Web site. Plus, I use the enable pins. So my circuit needs four pins, and I don’t found a way to use less.
+Parts list
+1 x Arduino
+1 x L293 Quadruple Half H-Bridge
+2 x 1K Ohm Resistors
+2 x 10K Ohm Resistors
+2 x 2N2222 NPN Transistors
+1 x Bipolar Step Motor
+There is the sequence to make the motor turn one direction, invert it to make it turn the other.
+Control sequence
+CTRL A
+EN A
+CTRL B
+EN B
+0
+0
+1
+1
+1
+1
+0
+0
+0
+0
+0
+1
+0
+1
+0
+0
+There is my code to control the stepper motor. Like you see in my code I use direct port command to take less processor time. And I create a function called in the main loop for each steps. This way the code can do something else when the motor is running.
+/*
+	Stepper Motor Controller
+	by Kevin Filteau 2010-05-29
+	Playwithmyled.com
+*/
+
+// Motor controller pins.
+#define pinMotorCtrlA 4
+#define pinMotorCtrlB 7
+#define pinMotorEnA 5
+#define pinMotorEnB 6
+
+// Direction constants.
+#define GOLEFT 0
+#define GORIGHT 1
+
+// Motor states and position.
+boolean motorRunning = false;
+int motorMax = 700;
+int motorPos = 0;
+
+/**********************************************
+	MOTOR
+**********************************************/
+
+// Setup the motor.
+void motorSetup() {
+  pinMode(pinMotorCtrlA, OUTPUT);
+  pinMode(pinMotorCtrlB, OUTPUT);
+  pinMode(pinMotorEnA, OUTPUT);
+  pinMode(pinMotorEnB, OUTPUT);
+  // Everybody to LOW.
+  digitalWrite(pinMotorCtrlA, LOW);
+  digitalWrite(pinMotorCtrlB, LOW);
+  digitalWrite(pinMotorEnA, LOW);
+  digitalWrite(pinMotorEnB, LOW);
+}
+
+// Free the motor.
+void motorFree() {
+  digitalWrite(pinMotorEnA, LOW);
+  digitalWrite(pinMotorEnB, LOW);
+}
+
+// Make the motor spin one step in the direction specified.
+// Pins    7654 ----
+// Binary 0000 0000
+void motorSpin(boolean dir) {
+
+	static int pos = 0; // Starting step pos.
+
+	int stepsSeq[] = {0xC0,0x30,0x40,0x20}; // Registry value.
+	int st;
+
+  // Timing
+  static unsigned long previousMillis;
+  long interval = 3;
+
+	if(millis() - previousMillis &gt; interval) {
+		previousMillis = millis();
+
+		st = stepsSeq[pos];
+		if( dir == GOLEFT ) {
+			pos++; if(pos&gt;3) pos=0;
+			motorPos++;
+		} else {
+			pos--; if(pos&lt;0) pos=3;
+			motorPos--;
+		}
+		PORTD &amp;= 0xF;
+		PORTD |= st;
+	}
+
+}
+
+/**********************************************
+	MAIN FUNCTIONS.
+**********************************************/
+void setup() {
+	motorSetup();
+
+}
+
+void loop() {
+	motorSpin(GOLEFT);
+	// motorSpin(GORIGHT);
+}
+And to close this post. Some pictures of the prototype, the finalized circuit board (useful for the pinout) and a video taken while testing the circuit.
+View all 34 comments	Put your image up in the air
+April 11, 2010Glowing Marquee, Programming, ProjectsKevin Filteau	My goal is to use an image and output it to the marquee. I really don’t want to build matrix characters one by one. I mostly want to create anti-aliased characters or graphics. How? By making the leds blink more or less time. That will make the glow-in-the-dark stripe illuminate more when the led lit more longer. So, for now, I code a test program in PHP, a familiar language for me, to read the image and output the result data I need to give to the Arduino microcontroler.
+There is the idea of code :
+
+&lt;?php
+/*
+	This script display a black and white graphic
+	constructed in a html table
+	based on the readed jpg image.
+
+*/
+// Declare the image file to read.
+$file = &quot;test.jpg&quot;;
+// Read the jpg file and create an image in memory.
+$image = imagecreatefromjpeg($file);
+// Get the size of the image.
+$width = imagesx($image);
+$height = imagesy($image);
+
+print &quot;&lt;table&gt;&lt;tr&gt;&quot;;
+// Read one row of the image at a time.
+for ($y=0; $y &lt; $height; $y++) {
+	// Read one column of the image at a time.
+	for ($x=0; $x &lt; $width; $x++) {
+		// Get the index of a pixel.
+		$pix_index = imagecolorat($image,$x,$y);
+		// Get the decimal RGB color of this pixel.
+		$A = imagecolorsforindex($image,$pix_index);
+		// Convert this color to gray scale.
+		$col = ($A['red'] + $A['green'] + $A['blue'] ) / 3;
+		// Convert this color to hex.
+		$col = dechex($col);
+		
+		print &quot;&lt;td style=\&quot;width:10px;height:10px;background-color:#{$col}{$col}{$col}\&quot;&gt;&amp;nbsp;&lt;/td&gt;&quot;;
+	}
+	print&quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+}
+print &quot;&lt;/tr&gt;&lt;/table&gt;&quot;;
+?&gt;
+
+Leave a comment	Multitasking… a new player
+March 28, 2010Arduino, ProgrammingKevin Filteau	Give a look at the alpha release of DuinOS: a free full open source RTOS with preemptive multitasking for Arduino. It’s based on the FreeRTOS kernel. I had no time to try this now, but I’ll check it later. Thanks Juilán.
+Leave a comment	Parallel programming
+February 3, 2010Arduino, ProgrammingKevin Filteau	After working hard on basic looping kind of parallel programming, I got a hint on Plumbing library. It’s based on OCCAM-pi language and it sound really promising. I read as much as I can found about it, it’s look like it will facilitate the emergence of great programs for the Arduino. As is it now, not much information is available. I’ll wait for more within the next months. Actually i’m very busy on a business project so, i’m not so eager for news about them, but i’ll keep looking for more documentation.
+Leave a comment	Multitasking/multithreading in C on Arduino
+October 17, 2009Arduino, ProgrammingKevin Filteau	Doing multitasking/multithreading on Arduino has an advantage, it’s give the possibility to read multiple captors, blink led and start a motor at virtually the same time. This is done by cycling rapidly (faster as the Arduino can) witting all the functions. I made up this code to execute many functions in the default cycling loop function on the Arduino. In the sample, the starting functions are hard coded, but The program offer the advantage of starting and stopping functions at run time. In a more complex program I’m doing it by adding a serial communication ability to the code, so I can call only the functions I need.
+// By kevin@playwithmyled.com - 2009-10-17.
+// 2010-05-11: Better and lighter.
+
+// Define a function pointer and initialize to NULL.
+typedef void (*FunctionPointer) ();
+
+// Declare looping actions function names, declared lower.
+FunctionPointer xActions[] = {loopActionA,loopActionB,loopActionC};
+// Define actions status flags. Set to 1 to auto execute a start.
+int xActionsFlags[] = {0,0,0}; 
+
+int xActionsCount = sizeof(xActions);
+
+void xActionTrigger(int id=0, int action=0) {
+  // The id represent it's position in the flags array.
+  // Action 1 = executed, 0 not.
+  xActionsFlags[id] = action;
+}
+
+// LOOPING FUNCTIONS
+
+void loopActionA() {
+        // Do something...
+}
+
+void loopActionB() {
+	// Do something...
+}
+
+void loopActionC() {
+	// Do something...
+}
+
+// Exectute all loop functions.
+void xDoActions() {
+	// Execute all looped function.
+	for(unsigned int j=0; j &lt; xActionsCount; j++) {
+		if( xActionsFlags[j] == 1 ) { // Execute the action if.
+			xActions[j](); // Call the related loop action.
+		}
+	}
+}
+
+void setup() {
+        xActionTrigger(0,1); // First action.
+        xActionTrigger(2,1); // Third action.
+}
+
+void loop() {
+	xDoActions();
+}
+View all 12 comments	Tweets by @playwithmyled
+Projects	Categories	Arduino
+Edgar
+Glowing Marquee
+Internet to Serial Proxy
+Kid's Buttons Box
+LILA
+Marvin
+Mixed
+News
+Programming
+Projects
+Raspberry Pi
+Smart Garden
+Arduino
+Arduino
+Arduino Knowledge
+Inspiring
+Design You Trust
+Makezine Blog
+Archives	December 2013 (1)
+November 2013 (2)
+September 2013 (1)
+April 2013 (2)
+March 2013 (4)
+February 2013 (1)
+October 2012 (3)
+March 2012 (2)
+November 2011 (1)
+September 2011 (1)
+December 2010 (1)
+November 2010 (1)
+October 2010 (2)
+September 2010 (1)
+June 2010 (2)
+May 2010 (3)
+April 2010 (2)
+March 2010 (2)
+February 2010 (1)
+October 2009 (1)
+BITCOINI love bitcoin, please send me some if you wish.
+1F4fhchR46w6CE4CKkcHdTJm1wgRKPndXU
+Or you can send me some stuff in my wish list :
+8ohm shelf speakers
+Raspberry Pi
+Arduino
+Any electronic parts
+Thank you so much
+Proudly powered by WordPress
+

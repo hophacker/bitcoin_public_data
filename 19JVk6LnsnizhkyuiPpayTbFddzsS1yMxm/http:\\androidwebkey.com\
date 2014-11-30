@@ -1,0 +1,262 @@
+http://androidwebkey.com/
+HTTP/1.0 200 OK
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Last-Modified: Tue, 16 Jul 2013 21:30:17 GMT
+ETag: "401015089"
+Content-Type: text/html
+Accept-Ranges: bytes
+Content-Length: 5680
+Connection: close
+Date: Wed, 23 Jul 2014 17:54:10 GMT
+Server: lighttpd/1.4.31
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//HU">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+   <link rel="shortcut icon" href="/favicon.ico"/>
+<title>Webkey for Android</title>
+</head>
+<body>
+	<h1>Webkey for Android<img alt="icon" src="html/icon.png"/></h1>
+	<p>To access your phone write your nickname after slash (don't forget to enable "keep alive connection to webkey.cc" and "Start service")<br/> http://webkey.cc/<input type="text" id="phoneid" rows="1" size="16" onkeydown="if (event.keyCode==13) {window.location = 'http://webkey.cc/'+document.getElementById('phoneid').value; return false;}" ></input><input type="button" onclick="window.location = 'http://webkey.cc/'+document.getElementById('phoneid').value" value="Connect"></p>
+	<ul>
+		<li><a href="#about">About</a></li>
+		<li><a href="#how">How can I connect to the phone? Why is everything so complicated?</a></li>
+		<li><a href="#download">Download binary and source</a></li>
+		<li><a href="#screenshots">Screenshots</a></li>
+		<li><a href="#server">Server code for one client, how does this server works</a></li>
+		<li><a href="#api">API for Webkey</a></li>
+		<li><a href="#us">About us</a></li>
+		<li><a href="#thanks">Thanks</a></li>
+	</ul>
+	<h3 id="about">About</h3>
+	<p id="donate">
+	Using Webkey you can control your phone from any browser. It requires a rooted Android phone.
+	<ul>
+		<li>You can click and type on the phone (we inject touch events to the touch device and create a new HID for typing),</li>
+		<li>get screenshots (copied from the framebuffer device) in jpeg and png, record images in sequence</li>
+		<li>start phone calls (it uses '/bin/system/service' from android) </li>
+		<li>open webpages on the phone (it uses intents) </li>
+		<li>browse, download from, upload to the SD card (it uses AjaXplorer so you can rename files, listen mp3, etc.)</li>
+		<li>browse and read every files on phone</li>
+		<li>adjust LCD backlight</li>
+		<li>get the phone's location (GPS and network, it uses our JAVA code and shows the result on GoogeMaps)</li>
+		<li>reading and writing SMS,</li>
+		<li>exporting contacts, messages, call list in txt, csv, xml,</li>
+		<li>chat with phone and other users</li>
+		<li>terminal emulator with Shell In A Box</li>
+		<li>user rights management, log</li>
+		<li>works on wifi, 3g</li>
+		<li>DynDNS support (it's a dinamic DNS service, after you register at <a href="http://dyndns.org">dyndns.org</a>, your phone will have an address like: myphone.homeip.net, this only works if you can reach your phone using its IP address)</li>
+		<li>if your 3g internet provider blocks the incoming connection to your phone, then you cannot connect using its IP address or DynDNS, but you can connect through our server (the phone starts the connection like GoogleTalk does)</li>
+		<li>SSL support for direct connections (it doesn't work thought our server, we are working on it) - this product includes cryptographic software written by Eric Young (eay@cryptsoft.com)</li>
+		<li>opensource (it is licensed under General Public License)</li>
+		<li>most of the functions uses only C++ part, which has very low memory footprint and almost no CPU use in idle.</li>
+		<li>tanslations:
+			<ul>
+	<li>Español (Spanish): </strong> Roberto Yoldi</li>
+	<li>Greek: Ilias Gerasimou</li>
+	<li>Hungarian: Péter Móra</li>
+		</ul>
+		</li>
+		<li>Feel free to write us: <a href="http://www.math.bme.hu/~morap">Péter Móra</a> (<a href="html/emailmp.png">email</a>), Zoltán Papp (<a href="html/emailpz.png">email</a>)</li>
+		<li>
+	If you like our app, please support the development of Webkey. Every help is appreciated.
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_donations">
+		<input type="hidden" name="business" value="morapeter@gmail.com">
+		<input type="hidden" name="lc" value="US">
+		<input type="hidden" name="item_name" value="Android Webkey">
+		<input type="hidden" name="item_number" value="Support the development of Webkey">
+		<input type="hidden" name="no_note" value="0">
+		<input type="hidden" name="currency_code" value="USD">
+		<input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_LG.gif:NonHostedGuest">
+		<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+		<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+	</form>
+	or via BitCoin: 19JVk6LnsnizhkyuiPpayTbFddzsS1yMxm
+
+</li>
+</ul>	
+	</p>
+	<a href="http://forum.xda-developers.com/showthread.php?p=7567932">XDA thread</a>
+	<a href="http://twitter.com/androidwebkey">Twitter</a>
+	<h2 id="how">How can I connect to the phone? Why is everything so complicated?</h2>
+	Webkey opens a standard TCP socket (port 80 is for http), and listens on that port. After starting the service, your phone writes something like:
+	<br/><em>Your phone is available at:<br/>http://11.22.33.44</em><br/>
+	where in this example "11.22.33.44" is the IP address of your phone. Usually it is not so easy to remember, changes sometimes, and some 3g internet providers blocks it.
+	<h3>Unable to connect</h3>
+	If you are unable to connect to this address in your webbrowser, then your 3G internet provider blocks the incoming connections to your phone. Users from USA and UK complained about it. (If you are an expert, you can set up a VPN or an ssh reverse port forwarding. If you know how to do that, then stop reading.) However, the easiest solution is to use our server to forward the connection. Namely, your phone connects to our server (it works, because your phone starts the connection), and wait until you visit <em>http://webkey.cc/nickname/</em>. Then our server uses the opened connection (which was opened by the phone) to send the request. After that our server forwards every messages between your phone and your browser.<br/>
+	To use this, click on <em>"Keep alive connection to webkey.cc"</em>. (If you don't use, it has minimal network traffic, only some bytes to open the connection.)
+	<h3>But I can connect using my IP</h3>
+	It should work on WiFi (then the IP address is usually something like <em>192.168.1.x</em>), but then it is only accessable from the local area.
+	<br/>
+	If it works on 3G, then you are lucky! It's not easy to remember the IP address, and usually it changes. You can use <a href="http://dyndns.org">DynDNS</a> to have an address like 
+	<br/><em>http://yourphone.homeip.net</em><br/>or something like that. Webkey has an option to refresh the IP address in the DynDNS database (otherwise how could they know when it has changed). Actually it checks your IP every minute, and if it differs from the last updated one, then it send the new IP to DynDNS.<br/>
+	Actually, if you use our server, it will redirect your browser directly to the phone, you will see a message like <em>Your phone has a public IP, redirecting to ...</em> (How it works: the server tries to connect back to the phone whenever it connects from a new IP address. If it can reach the phone, then the server will remember to do so.)
+<br/><br/>Just write an email if you have any question.
+	<h2 id="download">Download binary and source</h2>
+	Webkey is available on the <a href="market://details?id=com.webkey">Market</a>. The source code and the apk can be download <a href="html/webkey">here</a>.
+	<h2 id="screenshots">Screenshots</h2>
+	<p><strong>Unlock phone from browser by dragging the screen:</strong></p>
+	<img src="html/screenshot1.png" alt="screenshot"/>
+	<p><strong>GPS and network positions:</strong></p>
+	<img src="html/screenshot2.png" alt="screenshot"/>
+	<p><strong>Read and write messages:</strong></p>
+	<img src="html/screenshot3.png" alt="screenshot"/>
+	<p><strong>View call list:</strong></p>
+	<img src="html/screenshot4.png" alt="screenshot"/>
+	<p><strong>Export contacts, messages, call list:</strong></p>
+	<img src="html/screenshot5.png" alt="screenshot"/>
+	<p><strong>Use terminal from browser:</strong></p>
+	<img src="html/screenshot6.png" alt="screenshot"/>
+	<p><strong>Create new users, users' right management:</strong></p>
+	<img src="html/screenshot7.png" alt="screenshot"/>
+	<p><strong>Read files on phone:</strong></p>
+	<img src="html/screenshot8.png" alt="screenshot"/>
+	<p><strong>Browse, download, upload files on the SD card:</strong></p>
+	<img src="html/screenshot9.png" alt="screenshot"/>
+
+	<h2 id="server">Server code for one client, how does this server works</h2>
+	<a href="html/redirect.html">How to reach your phone</a>.
+
+	<h2 id ="api">API for Webkey</h2>
+	You can use most of the functions without our html page. Webkey uses digest HTTP authentication, for example the program <code>curl</code> support it, and it's available for linux, Windows and Mac OS. There is no documentation about these functions (they are listed in webkey.c), but let's see some examples. The "phone's_address" can be an IP address or <em>http://webkey.cc/nickname</em> as well. It might happen that you have to reconnect twice. This server maintances at most 3 TCP connection with the phone, and it is had to tell which TCP flow is alive.
+<br/>
+<br/>
+<strong>List the directory /system:</strong>
+	<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/run -d "ls -l -a /system/"</pre>
+result:
+	<pre style="border:1px inset;width:720px">
+drwxr-xr-x    1 root     root          2048 Nov 12 22:18 .
+drwxr-xr-x   14 root     root             0 Nov 20 14:59 ..
+drwxr-xr-x    1 root     root          2048 Nov 12 22:19 app
+drwxr-xr-x    1 root     shell         2048 Nov 13 20:20 bin
+-rw-r--r--    1 root     root          2207 Nov 12 22:19 build.prop
+-rw-r--r--    1 root     root           206 Aug  1  2008 build.sapphire.prop
+-rw-r--r--    1 root     root           268 Aug  1  2008 build.trout.prop
+drwxr-xr-x    1 root     root          2048 Nov 13 00:03 etc
+drwxr-xr-x    1 root     root          2048 Nov 12 22:18 fonts
+drwxr-xr-x    1 root     root          2048 Nov 12 22:19 framework
+drwxr-xr-x    1 root     root          2048 Nov 12 22:19 lib
+drwxr-xr-x    1 root     root          2048 Nov 12 22:18 lost+found
+drwxr-xr-x    1 root     root          2048 Nov 12 22:18 media
+drwxr-xr-x    1 root     root          2048 Nov 12 22:18 usr
+drwxrwxrwx    2 system   system        3037 Oct 28 05:24 xbin</pre>
+
+<br/>
+<strong>Download /proc/cpuinfo:</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/files/proc/cpuinfo</pre>
+result:
+<pre style="border:1px inset;width:720px">
+Processor	: ARMv6-compatible processor rev 2 (v6l)
+BogoMIPS	: 245.36
+Features	: swp half thumb fastmult edsp java 
+CPU implementer	: 0x41
+CPU architecture: 6TEJ
+CPU variant	: 0x1
+CPU part	: 0xb36
+CPU revision	: 2
+
+Hardware	: trout
+Revision	: 0080
+Serial		: 0000000000000000
+</pre>
+
+<br/>
+<strong>Get the position of the phone:</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/gpsget</pre>
+result should be in xml, but we were lazy, "g" means GPS, lat=latitude, long=longitude, mtime=how many seconds ago, accu=accurate (it might be empty, if there is no position yet):
+<pre style="border:1px inset;width:720px">
+_glat_47.4770039_glong_19.0527391_gmtime_98_gaccu_24
+</pre>
+
+<br/>
+<strong>Save screenshot:</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/screenshot.jpg &gt; screenshot.jpg</pre>
+or
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/screenshot.png &gt; screenshot.png</pre>
+
+<br/>
+<strong>Inject keys ("Árvíztűrő tükörfúrógép" is a Hungarian flood-resistant mirror-drilling machine):</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/injkey -d "Árvíztűrő tükörfúrógép"</pre>
+The keys must be in UTF-8 format and previously added in the menu Config keys.
+<br/>
+<br/>
+
+<br/>
+<strong>Inject touch events:</strong>
+Let's see how to unlock my Nexus One:
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/touch
+    -d "_v62_664_1_v102_662_1_v342_662_1_v390_668_1_v392_668_0"</pre>
+or
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/touch_v62_664_1_v102_662_1_v342_662_1_v390_668_1_v392_668_0</pre>
+The first solution is better, because it works for a longer sequance. The terms has the following format: _OrientationXcoord_Ycoord_Pressed, there Orientation is either 'v' for vertical or 'h' for horizontal, and Pressed is either 1 for touch or drag, or 0 for release. You can make the screen touched forever by sending 1 and not sending 0, then touching the screen by hand releases the touch. You might want to send more requests for a long touch as there is no option for delay.
+<br/>
+<br/>
+
+
+<br/>
+<strong>Read chat messages:</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/getchatmessage_0</pre>
+result:
+<pre style="border:1px inset;width:720px">
+&lt;chat&gt;&lt;readbypos&gt;5&lt;/readbypos&gt;&lt;id&gt;1292416763&lt;/id&gt;
+&lt;message&gt;&lt;user&gt;petya&lt;/user&gt;&lt;time&gt;1291766926&lt;/time&gt;&lt;data&gt;Hi there!&lt;/data&gt;&lt;/message&gt;
+&lt;message&gt;&lt;user&gt;phone&lt;/user&gt;&lt;time&gt;1291766955&lt;/time&gt;&lt;data&gt;Hi!&lt;/data&gt;&lt;/message&gt;
+&lt;readby name="petya"&gt;2&lt;/readby&gt;&lt;readby name="phone"&gt;2&lt;/readby&gt;&lt;/chat&gt;
+</pre>
+where the main point is the fields <em>user</em> and <em>data</em>. The time is in Unix time.
+<br/>
+<br/>
+
+<br/>
+<strong>Write chat messages:</strong>
+<pre style="border:1px inset;width:720px">
+curl --digest http://username:password@phone's_address/writechatmessage -d 'It's me!'</pre>
+
+
+
+	<h2 id ="us">About us</h2>
+	<a href="http://www.math.bme.hu/~morap">Péter Móra</a> (<a href="html/emailmp.png">email</a>), Zoltán Papp (<a href="html/emailpz.png">email</a>)<br/>
+	We are guys from Hungary and have enough time to develop Webkey :) Zoltan has already has a job as a coder and tester, Péter is doing his PhD in Math. We are not evil, which means the followings:
+	<ul>
+		<li>we can't access to the users' phones, we don't know the passwords,</li>
+		<li>we don't record any sensitive data of the users, we only log the used function, IP addresses and timestamp.</li>
+	</ul>
+
+	<h2 id ="thanks">Thanks</h2>
+	<p>Mongoose webserver, which was a good choice: 
+	<a href="http://code.google.com/p/mongoose/">http://code.google.com/p/mongoose/</a></p>
+	<p>Brad Fitzpatrick for the typing idea: 
+	<a href="http://brad.livejournal.com/2400054.html">http://brad.livejournal.com/2400054.html</a></p>
+	<p>Tuomas Räsänen for the Simple C-API to the Linux uinput-system: 
+	<a href="http://codegrove.org/libsuinput/">http://codegrove.org/libsuinput/</a></p>
+	<p>Android-vnc, I've learnt howto read from framebuffers: 
+	<a href="http://code.google.com/p/android-vnc/">http://code.google.com/p/android-vnc/</a></p>
+	<p>Android Open Source Project, for the kcm.* files: 
+	<a href="http://android.git.kernel.org/">http://android.git.kernel.org/</a></p>
+	<p>AjaXplorer: 
+	<a href="http://www.ajaxplorer.info">http://www.ajaxplorer.info</a></p>
+	<p>Robert Harder, Base64 Java package: 
+	<a href="http://iharder.net/base64">http://iharder.net/base64</a></p>
+	<p>René Nyffenegger's base64 C++ package: 
+	<a href="http://www.adp-gmbh.ch/cpp/common/base64.html">http://www.adp-gmbh.ch/cpp/common/base64.html</a></p>
+	<p>Minizip: Zip and UnZip additionnal library: 
+	<a href="http://www.winimage.com/zLibDll/minizip.html">http://www.winimage.com/zLibDll/minizip.html</a></p>
+	<p>libpng, libjpeg, libz of course.</p>
+
+</body>
+</html>
+

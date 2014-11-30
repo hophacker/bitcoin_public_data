@@ -1,0 +1,819 @@
+http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/
+HTTP/1.1 200 OK
+Date: Sat, 12 Jul 2014 23:09:53 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Sun, 12-Jul-2015 23:09:53 GMT; path=/
+Set-Cookie: lw_user_sid=ff57b4f7026b712f625a7144e5605a11; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 12259
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-13T01:09:53Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Streaming audio over TCP with python-gstreamer - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/" class="entry-title">Streaming audio over TCP with python-gstreamer</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>I've fallen in love with <a href="http://www.python.org">Python</a>. I'm always on the lookout for a good excuse to learn a new programming language. Since Lua is <a href="http://bugzilla.jejik.com/show_bug.cgi?id=6">backwards-incompatible</a> (and most non-Debian based Linux distro's ship Lua in such a way that you cannot run multiple versions at the same time), I wanted to switch the AI script language for <a href="http://gnome-hearts.org">Gnome Hearts</a> to Python. I'm still <a href="http://svn.jejik.com/viewvc.cgi/gnome-hearts/trunk/?pathrev=122">working on that</a> and now I'm hooked. So, when I wanted something that lets me play my music collection from my server to my stereo I took python for a good test drive.</p>
+
+<p>Anoher thing I wanted an excuse for was learning gstreamer, so naturally I picked <a href="http://gstreamer.freedesktop.org/modules/gst-python.html">python-gstreamer</a>. Sadly there's a huge lack of documentation for it. There are only a few good tutorials around, first and foremost <a href="http://www.jonobacon.org/">Jona Bacon's</a> excellent tutorials [<a href="http://www.jonobacon.org/?p=750">1</a>][<a href="http://www.jonobacon.org/?p=810">2</a>][<a href="http://www.jonobacon.org/?p=851">3</a>]. I wanted my hack to work over TCP as well, because I have multiple music libraries. One on my home server, one on my desktop, a bit more on my laptop, etcetera. I want to be able to stream from other machines to my server which I'll hook up to my stereo. I could not find any tutorials on using tcpserversource and tcpclientsink elements, so honoring Jona's request that everyone &ldquo;should write an article about something that you have discovered that isn�t particularly well documented&rdquo;, here's mine about tcpserversource and tcpclientsink.</p>
+
+<h4>TCP streaming using gst-launch</h4>
+
+<p>Using gst-launch-0.10 is the easiest way to see if a pipeline will actually work or not. It's quicker to change a few commandline variables than it is to change your program every time. It took my a few hours before I found the right one due to two causes:</p>
+<ul>
+<li>Caps (format descriptors) are not automagically negotiated when you use tcp elements. According to the scarce documentation I could find, using setting the protocol to GST_TCP_PROTOCOL_GDP should enable negotiation, but I could not make this work.</li>
+<li>Apparently the caps for the audiotestsrc that I was trying to use most of the time could not be negotiated at all.</li>
+</ul>
+
+<p>What I ended up doing was simply streaming the still compressed audiofile before any caps negotiation has taken place. Aside from making my pipeline actually work it has the added benefit for me that it uses less bandwidth. All caps negotiation then happens at the server side. Here are the server and client pipelines that actually worked for me. You can run them both on the same machine simply by setting the host to <tt>localhost</tt> and using two xterms. Make sure you start the server before starting the client.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">you@server$ gst-launch-0.10 tcpserversrc host=localhost port=3000 ! decodebin ! audioconvert ! alsasink</div></li>
+<li class="li1"><div class="de1">you@client$ gst-launch-0.10 filesrc location=/home/you/song.ogg ! tcpclientsink host=localhost port=3000</div></li>
+</ol></div></div>
+
+<h4>Putting it all in Python</h4>
+
+<p>With the gst-launch pipelines sorted out it's trivial to implement the same thing in Python. The server code:</p>
+
+<div class="geshi-wrap"><div class="python geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="co1">#!/usr/bin/env python</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># This is some example code for python-gstreamer.</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># It's a gstreamer TCP/IP server that listens on</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># the localhost for a client to send data to it.</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># It shows how to use the tcpserversrc and tcpclientsink</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># elements.</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="kw1">import</span> gobject, pygst</div></li>
+<li class="li1"><div class="de1">pygst.<span class="me1">require</span><span class="br0">&#40;</span><span class="st0">&quot;0.10&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">import</span> gst</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># Callback for the decodebin source pad</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">def</span> new_decode_pad<span class="br0">&#40;</span>dbin, pad, islast<span class="br0">&#41;</span>:</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; pad.<span class="me1">link</span><span class="br0">&#40;</span>convert.<span class="me1">get_pad</span><span class="br0">&#40;</span><span class="st0">&quot;sink&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># create a pipeline and add [tcpserversrc ! decodebin ! audioconvert ! alsasink]</span></div></li>
+<li class="li1"><div class="de1">pipeline = gst.<span class="me1">Pipeline</span><span class="br0">&#40;</span><span class="st0">&quot;server&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">tcpsrc = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;tcpserversrc&quot;</span>, <span class="st0">&quot;source&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>tcpsrc<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">tcpsrc.<span class="me1">set_property</span><span class="br0">&#40;</span><span class="st0">&quot;host&quot;</span>, <span class="st0">&quot;127.0.0.1&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">tcpsrc.<span class="me1">set_property</span><span class="br0">&#40;</span><span class="st0">&quot;port&quot;</span>, <span class="nu0">3000</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">decode = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;decodebin&quot;</span>, <span class="st0">&quot;decode&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">decode.<span class="me1">connect</span><span class="br0">&#40;</span><span class="st0">&quot;new-decoded-pad&quot;</span>, new_decode_pad<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>decode<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">tcpsrc.<span class="me1">link</span><span class="br0">&#40;</span>decode<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">convert = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;audioconvert&quot;</span>, <span class="st0">&quot;convert&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>convert<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">sink = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;alsasink&quot;</span>, <span class="st0">&quot;sink&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>sink<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">convert.<span class="me1">link</span><span class="br0">&#40;</span>sink<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">set_state</span><span class="br0">&#40;</span>gst.<span class="me1">STATE_PLAYING</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># enter into a mainloop</span></div></li>
+<li class="li1"><div class="de1">loop = gobject.<span class="me1">MainLoop</span><span class="br0">&#40;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">loop.<span class="me1">run</span><span class="br0">&#40;</span><span class="br0">&#41;</span></div></li>
+</ol></div></div>
+
+<p>And the client code:</p>
+
+<div class="geshi-wrap"><div class="python geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="co1">#!/usr/bin/env python</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># This is some example code for python-gstreamer.</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># It's a gstreamer TCP/IP client that sends a file</span></div></li>
+<li class="li1"><div class="de1"><span class="co1"># through a tcpclientsink to a server on localhost</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="kw1">import</span> gobject, pygst</div></li>
+<li class="li1"><div class="de1">pygst.<span class="me1">require</span><span class="br0">&#40;</span><span class="st0">&quot;0.10&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">import</span> gst</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># create a pipeline and add [ filesrc ! tcpclientsink ]</span></div></li>
+<li class="li1"><div class="de1">pipeline = gst.<span class="me1">Pipeline</span><span class="br0">&#40;</span><span class="st0">&quot;client&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">src = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;filesrc&quot;</span>, <span class="st0">&quot;source&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">src.<span class="me1">set_property</span><span class="br0">&#40;</span><span class="st0">&quot;location&quot;</span>, <span class="st0">&quot;/home/you/song.ogg&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>src<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">client = gst.<span class="me1">element_factory_make</span><span class="br0">&#40;</span><span class="st0">&quot;tcpclientsink&quot;</span>, <span class="st0">&quot;client&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">add</span><span class="br0">&#40;</span>client<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">client.<span class="me1">set_property</span><span class="br0">&#40;</span><span class="st0">&quot;host&quot;</span>, <span class="st0">&quot;127.0.0.1&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">client.<span class="me1">set_property</span><span class="br0">&#40;</span><span class="st0">&quot;port&quot;</span>, <span class="nu0">3000</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">src.<span class="me1">link</span><span class="br0">&#40;</span>client<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">pipeline.<span class="me1">set_state</span><span class="br0">&#40;</span>gst.<span class="me1">STATE_PLAYING</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="co1"># enter into a mainloop</span></div></li>
+<li class="li1"><div class="de1">loop = gobject.<span class="me1">MainLoop</span><span class="br0">&#40;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">loop.<span class="me1">run</span><span class="br0">&#40;</span><span class="br0">&#41;</span></div></li>
+</ol></div></div>
+
+<p>I hope this has been useful to you. Happy coding!</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2007-01-24T15:16:00Z">2007-01-24@15:16</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/streaming" rel="tag">streaming</a>
+															&nbsp;<a href="http://www.jejik.com/tag/music" rel="tag">music</a>
+															&nbsp;<a href="http://www.jejik.com/tag/network" rel="tag">network</a>
+															&nbsp;<a href="http://www.jejik.com/tag/python" rel="tag">python</a>
+															&nbsp;<a href="http://www.jejik.com/tag/gstreamer" rel="tag">gstreamer</a>
+															&nbsp;<a href="http://www.jejik.com/tag/tcp" rel="tag">tcp</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c1" class="number" id="c1">#1</a>
+																			blaxeep
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-16@10:16
+																																			</div>
+																really helpful post!<br />
+I am a student in TUC (Greece) and your code was really helpful for me to understand what's going on!<br />
+It's about a project that implements a mail application in which users will send video-mail instead of e-mails :P<br />
+thnx!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c2" class="number" id="c2">#2</a>
+																			Diego Tejera
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-05-11@02:55
+																																			</div>
+																awesome, thnx for the tutorial! (am a student from Panama) also very helpful with a little project am making. Thanks!!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c3" class="number" id="c3">#3</a>
+																			Anonymous
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-16@14:22
+																																			</div>
+																Thanks for this nice tutorial !!!<br />
+<br />
+Note that, if you want to stream data from one computer to another,<br />
+you have to fill the host property of the client AND the server with<br />
+the server's IP address...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c4" class="number" id="c4">#4</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-29@13:16
+																																			</div>
+																hi,<br />
+very simple, easy to understand, appreciate you<br />
+<br />
+a question: is there a similar simple way for live streaming?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-30@10:29
+																																			</div>
+																The easiest way for live streaming would simply be to use an IceCast server. It comes with all the bits you need. If you really need programatic control over the stream then you could use a simple gstreamer application that dumps to an IceCast sink and then broadcast with IceCast.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c6" class="number" id="c6">#6</a>
+																			Hassan
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-10-11@10:50
+																																			</div>
+																Hi,<br />
+<br />
+I am a student from Pakistan. Your tutorial is pretty good, gave me some help for what I was looking for. Its not exactly this but put me on the right path. <br />
+<br />
+Cheers :)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c7" class="number" id="c7">#7</a>
+																			<a href="http://153.19.231.17" class="name">Anonymous Coward<small> (http://153.19.231.17)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-04-06@10:12
+																																			</div>
+																thx a lot, can You (or somebody) put a similary code but where transmission is realized over RTP
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c8" class="number" id="c8">#8</a>
+																			<a href="http://melug.blogspot.com" class="name">Tulga<small> (http://melug.blogspot.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-04-18@04:56
+																																			</div>
+																your tutorial is very helpful, i'll use your idea to my project. few weeks ago i was looking for way to using ffmpeg and python, gtk together. but ended up using gstream. yep, there's not enough documentation. i'll write the documentation in own language. again, thank you very much. from Mongolia.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c9" class="number" id="c9">#9</a>
+																			<a href="http://devloop.org.uk" class="name">Antoine Martin<small> (http://devloop.org.uk)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-05-13@12:15
+																																			</div>
+																Great example. Nice and simple.<br />
+<br />
+One question though, how do I make it re-start after the first client disconnects?<br />
+It just seems to get stuck and you have to kill the tcpserversrc script and start it again.<br />
+I tried catching the EOS and unlink()ing the elements after the tcpserversrc (then re-adding new ones), but the exact incantions required are beyond me at this point.<br />
+<br />
+How about allowing multiple concurrent connections? Is that even possible using the same port?<br />
+<br />
+Also, when I run it across the network it seems to stutter a bit (despite the fact there is lots of bandwidth to spare), even more so when tunneled over ssh, how can I get rid of that problem? (increase buffering somehow?)<br />
+<br />
+Many thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c10" class="number" id="c10">#10</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-05-13@21:30
+																																			</div>
+																Hi Antoine. I don't know about restarting the server or allowing multiple connections. I played with this code in order to make a jukebox server, but after this experiment I simplified my design. Instead of doing the streaming myself over TCP, I simply use shout2send and drop to an IceCast server. IceCast is designed to stream to multiple concurrent connections. If you want to take a look at my jukebox code, you can find it <a href="http://svn.jejik.com/viewvc.cgi/jukebox/" rel="nofollow">http://svn.jejik.com/viewvc.cgi/jukebox/</a>.<br />
+<br />
+As for the stuttering, try introducing some queue elements to act as buffers.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c11" class="number" id="c11">#11</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-25@13:00
+																																			</div>
+																Hello ... i am Student from London.. I am developing a media player in my final year project .. I will use gstreamer for library .. can anyone help me .. how shall i start it .. any idea will be helpful .. <br />
+thank you
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c12" class="number" id="c12">#12</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-25@21:19
+																																			</div>
+																I highly recommend you start learning Python if you don't know it already. GStreamer is quite a complicated beast. I can't imagine how hard it must be while trying it in C/C++.<br />
+<br />
+Next, I suggest you start playing with the commandline tools such as gst-launch and build some working pipelines. Once you have something that works, try to implement the same pipeline in Python.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c13" class="number" id="c13">#13</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-26@13:55
+																																			</div>
+																Thankx Sander.. i will start working on that.. <br />
+do you have any tutorial or any useful documentation on that??.. <br />
+<br />
+Thank you
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c14" class="number" id="c14">#14</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-27@08:08
+																																			</div>
+																Sure.<br />
+<br />
+<a href="http://docs.python.org/tutorial/" rel="nofollow">Python tutorial</a><br />
+<a href="http://www.gstreamer.net/wiki/Tutorials" rel="nofollow">Gstreamer tutorials</a>, especially <a href="http://www.jonobacon.org/2006/08/28/getting-started-with-gstreamer-with-python/" rel="nofollow">this one</a><br />
+<br />
+And read the code in my article. It shows the same GStreamer pipeline twice. First using gst-launch from the commandline and then the same pipeline implemented in Python.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c15" class="number" id="c15">#15</a>
+																			celia
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-29@16:42
+																																			</div>
+																Hi! your guide is great! im begining with gstreamer and python ... i like to add a type of pause to your code ... a read something about the bus... sending msgs ... but i dont really get it.. if you can help me, please send me an email!<br />
+thanks! and sorry for my english :)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c16" class="number" id="c16">#16</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-29@21:17
+																																			</div>
+																Normally, pausing is as simple as setting the entire pipeline to a PAUSED state. But in this case you're dealing with two processes: a sender and a receiver. I wouldn't know how to pause it.<br />
+<br />
+I did something like that for my jukebox server but that was basically a cheat. I had two sound sources: a song and a dummy bin that produces a constant stream of silence. When I wanted to "pause", I only stopped the song. The "silence" still played, so the pipeline kept rolling.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c17" class="number" id="c17">#17</a>
+																			celia
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-30@02:18
+																																			</div>
+																thats a good one!,i keep it in mind! thanks again for de code and the quick response!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c18" class="number" id="c18">#18</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-11-30@20:14
+																																			</div>
+																I'm afraid I accidentally deleted someone's comment. It may have been yours celia. I apologise.<br />
+<br />
+The person in question was asking about a simple GStreamer pipeline tutorial. As it happens, Jono Bacon has written an excellent tutorial on implementing a simple pipeline. He implements it both using gst-launch and using Python.<br />
+<br />
+See here: <a href="http://www.jonobacon.org/2006/08/28/getting-started-with-gstreamer-with-python/" rel="nofollow">http://www.jonobacon.org/2006/08/28/getting-started-with-gstreamer-with-python/</a>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c19" class="number" id="c19">#19</a>
+																			celia
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-12-01@13:00
+																																			</div>
+																it wasn't mine..i implementing a big silence for de pause :):) thanks again!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c20" class="number" id="c20">#20</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-12-01@15:12
+																																			</div>
+																That was mine sander.. thats fine ... <br />
+yeah i have check the Jono Bacon tutorial its very very useful.. As i have a very basic knowledge about this.. it gave me idea to start with.. as i am very basic in this i still couldn't get how can i create a or develop a pipeline to play any mp3/mp4 files.. i might be asking for too much but i will really appreciate your help.. <br />
+Many thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c21" class="number" id="c21">#21</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-12-01@19:11
+																																			</div>
+																@sam: You may want to read his followup tutorial in that case: <a href="http://www.jonobacon.org/2006/11/03/gstreamer-dynamic-pads-explained/" rel="nofollow">http://www.jonobacon.org/2006/11/03/gstreamer-dynamic-pads-explained/</a><br />
+<br />
+That article shows a minimal, basic pipeline that can play pretty much any audiofile (mp3, ogg, etcetera)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c22" class="number" id="c22">#22</a>
+																			Sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-12-29@21:52
+																																			</div>
+																Hello sander, after long time.. still working on the project. I can run those command and stream over tcp but i am unable to do so using python file.. i mean when i run server and client it doesn't seems working so .. could you help me with this??<br />
+ Thank you
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c23" class="number" id="c23">#23</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-12-29@22:33
+																																			</div>
+																@Sam: Is your code available somewhere (Subversion, Githib)? Feel free to contact me through the <a href="http:///contact.php" rel="nofollow">Contact</a> form. E-mail is much easier than blog comments.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c24" class="number" id="c24">#24</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-06@03:08
+																																			</div>
+																Hello sander, I have used the same code which you have written above.. I have created a server.py and client.py when I try to run the server.py it doesn't run .. it shows the following error..<br />
+<br />
+sam@ubuntu:~/Desktop$ ./server.py<br />
+./server.py: line 8: import: command not found<br />
+./server.py: line 9: syntax error near unexpected token `"0.10"'<br />
+./server.py: line 9: `pygst.require("0.10")'<br />
+<br />
+can you help me with this...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c25" class="number" id="c25">#25</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-06@20:49
+																																			</div>
+																@Sam: I have no idea. Are you sure you are executing it with Python and not with bash (or some other shell)? Do you have python-gstreamer installed? Are you *sure* you don't have a typo in there? I mean, it's the first line of code...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c26" class="number" id="c26">#26</a>
+																			Matt Derlay
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-08@12:34
+																																			</div>
+																Hi, thanks for the tutorial, much appreciated. One question: how can you run the client more than one time while the same instance of the server is running? The song plays fine the first time, but when I run the client again (without restarting the server), nothing happens.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c27" class="number" id="c27">#27</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-08@22:25
+																																			</div>
+																You can't, not without adding some extra code. Right now, when the client stop sending data, the server pipeline stops. You'll need to add some extra code to set the server pipeline back to the playing state again, waiting for the next client to connect.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c28" class="number" id="c28">#28</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-24@01:07
+																																			</div>
+																Hello.. do you have any tutorial on video streaming??
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c29" class="number" id="c29">#29</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-24@06:28
+																																			</div>
+																No, unfortunately not.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c30" class="number" id="c30">#30</a>
+																			sam
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-14@03:37
+																																			</div>
+																hello sander..  I am trying stream video using the same concept like yours.. I am a beginner so i am only able to run the server but not the client side.. I have explained the codes in my blog http//samirghimire.wordpress.com<br />
+<br />
+Please have a look, I will be really grateful if you can help me with this...<br />
+Thank you
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c31" class="number" id="c31">#31</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-14@22:18
+																																			</div>
+																Looks like you're missing a codec or plugin bundle on the machine where you are running your client. The dvddemux element comes from the gstreamer-plugins-ugly bundle. Try instralling that (when on Debian or Ubuntu, try to install the non-free versions from e.g. debian-multimedia or Ubuntu Multiverse).
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c32" class="number" id="c32">#32</a>
+																			<a href="http://samirghimire.wordpress.com" class="name">Samir Ghimire<small> (http://samirghimire.wordpress.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-03-04@17:05
+																																			</div>
+																Hello sander.. bothering you again and again.. but i have a problem and i think you will be able to solve it.. In my previous question i asked about the video streaming which was not running properly.. Some how i can run those but, its not showing any output..<br />
+<br />
+And recently i have been trying for live streaming from my webcam.. here is the link:<br />
+http://samirghimire.wordpress.com/2011/03/04/webcam-streaming-using-python-and-gstreamer/<br />
+<br />
+I can stream using just the gstreamer pipeline but when i bind with python its not showing any output although both server and client are running.. <br />
+Please help me out with this.. <br />
+<br />
+Thank you very much
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c33" class="number" id="c33">#33</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-03-12@02:07
+																																			</div>
+																I can't really help you there Samir. I have no webcams so I have no way to test your code. The only thing I notice in your receiver is that you have an OnDynamicPad function, but you're not telling GStreamer to use it as a callback.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c34" class="number" id="c34">#34</a>
+																			<a href="http://samirghimire.wordpress.com" class="name">Samir Ghimire<small> (http://samirghimire.wordpress.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-03-26@16:06
+																																			</div>
+																Thank you sander...<br />
+another question , how to write the call back like in <br />
+def new_decode_pad(dbin, pad, islast):<br />
+on what basis the dbin, pad, islast is written.. what is islast??<br />
+many thanks...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c35" class="number" id="c35">#35</a>
+																			Ionut
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-06-23@23:47
+																																			</div>
+																Can you please explain what is the purpose of the audioconvert element? I've tried it and it works just fine without it...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c36" class="number" id="c36">#36</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-06-24@12:10
+																																			</div>
+																It may work without it. It may also fail. It depends on what your alsasink (audio card) understands and what file format you are reading. The auioconvert is there to make sure it always works.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c37" class="number" id="c37">#37</a>
+																			Giovanni
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-10-17@06:17
+																																			</div>
+																I'd like to send real-time audio (coming from the microphone) instead of file-content audio. Can you show how ? Thanks.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c38" class="number" id="c38">#38</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-10-18@11:29
+																																			</div>
+																Hi Giovanni. The microphone is usually handled by Pulse Audio on Linux. So, all you have to do is use `pulsesrc` instead of `filesrc`.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#c39" class="number" id="c39">#39</a>
+																			<a href="http://thezeroth.net" class="name">Abhishek<small> (http://thezeroth.net)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-12-03@16:38
+																																			</div>
+																In your code the server listens to the client and server is playing the music I just to do exactly opposite where server just streams the audio file and any music player can listen to it. very much like a internet radio but in single command. I tried following : <blockquote> $ gst-launch-0.10 filesrc location="/path/to/file.mp3" ! tcpserversink host=0.0.0.0 port=3000 </blockquote> <br />
+but it doesnt work. am I using it correctly ? <br />
+<br />
+Thanks
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2007/01/streaming_audio_over_tcp_with_python-gstreamer/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="d07146b2f932153c4f5eb10677ba8763" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2007%2F01%2Fstreaming_audio_over_tcp_with_python-gstreamer%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://www.jejik.com/articles/2007/01/python-gstreamer_threading_and_the_main_loop">www.jejik.com/articles/2007...</a></li>
+															<li><a href="http://chrisgrice.com/tweets/links-for-2008-11-06/">chrisgrice.com/tweets/links...</a></li>
+															<li><a href="http://blog.abourget.net/2009/6/14/gstreamer-rtp-and-live-streaming">blog.abourget.net/2009/6/14...</a></li>
+															<li><a href="http://samirghimire.wordpress.com/2011/03/04/webcam-streaming-using-python-and-gstreamer/">samirghimire.wordpress.com/...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

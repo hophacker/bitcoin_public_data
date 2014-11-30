@@ -1,0 +1,1243 @@
+https://www.kitten-technologies.co.uk/project/ugarit/doc/trunk/README.wiki
+HTTP/1.0 200 OK
+Status: 200 OK
+X-Frame-Options: SAMEORIGIN
+Cache-control: no-cache
+Content-Type: text/html; charset=utf-8
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Content-Length: 21496
+Connection: close
+Date: Sun, 13 Jul 2014 02:34:22 GMT
+Server: lighttpd/1.4.32
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ugarit: Documentation</title>
+<link rel="alternate" type="application/rss+xml" title="RSS Feed"
+      href="/project/ugarit/timeline.rss" />
+<link rel="meta" type="application/rdf+xml" title="DOAP"
+      href="/project/ugarit/doc/trunk/METADATA.rdf" />
+<link rel="shortcut icon" type="image/png" href="https://www.kitten-technologies.co.uk/favicon.png" />
+<link rel="stylesheet" href="https://www.kitten-technologies.co.uk/kitten-technologies.css" type="text/css"
+      media="screen" />
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <a href="https://www.kitten-technologies.co.uk/"><img src="https://www.kitten-technologies.co.uk/kt_logo.png" alt="logo" /></a>
+  </div>
+  <div class="title"><small>Ugarit</small><br />Documentation</div>
+  <div class="status">Not logged in</div>
+</div>
+<div class="mainmenu">
+<a href="https://www.kitten-technologies.co.uk/">Kitten Technologies</a> |
+<a href='/project/ugarit/doc/trunk/README.wiki'>Home</a>
+<a href='/project/ugarit/doc/trunk/DOWNLOAD.wiki'>Download</a>
+<a href='/project/ugarit/timeline'>Timeline</a>
+<a href='/project/ugarit/reportlist'>Tickets</a>
+<a href='/project/ugarit/wiki'>Wiki</a>
+ | <a href='/project/ugarit/login'>Login</a>
+</div><div class="content">
+<script>
+function gebi(x){
+if(/^#/.test(x)) x = x.substr(1);
+var e = document.getElementById(x);
+if(!e) throw new Error("Expecting element with ID "+x);
+else return e;}
+</script>
+<center><img src="doc/trunk/artwork/logo.png" /></center>
+
+<h1>Introduction</h1>
+
+<p>Ugarit is a backup/archival system based around content-addressible
+storage.
+
+<h1>News</h1>
+
+<p>Current development priority: Performance, better error handling,
+and fixing bugs! After I've cleaned house a little, I'll be focussing
+on replicated backend storage (ticket [f1f2ce8cdc]), as I now have a cluster
+of storage devices at home.</p>
+
+<ul>
+<li>2014-02-21: User <a href="http://rmm.meta.ph/">Rommel Martinez</a> has written
+<a href="http://rmm.meta.ph/blog/2014/02/21/an-introduction-to-ugarit/">An introduction to Ugarit</a>!</li>
+</ul>
+
+<h1>About Ugarit</h1>
+
+<h2>What's content-addressible storage?</h2>
+
+<p>Traditional backup systems work by storing copies of your files
+somewhere. Perhaps they go onto tapes, or perhaps they're in archive
+files written to disk. They will either be full dumps, containing a
+complete copy of your files, or incrementals or differentials, which
+only contain files that have been modified since some point. This
+saves making repeated copies of unchanging files, but it means that to
+do a full restore, you need to start by extracting the last full dump
+then applying one or more incrementials, or the latest differential,
+to get the latest state.
+
+<p>Not only do differentials and incrementals let you save space, they
+also give you a history - you can restore up to a previous point in
+time, which is invaluable if the file you want to restore was deleted
+a few backup cycles ago!
+
+<p>This technology was developed when the best storage technology for
+backups was magnetic tape, because each dump is written sequentially
+(and restores are largely sequential, unless you're skipping bits to
+pull out specific files).
+
+<p>However, these days, random-access media such as magnetic disks and
+SSDs are cheap enough to compete with magnetic tape for long-term bulk
+storage (especially when one considers the cost of a tape drive or
+two). And having fast random access means we can take advantage of
+different storage techniques.
+
+<p>A content-addressible store is a key-value store, except that the keys
+are always computed from the values. When a given object is stored, it
+is hashed, and the hash used as the key. This means you can never
+store the same object twice; the second time you'll get the same hash,
+see the object is already present, and re-use the existing
+copy. Therefore, you get deduplication of your data for free.
+
+<p>But how do you find things again, if you can't choose the keys?
+
+<p>When an object is stored, you need to record the key so you can find
+it again later. In Ugarit, we are storing a tree-like directory
+structure. Files are uploaded and their hashes obtained, and then a
+directory object is constructed containing a list of the files in the
+directory, and listing the key of the Ugarit objects storing the
+contents of each file. This directory object itself has a hash, which
+is stored inside the directory entry in the parent directory, and so
+on up to the root. The root of a tree stored in a Ugarit vault has no
+parent directory to contain it, so at that point, we store the key of
+the root in a named "tag" that we can look up by name when we want it.
+
+<p>Therefore, everything in a Ugarit vault can be found by starting with
+a named tag and retrieving the object whose key it contains, then
+finding keys inside that object and looking up the objects they refer
+to, until we find the object we want.
+
+<p>When you use Ugarit to backup your filesystem, it uploads a complete
+snapshot of every file in the filesystem, like a full dump. But
+because the vault is content-addressed, it automatically avoids
+uploading anything it already has a copy of, so all we upload is an
+incremental dump - but in the vault, it looks like a full dump, and so
+can be restored on its own without having to restore a chain of incrementals.
+
+<p>Also, the same storage can be shared between multiple systems that all
+back up to it - and the incremental upload algorithm will mean that
+any files shared between the servers will only need to be uploaded
+once. If you back up a complete server, than go and back up another
+that is running the same distribution, then all the files in <tt>/bin</tt>
+and so on that are already in the storage will not need to be backed
+up again; the system will automatically spot that they're already
+there, and not upload them again.
+
+<h2>So what's that mean in practice?</h2>
+
+<p>You can run Ugarit to back up any number of filesystems to a shared
+storage area (known as a <i>vault</i>, and on every backup, Ugarit
+will only upload files or parts of files that aren't already in the
+vault - be they from the previous snapshot, earlier snapshots,
+snapshot of entirely unrelated filesystems, etc. Every time you do a
+snapshot, Ugarit builds an entire complete directory tree of the
+snapshot in the vault - but reusing any parts of files, files, or
+entire directories that already exist anywhere in the vault, and
+only uploading what doesn't already exist.
+
+<p>The support for parts of files means that, in many cases, gigantic
+files like database tables and virtual disks for virtual machines will
+not need to be uploaded entirely every time they change, as the
+changed sections will be identified and uploaded.
+
+<p>Because a complete directory tree exists in the vault for any
+snapshot, the extraction algorithm is incredibly simple - and,
+therefore, incredibly reliable and fast. Simple, reliable, and fast
+are just what you need when you're trying to reconstruct the
+filesystem of a live server.
+
+<p>Also, it means that you can do lots of small snapshots. If you run a
+snapshot every hour, then only a megabyte or two might have changed in
+your filesystem, so you only upload a megabyte or two - yet you end up
+with a complete history of your filesystem at hourly intervals in the
+vault.
+
+<p>Conventional backup systems usually either store a full backup then
+incrementals to their archives, meaning that doing a restore involves
+reading the full backup then reading every incremental since and
+applying them - so to do a restore, you have to download *every
+version* of the filesystem you've ever uploaded, or you have to do
+periodic full backups (even though most of your filesystem won't have
+changed since the last full backup) to reduce the number of
+incrementals required for a restore. Better results are had from
+systems that use a special backup server to look after the archive
+storage, which accept incremental backups and apply them to the
+snapshot they keep in order to maintain a most-recent snapshot that
+can be downloaded in a single run; but they then restrict you to using
+dedicated servers as your archive stores, ruling out cheaply scalable
+solutions like Amazon S3, or just backing up to a removable USB or
+eSATA disk you attach to your system whenever you do a backup. And
+dedicated backup servers are complex pieces of software; can you rely
+on something complex for the fundamental foundation of your data
+security system?
+
+<h2>System Requirements</h2>
+
+<p>Ugarit should run on any POSIX-compliant system that can run
+<a href="http://www.call-with-current-continuation.org/">Chicken Scheme</a>. It
+stores and restores all the file attributes reported by the <code>stat</code>
+system call - POSIX mode permissions, UID, GID, mtime, and optionally
+atime and ctime (although the ctime cannot be restored due to POSIX
+restrictions). Ugarit will store files, directories, device and
+character special files, symlinks, and FIFOs.
+
+<p>Support for extended filesystem attributes - ACLs, alternative
+streams, forks and other metadata - is possible, due to the extensible
+directory entry format; support for such metadata will be added as
+required.
+
+<p>Currently, only local filesystem-based vault storage backends are
+complete: these are suitable for backing up to a removable hard disk
+or a filesystem shared via NFS or other protocols. However, the
+backend can be accessed via an SSH tunnel, so a remote server you are
+able to install Ugarit on to run the backends can be used as a remote
+vault.
+
+<p>However, the next backend to be implemented will be one for Amazon S3,
+and an SFTP backend for storing vaults anywhere you can ssh
+to. Other backends will be implemented on demand; a vault can, in
+principle, be stored on anything that can store files by name, report
+on whether a file already exists, and efficiently download a file by
+name. This rules out magnetic tapes due to their requirement for
+sequential access.
+
+<p>Although we need to trust that a backend won't lose data (for now), we
+don't need to trust the backend not to snoop on us, as Ugarit
+optionally encrypts everything sent to the vault.
+
+<h2>Terminology</h2>
+
+<p>A Ugarit backend is the software module that handles backend
+storage. An actual storage area - an instance of a backend is called a
+storage, and is used to implement a vault; currently, every storage is
+a valid vault, but the planned future introduction of a distributed
+storage backend will enable multiple storages (which are not,
+themselves, valid vaults as they only contain some subset of the
+information required) to be combined into an aggregrate storage, which
+then holds the actual vault. Note that the contents of a storage is
+purely a set of blocks, and a series of named tags containing
+references to them; the storage does not know the details of
+encryption and hashing, so cannot make any sense of its contents.
+
+<p>For example, if you use the recommended "splitlog" filesystem backend,
+your vault might be <samp>/mnt/bigdisk</samp> on the server
+<samp>prometheus</samp>. The backend (which is compiled along with the
+other filesystem backends in the <code>backend-fs</code> binary) must
+be installed on <samp>prometheus</samp>, and Ugarit clients all over
+the place may then use it via ssh to <samp>prometheus</samp>. However,
+even with the filesystem backends, the actual storage might not be on
+<samp>prometheus</samp> where the backend runs -
+<samp>/mnt/bigdisk</samp> might be an NFS mount, or a mount from a
+storage-area network. This ability to delegate via SSH is particularly
+useful with the "cache" backend, which reduces latency by storing a
+cache of what blocks exist in a backend, thereby making it quicker to
+identify already-stored files; a cluster of servers all sharing the
+same vault might all use SSH tunnels to access an instance of the
+"cache" backend on one of them (using some local disk to store the
+cache), which proxies the actual vault storage to a vault on the other
+end of a high-latency Internet link, again via an SSH tunnel.
+
+<p>A vault is where Ugarit stores backups (as chains of snapshots) and,
+in future, archives (as chains of archive deltas). Backups and
+archives are identified by tags, which are the top-level named entry
+points into a vault. A vault is based on top of a storage, along with
+a choice of hash function, compression algorithm, and encryption that
+are used to map the logical world of snapshots and archive deltas into
+the physical world of blocks stored in the storage.
+
+<p>A snapshot is a copy of a filesystem tree in the vault, with a header
+block that gives some metadata about it. A backup consists of a number
+of snapshots of a given filesystem.
+
+<p>An archive delta is a set of filesystem trees, each along with
+metadata about it. Whereas a backup is organised around a series of
+timed snapshots, an archive is organised around the metadata; the
+filesystem trees in the archive are identified by their properties.
+
+<h2>What's in a vault?</h2>
+
+<p>A Ugarit vault contains a load of blocks, each up to a maximum size
+(usually 1MiB, although other backends might impose smaller
+limits). Each block is identified by the hash of its contents; this is
+how Ugarit avoids ever uploading the same data twice, by checking to
+see if the data to be uploaded already exists in the vault by
+looking up the hash. The contents of the blocks are compressed and
+then encrypted before upload.
+
+<p>Every file uploaded is, unless it's small enough to fit in a single
+block, chopped into blocks, and each block uploaded. This way, the
+entire contents of your filesystem can be uploaded - or, at least,
+only the parts of it that aren't already there! The blocks are then
+tied together to create a snapshot by uploading blocks full of the
+hashes of the data blocks, and directory blocks are uploaded listing
+the names and attributes of files in directories, along with the
+hashes of the blocks that contain the files' contents. Even the blocks
+that contain lists of hashes of other blocks are subject to checking
+for pre-existence in the vault; if only a few MiB of your
+hundred-GiB filesystem has changed, then even the index blocks and
+directory blocks are re-used from previous snapshots.
+
+<p>Once uploaded, a block in the vault is never again changed. After
+all, if its contents changed, its hash would change, so it would no
+longer be the same block! However, every block has a reference count,
+tracking the number of index blocks that refer to it. This means that
+the vault knows which blocks are shared between multiple snapshots
+(or shared *within* a snapshot - if a filesystem has more than one
+copy of the same file, still only one copy is uploaded), so that if a
+given snapshot is deleted, then the blocks that only that snapshot is
+using can be deleted to free up space, without corrupting other
+snapshots by deleting blocks they share. Keep in mind, however, that
+not all storage backends may support this - there are certain
+advantages to being an append-only vault. For a start, you can't
+delete something by accident! The supplied fs backend supports
+deletion, while the splitlog backend does not yet. However, the actual
+snapshot deletion command hasn't been implemented yet either, so it's
+a moot point for now...
+
+<p>Finally, the vault contains objects called tags. Unlike the blocks,
+the tags contents can change, and they have meaningful names rather
+than being identified by hash. Tags identify the top-level blocks of
+snapshots within the system, from which (by following the chain of
+hashes down through the index blocks) the entire contents of a
+snapshot may be found. Unless you happen to have recorded the hash of
+a snapshot somewhere, the tags are where you find snapshots from when
+you want to do a restore!
+
+<p>Whenever a snapshot is taken, as soon as Ugarit has uploaded all the
+files, directories, and index blocks required, it looks up the tag you
+have identified as the target of the snapshot. If the tag already
+exists, then the snapshot it currently points to is recorded in the
+new snapshot as the "previous snapshot"; then the snapshot header
+containing the previous snapshot hash, along with the date and time
+and any comments you provide for the snapshot, and is uploaded (as
+another block, identified by its hash). The tag is then updated to
+point to the new snapshot.
+
+<p>This way, each tag actually identifies a chronological chain of
+snapshots. Normally, you would use a tag to identify a filesystem
+being backed up; you'd keep snapshotting the filesystem to the same
+tag, resulting in all the snapshots of that filesystem hanging from
+the tag. But if you wanted to remember any particular snapshot
+(perhaps if it's the snapshot you take before a big upgrade or other
+risky operation), you can duplicate the tag, in effect 'forking' the
+chain of snapshots much like a branch in a version control system.
+
+<h1>Using Ugarit</h1>
+
+<h2>Installation</h2>
+
+<p>Install <a href="http://www.call-with-current-continuation.org/">Chicken Scheme</a> using their <a href="http://wiki.call-cc.org/man/4/Getting%20started">installation instructions</a>.
+
+<p>Ugarit can then be installed by typing (as root):
+
+<blockquote>chicken-install ugarit</blockquote>
+
+<p>See the <a href="http://wiki.call-cc.org/manual/Extensions#chicken-install-reference">chicken-install manual</a> for details if you have any trouble, or wish to install into your home directory.
+
+<h2>Setting up a vault</h2>
+
+<p>Firstly, you need to know the vault identifier for the place you'll
+be storing your vaults. This depends on your backend. The vault
+identifier is actually the command line used to invoke the backend for
+a particular vault; communication with the vault is via standard
+input and output, which is how it's easy to tunnel via ssh.
+
+<h3>Local filesystem backends</h3>
+
+<p>These backends use the local filesystem to store the vaults. Of
+course, the "local filesystem" on a given server might be an NFS mount
+or mounted from a storage-area network.
+
+<h4>Logfile backend</h4>
+
+<p>The logfile backend works much like the original Venti system. It's
+append-only - you won't be able to delete old snapshots from a logfile
+vault, even when I implement deletion. It stores the vault in two
+sets of files; one is a log of data blocks, split at a specified
+maximum size, and the other is the metadata: an sqlite database used
+to track the location of blocks in the log files, the contents of
+tags, and a count of the logs so a filename can be chosen for a new one.
+
+<p>To set up a new logfile vault, just choose where to put the two
+parts. It would be nice to put the metadata file on a different
+physical disk to the logs directory, to reduce seeking. If you only
+have one disk, you can put the metadata file in the log directory
+("metadata" is a good name).
+
+<p>You can then refer to it using the following vault identifier:
+
+<blockquote>"backend-fs splitlog ...log directory... ...metadata file... max-logfile-size"</blockquote>
+
+<p>For most platforms, a max-logfile-size of 900000000 (900 MB) should
+suffice. For now, don't go much bigger than that on 32-bit systems
+until Chicken's <code>file-position</code> function is fixed to work with files
+more than 1GB in size.
+
+<h4>Filesystem backend</h4>
+
+<p>The filesystem backend creates vaults by storing each block or tag
+in its own file, in a directory. To keep the objects-per-directory
+count down, it'll split the files into subdirectories. Because of
+this, it uses a stupendous number of inodes (more than the filesystem
+being backed up). Only use it if you don't mind that; splitlog is much
+more efficient.
+
+<p>To set up a new filesystem-backend vault, just create an empty
+directory that Ugarit will have write access to when it runs. It will
+probably run as root in order to be able to access the contents of
+files that aren't world-readable (although that's up to you), so be
+careful of NFS mounts that have <code>maproot=nobody</code> set!
+
+<p>You can then refer to it using the following vault identifier:
+
+<blockquote>"backend-fs fs ...path to directory..."</blockquote>
+
+<h3>Proxying backends</h3>
+
+<p>These backends wrap another vault identifier which the actual
+storage task is delegated to, but add some value along the way.
+
+<h3>SSH tunnelling</h3>
+
+<p>It's easy to access a vault stored on a remote server. The caveat
+is that the backend then needs to be installed on the remote server!
+Since vaults are accessed by running the supplied command, and then
+talking to them via stdin and stdout, the vault identified needs
+only be:
+
+<blockquote>"ssh ...hostname... '...remote vault identifier...'"</blockquote>
+
+<h3>Cache backend</h3>
+
+<p>The cache backend is used to cache a list of what blocks exist in the
+proxied backend, so that it can answer queries as to the existance of
+a block rapidly, even when the proxied backend is on the end of a
+high-latency link (eg, the Internet). This should speed up snapshots,
+as existing files are identified by asking the backend if the vault
+already has them.
+
+<p>The cache backend works by storing the cache in a local sqlite
+file. Given a place for it to store that file, usage is simple:
+
+<blockquote>"backend-cache ...path to cachefile... '...proxied vault identifier...'"</blockquote>
+
+<p>The cache file will be automatically created if it doesn't already
+exist, so make sure there's write access to the containing directory.
+
+<p> - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING -
+
+<p>If you use a cache on a vault shared between servers, make sure
+that you either:
+
+<ul><li>Never delete things from the vault</li></ul>
+
+<p>or
+
+<ul><li>Make sure all access to the vault is via the same cache</li></ul>
+
+<p>If a block is deleted from a vault, and a cache on that vault is
+not aware of the deletion (as it did not go "through" the caching
+proxy), then the cache will record that the block exists in the
+vault when it does not. This will mean that if a snapshot is made
+through the cache that would use that block, then it will be assumed
+that the block already exists in the vault when it does
+not. Therefore, the block will not be uploaded, and a dangling
+reference will result!
+
+<p>Some setups which *are* safe:
+
+<ul><li>A single server using a vault via a cache, not sharing it with
+   anyone else.</li></ul>
+
+<ul><li>A pool of servers using a vault via the same cache.</li></ul>
+
+<ul><li>A pool of servers using a vault via one or more caches, and
+   maybe some not via the cache, where nothing is ever deleted from
+   the vault.</li></ul>
+
+<ul><li>A pool of servers using a vault via one cache, and maybe some
+   not via the cache, where deletions are only performed on servers
+   using the cache, so the cache is always aware.</li></ul>
+
+<h2>Writing a <code>ugarit.conf</code></h2>
+
+<p><code>ugarit.conf</code> should look something like this:
+
+<pre class='verbatim'>(storage &lt;vault identifier>)
+(hash tiger "&lt;salt>")
+[double-check]
+[(compression [deflate|lzma])]
+[(encryption aes &lt;key>)]
+[(file-cache "&lt;path>")]
+[(rule ...)]</pre>
+
+<p>The hash line chooses a hash algorithm. Currently Tiger-192
+(<code>tiger</code>), SHA-256 (<code>sha256</code>), SHA-384
+(<code>sha384</code>) and SHA-512 (<code>sha512</code>) are supported;
+if you omit the line then Tiger will still be used, but it will be a
+simple hash of the block with the block type appended, which reveals
+to attackers what blocks you have (as the hash is of the unencrypted
+block, and the hash is not encrypted). This is useful for development
+and testing or for use with trusted vaults, but not advised for use
+with vaults that attackers may snoop at. Providing a salt string
+produces a hash function that hashes the block, the type of block, and
+the salt string, producing hashes that attackers who can snoop the
+vault cannot use to find known blocks (see the "Security model"
+section below for more details).
+
+<p>I would recommend that you create a salt string from a secure entropy
+source, such as:
+
+<blockquote>dd if=/dev/random bs=1 count=64 | base64 -w 0</blockquote>
+
+<p>Whichever hash function you use, you will need to install the required
+Chicken egg with one of the following commands:
+
+<blockquote>chicken-install -s tiger-hash  # for tiger
+    chicken-install -s sha2        # for the SHA hashes</blockquote>
+
+<p><code>double-check</code>, if present, causes Ugarit to perform extra
+internal consistency checks during backups, which will detect bugs but
+may slow things down.
+
+<p><code>lzma</code> is the recommended compression option for
+low-bandwidth backends or when space is tight, but it's very slow to
+compress; deflate or no compression at all are better for fast local
+vaults. To have no compression at all, just remove the
+<code>(compression ...)</code> line entirely. Likewise, to use
+compression, you need to install a Chicken egg:
+
+<blockquote>chicken-install -s z3       # for deflate
+       chicken-install -s lzma     # for lzma</blockquote>
+
+<p>WARNING: The lzma egg is currently rather difficult to install, and
+needs rewriting to fix this problem.
+
+<p>Likewise, the <code>(encryption ...)</code> line may be omitted to have no
+encryption; the only currently supported algorithm is aes (in CBC
+mode) with a key given in hex, as a passphrase (hashed to get a key),
+or a passphrase read from the terminal on every run. The key may be
+16, 24, or 32 bytes for 128-bit, 192-bit or 256-bit AES. To specify a
+hex key, just supply it as a string, like so:
+
+<blockquote>(encryption aes "00112233445566778899AABBCCDDEEFF")</blockquote>
+
+<p>...for 128-bit AES,
+
+<blockquote>(encryption aes "00112233445566778899AABBCCDDEEFF0011223344556677")</blockquote>
+
+<p>...for 192-bit AES, or
+
+<blockquote>(encryption aes "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF")</blockquote>
+
+<p>...for 256-bit AES.
+
+<p>Alternatively, you can provide a passphrase, and specify how large a
+key you want it turned into, like so:
+
+<blockquote>(encryption aes (<a href="/project/ugarit/wiki?name=16">24|32</a> "We three kings of Orient are, one in a taxi one in a car, one on a scooter honking his hooter and smoking a fat cigar. Oh, star of wonder, star of light; star with royal dynamite"))</blockquote>
+
+<p>I would recommend that you generate a long passphrase from a secure
+entropy source, such as:
+
+<blockquote>dd if=/dev/random bs=1 count=64 | base64 -w 0</blockquote>
+
+<p>Finally, the extra-paranoid can request that Ugarit prompt for a
+passphrase on every run and hash it into a key of the specified
+length, like so:
+
+<blockquote>(encryption aes (<a href="/project/ugarit/wiki?name=16">24|32</a> prompt))</blockquote>
+
+<p>(note the lack of quotes around <code>prompt</code>, distinguishing it from a passphrase)
+
+<p>Please read the "Security model" section below for details on the
+implications of different encryption setups.
+
+<p>Again, as it is an optional feature, to use encryption, you must
+install the appropriate Chicken egg:
+
+<blockquote>chicken-install -s aes</blockquote>
+
+<p>A file cache, if enabled, significantly speeds up subsequent snapshots
+of a filesystem tree. The file cache is a file (which Ugarit will
+create if it doesn't already exist) mapping filenames to
+(mtime,size,hash) tuples; as it scans the filesystem, if it finds a
+file in the cache and the mtime and size have not changed, it will
+assume it is already stored under the specified hash. This saves it
+from having to read the entire file to hash it and then check if the
+hash is present in the vault. In other words, if only a few files
+have changed since the last snapshot, then snapshotting a directory
+tree becomes an O(N) operation, where N is the number of files, rather
+than an O(M) operation, where M is the total size of files involved.
+
+<p>For example:
+
+<blockquote>(storage "ssh ugarit@spiderman 'backend-fs splitlog /mnt/ugarit-data /mnt/ugarit-metadata/metadata 900000000'")
+      (hash tiger "i3HO7JeLCSa6Wa55uqTRqp4jppUYbXoxme7YpcHPnuoA+11ez9iOIA6B6eBIhZ0MbdLvvFZZWnRgJAzY8K2JBQ")
+      (encryption aes (32 "FN9m34J4bbD3vhPqh6+4BjjXDSPYpuyskJX73T1t60PP0rPdC3AxlrjVn4YDyaFSbx5WRAn4JBr7SBn2PLyxJw"))
+      (compression lzma)
+      (file-cache "/var/ugarit/cache")</blockquote>
+
+<p>Be careful to put a set of parentheses around each configuration
+entry. White space isn't significant, so feel free to indent things
+and wrap them over lines if you want.
+
+<p>Keep copies of this file safe - you'll need it to do extractions!
+Print a copy out and lock it in your fire safe! Ok, currently, you
+might be able to recreate it if you remember where you put the
+storage, but encryption keys and hash salts are harder to remember...
+
+<h2>Your first backup</h2>
+
+<p>Think of a tag to identify the filesystem you're backing up. If it's
+<code>/home</code> on the server <samp>gandalf</samp>, you might call it <samp>gandalf-home</samp>. If
+it's the entire filesystem of the server <samp>bilbo</samp>, you might just call
+it <samp>bilbo</samp>.
+
+<p>Then from your shell, run (as root):
+
+<blockquote># ugarit snapshot &lt;ugarit.conf> <a href="/project/ugarit/wiki?name=-c">-c</a> <a href="/project/ugarit/wiki?name=-a">-a</a> &lt;tag> &lt;path to root of filesystem></blockquote>
+
+<p>For example, if we have a <code>ugarit.conf</code> in the current directory:
+
+<blockquote># ugarit snapshot ugarit.conf -c localhost-etc /etc</blockquote>
+
+<p>Specify the <code>-c</code> flag if you want to store ctimes in the vault;
+since it's impossible to restore ctimes when extracting from an
+vault, doing this is useful only for informational purposes, so it's
+not done by default. Similarly, atimes aren't stored in the vault
+unless you specify <code>-a</code>, because otherwise, there will be a lot of
+directory blocks uploaded on every snapshot, as the atime of every
+file will have been changed by the previous snapshot - so with <code>-a</code>
+specified, on every snapshot, every directory in your filesystem will
+be uploaded! Ugarit will happily restore atimes if they are found in
+a vault; their storage is made optional simply because uploading
+them is costly and rarely useful.
+
+<h2>Exploring the vault</h2>
+
+<p>Now you have a backup, you can explore the contents of the
+vault. This need not be done as root, as long as you can read
+<code>ugarit.conf</code>; however, if you want to extract files, run it as root
+so the uids and gids can be set.
+
+<blockquote>$ ugarit explore &lt;ugarit.conf></blockquote>
+
+<p>This will put you into an interactive shell exploring a virtual
+filesystem. The root directory contains an entry for every tag; if you
+type <code>ls</code> you should see your tag listed, and within that
+tag, you'll find a list of snapshots, in descending date order, with a
+special entry <code>current</code> for the most recent
+snapshot. Within a snapshot, you'll find the root directory of your
+snapshot under "contents", and will be able to <code>cd</code> into
+subdirectories, and so on:
+
+<blockquote>> ls
+      Test &lt;tag>
+      > cd Test
+      /Test> ls
+      2009-01-24 10:28:16 &lt;snapshot>
+      2009-01-24 10:28:16 &lt;snapshot>
+      current &lt;snapshot>
+      /Test> cd current
+      /Test/current> ls
+      contents &lt;dir>
+      /Test/current> cd contents
+      /Test/current/contents> ls
+      README.txt &lt;file>
+      LICENCE.txt &lt;symlink>
+      subdir &lt;dir>
+      .svn &lt;dir>
+      FIFO &lt;fifo>
+      chardev &lt;character-device>
+      blockdev &lt;block-device>
+      /Test/current/contents> ls -ll LICENCE.txt
+      lrwxr-xr-x 1000 100 2009-01-15 03:02:49 LICENCE.txt -> subdir/LICENCE.txt
+      target: subdir/LICENCE.txt
+      ctime: 1231988569.0</blockquote>
+
+<p>As well as exploring around, you can also extract files or directories
+(or entire snapshots) by using the <code>get</code> command. Ugarit
+will do its best to restore the metadata of files, subject to the
+rights of the user you run it as.
+
+<p>Type <code>help</code> to get help in the interactive shell.
+
+<p>The interactive shell supports command-line editing, history and tab
+completion for your convenience.
+
+<h2>Extracting things directly</h2>
+
+<p>As well as using the interactive explore mode, it is also possible to
+directly extract something from the vault, given a path.
+
+<p>Given the sample vault from the previous example, it would be possible
+to extract the <code>README.txt</code> file with the following
+command:
+
+<blockquote>ugarit extract ugarit.conf /Test/current/contents/README.txt</blockquote>
+
+<h2>Duplicating tags</h2>
+
+<p>As mentioned above, you can duplicate a tag, creating two tags that
+refer to the same snapshot and its history but that can then have
+their own subsequent history of snapshots applied to each
+independently, with the following command:
+
+<blockquote>$ ugarit fork &lt;ugarit.conf> &lt;existing tag> &lt;new tag></blockquote>
+
+<h2>Storage administration</h2>
+
+<p>Each backend offers a number of administrative commands for
+administering the storage underlying vaults. These are accessible via
+the <code>ugarit-storage-admin</code> command line interface.
+
+<p>To use it, run it with the following command:
+
+<blockquote>$ ugarit-storage-admin '&lt;vault identifier>'</blockquote>
+
+<p>The available commands differ between backends, but all backends
+support the <code>info</code> and <code>help</code> commands, which give basic information
+about the vault, and list all available commands, respectively. Some
+offer a <code>stats</code> command that examines the vault state to give
+interesting statistics, but which may be a time-consuming operation.
+
+<h3>Administering <code>splitlog</code> vaults</h3>
+
+<p>The splitlog backend offers a wide selection of administrative
+commands. See the <code>help</code> command on a splitlog vault for
+details. The following facilities are available:
+
+<ul><li>Configuring the block size of the vault (this will affect new
+   blocks written to the vault, and leave existing blocks untouched,
+   even if they are larger than the new block size)</li></ul>
+
+<ul><li>Configuring the size at which a log file is finished and a new one
+   started (likewise, existing log files will be untouched; this will
+   only affect new log files)</li></ul>
+
+<blockquote>* Configuring the frequency of automatic synching of the vault
+   state to disk. Lowering this harms performance when writing to the
+   vault, but decreases the number of in-progress block writes that
+   can fail in a crash.</blockquote>
+
+<blockquote>* Enable or disable write protection of the vault</blockquote>
+
+<blockquote>* Reindex the vault, rebuilding the block and tag state from the
+   contents of the log. If the metadata file is damaged or lost,
+   reindexing can rebuild it (although any configuration changes made
+   via other admin commands will need manually repeating as they are
+   not logged).</blockquote>
+
+<h2><code>.ugarit</code> files</h2>
+
+<p>By default, Ugarit will vault everything it finds in the filesystem
+tree you tell it to snapshot. However, this might not always be
+desired; so we provide the facility to override this with <code>.ugarit</code>
+files, or global rules in your <code>.conf</code> file.
+
+<p>Note: The syntax of these files is provisional, as I want to
+experiment with usability, as the current syntax is ugly. So please
+don't be surprised if the format changes in incompatible ways in
+subsequent versions!
+
+<p>In quick summary, if you want to ignore all files or directories
+matching a glob in the current directory and below, put the following
+in a <code>.ugarit</code> file in that directory:
+
+<blockquote>(* (glob "*~") exclude)</blockquote>
+
+<p>You can write quite complex expressions as well as just globs. The
+full set of rules is:
+
+<ul><li><code>(glob "<em>pattern</em>")</code> matches files and directories whose names
+  match the glob pattern</li></ul>
+
+<ul><li><code>(name "<em>name</em>")</code> matches files and directories with exactly that
+  name (useful for files called <code>*</code>...)</li></ul>
+
+<ul><li><code>(modified-within <em>number</em> seconds)</code> matches files and
+  directories modified within the given number of seconds</li></ul>
+
+<ul><li><code>(modified-within <em>number</em> minutes)</code> matches files and
+  directories modified within the given number of minutes</li></ul>
+
+<ul><li><code>(modified-within <em>number</em> hours)</code> matches files and directories
+  modified within the given number of hours</li></ul>
+
+<ul><li><code>(modified-within <em>number</em> days)</code> matches files and directories
+  modified within the given number of days</li></ul>
+
+<ul><li><code>(not <em>rule</em>)</code> matches files and directories that do not match
+  the given rule</li></ul>
+
+<ul><li><code>(and <em>rule</em> <em>rule...</em>)</code> matches files and directories that match
+  all the given rules</li></ul>
+
+<ul><li><code>(or <em>rule</em> <em>rule...</em>)</code> matches files and directories that match
+  any of the given rules</li></ul>
+
+<p>Also, you can override a previous exclusion with an explicit include
+in a lower-level directory:
+
+<blockquote>(* (glob "*~") include)</blockquote>
+
+<p>You can bind rules to specific directories, rather than to "this
+directory and all beneath it", by specifying an absolute or relative
+path instead of the `*`:
+
+<blockquote>("/etc" (name "passwd") exclude)</blockquote>
+
+<p>If you use a relative path, it's taken relative to the directory of
+the <code>.ugarit</code> file.
+
+<p>You can also put some rules in your <code>.conf</code> file, although relative
+paths are illegal there, by adding lines of this form to the file:
+
+<blockquote>(rule * (glob "*~") exclude)</blockquote>
+
+<h1>Questions and Answers</h1>
+
+<h2>What happens if a snapshot is interrupted?</h2>
+
+<p>Nothing! Whatever blocks have been uploaded will be uploaded, but the
+snapshot is only added to the tag once the entire filesystem has been
+snapshotted. So just start the snapshot again. Any files that have
+already be uploaded will then not need to be uploaded again, so the
+second snapshot should proceed quickly to the point where it failed
+before, and continue from there.
+
+<p>Unless the vault ends up with a partially-uploaded corrupted block
+due to being interrupted during upload, you'll be fine. The filesystem
+backend has been written to avoid this by writing the block to a file
+with the wrong name, then renaming it to the correct name when it's
+entirely uploaded.
+
+<p>Actually, there is *one* caveat: blocks that were uploaded, but never
+make it into a finished snapshot, will be marked as "referenced" but
+there's no snapshot to delete to un-reference them, so they'll never
+be removed when you delete snapshots. (Not that snapshot deletion is
+implemented yet, mind). If this becomes a problem for people, we could
+write a "garbage collect" tool that regenerates the reference counts
+in a vault, leading to unused blocks (with a zero refcount) being
+unlinked.
+
+<h2>Should I share a single large vault between all my filesystems?</h2>
+
+<p>I think so. Using a single large vault means that blocks shared
+between servers - eg, software installed from packages and that sort
+of thing - will only ever need to be uploaded once, saving storage
+space and upload bandwidth. However, do not share a vault between
+servers that do not mutually trust each other, as they can all update
+the same tags, so can meddle with each other's snapshots - and read
+each other's snapshots.
+
+<h3>CAVEAT</h3>
+
+<p>It's not currently safe to have multiple concurrent snapshots to the
+same split log backend; this will soon be fixed, however.
+
+<h1>Security model</h1>
+
+<p>I have designed and implemented Ugarit to be able to handle cases
+where the actual vault storage is not entirely trusted.
+
+<p>However, security involves tradeoffs, and Ugarit is configurable in
+ways that affect its resistance to different kinds of attacks. Here I
+will list different kinds of attack and explain how Ugarit can deal
+with them, and how you need to configure it to gain that
+protection.
+
+<h2>Vault snoopers</h2>
+
+<p>This might be somebody who can intercept Ugarit's communication with
+the vault at any point, or who can read the vault itself at their
+leisure.
+
+<p>Ugarit's splitlog backend creates files with "rw-------" permissions
+out of the box to try and prevent this. This is a pain for people who
+want to share vaults between UIDs, but we can add a configuration
+option to override this if that becomes a problem.
+
+<h3>Reading your data</h3>
+
+<p>If you enable encryption, then all the blocks sent to the vault are
+encrypted using a secret key stored in your Ugarit configuration
+file. As long as that configuration file is kept safe, and the AES
+algorithm is secure, then attackers who can snoop the vault cannot
+decode your data blocks. Enabling compression will also help, as the
+blocks are compressed before encrypting, which is thought to make
+cryptographic analysis harder.
+
+<p>Recommendations: Use compression and encryption when there is a risk
+of vault snooping. Keep your Ugarit configuration file safe using
+UNIX file permissions (make it readable only by root), and maybe store
+it on a removable device that's only plugged in when
+required. Alternatively, use the "prompt" passphrase option, and be
+prompted for a passphrase every time you run Ugarit, so it isn't
+stored on disk anywhere.
+
+<h3>Looking for known hashes</h3>
+
+<p>A block is identified by the hash of its content (before compression
+and encryption). If an attacker was trying to find people who own a
+particular file (perhaps a piece of subversive literature), they could
+search Ugarit vaults for its hash.
+
+<p>However, Ugarit has the option to "key" the hash with a "salt" stored
+in the Ugarit configuration file. This means that the hashes used are
+actually a hash of the block's contents *and* the salt you supply. If
+you do this with a random salt that you keep secret, then attackers
+can't check your vault for known content just by comparing the hashes.
+
+<p>Recommendations: Provide a secret string to your hash function in your
+Ugarit configuration file. Keep the Ugarit configuration file safe, as
+per the advice in the previous point.
+
+<h2>Vault modifiers</h2>
+
+<p>These folks can modify Ugarit's writes into the vault, its reads
+back from the vault, or can modify the vault itself at their leisure.
+
+<p>Modifying an encrypted block without knowing the encryption key can at
+worst be a denial of service, corrupting the block in an unknown
+way. An attacker who knows the encryption key could replace a block
+with valid-seeming but incorrect content. In the worst case, this
+could exploit a bug in the decompression engine, causing a crash or
+even an exploit of the Ugarit process itself (thereby gaining the
+powers of a process inspector, as documented below). We can but hope
+that the decompression engine is robust. Exploits of the decryption
+engine, or other parts of Ugarit, are less likely due to the nature of
+the operations performed upon them.
+
+<p>However, if a block is modified, then when Ugarit reads it back, the
+hash will no longer match the hash Ugarit requested, which will be
+detected and an error reported. The hash is checked after
+decryption and decompression, so this check does not protect us
+against exploits of the decompression engine.
+
+<p>This protection is only afforded when the hash Ugarit asks for is not
+tampered with. Most hashes are obtained from within other blocks,
+which are therefore safe unless that block has been tampered with; the
+nature of the hash tree conveys the trust in the hashes up to the
+root. The root hashes are stored in the vault as "tags", which an
+vault modifier could alter at will. Therefore, the tags cannot be
+trusted if somebody might modify the vault. This is why Ugarit
+prints out the snapshot hash and the root directory hash after
+performing a snapshot, so you can record them securely outside of the
+vault.
+
+<p>The most likely threat posed by vault modifiers is that they could
+simply corrupt or delete all of your vault, without needing to know
+any encryption keys.
+
+<p>Recommendations: Secure your vaults against modifiers, by whatever
+means possible. If vault modifiers are still a potential threat,
+write down a log of your root directory hashes from each snapshot, and keep
+it safe. When extracting your backups, use the <code>ls -ll</code> command in the
+interface to check the "contents" hash of your snapshots, and check
+they match the root directory hash you expect.
+
+<h2>Process inspectors</h2>
+
+<p>These folks can attach debuggers or similar tools to running
+processes, such as Ugarit itself.
+
+<p>Ugarit backend processes only see encrypted data, so people who can
+attach to that process gain the powers of vault snoopers and
+modifiers, and the same conditions apply.
+
+<p>People who can attach to the Ugarit process itself, however, will see
+the original unencrypted content of your filesystem, and will have
+full access to the encryption keys and hashing keys stored in your
+Ugarit configuration. When Ugarit is running with sufficient
+permissions to restore backups, they will be able to intercept and
+modify the data as it comes out, and probably gain total write access
+to your entire filesystem in the process.
+
+<p>Recommendations: Ensure that Ugarit does not run under the same user
+ID as untrusted software. In many cases it will need to run as root in
+order to gain unfettered access to read the filesystems it is backing
+up, or to restore the ownership of files. However, when all the files
+it backs up are world-readable, it could run as an untrusted user for
+backups, and where file ownership is trivially reconstructible, it can
+do restores as a limited user, too.
+
+<h2>Attackers in the source filesystem</h2>
+
+<p>These folks create files that Ugarit will back up one day. By having
+write access to your filesystem, they already have some level of
+power, and standard Unix security practices such as storage quotas
+should be used to control them. They may be people with logins on your
+box, or more subtly, people who can cause servers to writes files;
+somebody who sends an email to your mailserver will probably cause
+that message to be written to queue files, as will people who can
+upload files via any means.
+
+<p>Such attackers might use up your available storage by creating large
+files. This creates a problem in the actual filesystem, but that
+problem can be fixed by deleting the files. If those files get
+stored into Ugarit, then they are a part of that snapshot. If you
+are using a backend that supports deletion, then (when I implement
+snapshot deletion in the user interface) you could delete that entire
+snapshot to recover the wasted space, but that is a rather serious
+operation.
+
+<p>More insidiously, such attackers might attempt to abuse a hash
+collision in order to fool the vault. If they have a way of creating
+a file that, for instance, has the same hash as your shadow password
+file, then Ugarit will think that it already has that file when it
+attempts to snapshot it, and store a reference to the existing
+file. If that snapshot is restored, then they will receive a copy of
+your shadow password file. Similarly, if they can predict a future
+hash of your shadow password file, and create a shadow password file
+of their own (perhaps one giving them a root account with a known
+password) with that hash, they can then wait for the real shadow
+password file to have that hash. If the system is later restored from
+that snapshot, then their chosen content will appear in the shadow
+password file. However, doing this requires a very fundamental break
+of the hash function being used.
+
+<p>Recommendations: Think carefully about who has write access to your
+filesystems, directly or indirectly via a network service that stores
+received data to disk. Enforce quotas where appropriate, and consider
+not backing up "queue directories" where untrusted content might
+appear; migrate incoming content that passes acceptance tests to an
+area that is backed up. If necessary, the queue might be backed up to
+a non-snapshotting system, such as rsyncing to another server, so that
+any excessive files that appear in there are removed from the backup
+in due course, while still affording protection.
+
+<h1>Acknowledgements</h1>
+
+<p>The Ugarit implementation contained herein is the work of Alaric
+Snell-Pym and Christian Kellermann, with advice, ideas, encouragement
+and guidance from many.
+
+<p>The original idea came from Venti, a content-addressed storage system
+from Plan 9. Venti is usable directly by user applications, and is
+also integrated with the Fossil filesystem to support snapshotting the
+status of a Fossil filesystem. Fossil allows references to either be
+to a block number on the Fossil partition or to a Venti key; so when a
+filesystem has been snapshotted, all it now contains is a "root
+directory" pointer into the Venti archive, and any files modified
+therafter are copied-on-write into Fossil where they may be modified
+until the next snapshot.
+
+<p>We're nowhere near that exciting yet, but using FUSE, we might be able
+to do something similar, which might be fun. However, Venti inspired
+me when I read about it years ago; it showed me how elegant
+content-addressed storage is. Finding out that the Git version control
+system used the same basic tricks really just confirmed this for me.
+
+<p>Also, I'd like to tip my hat to Duplicity. With the changing economics
+of storage presented by services like Amazon S3 and rsync.net, I
+looked to Duplicity as it provided both SFTP and S3 backends. However,
+it worked in terms of full and incremental backups, a model that I
+think made sense for magnetic tapes, but loses out to
+content-addressed snapshots when you have random-access
+media. Duplicity inspired me by its adoption of multiple backends, the
+very backends I want to use, but I still hungered for a
+content-addressed snapshot store.
+
+<p>I'd also like to tip my hat to Box Backup. I've only used it a little,
+because it requires a special server to manage the storage (and I want
+to get my backups *off* of my servers), but it also inspires me with
+directions I'd like to take Ugarit. It's much more aware of real-time
+access to random-access storage than Duplicity, and has a very
+interesting continuous background incremental backup mode, moving away
+from the tape-based paradigm of backups as something you do on a
+special day of the week, like some kind of religious observance. I
+hope the author Ben, who is a good friend of mine, won't mind me
+plundering his source code for details on how to request real-time
+notification of changes from the filesystem, and how to read and write
+extended attributes!
+
+<p>Moving on from the world of backup, I'd like to thank the Chicken Team
+for producing Chicken Scheme. Felix and the community at #chicken on
+Freenode have particularly inspired me with their can-do attitudes to
+combining programming-language elegance and pragmatic engineering -
+two things many would think un-unitable enemies. Of course, they
+didn't do it all themselves - R5RS Scheme and the SRFIs provided a
+solid foundation to build on, and there's a cast of many more in the
+Chicken community, working on other bits of Chicken or just egging
+everyone on. And I can't not thank Henry Baker for writing the seminal
+paper on the technique Chicken uses to implement full tail-calling
+Scheme with cheap continuations on top of C; Henry already had my
+admiration for his work on combining elegance and pragmatism in linear
+logic. Why doesn't he return my calls? I even sent flowers.
+
+<p>A special thanks should go to Christian Kellermann for porting Ugarit
+to use Chicken 4 modules, too, which was otherwise a big bottleneck to
+development, as I was stuck on Chicken 3 for some time! And to Andy
+Bennett for many insightful conversations about future directions.
+
+<p>Thanks to the early adopters who brought me useful feedback, too!
+
+<p>And I'd like to thank my wife for putting up with me spending several
+evenings and weekends and holiday days working on this thing...
+
+<h1>Version history</h1>
+
+<ul><li>1.0.9:  More humane display of sizes in explore's directory
+     listings, using low-level I/O to reduce CPU usage. Myriad small
+     bug fixes and some internal structural improvements.</li></ul>
+
+<ul><li>1.0.8: Bug fixes to work with the latest chicken master, and
+     increased unit test coverage to test stuff that wasn't working
+     due to chicken bugs. Looking good!</li></ul>
+
+<ul><li>1.0.7: Fixed bug with directory rules (errors arose when files
+     were skipped). I need to improve the test suite coverage of
+     high-level components to stop this happening!</li></ul>
+
+<ul><li>1.0.6: Fixed missing features from v1.0.5 due to a fluffed merge
+     (whoops), added tracking of directory sizes (files+bytes) in the
+     vault on snapshot and the use of this information to display
+     overall percentage completion when extracting. Directory sizes
+     can be seen in the explore interface when doing "ls -l" or "ls -ll".</li></ul>
+
+<ul><li>1.0.5: Changed the VFS layout slightly, making the existence of
+     snapshot objects explicit (when you go into a tag, then go into a
+     snapshot, you now need to go into "contents" to see the actual
+     file tree; the snapshot object itself now exists as a node in the
+     tree). Added traverse-vault-* functions to the core API, and tests
+     for same, and used traverse-vault-node to drive the cd and get
+     functions in the interactive explore mode (speeding them up in the
+     process!). Added "extract" command. Added a progress reporting
+     callback facility for snapshots and extractions, and used it to
+     provide progress reporting in the front-end, every 60 seconds or
+     so by default, not at all with -q, and every time something
+     happens with -v. Added tab completion in explore mode.</li></ul>
+
+<ul><li>1.0.4: Resurrected support for compression and encryption and SHA2
+  hashes, which had been broken by the failure of the
+  <code>autoload</code> egg to continue to work as it used to. Tidying
+  up error and ^C handling somewhat.</li></ul>
+
+<ul><li>1.0.3: Installed sqlite busy handlers to retry when the database is
+   locked due to concurrent access (affects backend-fs, backend-cache,
+   and the file cache), and gained an EXCLUSIVE lock when locking a
+   tag in backend-fs; I'm not clear if it's necessary, but it can't
+   hurt.</li></ul>
+
+<blockquote>BUGFIX: Logging of messages from storage backends wasn't
+   happening correctly in the Ugarit core, leading to errors when the
+   cache backend (which logs an info message at close time) was closed
+   and the log message had nowhere to go.</blockquote>
+
+<ul><li>1.0.2: Made the file cache also commit periodically, rather than on
+  every write, in order to improve performance. Counting blocks and
+  bytes uploaded / reused, and file cache bytes as well as hits;
+  reporting same in snapshot UI and logging same to snapshot
+  metadata. Switched to the <code>posix-extras</code> egg and ditched our own
+  <code>posixextras.scm</code> wrappers. Used the <code>parley</code> egg in the <code>ugarit
+  explore</code> CLI for line editing. Added logging infrastructure,
+  recording of snapshot logs in the snapshot. Added recovery from
+  extraction errors. Listed lock state of tags in explore
+  mode. Backend protocol v2 introduced (retaining v1 for
+  compatability) allowing for an error on backend startup, and logging
+  nonfatal errors, warnings, and info on startup and all protocol
+  calls. Added <code>ugarit-archive-admin</code> command line interface to
+  backend-specific administrative interfaces. Configuration of the
+  splitlog backend (write protection, adjusting block size and logfile
+  size limit and commit interval) is now possible via the admin
+  interface. The admin interface also permits rebuilding the metadata
+  index of a splitlog vault with the <code>reindex!</code> admin command.</li></ul>
+
+<blockquote>BUGFIX: Made file cache check the file hashes it finds in the
+    cache actually exist in the vault, to protect against the case
+    where a crash of some kind has caused unflushed changes to be
+    lost; the file cache may well have committed changes that the
+    backend hasn't, leading to references to nonexistant blocks. Note
+    that we assume that vaults are sequentially safe, eg if the
+    final indirect block of a large file made it, all the partial
+    blocks must have made it too.</blockquote>
+
+<blockquote>BUGFIX: Added an explicit <code>flush!</code> command to the backend
+    protocol, and put explicit flushes at critical points in higher
+    layers (<code>backend-cache</code>, the vault abstraction in the Ugarit
+    core, and when tagging a snapshot) so that we ensure the blocks we
+    point at are flushed before committing references to them in the
+    <code>backend-cache</code> or file caches, or into tags, to ensure crash
+    safety.</blockquote>
+
+<blockquote>BUGFIX: Made the splitlog backend never exceed the file size limit
+    (except when passed blocks that, plus a header, are larger than
+    it), rather than letting a partial block hang over the 'end'.</blockquote>
+
+<blockquote>BUGFIX: Fixed tag locking, which was broken all over the
+    place. Concurrent snapshots to the same tag should now block for
+    one another, although why you'd want to *do* that is questionable.</blockquote>
+
+<blockquote>BUGFIX: Fixed generation of non-keyed hashes, which was
+    incorrectly appending the type to the hash without an outer
+    hash. This breaks backwards compatability, but nobody was using
+    the old algorithm, right? I'll introduce it as an option if
+    required.</blockquote>
+
+<ul><li>1.0.1: Consistency check on read blocks by default. Removed warning
+  about deletions from backend-cache; we need a new mechanism to
+  report warnings from backends to the user. Made backend-cache and
+  backend-fs/splitlog commit periodically rather than after every
+  insert, which should speed up snapshotting a lot, and reused the
+  prepared statements rather than re-preparing them all the
+  time.</li></ul>
+
+<blockquote>BUGFIX: splitlog backend now creates log files with
+  "rw-------" rather than "rwx------" permissions; and all sqlite
+  databases (splitlog metadata, cache file, and file-cache file) are
+  created with "rw-------" rather then "rw-r--r--".</blockquote>
+
+<ul><li>1.0: Migrated from gdbm to sqlite for metadata storage, removing the
+  GPL taint. Unit test suite. backend-cache made into a separate
+  backend binary. Removed backend-log.</li></ul>
+
+<blockquote>BUGFIX: file caching uses mtime *and*
+  size now, rather than just mtime. Error handling so we skip objects
+  that we cannot do something with, and proceed to try the rest of the
+  operation.</blockquote>
+
+<ul><li>0.8: decoupling backends from the core and into separate binaries,
+  accessed via standard input and output, so they can be run over SSH
+  tunnels and other such magic.</li></ul>
+
+<ul><li>0.7: file cache support, sorting of directories so they're archived
+  in canonical order, autoloading of hash/encryption/compression
+  modules so they're not required dependencies any more.</li></ul>
+
+<ul><li>0.6: .ugarit support.</li></ul>
+
+<ul><li>0.5: Keyed hashing so attackers can't tell what blocks you have,
+  markers in logs so the index can be reconstructed, sha2 support, and
+  passphrase support.</li></ul>
+
+<ul><li>0.4: AES encryption.</li></ul>
+
+<ul><li>0.3: Added splitlog backend, and fixed a .meta file typo.</li></ul>
+
+<ul><li>0.2: Initial public release.</li></ul>
+
+<ul><li>0.1: Internal development release.
+</li></ul>
+</div>
+<div class="footer">
+Please support my open source work with a Bitcoin donation: <a href="bitcoin:1KittenrqNfd78FnM5k3R5qxdEqV4iQ8G7">1KittenrqNfd78FnM5k3R5qxdEqV4iQ8G7</a>. Thanks!<br />
+Fossil version 1.28 [1762a72f0e] 2014-04-10 08:36:18
+</div>
+</body></html>
+

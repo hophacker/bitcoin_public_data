@@ -1,0 +1,332 @@
+http://oli.me.uk/2012/03/03/pure-css-toggle-accordion/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 21:32:23 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=db6e8be9e404213c1a31d987e6d5931211406064743332; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.oli.me.uk; HttpOnly
+Last-Modified: Sat, 26 Apr 2014 13:24:40 GMT
+Cache-Control: max-age=86400
+Expires: Wed, 23 Jul 2014 21:32:31 GMT
+Vary: Accept-Encoding
+CF-RAY: 14e2c025dcbf0f03-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Pure CSS toggle accordion - Oliver.prototype.blog</title>
+<meta name="author" content="Oliver Caldwell">
+<meta name="description" content="CSS is brilliant. When written properly you can do so much with it. I believe that you should always try to build crucial UI elements with CSS rather &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://oli.me.uk/2012/03/03/pure-css-toggle-accordion">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Oliver.prototype.blog" type="application/atom+xml">
+ 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29131116-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<h1><a href="/">Oliver.prototype.blog</a></h1>
+<h2>A place to share my knowledge and escapades in the world of web development.</h2>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:oli.me.uk"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archives/">Archives</a></li>
+<li><a href="/about-me/">About me</a></li>
+<li><a href="https://github.com/Wolfy87/oli.me.uk">Source</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Pure CSS toggle accordion</h1>
+<p class="meta">
+<time datetime="2012-03-03T11:45:00+00:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2012</time>
+| <a href="#disqus_thread">Comments</a>
+</p>
+</header>
+<div class="entry-content"><p>CSS is brilliant. When written properly you can do so much with it. I believe that you should always try to build crucial UI elements with CSS rather than JavaScript. It always feels slightly more responsive, and now with transitions you can make things look amazing with just one line. So I thought I would try my hand at creating an accordion. We have all made one at some point, usually utilizing a massive JavaScript library such as MooTools or jQuery alongside a bloated accordion script. So my version uses <em>no JavaScript whatsoever</em>.</p>
+<p>I admit, because of using newer CSS, namely the <code>:checked</code> pseudo selector, you alienate your older IE audience. But that can be fixed by including <a href="http://selectivizr.com/">Selectivizr</a>. So you have your increased performance and ease of use in newer browsers with a working version in IE. The first thing you will need is the HTML.</p>
+ 
+<h2>Markup</h2>
+<p>Now the HTML for this particular accordion is a little more complicated than some. That is because we are utilizing radio buttons to perform the toggle on click action. But do not fear, it only means one extra element that is actually set to <code>display: none</code>.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&#39;accordion&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&#39;cp-1&#39;</span><span class="nt">&gt;</span>Content pane 1<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;radio&#39;</span> <span class="na">name=</span><span class="s">&#39;a&#39;</span> <span class="na">id=</span><span class="s">&#39;cp-1&#39;</span> <span class="na">checked=</span><span class="s">&#39;checked&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;content&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;p&gt;</span>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&#39;cp-2&#39;</span><span class="nt">&gt;</span>Content pane 2<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;radio&#39;</span> <span class="na">name=</span><span class="s">&#39;a&#39;</span> <span class="na">id=</span><span class="s">&#39;cp-2&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;content&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;p&gt;</span>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>I have only added two content panes here, but you can add as many as you require. As you can see, we have a simple unordered list with a class applied to it (<code>&lt;ul class='accordion'&gt;</code>). Each list item contains a label, input and div. The label is where you store your title and the div is where you put your content. You can style all of this however you want. Just adapt my CSS that I will show you in a second.</p>
+<p>When adding more items you must remember to update the <code>for</code> attribute on the label and the <code>id</code> of the radio input. Otherwise you will click one and six will show. You can also specify a content pane to be open by default by adding <code>checked='checked'</code> to its radio button, just like I have done in the HTML above. Other than that you can just copy and paste to your hearts content.</p>
+<h2>CSS</h2>
+<p>Now here is the code that makes the accordion work. I have added comments to help you out, but you may still find it a bit confusing. If you do just utilize it in your project via copy and paste first, then keep tweaking it until you know what does what. I believe that it is one of the best ways to understand some confusing code. Style it up, add some transitions. Maybe even adapt it to work horizontally. Just don&rsquo;t say &ldquo;bah! that looks too hard, I give up&rdquo;. Just experiment.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/* Clean up the lists styles */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">list-style</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">/* Hide the radio buttons */</span>
+</span><span class='line'><span class="c">/* These are what allow us to toggle content panes */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">label</span> <span class="o">+</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="s1">&#39;radio&#39;</span><span class="o">]</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">/* Give each content pane some styles */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#CCCCCC</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border-bottom</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#DDDDDD</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">/* Make the main tab look more clickable */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">label</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#666666</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#FFFFFF</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">block</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">label</span><span class="nd">:hover</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">cursor</span><span class="o">:</span> <span class="k">pointer</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">/* Set up the div that will show and hide */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">div</span><span class="nc">.content</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">/* Show the content boxes when the radio buttons are checked */</span>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.accordion</span> <span class="nt">label</span> <span class="o">+</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="s1">&#39;radio&#39;</span><span class="o">]</span><span class="nd">:checked</span> <span class="o">+</span> <span class="nt">div</span><span class="nc">.content</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>So this CSS first adds some basic styles, so we can actually distinguish between content panes, and then adds the radio button based functionality. This relies heavily on the adjacent sibling selector (<code>+</code>). So in the last selector we are saying: &ldquo;any div with a class of &lsquo;content&rsquo; that is under a checked radio button that is under a label should be displayed&rdquo;. See, that&rsquo;s not so bad is it, and that is the most complicated line!</p>
+<p>The main question is, does it work? Well yes, yes it does. And here is an example. <a href="http://jsfiddle.net/Wolfy87/Z4Mr3/">Here is a fiddle too</a>, just in case you want to play about with the code as well as the accordion itself.</p>
+<iframe height='370' class='example' src='/examples/css-accordion/complete.html'>.</iframe>
+</div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">Posted by <span class="fn">Oliver Caldwell</span></span>
+<time datetime="2012-03-03T11:45:00+00:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2012</time>
+<span class="categories">
+<a class='category' href='/categories/accordion/'>accordion</a>, <a class='category' href='/categories/css/'>css</a>, <a class='category' href='/categories/form/'>form</a>, <a class='category' href='/categories/html/'>html</a>
+</span>
+</p>
+<div class="sharing">
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="http://oli.me.uk/2012/03/03/pure-css-toggle-accordion/" data-via="OliverCaldwell" data-counturl="http://oli.me.uk/2012/03/03/pure-css-toggle-accordion/">Tweet</a>
+</div>
+<p class="meta">
+<a class="basic-alignment left" href="/2012/02/27/sliced-text-effect/" title="Previous Post: Sliced text effect">&laquo; Sliced text effect</a>
+<a class="basic-alignment right" href="/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/" title="Next Post: Thoughts on JavaScript libraries and frameworks">Thoughts on JavaScript libraries and frameworks &raquo;</a>
+</p>
+</footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Bitcoin</h1>
+<p>Like what I do here? Want even more? Spur me on with a small donation, it will probably go towards a coffee that will fuel my next post or project.</p>
+<script type='text/javascript' src='http://coinwidget.com/widget/coin.js'></script>
+<script type='text/javascript'>
+		CoinWidgetCom.go({
+			wallet_address: '1BE2s3dsELzBHGk3su2U6GfAqSXcA65P34',
+			currency: 'bitcoin',
+			counter: 'hide',
+			alignment: 'bl',
+			qrcode: true,
+			auto_show: false,
+			lbl_button: 'Donate',
+			lbl_address: 'My Bitcoin Address:',
+			lbl_count: 'donations',
+			lbl_amount: 'BTC'
+		});
+	</script>
+</section>
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/2014/04/26/installing-vimdeck-on-arch/">Installing Vimdeck on Arch</a>
+</li>
+<li class="post">
+<a href="/2014/03/18/always-remain-a-beginner/">Always remain a beginner</a>
+</li>
+<li class="post">
+<a href="/2013/12/13/test-private-methods/">Test private methods</a>
+</li>
+<li class="post">
+<a href="/2013/12/05/graph-from-scratch/">Graph from scratch</a>
+</li>
+<li class="post">
+<a href="/2013/09/25/grabbing-elements-from-the-dom/">Grabbing elements from the DOM</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>GitHub Repos</h1>
+<ul id="gh_repos">
+<li class="loading">Status updating...</li>
+</ul>
+<a href="https://github.com/Wolfy87">@Wolfy87</a> on GitHub
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/libs/jXHR.js"></script>
+<script type="text/javascript" src="/javascripts/github.js"></script>
+<script type="text/javascript">
+	github.showRepos({
+		user: 'Wolfy87',
+		count: 5,
+		skip_forks: true,
+		target: '#gh_repos'
+	});
+</script>
+<p>
+Copyright &copy; 2014 - Oliver Caldwell -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'olimeuk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://oli.me.uk/2012/03/03/pure-css-toggle-accordion/';
+        var disqus_url = 'http://oli.me.uk/2012/03/03/pure-css-toggle-accordion/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

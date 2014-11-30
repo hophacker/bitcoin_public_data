@@ -1,0 +1,1740 @@
+http://ccl.clozure.com/irc-logs/lisp/2013-10/lisp-2013.10.08.txt
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 23:54:51 GMT
+Server: Apache/2.2.22 (Ubuntu)
+Last-Modified: Tue, 08 Oct 2013 23:58:48 GMT
+ETag: "341b75-20ff2-4e8438cb57e00"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 36993
+Connection: close
+Content-Type: text/plain
+
+00:00:20 -!- beaumonta [~abeaumont@77.231.225.43] has quit [Read error: Connection reset by peer]
+00:01:18 beaumonta [~abeaumont@77.231.255.35] has joined #lisp
+00:01:59 ehaliewi` [~user@50-0-51-11.dsl.static.sonic.net] has joined #lisp
+00:02:35 -!- ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has quit [Read error: Connection reset by peer]
+00:02:48 -!- danielszmulewi-1 [~danielszm@185.3.146.210] has quit [Quit: danielszmulewi-1]
+00:03:44 rtoym [~chatzilla@24.130.4.105] has joined #lisp
+00:03:45 -!- shridhar [Shridhar@nat/redhat/x-dcpffktyubcodcgh] has quit [Quit: shridhar]
+00:04:42 -!- harish_ [~harish@175.156.117.104] has quit [Ping timeout: 256 seconds]
+00:05:01 -!- stassats [~stassats@wikipedia/stassats] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+00:05:42 -!- lduros [~user@fsf/member/lduros] has quit [Remote host closed the connection]
+00:13:50 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 240 seconds]
+00:16:18 -!- joneshf-laptop [~joneshf@086.112-30-64.ftth.swbr.surewest.net] has quit [Ping timeout: 264 seconds]
+00:22:00 -!- mikeit [~mikeit@net-37-116-147-184.cust.dsl.vodafone.it] has quit [Quit: Leaving]
+00:28:41 zRecursive [~czsq888@171.217.1.197] has joined #lisp
+00:28:55 -!- sellout-1 [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has quit [Ping timeout: 246 seconds]
+00:30:24 joneshf-laptop [~joneshf@086.112-30-64.ftth.swbr.surewest.net] has joined #lisp
+00:32:12 sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has joined #lisp
+00:32:13 phf [~phf@c-71-224-252-90.hsd1.nj.comcast.net] has joined #lisp
+00:33:28 -!- cnl [~pony@95.83.139.185] has quit [Ping timeout: 264 seconds]
+00:34:25 cnl [~pony@95.83.189.134] has joined #lisp
+00:35:39 -!- phf [~phf@c-71-224-252-90.hsd1.nj.comcast.net] has quit [Remote host closed the connection]
+00:36:42 ericmathison [~ericmathi@172-15-249-133.lightspeed.irvnca.sbcglobal.net] has joined #lisp
+00:37:29 <pjb> Oops!  It looks like McCLIM is not available on MacOSX in Lispworks. :-(
+00:38:52 <jaimef> lispworks worth it? :P
+00:39:16 <Xach> It's pretty good.
+00:39:39 <pjb> Well, I hoped to use it as a solution to a McCLIM problem on MacOSX, but it seems it's only available on X11 and MS-Windows.
+00:40:09 <pjb> Everytime I try to do something with Lispworks, that fails for some reason or another
+00:41:46 <pjb> And CLIM in Allegro is thru X11 too, there's no native MacOSX CLIM it seems :-(
+00:41:50 ludocode [~quassel@108.175.230.81] has joined #lisp
+00:44:08 <p_l> pjb: there used to be a backend for mcclim, no idea the state it is in, though
+00:44:13 <p_l> which went through cocoa
+00:44:22 -!- billstclair [~billstcla@unaffiliated/billstclair] has quit [Ping timeout: 256 seconds]
+00:44:27 -!- ludocode_ [~quassel@75-119-235-129.dsl.teksavvy.com] has quit [Ping timeout: 268 seconds]
+00:44:47 <pjb> I've got:  CLX/  Graphic-Forms/  Null/  OpenGL/  PostScript/  beagle/  gtkairo/  in mcclim/Backends
+00:45:02 <p_l> I think it was beagle, but I can't be sure
+00:45:51 <pjb> Ah right.  It worked on openmcl.  I'll have a look at it with ccl.  Thanks.
+00:45:52 rainbyte [~rainbyte@190.191.165.139] has joined #lisp
+00:46:55 -!- sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has quit [Ping timeout: 268 seconds]
+00:46:55 -!- seangrov` [~user@208.80.69.42] has quit [Ping timeout: 268 seconds]
+00:49:18 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+00:55:04 -!- rainbyte [~rainbyte@190.191.165.139] has quit [Quit: Leaving]
+00:55:21 -!- desophos [~desophos@n138h11.dhcp.oxy.edu] has quit [Quit: Leaving]
+00:55:22 rainbyte [~rainbyte@190.191.165.139] has joined #lisp
+00:55:37 desophos [~desophos@n138h11.dhcp.oxy.edu] has joined #lisp
+00:55:49 -!- rainbyte [~rainbyte@190.191.165.139] has quit [Read error: Connection reset by peer]
+00:57:40 rainbyte [~rainbyte@190.191.165.139] has joined #lisp
+00:57:42 -!- scripty [~scripty@117.221.125.253] has quit [Ping timeout: 264 seconds]
+00:58:21 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 245 seconds]
+01:02:01 -!- DataLinkDroid [~DataLinkD@110.150.30.181] has quit [Read error: Connection reset by peer]
+01:02:13 DataLinkDroid [~DataLinkD@110.150.30.181] has joined #lisp
+01:03:37 prxq_ [~mommer@x2f6bd50.dyn.telefonica.de] has joined #lisp
+01:04:14 -!- DataLinkDroid [~DataLinkD@110.150.30.181] has quit [Client Quit]
+01:05:28 sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has joined #lisp
+01:06:13 seangrov` [~user@c-69-181-197-122.hsd1.ca.comcast.net] has joined #lisp
+01:06:14 lyanchih [~lyanchih@202.39.219.19] has joined #lisp
+01:07:06 -!- prxq [~mommer@x2f6a944.dyn.telefonica.de] has quit [Ping timeout: 245 seconds]
+01:16:33 p_adams [~p_adams@24-107-140-111.dhcp.stls.mo.charter.com] has joined #lisp
+01:17:33 -!- p_adams is now known as yrdz
+01:19:19 zophy [~sy@host-49-142-220-24.midco.net] has joined #lisp
+01:37:47 -!- namccarty [~namccarty@74-131-94-214.dhcp.insightbb.com] has quit [Quit: Leaving]
+01:43:41 fridim_ [~fridim@bas2-montreal07-2925317643.dsl.bell.ca] has joined #lisp
+01:48:13 tolk [~user@host175.190-138-194.telecom.net.ar] has joined #lisp
+01:56:01 KarlDscc [~localhost@p578FC4FE.dip0.t-ipconnect.de] has joined #lisp
+01:56:25 <Fare> Xach: ping
+01:56:31 <Xach> Was ist los
+01:56:56 <Fare> just want to know if you could test the patch and/or if I should/may/may not commit it upstream?
+01:57:17 <Xach> I do not have time today to test it, sorry.
+01:58:04 <Fare> np
+01:59:44 -!- Karl_dscc [~localhost@p5DD9C0B8.dip0.t-ipconnect.de] has quit [Ping timeout: 256 seconds]
+02:01:31 zacharias_ [~aw@unaffiliated/zacharias] has joined #lisp
+02:01:55 aw [~zacharias@unaffiliated/aw] has joined #lisp
+02:03:20 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+02:04:14 -!- aw|incendiary_ [~zacharias@unaffiliated/aw] has quit [Ping timeout: 240 seconds]
+02:05:02 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Ping timeout: 264 seconds]
+02:08:42 nilsi_ [~nilsi@221.146.90.62] has joined #lisp
+02:09:08 -!- oleo [~oleo@xdsl-78-35-188-101.netcologne.de] has quit [Ping timeout: 240 seconds]
+02:09:14 -!- joshe [~joshe@2001:470:e862::1:1] has quit [Ping timeout: 264 seconds]
+02:09:27 oleo [~oleo@xdsl-78-35-180-182.netcologne.de] has joined #lisp
+02:13:48 Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has joined #lisp
+02:14:00 -!- kpreid [~kpreid@50-196-148-101-static.hfc.comcastbusiness.net] has quit [Quit: Quitting]
+02:14:10 -!- REPLeffect [~REPLeffec@69.54.115.254] has quit [Ping timeout: 245 seconds]
+02:14:19 kpreid [~kpreid@50-196-148-101-static.hfc.comcastbusiness.net] has joined #lisp
+02:15:20 -!- ckoch786 [~cory@107-219-7-73.lightspeed.toldoh.sbcglobal.net] has quit [Read error: Connection reset by peer]
+02:15:54 ianmcorvidae|alt [~ianmcorvi@musicbrainz/user/ianmcorvidae] has joined #lisp
+02:16:03 -!- yrdz [~p_adams@24-107-140-111.dhcp.stls.mo.charter.com] has quit [Quit: WeeChat 0.4.1]
+02:17:30 -!- ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has quit [Ping timeout: 264 seconds]
+02:17:59 -!- KarlDscc [~localhost@p578FC4FE.dip0.t-ipconnect.de] has quit [Remote host closed the connection]
+02:21:06 -!- doomlord_ [~servitor@host109-151-64-15.range109-151.btcentralplus.com] has quit [Ping timeout: 264 seconds]
+02:21:09 -!- lusory [~lusory@42.60.25.228] has quit [Ping timeout: 252 seconds]
+02:21:40 ckoch786 [~cory@107-219-7-73.lightspeed.toldoh.sbcglobal.net] has joined #lisp
+02:25:48 -!- gyutyuglf [gyutyuglf@86.126.58.151] has quit [Ping timeout: 256 seconds]
+02:26:21 -!- motionman [~motionman@unaffiliated/motionman] has quit [Remote host closed the connection]
+02:27:04 -!- s00pcan [~chris@108-208-64-149.lightspeed.livnmi.sbcglobal.net] has quit [Quit: leaving]
+02:28:21 s00pcan [~chris@108-208-64-149.lightspeed.livnmi.sbcglobal.net] has joined #lisp
+02:29:04 ics [~ics@ool-18bf6d86.dyn.optonline.net] has joined #lisp
+02:30:30 -!- ehaliewi` is now known as ehaliewicz
+02:31:38 <loke> I've implemented a small package that does SPNEGO authentication for Hunchentoot. Currently the system is called "hunchentoot-single-signon", but if I include this in QL, it needs a different name, yes?
+02:32:01 <Xach> Why?
+02:32:01 TDog [~chatzilla@65.129.207.43] has joined #lisp
+02:32:28 <loke> I don't know
+02:32:41 <loke> Should I have hunchentoot in the name? Hunchentoot is not my project
+02:32:50 -!- s00pcan [~chris@108-208-64-149.lightspeed.livnmi.sbcglobal.net] has quit [Client Quit]
+02:33:12 <Xach> There are other projects that add stuff to hunchentoot that have hunchentoot in the name
+02:33:14 setekhid [~sete@119.129.119.18] has joined #lisp
+02:33:35 <loke> Currently this project is only used in-house, since some of our internal intranet sites use Hunchentoot, and people expect single-signon to work
+02:33:49 -!- nilsi_ [~nilsi@221.146.90.62] has quit [Remote host closed the connection]
+02:33:53 <Fare> it's OK for extensions to keep the main project name while having different maintainers
+02:34:01 <Fare> e.g. asdf-system-connections or asdf-flv
+02:34:02 <loke> Fare: OK, cool
+02:34:17 <loke> Is Hans the maintainer of hunchentoot?
+02:34:21 <Fare> or quux-hunchentoot, etc.
+02:34:29 <Fare> I believe so
+02:34:46 REPLeffect [~REPLeffec@69.54.115.254] has joined #lisp
+02:34:48 s00pcan [~chris@108-208-64-149.lightspeed.livnmi.sbcglobal.net] has joined #lisp
+02:35:12 -!- rpg [~rpg@198-74-7-110.fttp.usinternet.com] has quit [Quit: rpg]
+02:35:35 <loke> I do have some questions as to what is the best way to provide this thing as an API. Mainly because Hunchentoot doesn't have a standard filter mechanism, nor does it have a user/login system (as per design, I guess). So right now it's just a single function that one has to call to perform the handshake
+02:36:09 -!- zophy [~sy@host-49-142-220-24.midco.net] has quit [Quit: Leaving]
+02:36:52 echo-area [~user@nat/yahoo/x-pyjmdtegrclirgbv] has joined #lisp
+02:43:12 <Fare> Xach: anyway, I pushed something as 3.0.2.12, so you don't have to apply a patch, just pull the latest and try.
+02:44:16 DalekBaldwin [~Adium@50.14.84.76] has joined #lisp
+02:49:21 -!- chenjf [~chenjf@14.209.102.84] has quit [Quit: Leaving.]
+02:49:57 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Remote host closed the connection]
+02:51:23 -!- cmm [~cmm@bzq-109-65-251-48.red.bezeqint.net] has quit [Read error: Connection reset by peer]
+02:52:21 cmm [~cmm@109.65.251.48] has joined #lisp
+02:55:10 drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has joined #lisp
+03:01:13 -!- p_nathan [~Adium@216.57.209.252] has quit [Quit: Leaving.]
+03:01:34 echo-are` [~user@182.92.247.2] has joined #lisp
+03:04:40 -!- echo-area [~user@nat/yahoo/x-pyjmdtegrclirgbv] has quit [Ping timeout: 246 seconds]
+03:07:57 <drmeister> To be a bit pedantic - what is the CL convention for single semi-colon comments - do they come before or after what they are describing.
+03:08:34 <Quadrescence> after, on the same line
+03:08:36 <Bike> clhs 2.4.4.2
+03:08:37 <specbot> Notes about Style for Semicolon: http://www.lispworks.com/reference/HyperSpec/Body/02_ddb.htm
+03:08:39 <Quadrescence> usually at a particular column
+03:08:49 <Bike> the most pedantic section of the spec? quite possibly
+03:11:07 didi [~user@unaffiliated/didi/x-1022147] has joined #lisp
+03:11:43 -!- araujo [~araujo@gentoo/developer/araujo] has quit [Quit: Leaving]
+03:12:25 -!- echo-are` is now known as echo-area
+03:12:59 -!- fourier [~fourier@fsf/member/fourier] has quit [Read error: Connection reset by peer]
+03:13:03 fourier1 [~fourier@c193-150-241-109.bredband.comhem.se] has joined #lisp
+03:14:33 <drmeister> Got it - thanks.
+03:16:50 <drmeister> When I put them on the same line as the code they describe, emacs doesn't indent them at all - does emacs really expect me to indent my own comments - for shame.
+03:17:39 doomlord_ [~servitor@host109-151-64-15.range109-151.btcentralplus.com] has joined #lisp
+03:18:09 <zRecursive> drmeister: choose the codes and `M-x comment-region`
+03:18:29 <Quadrescence> i don't thnk that's what he means
+03:19:02 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+03:19:40 <zRecursive> oh, it is "own comments", sigh
+03:19:51 <drmeister> I mean if I want to line up my semi-colon comments as in: https://gist.github.com/drmeister/31c94000908e46a04a7c   I have to do it myself - is that correct?
+03:21:17 <drmeister> This is my first non-CL compiler code.  My CL compiler is written in low-level Common Lisp without CLOS so I'm using generic functions for the first time.
+03:21:46 <Quadrescence> drmeister, no, press M-;
+03:22:06 TDog_ [~chatzilla@65.129.207.43] has joined #lisp
+03:22:17 -!- TDog [~chatzilla@65.129.207.43] has quit [Ping timeout: 240 seconds]
+03:22:22 -!- TDog_ is now known as TDog
+03:22:30 -!- REPLeffect [~REPLeffec@69.54.115.254] has quit [Ping timeout: 245 seconds]
+03:24:41 <drmeister> I was a bit shocked to hear that Juanjo Garcia-Ripoll wants to hand off ECL development to someone else. I completely understand since he's not using it for his own research.
+03:26:36 <ahungry> in emacs you can always use M-x align-regexp
+03:26:37 -!- cmm [~cmm@109.65.251.48] has quit [Read error: Connection reset by peer]
+03:26:50 <ahungry> then do something like ;
+03:26:52 <ahungry> followed by RET
+03:26:59 <ahungry> to align all highlighted area on the ;
+03:27:15 <zRecursive> drmeister: I feel ECL will be history long ago.
+03:27:19 cmm [~cmm@109.65.251.48] has joined #lisp
+03:28:57 <zRecursive> IIRC, the stumpwm built with ECL even cannot work although ECL declares it is ANSI compatible
+03:29:56 <Bike> for god's sake, how hard is it to understand that clx is not part of ansi
+03:32:09 <zRecursive> However, CLISP/CCL/SBCL can work great using CLX from QuickLisp except ECL.
+03:33:06 -!- zRecursive is now known as zRecursive{away}
+03:33:15 -!- zRecursive{away} [~czsq888@171.217.1.197] has left #lisp
+03:34:26 arquebus [~frath@c-107-3-164-239.hsd1.ca.comcast.net] has joined #lisp
+03:35:33 -!- fridim_ [~fridim@bas2-montreal07-2925317643.dsl.bell.ca] has quit [Ping timeout: 248 seconds]
+03:35:38 <Fare> so ECL goes to the unmaintained compiler list? :-/
+03:36:07 <Zhivago> Sure, the maintained one is ECLS, isn't it? :)
+03:36:28 <drmeister> What's ECLS?
+03:37:25 <Zhivago> What Juan renamed ECL to.
+03:37:32 <drmeister> Oh.
+03:38:20 beach [~user@ABordeaux-651-1-170-195.w90-5.abo.wanadoo.fr] has joined #lisp
+03:38:25 <beach> Good morning everyone.
+03:38:57 <Fare> who's maintaining McCLIM, these days?
+03:39:10 <beach> I don't think anybody is.
+03:39:17 <Fare> where is the "official" repo? Still old CVS?
+03:39:30 <beach> Yes, I believe so.
+03:39:41 <beach> It would be a good start to move it to GIT.
+03:39:44 <zxq9> ooc, is SBCL still actively maintained?
+03:42:45 <Bike> yes.
+03:43:21 -!- bananagram [~bot@c-76-30-158-226.hsd1.tx.comcast.net] has quit [Read error: Operation timed out]
+03:43:53 <sykopomp> ECL got renamed?... I saw something in twitter about ECL needing a new maintainer?
+03:44:03 REPLeffect [~REPLeffec@69.54.115.254] has joined #lisp
+03:44:13 <Quadrescence> ECL does need a new maintainer
+03:44:30 eaumontab [~abeaumont@77.231.255.178] has joined #lisp
+03:46:13 <beach> What are some advantages of ECL over (say) GCL or CLISP?
+03:46:40 -!- beaumonta [~abeaumont@77.231.255.35] has quit [Ping timeout: 248 seconds]
+03:47:39 <Zhivago> Well, ECL is more or less the dehorriblized version of GCL.
+03:47:50 <Zhivago> CLISP is in another basket.
+03:48:02 <Zhivago> ECL's selling point is very good C integration in both directions.
+03:48:16 <beach> I see.
+03:48:19 aumontabe [~abeaumont@77.231.255.212] has joined #lisp
+03:48:38 -!- eaumontab [~abeaumont@77.231.255.178] has quit [Ping timeout: 240 seconds]
+03:51:07 <drmeister> What's horrible about GCL?
+03:51:36 youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has joined #lisp
+03:51:39 <Zhivago> Everything, from memory.
+03:51:53 <arquebus> can ECL run on bare metal?
+03:51:56 <drmeister> Not to start a flame war or anything - I'm just curious about technical decisions made that led to problems.
+03:52:06 <Zhivago> arquebus: No more than C can.
+03:52:10 *drmeister* knows a thing or two about those ....
+03:52:40 <Bike> i thought the reason GCL is like it is because it was for propping up maxima and nothing else, but i've never looked at it
+03:53:09 attila_lendvai [~attila_le@95.56.74.66] has joined #lisp
+03:53:11 -!- attila_lendvai [~attila_le@95.56.74.66] has quit [Changing host]
+03:53:11 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+03:53:49 <Zhivago> GCL is a version of KCL that was mostly developed to support maxima.
+03:54:02 <drmeister> Bike: That's an interesting statement - what does maxima need that GCL provides?
+03:54:25 <Bike> i mean, the development of GCL and maxima got mixed up. apparenty to the detriment of both.
+03:55:01 <drmeister> I was hoping to run maxima at some point and ditch mathematica althogether.
+03:55:25 <Fare> what's NOT horrible about GCL?
+03:55:49 <sykopomp> KCL was developed mostly in isolation, too, wasn't it?
+03:56:04 <sykopomp> is that the one where randomly some japanese folks were like "hey look we have lisp"
+03:56:18 <Fare> sykopomp, yup
+03:56:22 <drmeister> ECL is derived from KCL isn't it?
+03:56:36 <Fare> distantly, yes
+03:57:22 <Fare> KCL -> { AKCL -> GCL , ECLS -> ECL }
+03:57:34 <Fare> ECL -> MKCL
+03:58:48 <Zhivago> ECLS came from ECL, didn't it?
+04:01:00 <beach> Sorry for my ignorance, but if MKCL is an improvement over ECL (as the project page claims) is it really worth the effort to maintain ECL as well?
+04:01:26 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 240 seconds]
+04:01:29 p_nathan [~Adium@216.57.209.252] has joined #lisp
+04:03:20 -!- axion [~axion@cpe-67-242-83-63.nycap.res.rr.com] has quit [Quit: WeeChat 0.4.1]
+04:03:40 axion [~axion@cpe-67-242-83-63.nycap.res.rr.com] has joined #lisp
+04:04:26 -!- tolk [~user@host175.190-138-194.telecom.net.ar] has quit [Ping timeout: 264 seconds]
+04:05:04 <Fare> ECL is just ECLS renamed
+04:05:17 <Fare> beach: "if"
+04:05:34 <Fare> I trust juanjo more than JCB
+04:05:39 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Ping timeout: 252 seconds]
+04:05:51 <beach> Fare: Things like that are hard to tell from the project pages.
+04:05:52 <Fare> JCB has some good ideas, but he sucks as a developer of an open source project
+04:06:04 <beach> I see.
+04:06:26 <Fare> what you CAN tell is that JCB has not been using source control, and not been releasing often, either, and not been tracking bugfixes in ECL since the fork.
+04:06:56 <Fare> and yes, you can tell that from the project page
+04:07:08 <beach> Fare: Thanks.
+04:07:16 <beach> I guess I didn't look hard enough.
+04:07:52 <Fare> so I haven't looked at the merit of his changes to ECL � I'm sure there are some � but as a fork it still sucks.
+04:08:14 <beach> So it seems ECL would be well worth maintaining.
+04:08:20 <Fare> would it?
+04:08:33 <Fare> no one seems to agree enough.
+04:08:40 <Fare> does CL have a future?
+04:09:05 <beach> Oh, that's a much more general question.
+04:09:28 <Fare> in the long run, John Maynard Keynes is dead.
+04:09:50 -!- p_nathan [~Adium@216.57.209.252] has quit [Ping timeout: 264 seconds]
+04:10:06 cmack` [~charlie@adsl-74-179-197-204.bna.bellsouth.net] has joined #lisp
+04:10:27 -!- lyanchih [~lyanchih@202.39.219.19] has quit [Quit: lyanchih]
+04:11:31 -!- cmack [~charlie@adsl-74-179-198-18.bna.bellsouth.net] has quit [Ping timeout: 246 seconds]
+04:11:38 <beach> Fare: By "no one seems to agree enough", do you mean that nobody cares enough to take on the task of maintaining it?
+04:12:08 -!- Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has quit [Ping timeout: 240 seconds]
+04:12:24 <Fare> beach: yup
+04:13:56 -!- arquebus [~frath@c-107-3-164-239.hsd1.ca.comcast.net] has quit [Quit: Konversation terminated!]
+04:14:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:14:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:15:17 cmack`` [~charlie@adsl-98-87-43-226.bna.bellsouth.net] has joined #lisp
+04:15:46 -!- cmack` [~charlie@adsl-74-179-197-204.bna.bellsouth.net] has quit [Read error: Connection reset by peer]
+04:15:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:15:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:16:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:16:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:16:19 lyanchih [~lyanchih@202.39.219.19] has joined #lisp
+04:16:37 <drmeister> Common Lisp is like Shangri-La - the enlightened will always find it.
+04:17:46 zophy [~sy@host-98-218-220-24.midco.net] has joined #lisp
+04:17:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:17:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:18:08 <Fare> or hopefully, they'll find something better.
+04:18:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:18:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:18:23 Ryan_Burnside [~ryan@63-153-70-207.hlna.qwest.net] has joined #lisp
+04:18:37 <didi> This community grief towards CL is unfortunate.
+04:18:48 <Fare> what community?
+04:18:57 <didi> We.
+04:19:12 <Fare> CL is a good CL � but it's not moving forward as a language
+04:19:18 <Fare> there is no we.
+04:19:26 <Ryan_Burnside> We are Hugh.
+04:19:36 <didi> Fare: Sure there is. There is you, there is me.
+04:19:37 <Fare> You said "we". It's cussing. Send $1 to we.is.cussing@gmail.com. Or the equivalent to bitcoin:1nowe5FVoAMKnWEPucd5Yjv4ZGcXCJyXD
+04:19:37 <youlysses> Fare: Less so than Scheme? :^P
+04:19:47 *youlysses* is still a big scheme fan though.
+04:19:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:19:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:19:51 <drmeister> Pah - C++ is moving forward as a language - it got LAMBDA's in 2011 - yay!
+04:20:09 <Ryan_Burnside> CL needs public library development in my opinion.
+04:20:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:20:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:20:47 <Fare> youlysses, Scheme has a dysfunctional community, but healthy subcommunities. Racket is healthy. Dunno about Chicken these days, but used to be. Gambit seems healthy though small.
+04:21:03 <Fare> Ryan_Burnside, there are 700 different libraries
+04:21:16 <Fare> doing maybe 300 different things
+04:21:20 <didi> And CL griefs
+04:21:43 -!- DalekBaldwin [~Adium@50.14.84.76] has quit [Quit: Leaving.]
+04:21:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:21:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:22:09 <Ryan_Burnside> Fare, yes but a bunch of decentralized repos isn't the best way to ensure longevity.
+04:22:10 <beach> didi: Don't worry about it.  It seems to come with the language.
+04:22:14 -!- lyanchih [~lyanchih@202.39.219.19] has quit [Quit: lyanchih]
+04:22:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:22:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:22:23 <didi> beach: It's very unfortunate.
+04:22:40 <beach> didi: I quit worrying about it many years ago.
+04:23:05 <beach> Ryan_Burnside: Do you know about quicklisp?
+04:23:23 <Ryan_Burnside> Yes. :)
+04:23:30 <Ryan_Burnside> Not used it much though.
+04:23:50 <beach> Ryan_Burnside: I would not call that "a bunch of decentralized repos".
+04:23:55 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:23:56 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:24:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:24:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:24:39 <drmeister> I've written extensively in C, FORTRAN, Smalltalk, Prolog, Forth, Postscript, Basic, TCL, Python, C++ ('til my fingers bleed) - I have never seen a better language than Common Lisp - what more does it need?
+04:25:19 <Ryan_Burnside> The language itself is pretty complete. I just fear library rot myself.
+04:25:36 <Ryan_Burnside> (Sorry, been trying to do GUI things as of late)
+04:25:46 -!- |jrg| [~user@dynamic-adsl-78-13-176-250.clienti.tiscali.it] has left #lisp
+04:25:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:25:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:25:55 <nisstyre> drmeister: Have you tried Haskell or Scheme?
+04:26:07 <drmeister> Scheme - yes.   Haskell - no.
+04:26:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:26:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:26:28 <drmeister> Scheme doesn't do macros as well as Common Lisp.
+04:26:39 DrCode [~DrCode@gateway/tor-sasl/drcode] has joined #lisp
+04:26:40 <nisstyre> drmeister: that's false
+04:26:51 -!- Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has left #lisp
+04:26:54 <nisstyre> if you mean they are hygienic, that's an improvement
+04:27:04 -!- zophy [~sy@host-98-218-220-24.midco.net] has quit [Ping timeout: 268 seconds]
+04:27:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:27:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:28:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:28:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:29:02 -!- effy [~quassel@222.131.155.249] has quit [Ping timeout: 264 seconds]
+04:29:03 <drmeister> nisstyre: I'm not arguing - I just find it too much trouble dealing with the single namespace and macros.  I'm not a fan of hygienic macros. I like my macro programming dirty!
+04:29:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:29:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:30:01 alezost [~user@128-70-203-73.broadband.corbina.ru] has joined #lisp
+04:30:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:30:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:30:50 <drmeister> You should see my macro for generating exception handling code using LLVM - it will make you blush: https://gist.github.com/drmeister/178963535be250eb218d
+04:31:37 <drmeister> And I've only been programming in CL for a year - I'm a macro noob.
+04:31:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:31:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:32:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:32:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:32:22 <samebchase> woah
+04:32:28 <samebchase> that looks complex
+04:33:30 -!- echo-area [~user@182.92.247.2] has quit [Remote host closed the connection]
+04:33:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:33:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:33:52 -!- youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has quit [Remote host closed the connection]
+04:34:14 <drmeister> Yeah - I was inspired that day - I barely understand it now myself.   It sets up C++ style exception handling and I use it to implement UNWIND-PROTECT/CATCH&THROW/BLOCK&RETURN-FROM etc.
+04:34:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:34:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:35:48 <drmeister> All-righty-then - my SMILES parser and molecule builder is coming together - generic functions rock.
+04:35:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:35:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:36:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:36:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:37:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:37:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:37:50 -!- cmm [~cmm@109.65.251.48] has quit [Read error: Connection reset by peer]
+04:38:07 <|3b|> drmeister: that just looks verbose, rather than complex
+04:38:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:38:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:38:23 *|3b|* doesn't see any variants of ,, in that for example
+04:38:45 <drmeister> I love the idea of programs that write programs - you can escape the normal confines of writing code.
+04:38:57 cmm [~cmm@109.65.251.48] has joined #lisp
+04:39:18 <Ryan_Burnside> @drmeister you know there are AI implications in that...someplace.
+04:39:37 <drmeister> |3b| - oh pish posh - it's irreducibly complex.
+04:39:42 <|3b|> declaring (safety 0) in a macro seems a bit odd though
+04:39:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:39:49 *drmeister* reminds himself that you can't impress other developers.
+04:39:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:40:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:40:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:40:41 *|3b|* can maybe see wanting to optimize run time enough to justify it sometimes, but compile time?
+04:40:50 <|3b|> particularly with no explicit error handling
+04:41:22 <|3b|> actually, safety 0 and speed 0, so it isn't even trying to optimize compile time
+04:41:28 <drmeister> |3b| It's even more odd that my compiler ignores (declare (optimize ...)) at the present time.  I think I was testing it on SBCL or something - but you are correct (safety 0) for a macro is weird.
+04:41:46 <|3b|> nah, ignoring (most) declarations is perfectly reasonably
+04:41:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:41:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:42:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:42:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:43:06 <loke> I'm so annoyed with the fact that there is one special declaration that can't be ignored. It really should be a declaration.
+04:43:50 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:43:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:44:04 -!- pillton [~user@140.253.50.147] has left #lisp
+04:44:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:44:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:44:28 <|3b|> yeah, can't ignore declarations of 'special'
+04:44:34 <drmeister> loke: Yeah, (declare (special ...))) took me a long time to come to terms with.
+04:45:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:45:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:46:08 <|3b|> some of the other declarations can only be ignored if you ignore some other things too (for example you can't ignore 'notinline' if you implement compiler macros, or inline things)
+04:46:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:46:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:46:19 <loke> In most cases, that declaration is a bit pointless as well since you can be much more clear with your intent by using DEFVAR'ed variabled.
+04:46:59 <loke> |3b|: fair enough
+04:47:44 effy [~quassel@114.250.102.184] has joined #lisp
+04:47:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:47:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:48:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:48:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:49:49 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:49:50 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:50:17 <drmeister> Can we kick K1rk off?
+04:50:19 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:50:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:51:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+04:51:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+04:53:20 -!- Fare [fare@nat/google/x-bhrrifmlsolzxgbl] has quit [Ping timeout: 245 seconds]
+04:55:42 ASau` [~user@p5797F03E.dip0.t-ipconnect.de] has joined #lisp
+04:59:38 -!- ASau [~user@p5797F473.dip0.t-ipconnect.de] has quit [Ping timeout: 264 seconds]
+05:00:25 Munksgaard [~philip@80-71-132-106.u.parknet.dk] has joined #lisp
+05:01:13 sdemarre [~serge@91.176.212.217] has joined #lisp
+05:04:20 lyanchih [~lyanchih@202.39.219.19] has joined #lisp
+05:04:55 -!- Ryan_Burnside [~ryan@63-153-70-207.hlna.qwest.net] has quit [Quit: Leaving]
+05:08:23 -!- TDog [~chatzilla@65.129.207.43] has quit [Quit: ChatZilla 0.9.90.1 [Firefox 23.0.1/20130814063812]]
+05:09:41 -!- normanrichards [~normanric@70.114.215.220] has quit []
+05:16:45 -!- lyanchih [~lyanchih@202.39.219.19] has quit [Quit: lyanchih]
+05:19:20 ln [~l@84.233.246.170] has joined #lisp
+05:19:54 -!- ln [~l@84.233.246.170] has left #lisp
+05:21:37 lyanchih [~lyanchih@118-163-141-228.HINET-IP.hinet.net] has joined #lisp
+05:23:01 -!- apfel [~apfel@p5499919B.dip0.t-ipconnect.de] has quit [Ping timeout: 240 seconds]
+05:25:59 -!- nug700_ [~nug700@209-181-103-104.phnx.qwest.net] has quit [Quit: bye]
+05:27:46 nug700 [~nug700@209-181-103-104.phnx.qwest.net] has joined #lisp
+05:29:34 Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has joined #lisp
+05:30:52 stepnem [~stepnem@internet2.cznet.cz] has joined #lisp
+05:34:54 -!- sdemarre [~serge@91.176.212.217] has quit [Ping timeout: 268 seconds]
+05:36:52 -!- zacharias_ is now known as zacharias
+05:37:10 -!- aw [~zacharias@unaffiliated/aw] has quit [Quit: WeeChat 0.4.2-dev]
+05:37:25 aw|incendiary [~zacharias@unaffiliated/aw] has joined #lisp
+05:38:56 przl [~przlrkt@p5792247C.dip0.t-ipconnect.de] has joined #lisp
+05:39:21 mishoo [~mishoo@93.113.190.121] has joined #lisp
+05:41:40 normanrichards [~normanric@70.114.215.220] has joined #lisp
+05:42:02 parennoob [62f3ab25@gateway/web/freenode/ip.98.243.171.37] has joined #lisp
+05:42:38 billstclair [~billstcla@unaffiliated/billstclair] has joined #lisp
+05:47:15 mrSpec [~Spec@88.208.105.6] has joined #lisp
+05:47:15 -!- mrSpec [~Spec@88.208.105.6] has quit [Changing host]
+05:47:15 mrSpec [~Spec@unaffiliated/mrspec] has joined #lisp
+05:51:34 angavrilov [~angavrilo@217.71.227.190] has joined #lisp
+05:51:34 -!- cmm [~cmm@109.65.251.48] has quit [Read error: Connection reset by peer]
+05:52:08 -!- igotnolegs- [~igotnoleg@63-224-120-51.slkc.qwest.net] has quit [Ping timeout: 240 seconds]
+05:52:37 cmm [~cmm@109.65.251.48] has joined #lisp
+05:52:45 youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has joined #lisp
+05:52:50 gravicappa [~gravicapp@ppp91-77-173-229.pppoe.mtu-net.ru] has joined #lisp
+05:55:09 jewel_ [~jewel@105-237-57-251.access.mtnbusiness.co.za] has joined #lisp
+05:55:28 -!- billstclair [~billstcla@unaffiliated/billstclair] has quit [Quit: Linkinus - http://linkinus.com]
+05:58:43 -!- parennoob [62f3ab25@gateway/web/freenode/ip.98.243.171.37] has quit [Quit: Page closed]
+05:59:08 zRecursive [~czsq888@171.216.201.151] has joined #lisp
+06:00:55 igotnolegs- [~igotnoleg@63-224-120-51.slkc.qwest.net] has joined #lisp
+06:04:35 -!- przl [~przlrkt@p5792247C.dip0.t-ipconnect.de] has quit [Ping timeout: 245 seconds]
+06:05:05 robot-beethoven [~user@c-24-118-142-0.hsd1.mn.comcast.net] has joined #lisp
+06:05:54 p_nathan1 [~Adium@216.57.209.252] has joined #lisp
+06:06:02 -!- k0001 [~k0001@host2.190-229-208.telecom.net.ar] has quit [Ping timeout: 240 seconds]
+06:10:24 -!- bgs100 [~nitrogen@unaffiliated/bgs100] has quit [Quit: bgs100]
+06:16:07 -!- p_nathan1 [~Adium@216.57.209.252] has quit [Ping timeout: 246 seconds]
+06:17:00 -!- quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has quit [Ping timeout: 256 seconds]
+06:17:34 quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has joined #lisp
+06:20:13 ggole [~ggole@220-253-148-171.dyn.iinet.net.au] has joined #lisp
+06:20:32 Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has joined #lisp
+06:20:57 harish_ [~harish@119.234.192.168] has joined #lisp
+06:22:08 maxter [~maxter@gaffeless.chaperon.volia.net] has joined #lisp
+06:23:20 -!- quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has quit [Ping timeout: 245 seconds]
+06:23:25 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Remote host closed the connection]
+06:25:29 przl [~przlrkt@87.146.36.124] has joined #lisp
+06:27:23 -!- Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has quit [Ping timeout: 240 seconds]
+06:31:23 -!- Vutral [ss@mirbsd/special/Vutral] has quit [Ping timeout: 245 seconds]
+06:34:35 echo-area [~user@182.92.247.2] has joined #lisp
+06:36:04 kushal [~kdas@fedora/kushal] has joined #lisp
+06:36:24 ehu [~ehu@31.138.86.204] has joined #lisp
+06:37:50 -!- przl [~przlrkt@87.146.36.124] has quit [Ping timeout: 240 seconds]
+06:38:02 oleo_ [d4b81ecd@gateway/web/freenode/ip.212.184.30.205] has joined #lisp
+06:38:14 Vutral [~ss@mirbsd/special/Vutral] has joined #lisp
+06:38:27 Krystof [~user@81.174.155.115] has joined #lisp
+06:40:01 clmsy [~clmsy@212.57.9.204] has joined #lisp
+06:41:09 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Ping timeout: 248 seconds]
+06:41:26 Vicfred [~Vicfred@187.206.61.47] has joined #lisp
+06:41:34 -!- axion [~axion@cpe-67-242-83-63.nycap.res.rr.com] has quit [Read error: Connection reset by peer]
+06:42:47 spacefrogg_ [~spacefrog@unaffiliated/spacefrogg] has joined #lisp
+06:44:03 ramkrsna [ramkrsna@nat/redhat/x-jiyowkhimtkknamf] has joined #lisp
+06:44:07 mvilleneuve [~mvilleneu@LLagny-156-36-4-214.w80-14.abo.wanadoo.fr] has joined #lisp
+06:44:16 -!- ramkrsna [ramkrsna@nat/redhat/x-jiyowkhimtkknamf] has quit [Changing host]
+06:44:16 ramkrsna [ramkrsna@unaffiliated/ramkrsna] has joined #lisp
+06:44:18 -!- nisstyre [~yours@oftn/member/Nisstyre] has quit [Read error: Connection timed out]
+06:46:28 nisstyre [~yours@oftn/member/Nisstyre] has joined #lisp
+06:52:30 -!- sthalik_ is now known as sthalik
+06:53:00 xan_ [~xan@80.174.78.163.dyn.user.ono.com] has joined #lisp
+06:55:18 -!- ianmcorvidae|alt is now known as ianmcorvidae
+06:57:57 stassats [~stassats@wikipedia/stassats] has joined #lisp
+06:59:38 -!- ehu [~ehu@31.138.86.204] has quit [Ping timeout: 264 seconds]
+07:03:18 -!- ZombieChicken [~weechat@unaffiliated/forgottenwizard] has quit [Ping timeout: 252 seconds]
+07:06:18 -!- harish_ [~harish@119.234.192.168] has quit [Ping timeout: 256 seconds]
+07:07:25 ZombieChicken [~weechat@unaffiliated/forgottenwizard] has joined #lisp
+07:10:07 chr`` [~user@148.122.202.244] has joined #lisp
+07:12:47 ozzloy_ [~ozzloy@ozzloy.lifeafterking.org] has joined #lisp
+07:12:54 tycho [~tychoish@foucault.cyborginstitute.net] has joined #lisp
+07:12:58 peterhil [~peterhil@dsl-hkibrasgw3-58c156-108.dhcp.inet.fi] has joined #lisp
+07:12:59 j0ni_ [~j0ni@tomos.lollyshouse.net] has joined #lisp
+07:13:06 jsnell_ [~jsnell@ash.snellman.net] has joined #lisp
+07:13:12 ineiros [~itniemin@bayesianconspiracy.org] has joined #lisp
+07:13:13 cruxeter1us [cruxtech@secspeed.com] has joined #lisp
+07:13:54 pchrist_ [~spirit@gentoo/developer/pchrist] has joined #lisp
+07:15:29 luis- [~luis@kerno.org] has joined #lisp
+07:15:43 yeltzooo6 [~yeltzooo@ec2-54-241-122-161.us-west-1.compute.amazonaws.com] has joined #lisp
+07:16:34 ivan\_ [~ivan@unaffiliated/ivan/x-000001] has joined #lisp
+07:16:37 fmu^ [~^fmu@unaffiliated/fmu] has joined #lisp
+07:17:30 quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has joined #lisp
+07:17:50 -!- j0ni [~j0ni@tomos.lollyshouse.net] has quit [*.net *.split]
+07:17:50 -!- pchrist [~spirit@gentoo/developer/pchrist] has quit [*.net *.split]
+07:17:50 -!- aajmakin [aajmakin@kosh.org.aalto.fi] has quit [*.net *.split]
+07:17:50 -!- ineiros_ [~itniemin@bayesianconspiracy.org] has quit [*.net *.split]
+07:17:50 -!- Khisanth [~Khisanth@50.14.244.111] has quit [*.net *.split]
+07:17:50 -!- wilfredh [uid159@gateway/web/irccloud.com/x-pmdenshcsgclemsw] has quit [*.net *.split]
+07:17:50 -!- ivan\ [~ivan@unaffiliated/ivan/x-000001] has quit [*.net *.split]
+07:17:50 -!- chr` [~user@148.122.202.244] has quit [*.net *.split]
+07:17:50 -!- tychoish [~tychoish@foucault.cyborginstitute.net] has quit [*.net *.split]
+07:17:50 -!- yeltzooo [~yeltzooo@ec2-54-241-122-161.us-west-1.compute.amazonaws.com] has quit [*.net *.split]
+07:17:50 -!- jsnell [~jsnell@ash.snellman.net] has quit [*.net *.split]
+07:17:51 -!- fmu [~^fmu@unaffiliated/fmu] has quit [*.net *.split]
+07:17:51 -!- luis` [~luis@kerno.org] has quit [*.net *.split]
+07:17:51 -!- ozzloy [~ozzloy@unaffiliated/ozzloy] has quit [*.net *.split]
+07:17:51 -!- cruxeternus [cruxtech@secspeed.com] has quit [*.net *.split]
+07:17:51 -!- fmu^ is now known as fmu
+07:17:52 -!- tycho is now known as tychoish
+07:18:27 Beetny [~Beetny@ppp118-208-23-19.lns20.bne1.internode.on.net] has joined #lisp
+07:18:36 -!- ivan\_ is now known as ivan\
+07:18:51 -!- ASau` is now known as ASau
+07:22:28 aajmakin [aajmakin@kosh.org.aalto.fi] has joined #lisp
+07:22:51 lyanchih_ [~lyanchih@202.39.219.19] has joined #lisp
+07:23:30 -!- lyanchih [~lyanchih@118-163-141-228.HINET-IP.hinet.net] has quit [Ping timeout: 264 seconds]
+07:25:13 Khisanth [~Khisanth@50.14.244.111] has joined #lisp
+07:30:29 axion [~axion@cpe-67-242-83-63.nycap.res.rr.com] has joined #lisp
+07:32:35 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+07:32:46 Mon_Ouie [~Mon_Ouie@subtle/user/MonOuie] has joined #lisp
+07:34:38 -!- [SLB] [~slabua@unaffiliated/slabua] has quit [Ping timeout: 240 seconds]
+07:35:54 [SLB] [~slabua@unaffiliated/slabua] has joined #lisp
+07:39:38 -!- zRecursive [~czsq888@171.216.201.151] has left #lisp
+07:41:02 przl [~przlrkt@62.217.45.197] has joined #lisp
+07:44:07 -!- przl [~przlrkt@62.217.45.197] has quit [Client Quit]
+07:44:17 przl [~przlrkt@62.217.45.197] has joined #lisp
+07:44:22 araujo [~araujo@gentoo/developer/araujo] has joined #lisp
+07:48:15 -!- ludocode [~quassel@108.175.230.81] has quit [Remote host closed the connection]
+07:50:18 clmsy [~clmsy@212.57.9.204] has joined #lisp
+07:50:42 zacharias [~aw@unaffiliated/zacharias] has joined #lisp
+07:51:14 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Remote host closed the connection]
+07:52:20 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+07:52:28 -!- quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has quit [Ping timeout: 240 seconds]
+07:53:16 quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has joined #lisp
+07:53:20 ludocode [~quassel@108.175.230.81] has joined #lisp
+07:56:35 -!- lyanchih_ [~lyanchih@202.39.219.19] has quit [Quit: lyanchih_]
+07:58:01 ck`` [~ck@dslb-094-219-251-096.pools.arcor-ip.net] has joined #lisp
+07:58:14 arenz [arenz@nat/ibm/x-skyfwokbfktiwsrp] has joined #lisp
+07:58:26 -!- quazimodo [~quazimodo@d110-33-227-98.bla801.nsw.optusnet.com.au] has quit [Ping timeout: 240 seconds]
+08:00:17 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Remote host closed the connection]
+08:00:35 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+08:01:04 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Ping timeout: 248 seconds]
+08:02:05 -!- peterhil [~peterhil@dsl-hkibrasgw3-58c156-108.dhcp.inet.fi] has quit [Ping timeout: 245 seconds]
+08:02:36 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Remote host closed the connection]
+08:02:54 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+08:06:33 pavelpenev [~quassel@melontech.com] has joined #lisp
+08:06:49 -!- youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has quit [Remote host closed the connection]
+08:07:06 -!- cdidd [~cdidd@128-72-27-17.broadband.corbina.ru] has quit [Remote host closed the connection]
+08:08:58 cdidd [~cdidd@95-26-83-239.broadband.corbina.ru] has joined #lisp
+08:10:09 -!- loke [~loke@203.127.16.194] has quit [Remote host closed the connection]
+08:11:49 -!- Munksgaard [~philip@80-71-132-106.u.parknet.dk] has quit [Ping timeout: 248 seconds]
+08:13:21 p_nathan [~Adium@216.57.209.252] has joined #lisp
+08:13:27 -!- robot-beethoven [~user@c-24-118-142-0.hsd1.mn.comcast.net] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+08:13:40 -!- nightfly [sage@destiny.cat.pdx.edu] has quit [Ping timeout: 264 seconds]
+08:13:41 -!- ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has quit [Read error: Operation timed out]
+08:13:44 loke [~loke@203.127.16.194] has joined #lisp
+08:14:02 -!- loke is now known as loke_
+08:16:13 ogamita [~t@lnantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+08:16:38 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Ping timeout: 240 seconds]
+08:16:47 echo-are` [~user@182.92.247.2] has joined #lisp
+08:17:42 -!- echo-area [~user@182.92.247.2] has quit [Ping timeout: 256 seconds]
+08:18:19 -!- p_nathan [~Adium@216.57.209.252] has quit [Ping timeout: 268 seconds]
+08:18:26 ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has joined #lisp
+08:20:03 lyanchih [~lyanchih@202.39.219.19] has joined #lisp
+08:20:26 -!- clmsy [~clmsy@212.57.9.204] has quit [Ping timeout: 240 seconds]
+08:26:40 -!- ggole [~ggole@220-253-148-171.dyn.iinet.net.au] has quit [Ping timeout: 246 seconds]
+08:27:14 -!- Mon_Ouie [~Mon_Ouie@subtle/user/MonOuie] has quit [Ping timeout: 264 seconds]
+08:27:27 clmsy [~clmsy@212.57.9.204] has joined #lisp
+08:29:54 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+08:29:58 edgar-rft [~GOD@HSI-KBW-109-193-013-113.hsi7.kabel-badenwuerttemberg.de] has joined #lisp
+08:31:37 zickzackv [~faot@port-92-198-30-130.static.qsc.de] has joined #lisp
+08:32:37 seg [~Thunderbi@71-80-164-69.dhcp.lnbh.ca.charter.com] has joined #lisp
+08:32:50 -!- seg [~Thunderbi@71-80-164-69.dhcp.lnbh.ca.charter.com] has quit [Client Quit]
+08:36:24 -!- ramkrsna [ramkrsna@unaffiliated/ramkrsna] has quit [Ping timeout: 256 seconds]
+08:36:28 peterhil [~peterhil@gw4.tieturi.com] has joined #lisp
+08:39:00 -!- spacefrogg_ is now known as spacefrogg
+08:40:08 ggole [~ggole@106-68-158-195.dyn.iinet.net.au] has joined #lisp
+08:42:32 -!- clmsy [~clmsy@212.57.9.204] has quit [Read error: No route to host]
+08:42:46 motionman [~motionman@unaffiliated/motionman] has joined #lisp
+08:42:53 clmsy [~clmsy@212.57.9.204] has joined #lisp
+08:43:33 p_nathan [~Adium@216.57.209.252] has joined #lisp
+08:44:08 -!- ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has quit [Read error: No route to host]
+08:44:50 Tuxedo [~tuxedo@bas3-cooksville17-3096519109.dsl.bell.ca] has joined #lisp
+08:46:26 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 264 seconds]
+08:52:18 -!- p_nathan [~Adium@216.57.209.252] has quit [Ping timeout: 264 seconds]
+08:52:41 djschneider [~nobody@217.110.245.34] has joined #lisp
+08:53:02 [1]JPeterson [~JPeterson@81-233-152-121-no83.tbcn.telia.com] has joined #lisp
+08:53:22 ramkrsna [ramkrsna@nat/redhat/x-vbeluebldvlusklp] has joined #lisp
+08:53:52 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+08:53:53 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Quit: Leaving.]
+08:54:00 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+08:54:22 kiuma [~kiuma@83-103-19-212.ip.fastwebnet.it] has joined #lisp
+08:55:06 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+08:55:26 -!- JPeterson [~JPeterson@81-233-152-121-no83.tbcn.telia.com] has quit [Ping timeout: 245 seconds]
+08:56:01 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+08:56:16 -!- djschneider [~nobody@217.110.245.34] has quit [Remote host closed the connection]
+08:56:30 -!- Oddity [~Oddity@unaffiliated/oddity] has quit [Ping timeout: 264 seconds]
+08:56:31 dfox [~dfox@94.142.237.120] has joined #lisp
+08:57:30 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+08:57:42 -!- ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has quit [Read error: Connection reset by peer]
+08:58:44 ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has joined #lisp
+08:59:28 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+08:59:45 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+09:01:36 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+09:01:54 -!- echo-are` is now known as echo-area
+09:04:54 -!- ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has quit [Ping timeout: 264 seconds]
+09:04:58 -!- didi [~user@unaffiliated/didi/x-1022147] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+09:07:22 ianmcorvidae [~ianmcorvi@musicbrainz/user/ianmcorvidae] has joined #lisp
+09:07:36 wilfredh [uid159@gateway/web/irccloud.com/x-dsjulzjgwycimwzl] has joined #lisp
+09:15:09 zacharias [~aw@unaffiliated/zacharias] has joined #lisp
+09:18:53 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Quit: Leaving.]
+09:21:51 clmsy [~clmsy@212.57.9.204] has joined #lisp
+09:22:49 -!- nug700 [~nug700@209-181-103-104.phnx.qwest.net] has quit [Quit: bye]
+09:27:48 drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has joined #lisp
+09:31:49 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Ping timeout: 240 seconds]
+09:32:05 -!- ericmathison [~ericmathi@172-15-249-133.lightspeed.irvnca.sbcglobal.net] has quit [Ping timeout: 245 seconds]
+09:39:06 -!- aumontabe [~abeaumont@77.231.255.212] has quit [Ping timeout: 264 seconds]
+09:44:57 harish_ [~harish@119.234.165.214] has joined #lisp
+09:45:48 -!- ogamita [~t@lnantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Read error: Connection reset by peer]
+09:46:01 ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+09:46:29 Okasu [~1@unaffiliated/okasu] has joined #lisp
+09:47:48 przl [~przlrkt@62.217.45.197] has joined #lisp
+09:48:16 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Quit: Bye!]
+09:49:54 -!- ramkrsna [ramkrsna@nat/redhat/x-vbeluebldvlusklp] has quit [Ping timeout: 264 seconds]
+09:49:58 -!- luis- is now known as luis1
+09:50:11 <Code_Man> how to use association lists?
+09:50:11 -!- luis1 is now known as luis
+09:52:42 -!- przl [~przlrkt@62.217.45.197] has quit [Read error: Connection reset by peer]
+09:52:54 <pavelpenev> Code_Man: check out the section titled 'Lookup Tables: Alists and Plists'  http://gigamonkeys.com/book/beyond-lists-other-uses-for-cons-cells.html
+09:53:22 <sthalik> clhs assoc
+09:53:22 <specbot> http://www.lispworks.com/reference/HyperSpec/Body/f_assocc.htm
+09:53:31 <sthalik> clhs (setf cdr)
+09:53:38 <sthalik> clhs #'(setf cdr)
+09:54:00 <fe[nl]ix> Code_Man: pairlis & acons to create them, assoc and rassoc for lookup
+09:54:16 <Code_Man> ty
+09:54:53 <sthalik> clhs remove
+09:54:53 <specbot> http://www.lispworks.com/reference/HyperSpec/Body/f_rm_rm.htm
+09:54:59 <sthalik> ^ also, this, to avoid mutation
+09:55:25 <hlavaty`> loke_: do you have code for windows domain auth or pubkey der based one?
+09:56:23 -!- motionman [~motionman@unaffiliated/motionman] has quit [Quit: tsch��]
+09:56:56 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Remote host closed the connection]
+09:58:29 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+09:59:08 Ayey_ [~rune1@0309ds7-ar.0.fullrate.dk] has joined #lisp
+09:59:16 <ogamita> Code_Man: I'm in favor of abstractions.
+09:59:34 <ogamita> I hide a-list behind a common API, so that I can switch to plist or hash-table transparently.
+09:59:40 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Remote host closed the connection]
+09:59:40 <sthalik> as long as lang actually allows user-defined types, it's fine
+09:59:48 <ogamita> cf. com.informatimago.common-lisp.cesarum.dictionary
+09:59:50 <sthalik> r5rs *grmbl*
+09:59:50 <specbot> Sorry, I couldn't find anything for *grmbl*.
+09:59:54 Karl_dscc [~localhost@p578FC4FE.dip0.t-ipconnect.de] has joined #lisp
+09:59:57 <Code_Man> hash is probably overkill at this point for me
+09:59:58 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+10:00:25 <Code_Man> ok works thanks
+10:00:32 <sthalik> Fare did great data struct stuff on github
+10:00:37 -!- Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has quit [Ping timeout: 248 seconds]
+10:00:43 ogamita` [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+10:01:16 <sthalik> hi, 'pjb
+10:01:36 -!- ogamita is now known as Guest24500
+10:01:50 <ogamita`> Hi!
+10:02:07 -!- ogamita` is now known as ogamita
+10:03:03 ramkrsna [ramkrsna@nat/redhat/x-fnpcpeolexyhkcfc] has joined #lisp
+10:04:29 -!- Guest24500 [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Ping timeout: 240 seconds]
+10:09:10 nightfly [sage@destiny.cat.pdx.edu] has joined #lisp
+10:10:25 Munksgaard [~philip@shop3.diku.dk] has joined #lisp
+10:11:09 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+10:13:03 -!- setekhid [~sete@119.129.119.18] has left #lisp
+10:13:04 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+10:16:46 -!- lyanchih [~lyanchih@202.39.219.19] has quit [Quit: lyanchih]
+10:20:40 -!- effy [~quassel@114.250.102.184] has quit [Quit: No Ping reply in 180 seconds.]
+10:21:03 effy [~quassel@114.250.102.184] has joined #lisp
+10:25:18 -!- gyutyuglf [gyutyuglf@86.126.58.151] has quit [Ping timeout: 264 seconds]
+10:27:33 oudeis [~oudeis@bzq-109-67-136-32.red.bezeqint.net] has joined #lisp
+10:29:25 <chr``> Is there a var or something that could tell the uptime of the lisp system?
+10:29:50 <loke_> hlavaty`: It's Kerberos SIngle-sign-on
+10:30:47 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+10:30:53 <chr``> as in when an image was started?
+10:31:33 -!- effy [~quassel@114.250.102.184] has quit [Ping timeout: 248 seconds]
+10:31:55 dsevilla [~user@neuromancer.inf.um.es] has joined #lisp
+10:34:30 dsevilla` [~user@neuromancer.inf.um.es] has joined #lisp
+10:35:00 -!- harish_ [~harish@119.234.165.214] has quit [Ping timeout: 245 seconds]
+10:35:00 przl [~przlrkt@62.217.45.197] has joined #lisp
+10:35:32 pillton [~user@124-170-113-241.dyn.iinet.net.au] has joined #lisp
+10:36:02 -!- echo-area [~user@182.92.247.2] has quit [Remote host closed the connection]
+10:36:16 -!- dsevilla [~user@neuromancer.inf.um.es] has quit [Ping timeout: 248 seconds]
+10:38:48 -!- dsevilla` [~user@neuromancer.inf.um.es] has quit [Ping timeout: 256 seconds]
+10:39:15 <hlavaty`> loke_: ok i think the windows stuff is based on that;  is that available somewhere?  does it need to depend on hunchentoot?  what about name kerberos-sso?
+10:39:39 -!- pillton [~user@124-170-113-241.dyn.iinet.net.au] has left #lisp
+10:41:26 <p_l> hlavaty`: Windows uses LDAP, with (slightly extended) Kerberos v5 for authentication etc.
+10:41:40 <p_l> hlavaty`: that's what is used for modern domains
+10:43:52 <p_l> for HTTP authenticated with Kerberos, you'd need to write your own code to handle SPNEGO (iirc) or use some proxy to do it for you and just pass some variable informing you of auth status
+10:45:00 lyanchih [~lyanchih@118-163-141-228.HINET-IP.hinet.net] has joined #lisp
+10:45:17 <loke_> p_l: I wrote that code already
+10:45:20 <hlavaty`> p_l: ok thanks;  are there any cl libs for that?
+10:45:22 <loke_> (finished it today actually)
+10:45:30 <p_l> loke_: for SPNEGO?
+10:45:35 <loke_> https://github.com/lokedhs/hunchentoot-single-signon
+10:45:37 <loke_> p_l: yes
+10:45:44 foreignFunction [~niksaak@ip-4761.sunline.net.ua] has joined #lisp
+10:45:47 <loke_> it's not documented yet though
+10:46:00 <p_l> loke_: I have such giant smile right now it's threatening to break my face
+10:47:16 <loke_> All you need to do to use it is to call (SPNEGO-AUTH fn) in the body of a hunchentoot handler. After successful handshake, the fn will be called with one argument, the name of the autoenticated user
+10:47:40 <loke_> I.e. all normal processing needs to go in the "fn"
+10:47:49 <hlavaty`> loke_: thank you!  i see that the main work is via in cl-gss, gss ffi wrapper
+10:48:00 p_nathan [~Adium@216.57.209.252] has joined #lisp
+10:48:02 <loke_> hlavaty`: Yes. I wrote that too. It's in Quicklisp
+10:48:51 <pavelpenev> chr``: get-internal-real-time might do what you need, but it's implementation specific.  See http://www.lispworks.com/documentation/HyperSpec/Body/f_get_in.htm and http://xach.livejournal.com/94777.html . The SBCL docstring is:
+10:48:51 <pavelpenev> "Return the real time (\"wallclock time\") since startup in the internal
+10:48:51 <pavelpenev> time format. (See INTERNAL-TIME-UNITS-PER-SECOND.)"
+10:49:02 <p_l> hlavaty`: well, it kind of has to be done - GSS API is for plugging in the SPNEGO negotiated auth mechanism
+10:49:32 <loke_> Oh, one thing to keep in mind: if you have a windows client, it will initially request a mechnicasm that is unsupported, and CL-GSS:ACCEPT-SEC will throw an error. Just respond to that by throwing a 500 or wahetever, and Explorer will come back again with a "normal" GSSAPI request
+10:50:21 effy [~quassel@222.129.233.89] has joined #lisp
+10:50:22 <loke_> I intend to fix this so that it works properly, but right now it does work, as I put it in production in-house today
+10:50:24 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+10:50:25 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Read error: Connection reset by peer]
+10:50:31 <hlavaty`> i was hoping for pure lisp library, but ffi wrapper is still better than no solution
+10:51:05 <loke_> hlavaty`: That would be insanely painful. You'd have to reimplement not only GSSAPI but also the entire Kerberos client part
+10:51:29 <loke_> No one is going to do that in Lisp. They did it for Java, and the Java implementation is horrible to deal with
+10:52:16 <p_l> and you can't load local GSS plugins without FFI anyway
+10:52:19 <hlavaty`> ok
+10:52:29 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+10:54:29 <hlavaty`> is there a good overview/spec for the gss protocol you could recommend?
+10:54:32 <loke_> Oh, and don't forget to call CL-GSS:KRB5-REGISTER-ACCEPTOR-IDENTITY with your service keytab as well
+10:54:40 <loke_> hlavaty`: The protocol itself?
+10:54:45 <hlavaty`> yes
+10:54:49 <loke_> hlavaty`: there is no GSS protocol
+10:54:53 <loke_> it's an API
+10:55:03 <loke_> There is a Kerberos protocol
+10:55:07 <hlavaty`> well, the systems talk to each other somehow
+10:55:20 <loke_> Yeah, using the underlying implementation. Normally Kerberos.
+10:55:42 <hlavaty`> understand
+10:56:19 <loke_> hlavaty`: STart here: https://tools.ietf.org/html/rfc4556
+10:56:28 <loke_> oh wai
+10:56:30 <loke_> t
+10:56:32 <loke_> not that one
+10:56:47 <loke_> that one: https://tools.ietf.org/html/rfc4120
+10:56:56 -!- p_nathan [~Adium@216.57.209.252] has quit [Ping timeout: 256 seconds]
+10:57:30 <loke_> have fun :-)
+10:57:55 <p_l> hlavaty`: GSS is to provide pluggable authentication (a bit like PAM) for remote services, SPNEGO is basically a way to negotiate *what* you're using to authenticate
+10:57:58 <loke_> I've spent several hours on getting the FFI bindings working satisfactory (and there are still issues with it)
+10:58:02 <p_l> Kerberos is the actual auth protocol
+10:58:11 <loke_> Implementing just that RFC will take months at least
+10:58:23 <p_l> afk
+11:01:26 -!- ramkrsna [ramkrsna@nat/redhat/x-fnpcpeolexyhkcfc] has quit [Ping timeout: 264 seconds]
+11:01:37 <loke_> p_l: If you test this stuff, please let me know of any issues. The CL-GSS implementation has issues here and there, and the SPNEGO stuff is completely new, and mostly works on pure luck (I just hacked it together yesterday)
+11:02:00 <loke_> I'll try to improve it in the coming days, but please keep me updated on anything you notice.
+11:02:04 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+11:03:15 <hlavaty`> loke_: i dont think pubkey cryptography is difficult in lisp; we have bignums out of the box; the difficult part is to wrap ones head around the ideas and then implement the overengineered wire protocols
+11:03:34 <loke_> hlavaty`: Kerberos is not public key. It only uses symmetric keys.
+11:03:53 <loke_> hlavaty`: That said, it's not the encryuption that is difficult (Ironclad already has everything you need)
+11:04:12 <loke_> it's the implementation of the protocol itself that will have you go insane
+11:04:16 <hlavaty`> yes, and i just found http://common-lisp.net/project/crypticl/
+11:04:50 <hlavaty`> loke_: i can imagine that:-(
+11:05:39 <hlavaty`> there is also https://github.com/lmj/lfarm/blob/master/lfarm-gss/lfarm-gss.lisp
+11:05:41 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+11:05:53 <loke_> hlavaty`: Umm... That's my code
+11:05:55 <hlavaty`> ah it uses your cl-gss :-)
+11:06:04 <loke_> Generally, if it does GSS on Lisp, you can be pretty sure I'm behind it
+11:06:11 <loke_> I implemented that
+11:06:20 <loke_> I also implemented GSSAPI support in TRIVIAL-LDAP
+11:06:27 <loke_> Oh, and I did the GSS support in Postmodern
+11:07:05 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 245 seconds]
+11:07:30 <loke_> I mainly did it for my own benefit. I'm trying to have everything using SSO at home and we're also doing the same at the office
+11:09:03 <hlavaty`> loke_: brilliant;  the dependency of cl-gss is libgss, which is gplv3?
+11:09:26 -!- Munksgaard [~philip@shop3.diku.dk] has quit [Ping timeout: 240 seconds]
+11:09:39 <loke_> There are two major implementations: MIT Kerberos and Heimdal
+11:09:44 <loke_> both are BSD licensened
+11:09:59 <loke_> then there is the Microsoft version, SSPI.DLL I think?
+11:10:10 <loke_> I never tried to link with that one, but at least in theory it should work.
+11:10:40 namtsui` [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+11:11:12 <hlavaty`> loke_: sounds good, thank you very much!
+11:11:42 <fe[nl]ix> hej hlavaty`
+11:11:52 <hlavaty`> hi fe[nl]ix still in berlin?
+11:12:08 <loke_> Well, time to leave the office
+11:12:15 ehu [~ehu@109.34.49.254] has joined #lisp
+11:12:48 -!- namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Ping timeout: 240 seconds]
+11:13:24 Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has joined #lisp
+11:14:28 <fe[nl]ix> hlavaty`: nope, moved to Stra�burg
+11:14:34 ramkrsna [ramkrsna@nat/redhat/x-pntadaghwvfcomwj] has joined #lisp
+11:15:18 -!- gyutyuglf [gyutyuglf@86.126.58.151] has quit [Ping timeout: 268 seconds]
+11:15:23 -!- ramkrsna [ramkrsna@nat/redhat/x-pntadaghwvfcomwj] has quit [Changing host]
+11:15:23 ramkrsna [ramkrsna@unaffiliated/ramkrsna] has joined #lisp
+11:15:42 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Ping timeout: 264 seconds]
+11:15:42 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+11:15:54 -!- ckoch786 [~cory@107-219-7-73.lightspeed.toldoh.sbcglobal.net] has quit [Remote host closed the connection]
+11:16:02 Munksgaard [~philip@130.225.178.9] has joined #lisp
+11:16:05 josemanuel [~josemanue@203.Red-83-40-174.dynamicIP.rima-tde.net] has joined #lisp
+11:16:07 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Read error: Connection reset by peer]
+11:17:49 <hlavaty`> fe[nl]ix: it was too flat here? :-)  or is there a better lisp community there?
+11:21:41 -!- Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has quit [Read error: Connection reset by peer]
+11:23:41 Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has joined #lisp
+11:26:33 <chr``> pavelpenev: Thanks.  In Lispworks there is the undocumented system::PROCESS-STARTING-TIME-STRING.
+11:27:01 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+11:27:24 <fe[nl]ix> hlavaty`: I couldn't find a CL job in Berlin
+11:28:43 <hlavaty`> you didn't ask
+11:28:51 drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has joined #lisp
+11:31:43 <macdice> does anyone have an estimate of the total number of CL employers in the world?  ITA, Ravenpack, NovaSparks (?), the commercial Lisp vendors, ... ?
+11:32:52 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Ping timeout: 246 seconds]
+11:34:54 -!- kcj [~casey@unaffiliated/kcj] has quit [Ping timeout: 256 seconds]
+11:35:38 <attila_lendvai> is there a canonical website where CL freelancers are gathering? I've just looked at https://www.elance.com/ and there's linkedin of course... but where do people look for CL freelancers?
+11:36:06 zacharias [~aw@unaffiliated/zacharias] has joined #lisp
+11:37:04 <hlavaty`> word of mouth or they send email to http://lispjobs.wordpress.com/ i suppose
+11:38:34 <hlavaty`> attila_lendvai: hi still in asia?
+11:38:55 <attila_lendvai> hi
+11:39:26 <attila_lendvai> yep, almaty. but haven't really done anything interesting in programming for the past 5 years now...
+11:39:31 <p_l> macdice: there's a bunch of scheme in financials, i guess
+11:42:54 <stassats> p_l: finances are full of schemes indeed
+11:43:23 <p_l> haha
+11:46:28 -!- Beetny [~Beetny@ppp118-208-23-19.lns20.bne1.internode.on.net] has quit [Ping timeout: 240 seconds]
+11:49:21 <macdice> heh
+11:49:26 *macdice* uses scheme in finance
+11:49:43 <hlavaty`> which scheme?
+11:49:54 <macdice> used various
+11:50:26 <macdice> but i'm not really at liberty to say much about it.  but it's not used for anything terribly exciting, just data munging
+11:50:33 <macdice> mungeing
+11:50:35 <macdice> munching
+11:50:51 <macdice> i've also used CL for some amateur trading/finance hacking
+11:51:14 knob [~knob@76.76.202.244] has joined #lisp
+11:51:25 -!- peterhil [~peterhil@gw4.tieturi.com] has quit [Quit: Must not waste too much time here...]
+11:53:57 hitecnologys [~hitecnolo@46.233.252.39] has joined #lisp
+11:54:32 <macdice> anyone know anything about http://en.wikipedia.org/wiki/Alphacet ?  i suspect these guys may be using CL
+11:55:46 <stassats> what does it matter what they use?
+11:55:50 -!- cmack`` is now known as cmack
+11:56:43 <macdice> just curious.  i'm interested in who is using CL commercially, especially new companies, it makes me happy
+11:57:53 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+11:58:25 -!- namtsui` [~user@c-76-21-124-173.hsd1.ca.comcast.net] has quit [Read error: Connection reset by peer]
+11:59:27 <dim> Google Fligths ;)
+12:01:08 -!- kwmiebach [~kwmiebach@xdsl-87-79-111-228.netcologne.de] has quit [Ping timeout: 240 seconds]
+12:01:20 <oleo_> waaahahahaha
+12:01:25 <oleo_> was that a joke ?
+12:01:30 arnas [arnsa@78-63-18-208.static.zebra.lt] has joined #lisp
+12:01:43 <dim> google flights is the new name of ITA software, it's CL
+12:01:50 <dim> at least my understanding is that it's CL
+12:02:05 <oleo_> wait, do they provide flight tickets or what ?
+12:02:16 <dim> try it it's public.
+12:02:22 kwmiebach [~kwmiebach@xdsl-213-168-110-45.netcologne.de] has joined #lisp
+12:03:09 <macdice> there is a nice historical email/article about ITA here: http://www.paulgraham.com/carl.html
+12:03:38 <macdice> best quote is at the top: "until we pointed it out to them I don't think they had any understanding of how hard the problem they're trying to solve is, or how far their solutions are from optimal"
+12:03:44 -!- lyanchih [~lyanchih@118-163-141-228.HINET-IP.hinet.net] has quit [Ping timeout: 248 seconds]
+12:04:09 <oleo_> uhuh, germany is not included
+12:04:22 <oleo_> wth
+12:04:50 lyanchih [~lyanchih@202.39.219.19] has joined #lisp
+12:06:49 <oleo_> but results are displayed damn fast
+12:06:56 kcj [~casey@unaffiliated/kcj] has joined #lisp
+12:07:23 -!- lyanchih [~lyanchih@202.39.219.19] has quit [Client Quit]
+12:08:41 przl [~przlrkt@62.217.45.197] has joined #lisp
+12:12:05 namtsui [~user@c-76-21-124-173.hsd1.ca.comcast.net] has joined #lisp
+12:12:18 clmsy [~clmsy@212.57.9.204] has joined #lisp
+12:13:05 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Quit: Leaving.]
+12:18:40 <hitecnologys> Greetings.
+12:19:03 <hitecnologys> No dump questions today.
+12:19:03 <fe[nl]ix> hello hitecnologys
+12:19:14 <hitecnologys> How's everybody doing?
+12:20:00 cmack` [~charlie@adsl-74-179-250-229.bna.bellsouth.net] has joined #lisp
+12:21:34 -!- cmack [~charlie@adsl-98-87-43-226.bna.bellsouth.net] has quit [Ping timeout: 240 seconds]
+12:23:40 *hitecnologys* just thought that the previous phrase was probably incorrect.
+12:24:33 <stassats> did you mean "damp"?
+12:24:44 <hitecnologys> Yup.
+12:25:03 <stassats> i'm pulling your leg, sorry
+12:25:23 <hitecnologys> I probably need to sleep more, my mind is full of something weird.
+12:26:46 <hitecnologys> The actual question was: anybody working on something interesting?
+12:27:26 <stassats> why do you want to know?
+12:27:36 <hitecnologys> Just curious.
+12:27:40 <stassats> wouldn't you be rather working on something interesting yourself?
+12:28:25 <hitecnologys> I'm already working on something interesting: that crappy online libraries engine of mine.
+12:29:18 <hitecnologys> (or library engine, I'm not sure how to call it properly)
+12:31:28 <pavelpenev> hitecnologys: I'm in the proccess of finishing up my book, and open sourceing it: https://github.com/pvlpenev/lispwebtales
+12:32:58 dcguru [~chatzilla@66.129.60.130] has joined #lisp
+12:33:12 ubolonto` [~user@117.1.190.134] has joined #lisp
+12:33:59 <stassats> pavelpenev: (make-pathname :name nil :type nil :defaults *load-truename*) doesn't work quite that well
+12:34:02 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+12:34:44 <ogamita> chr``: cl-user> (uptime) / uptime: 1 day, 48 minutes, 15 seconds. / 89295
+12:34:44 <ogamita>  
+12:34:50 <stassats> but figuring it's an .asd file, not many people compile them
+12:34:53 <ogamita> But you have to be forseeing.
+12:35:28 -!- ubolonton [~user@117.1.185.68] has quit [Ping timeout: 268 seconds]
+12:35:28 <ogamita> and quickload com.informatimago.common-lisp.interactive in your rc file.
+12:35:49 <hitecnologys> pavelpenev: I thought you'll never publish it. That's great, I'll read it some time later.
+12:36:22 drmeister [~drmeister@166.137.85.221] has joined #lisp
+12:36:39 <pavelpenev> hitecnologys: moving and starting a job get a monopoly on your time :)
+12:39:44 -!- ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Read error: Connection reset by peer]
+12:39:52 ogamita` [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+12:39:57 ikki [~ikki@201.141.84.216] has joined #lisp
+12:41:51 <pavelpenev> stassats: and my inner script kiddie shows, I copied that from somewhere.
+12:41:56 -!- drmeister [~drmeister@166.137.85.221] has quit [Read error: Connection reset by peer]
+12:41:57 <stassats> pavelpenev: the indentation of the system in http://lispwebtales.ppenev.com/chap07.html#persistence-part-ii-the-ui is a tad off
+12:42:09 <stassats> pavelpenev: it's ok, i haven't noticed at first it being an .asd
+12:42:24 <stassats> pavelpenev: leave it like it is, if only to annoy ogamita`
+12:42:27 -!- dfox [~dfox@94.142.237.120] has quit [Read error: No route to host]
+12:42:34 dfox [~dfox@94.142.237.120] has joined #lisp
+12:43:15 <pavelpenev> stassats: It's a mess, I basically wrote the damn thing as fast as I could, then got a job and two monts later I'm trying to figure out what the hell I did, whats left and how to finish it. Prose is not unlike code :)
+12:43:30 <pavelpenev> stassats: Indentation is wrong in a whole lot of places.
+12:44:08 Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has joined #lisp
+12:48:03 echo-area [~user@123.120.255.5] has joined #lisp
+12:50:36 ogamita`` [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+12:51:40 -!- ogamita`` is now known as ogamita
+12:51:58 -!- theos [~theos@unaffiliated/theos] has quit [Read error: Connection reset by peer]
+12:51:58 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+12:52:19 -!- ogamita` [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Ping timeout: 246 seconds]
+12:52:48 clmsy [~clmsy@212.57.9.204] has joined #lisp
+12:52:53 p_nathan [~Adium@216.57.209.252] has joined #lisp
+12:53:06 theos [~theos@unaffiliated/theos] has joined #lisp
+12:53:54 -!- normanrichards [~normanric@70.114.215.220] has quit []
+12:55:19 eudoxia [~eudoxia@r179-24-22-51.dialup.adsl.anteldata.net.uy] has joined #lisp
+12:56:02 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 264 seconds]
+12:57:09 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Ping timeout: 248 seconds]
+12:57:39 fortitude [~mts@rrcs-24-97-165-124.nys.biz.rr.com] has joined #lisp
+12:57:45 attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has joined #lisp
+13:02:26 lduros [~user@fsf/member/lduros] has joined #lisp
+13:02:29 -!- p_nathan [~Adium@216.57.209.252] has quit [Read error: Connection reset by peer]
+13:03:43 <ogamita> macdice: the best estimation would be a /who #lisp |wc -l :-)
+13:03:49 przl [~przlrkt@62.217.45.197] has joined #lisp
+13:04:37 <ogamita> so 385 lispers world wide here :-)
+13:04:50 <ogamita> (including robots and duplicates).
+13:05:27 <H4ns> github says: remote: fatal: write error: No space left on device :/
+13:05:32 -!- oleo_ [d4b81ecd@gateway/web/freenode/ip.212.184.30.205] has quit []
+13:06:06 <ogamita> :-)
+13:06:08 -!- josemanuel [~josemanue@203.Red-83-40-174.dynamicIP.rima-tde.net] has quit [Quit: Saliendo]
+13:06:09 <ogamita> Bouahahaha!
+13:08:46 Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has joined #lisp
+13:09:50 -!- Munksgaard [~philip@130.225.178.9] has quit [Ping timeout: 240 seconds]
+13:10:57 -!- sthalik [~sthalik@aurora.misaki.pl] has quit [Read error: Connection reset by peer]
+13:11:08 -!- antgreen [~green@dsl-173-206-165-73.tor.primus.ca] has quit [Ping timeout: 240 seconds]
+13:12:02 -!- lduros [~user@fsf/member/lduros] has quit [Remote host closed the connection]
+13:12:52 segv- [~mb@95-91-243-156-dynip.superkabel.de] has joined #lisp
+13:13:42 -!- Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has quit [Ping timeout: 268 seconds]
+13:14:55 -!- gyutyuglf [gyutyuglf@86.126.58.151] has quit []
+13:15:26 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Ping timeout: 245 seconds]
+13:16:46 Munksgaard [~philip@shop3.diku.dk] has joined #lisp
+13:16:50 zacharias [~aw@unaffiliated/zacharias] has joined #lisp
+13:16:54 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+13:18:09 duggiefresh [~duggiefre@64.119.141.126] has joined #lisp
+13:18:24 drmeister [~drmeister@166.137.85.221] has joined #lisp
+13:20:32 -!- drmeister [~drmeister@166.137.85.221] has quit [Read error: Connection reset by peer]
+13:20:43 lyanchih [~lyanchih@114-34-99-241.HINET-IP.hinet.net] has joined #lisp
+13:21:48 normanrichards [~normanric@rrcs-108-178-109-36.sw.biz.rr.com] has joined #lisp
+13:22:20 -!- dcguru [~chatzilla@66.129.60.130] has quit [Quit: ChatZilla 0.9.90.1 [Firefox 23.0.1/20130902133717]]
+13:24:33 <dim> H4ns: I though the Cloud had that problem solved.
+13:26:32 <H4ns> dim: "the steady state of disks is 'full'"
+13:26:38 -!- lyanchih [~lyanchih@114-34-99-241.HINET-IP.hinet.net] has quit [Quit: lyanchih]
+13:26:50 <dim> hehe
+13:27:03 <dim> please wait until after digestion
+13:27:35 scampbell [~scampbell@mail.scampbell.net] has joined #lisp
+13:32:16 loke [~user@2400:d803:7342:f91a:b1d8:9ee5:ab41:1a1b] has joined #lisp
+13:34:24 -!- mishoo [~mishoo@93.113.190.121] has quit [Ping timeout: 248 seconds]
+13:37:36 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 248 seconds]
+13:38:37 przl [~przlrkt@62.217.45.197] has joined #lisp
+13:39:09 -!- gyutyuglf [gyutyuglf@86.126.58.151] has left #lisp
+13:40:28 -!- ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Ping timeout: 240 seconds]
+13:44:20 -!- scampbell [~scampbell@mail.scampbell.net] has quit [Remote host closed the connection]
+13:44:49 ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+13:46:17 lduros [~user@fsf/member/lduros] has joined #lisp
+13:48:08 JuanDaugherty [~Ren@cpe-76-180-168-166.buffalo.res.rr.com] has joined #lisp
+13:51:28 mishoo [~mishoo@93.113.190.121] has joined #lisp
+13:52:09 Joreji [~thomas@vpn-ho1.unidsl.de] has joined #lisp
+13:52:18 -!- sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has quit [Quit: Leaving.]
+13:54:39 nilsi_ [~nilsi@221.146.90.62] has joined #lisp
+13:55:45 Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has joined #lisp
+13:56:06 -!- normanrichards [~normanric@rrcs-108-178-109-36.sw.biz.rr.com] has quit []
+14:00:35 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+14:02:59 clmsy [~clmsy@212.57.9.204] has joined #lisp
+14:05:12 -!- Ayey_ [~rune1@0309ds7-ar.0.fullrate.dk] has quit [Quit: leaving]
+14:05:38 -!- lduros [~user@fsf/member/lduros] has quit [Remote host closed the connection]
+14:07:37 lduros [~user@fsf/member/lduros] has joined #lisp
+14:08:00 yacks [~py@103.6.159.103] has joined #lisp
+14:09:33 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+14:09:34 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+14:09:37 -!- cyphase [~cyphase@unaffiliated/cyphase] has quit [Ping timeout: 240 seconds]
+14:10:14 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+14:10:15 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Read error: Connection reset by peer]
+14:10:40 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+14:10:41 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Read error: Connection reset by peer]
+14:13:48 -!- ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Read error: Connection reset by peer]
+14:16:44 billstclair [~billstcla@unaffiliated/billstclair] has joined #lisp
+14:17:34 -!- segv- [~mb@95-91-243-156-dynip.superkabel.de] has quit [Remote host closed the connection]
+14:17:52 antgreen [green@nat/redhat/x-stnpoucqqvtnisng] has joined #lisp
+14:19:04 segv- [~mb@95-91-243-156-dynip.superkabel.de] has joined #lisp
+14:19:17 -!- weie [~eie@softbank221078042071.bbtec.net] has quit [Ping timeout: 240 seconds]
+14:19:57 sellout- [~Adium@c-67-176-62-45.hsd1.co.comcast.net] has joined #lisp
+14:20:41 <hitecnologys> Ah, damn, I was wrong about questions.
+14:20:51 <Xach> That there are no stupid ones?
+14:20:59 <hitecnologys> Not totally stupid.
+14:22:38 <hitecnologys> Let's say I have two macros. One does something like setting a value in hash table and another takes this value from it. The tricky part is that second macro can't do this because the part that sets this value are not yet evaluated. How can safely and properly make it be evaluated at compile time?
+14:22:54 <hitecnologys> is not yet*
+14:24:04 <hitecnologys> Here's the code, if that's important: https://github.com/HiTECNOLOGYs/Providing/blob/master/src/hooks.lisp. Line 111 and 146.
+14:25:03 wws [~billstcla@p-74-209-21-80.dsl1.rtr.chat.fpma.frpt.net] has joined #lisp
+14:25:05 varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has joined #lisp
+14:26:23 -!- billstclair [~billstcla@unaffiliated/billstclair] has quit [Ping timeout: 245 seconds]
+14:27:37 Mon_Ouie [~Mon_Ouie@subtle/user/MonOuie] has joined #lisp
+14:27:50 <loke> hitecnologys: which macro is it?
+14:27:53 <loke> it's a big file
+14:28:21 <loke> well first of all you forgot :load-toplevel
+14:28:26 <hitecnologys> loke: DEFHOOKABLE and DEFHOOK
+14:28:43 <loke> secondly, the EVAL-WHEN should be _inside_ the macro
+14:28:55 weie [~eie@softbank221078042071.bbtec.net] has joined #lisp
+14:28:56 <hlavaty`> hitecnologys: seems very complicated;  how is hookable stuff idea different from http://www.franz.com/support/documentation/9.0/doc/fwrappers-and-advice.htm ?
+14:30:46 billstclair [~billstcla@unaffiliated/billstclair] has joined #lisp
+14:31:25 drmeister [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+14:31:29 ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has joined #lisp
+14:31:29 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+14:32:05 <hitecnologys> hlavaty`: it supports changing order of execution (some day I'll implement more flexible one) and integration into plugin system.
+14:32:32 -!- wws [~billstcla@p-74-209-21-80.dsl1.rtr.chat.fpma.frpt.net] has quit [Ping timeout: 248 seconds]
+14:32:44 <hitecnologys> loke: oh, it works. Thanks a lot.
+14:33:22 -!- varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has quit [Quit: rcirc on GNU Emacs 24.2.1]
+14:33:25 clmsy [~clmsy@212.57.9.204] has joined #lisp
+14:33:45 <hitecnologys> hlavaty`: actually, the very first idea was to implement dependency mechanism for such "hooks". But then I decided to start with something simpler.
+14:35:06 -!- Vicfred [~Vicfred@187.206.61.47] has quit [Read error: Connection reset by peer]
+14:35:48 jtza8 [~jtza8@105-236-101-9.access.mtnbusiness.co.za] has joined #lisp
+14:35:53 varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has joined #lisp
+14:36:12 -!- yacks [~py@103.6.159.103] has quit [Read error: Operation timed out]
+14:36:14 -!- drmeister [~drmeister@farnsworth.chem.temple.edu] has quit [Ping timeout: 256 seconds]
+14:36:16 -!- billstclair [~billstcla@unaffiliated/billstclair] has quit [Ping timeout: 246 seconds]
+14:36:20 <hitecnologys> hlavaty`: I haven't read the whole article, though. Am I right about changing order?
+14:38:17 <hlavaty`> hitecnologys: http://www.franz.com/support/documentation/9.0/doc/operators/excl/fwrap-order.htm
+14:39:03 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 260 seconds]
+14:39:25 -!- mishoo [~mishoo@93.113.190.121] has quit [Ping timeout: 268 seconds]
+14:39:49 <hlavaty`> the order is simply in a list
+14:40:20 <hitecnologys> hlavaty`: hm, I have different ordering mechanism, but besides that it does pretty the same.
+14:40:58 mishoo [~mishoo@178.138.98.217] has joined #lisp
+14:41:16 -!- mvilleneuve [~mvilleneu@LLagny-156-36-4-214.w80-14.abo.wanadoo.fr] has quit [Ping timeout: 245 seconds]
+14:41:40 <hitecnologys> Now it just have some defined points where "hooks" can be "attached", but I'm working on adding support for something like :before, :after.
+14:42:35 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+14:43:14 -!- mishoo [~mishoo@178.138.98.217] has quit [Client Quit]
+14:43:30 mishoo [~mishoo@178.138.98.217] has joined #lisp
+14:44:58 -!- kiuma [~kiuma@83-103-19-212.ip.fastwebnet.it] has quit [Ping timeout: 268 seconds]
+14:45:59 -!- varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has quit [Quit: rcirc on GNU Emacs 24.2.1]
+14:46:22 varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has joined #lisp
+14:47:07 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 246 seconds]
+14:47:34 -!- jtza8 [~jtza8@105-236-101-9.access.mtnbusiness.co.za] has quit [Ping timeout: 256 seconds]
+14:47:37 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+14:48:31 harish_ [~harish@175.156.117.104] has joined #lisp
+14:50:36 -!- kushal [~kdas@fedora/kushal] has quit [Quit: Leaving]
+14:51:03 scampbell [~scampbell@mail.scampbell.net] has joined #lisp
+14:51:18 Gooder [~user@60.24.141.39] has joined #lisp
+14:54:07 -!- oleo [~oleo@xdsl-78-35-180-182.netcologne.de] has quit [Ping timeout: 246 seconds]
+14:55:20 -!- cmack` is now known as cmack
+14:55:27 przl [~przlrkt@62.217.45.197] has joined #lisp
+14:57:22 oleo [~oleo@xdsl-78-35-155-12.netcologne.de] has joined #lisp
+14:57:42 ludocode_ [~quassel@75-119-234-94.dsl.teksavvy.com] has joined #lisp
+14:57:55 -!- ludocode [~quassel@108.175.230.81] has quit [Ping timeout: 268 seconds]
+15:01:09 kiuma [~kiuma@151.11.163.66] has joined #lisp
+15:01:28 lyanchih [~lyanchih@114-34-99-241.HINET-IP.hinet.net] has joined #lisp
+15:03:38 -!- varlog [brown@c-50-151-36-62.hsd1.in.comcast.net] has quit [Remote host closed the connection]
+15:04:12 p_nathan1 [~Adium@216.57.209.252] has joined #lisp
+15:04:58 -!- ramkrsna [ramkrsna@unaffiliated/ramkrsna] has quit [Ping timeout: 246 seconds]
+15:07:05 -!- jewel_ is now known as jewel
+15:07:49 AK___ [5b9a6e2f@gateway/web/freenode/ip.91.154.110.47] has joined #lisp
+15:10:07 -!- duggiefresh [~duggiefre@64.119.141.126] has quit [Remote host closed the connection]
+15:11:06 optikalmouse [~optikalmo@207-245-237-147.dedicated.allstream.net] has joined #lisp
+15:12:15 -!- kiuma [~kiuma@151.11.163.66] has quit [Read error: Operation timed out]
+15:13:26 -!- p_nathan1 [~Adium@216.57.209.252] has quit [Ping timeout: 264 seconds]
+15:13:54 cyphase [~cyphase@unaffiliated/cyphase] has joined #lisp
+15:14:13 DalekBaldwin [~Adium@74.212.183.186] has joined #lisp
+15:14:48 -!- Munksgaard [~philip@shop3.diku.dk] has quit [Ping timeout: 240 seconds]
+15:14:48 -!- Harag [~Thunderbi@105-236-237-55.access.mtnbusiness.co.za] has quit [Ping timeout: 240 seconds]
+15:16:05 Munksgaard [~philip@shop3.diku.dk] has joined #lisp
+15:19:40 -!- arenz [arenz@nat/ibm/x-skyfwokbfktiwsrp] has quit [Ping timeout: 246 seconds]
+15:20:19 -!- sykopomp [~sykopomp@unaffiliated/sykopomp] has quit [Ping timeout: 240 seconds]
+15:20:49 -!- aerique [310225@xs8.xs4all.nl] has quit [Quit: ...]
+15:20:51 -!- pavelpenev [~quassel@melontech.com] has quit [Remote host closed the connection]
+15:22:29 ramkrsna [ramkrsna@nat/redhat/x-ukairdhnicnywvlp] has joined #lisp
+15:24:08 sykopomp [~sykopomp@unaffiliated/sykopomp] has joined #lisp
+15:24:48 -!- igotnolegs- [~igotnoleg@63-224-120-51.slkc.qwest.net] has quit [Ping timeout: 248 seconds]
+15:25:30 Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has joined #lisp
+15:25:58 -!- clmsy [~clmsy@212.57.9.204] has quit [Remote host closed the connection]
+15:26:46 -!- sellout- [~Adium@c-67-176-62-45.hsd1.co.comcast.net] has quit [Quit: Leaving.]
+15:31:26 -!- oudeis [~oudeis@bzq-109-67-136-32.red.bezeqint.net] has quit [Ping timeout: 240 seconds]
+15:31:28 igotnolegs- [~igotnoleg@67-2-122-205.slkc.qwest.net] has joined #lisp
+15:31:35 sellout- [~Adium@66.185.108.211] has joined #lisp
+15:31:40 -!- zickzackv [~faot@port-92-198-30-130.static.qsc.de] has quit [Ping timeout: 264 seconds]
+15:32:38 -!- Gooder [~user@60.24.141.39] has quit [Ping timeout: 264 seconds]
+15:33:06 normanrichards [~normanric@rrcs-108-178-120-144.sw.biz.rr.com] has joined #lisp
+15:34:03 jlongster [~user@pool-173-53-114-190.rcmdva.fios.verizon.net] has joined #lisp
+15:35:17 Nuupi [~IceChat9@a91-154-110-47.elisa-laajakaista.fi] has joined #lisp
+15:36:20 -!- ikki [~ikki@201.141.84.216] has quit [Quit: Saliendo]
+15:40:42 k0001 [~k0001@host2.190-229-208.telecom.net.ar] has joined #lisp
+15:41:37 -!- nilsi_ [~nilsi@221.146.90.62] has quit [Remote host closed the connection]
+15:44:23 corni [~corni@drupal.org/user/136353/view] has joined #lisp
+15:44:47 -!- AK___ [5b9a6e2f@gateway/web/freenode/ip.91.154.110.47] has quit [Ping timeout: 250 seconds]
+15:46:28 bgs100 [~nitrogen@unaffiliated/bgs100] has joined #lisp
+15:47:27 -!- zacharias [~aw@unaffiliated/zacharias] has quit [Ping timeout: 252 seconds]
+15:48:59 -!- normanrichards [~normanric@rrcs-108-178-120-144.sw.biz.rr.com] has quit []
+15:49:22 Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has joined #lisp
+15:50:09 nipra [~nipra@122.177.23.253] has joined #lisp
+15:52:40 kushal [~kdas@fedora/kushal] has joined #lisp
+15:52:51 developernotes [~developer@173-18-189-145.client.mchsi.com] has joined #lisp
+15:53:17 -!- edgar-rft [~GOD@HSI-KBW-109-193-013-113.hsi7.kabel-badenwuerttemberg.de] has quit [Quit: connection abandoned because all hope lost]
+15:55:57 clmsy [~clmsy@212.57.9.204] has joined #lisp
+15:57:07 didi [~user@unaffiliated/didi/x-1022147] has joined #lisp
+15:59:14 -!- Okasu [~1@unaffiliated/okasu] has quit [Quit: leaving]
+16:00:50 jtza8 [~jtza8@105-236-101-9.access.mtnbusiness.co.za] has joined #lisp
+16:01:25 -!- lyanchih [~lyanchih@114-34-99-241.HINET-IP.hinet.net] has quit [Quit: lyanchih]
+16:02:22 mvilleneuve [~mvilleneu@LLagny-156-36-4-214.w80-14.abo.wanadoo.fr] has joined #lisp
+16:03:26 billstclair [~billstcla@unaffiliated/billstclair] has joined #lisp
+16:05:39 Oddity [~Oddity@unaffiliated/oddity] has joined #lisp
+16:06:34 -!- Code_Man [~Adolf-Cha@185-206.5-85.cust.bluewin.ch] has quit [Remote host closed the connection]
+16:10:08 svs_ [~svs@104-252-AGAVEBB-NM.abq.nm.agavebb.net] has joined #lisp
+16:10:26 -!- jewel [~jewel@105-237-57-251.access.mtnbusiness.co.za] has quit [Ping timeout: 264 seconds]
+16:10:52 -!- Vivitron [~Vivitron@c-50-172-44-193.hsd1.il.comcast.net] has quit [Ping timeout: 256 seconds]
+16:12:31 -!- stassats [~stassats@wikipedia/stassats] has quit [Ping timeout: 245 seconds]
+16:14:29 dtw [~dtw@pdpc/supporter/active/dtw] has joined #lisp
+16:16:00 scmaccal [~scmaccal@169.244.99.10] has joined #lisp
+16:17:07 -!- mvilleneuve [~mvilleneu@LLagny-156-36-4-214.w80-14.abo.wanadoo.fr] has quit [Quit: Leaving]
+16:21:41 p_nathan [~Adium@216.57.209.252] has joined #lisp
+16:24:00 boian [~boian@5.53.168.6] has joined #lisp
+16:24:36 arquebus [~frath@c-107-3-164-239.hsd1.ca.comcast.net] has joined #lisp
+16:26:42 Pullphinger [~Pullphing@12.40.23.68] has joined #lisp
+16:31:51 -!- boian [~boian@5.53.168.6] has quit [Quit: Lingo - http://www.lingoirc.com]
+16:32:30 -!- gravicappa [~gravicapp@ppp91-77-173-229.pppoe.mtu-net.ru] has quit [Ping timeout: 245 seconds]
+16:35:48 -!- hitecnologys [~hitecnolo@46.233.252.39] has quit [Quit: hitecnologys]
+16:40:29 pavelpenev [~quassel@130-204-14-33.2075264485.ddns.cablebg.net] has joined #lisp
+16:42:24 -!- felideon [~felideon@199.241.28.84] has quit [Quit: WeeChat 0.4.0]
+16:43:49 felideon [~felideon@199.241.28.84] has joined #lisp
+16:46:18 ashish__ [having@badti.me] has joined #lisp
+16:49:52 kliph [~user@unaffiliated/kliph] has joined #lisp
+16:49:55 oudeis [~oudeis@bzq-79-182-131-40.red.bezeqint.net] has joined #lisp
+16:50:49 rainbyte16 [~rainbyte@190.191.129.32] has joined #lisp
+16:51:06 -!- ck`` [~ck@dslb-094-219-251-096.pools.arcor-ip.net] has quit [Ping timeout: 264 seconds]
+16:53:15 -!- ogamita [~t@LNantes-156-76-35-103.w82-127.abo.wanadoo.fr] has quit [Ping timeout: 248 seconds]
+16:57:11 -!- scmaccal [~scmaccal@169.244.99.10] has quit [Ping timeout: 260 seconds]
+16:57:13 -!- mishoo [~mishoo@178.138.98.217] has quit [Read error: Connection reset by peer]
+16:58:14 -!- spacefrogg [~spacefrog@unaffiliated/spacefrogg] has quit [Quit: spacefrogg]
+16:58:21 mishoo [~mishoo@178.138.98.217] has joined #lisp
+16:58:43 -!- przl [~przlrkt@62.217.45.197] has quit [Ping timeout: 246 seconds]
+17:02:32 shridhar [Shridhar@nat/redhat/x-czjpguhxnahapube] has joined #lisp
+17:03:08 -!- oudeis [~oudeis@bzq-79-182-131-40.red.bezeqint.net] has quit [Ping timeout: 240 seconds]
+17:03:16 -!- rainbyte16 [~rainbyte@190.191.129.32] has quit [Quit: Leaving]
+17:03:42 -!- ramkrsna [ramkrsna@nat/redhat/x-ukairdhnicnywvlp] has quit [Quit: Leaving]
+17:03:43 rainbyte16 [~rainbyte@190.191.129.32] has joined #lisp
+17:04:08 -!- DalekBaldwin [~Adium@74.212.183.186] has quit [Quit: Leaving.]
+17:05:22 ln [~l@84.233.246.170] has joined #lisp
+17:07:19 gravicappa [~gravicapp@ppp91-77-187-226.pppoe.mtu-net.ru] has joined #lisp
+17:07:37 -!- ln [~l@84.233.246.170] has left #lisp
+17:08:31 scmaccal [~scmaccal@169.244.99.10] has joined #lisp
+17:08:38 -!- arquebus [~frath@c-107-3-164-239.hsd1.ca.comcast.net] has quit [Quit: Konversation terminated!]
+17:08:42 -!- ehu [~ehu@109.34.49.254] has quit [Ping timeout: 240 seconds]
+17:09:46 BlankVer1e [~pankajm@202.3.77.238] has joined #lisp
+17:13:40 LiamH [~healy@pdp8.nrl.navy.mil] has joined #lisp
+17:14:02 rrs [~rrs@76.191.32.18] has joined #lisp
+17:15:03 bitonic` [~user@xdsl-188-155-179-93.adslplus.ch] has joined #lisp
+17:15:23 -!- Joreji [~thomas@vpn-ho1.unidsl.de] has quit [Ping timeout: 260 seconds]
+17:17:31 -!- corni [~corni@drupal.org/user/136353/view] has quit [Read error: Connection timed out]
+17:18:11 corni [~corni@HSI-KBW-046-005-249-023.hsi8.kabel-badenwuerttemberg.de] has joined #lisp
+17:18:13 -!- corni [~corni@HSI-KBW-046-005-249-023.hsi8.kabel-badenwuerttemberg.de] has quit [Changing host]
+17:18:13 corni [~corni@drupal.org/user/136353/view] has joined #lisp
+17:19:44 Okasu [~1@unaffiliated/okasu] has joined #lisp
+17:19:44 -!- Okasu [~1@unaffiliated/okasu] has quit [Client Quit]
+17:20:14 Okasu [~1@unaffiliated/okasu] has joined #lisp
+17:20:53 -!- fourier1 [~fourier@c193-150-241-109.bredband.comhem.se] has quit [Read error: Connection reset by peer]
+17:20:54 fourier [~fourier@fsf/member/fourier] has joined #lisp
+17:21:31 -!- Munksgaard [~philip@shop3.diku.dk] has quit [Ping timeout: 248 seconds]
+17:22:23 -!- scmaccal [~scmaccal@169.244.99.10] has quit [Read error: Connection reset by peer]
+17:22:35 -!- lduros [~user@fsf/member/lduros] has quit [Read error: Connection reset by peer]
+17:23:10 scmaccal [~scmaccal@169.244.99.10] has joined #lisp
+17:23:18 lduros [~user@fsf/member/lduros] has joined #lisp
+17:23:18 Munksgaard [~philip@shop3.diku.dk] has joined #lisp
+17:24:15 -!- Pullphinger [~Pullphing@12.40.23.68] has quit []
+17:28:46 whiteline [~user@unaffiliated/whiteline] has joined #lisp
+17:29:44 <rrs> lispers, would someone explain why this breaks http://pastebin.com/ruUTUW7G
+17:30:23 <rrs> i already posted a more detailed description at comp.lang.lisp, but it's really itching
+17:31:01 <Bike> what is "defmacro/g!"?
+17:31:15 <Bike> i'm going to guess that you want ,', though
+17:32:06 ejohnson [~Thunderbi@c-67-181-201-173.hsd1.ca.comcast.net] has joined #lisp
+17:32:31 <rrs> well: defmacro/g! is a macro that recognizes g! symbols
+17:32:42 <rrs> and wraps the form in gensym
+17:32:47 <Bike> if g!abc is just a gensym then yeah, you want ,', instead of ,,
+17:32:50 the2ndlaw [~l@84.233.246.170] has joined #lisp
+17:32:57 <rrs> sorry, forgot to add explanation ...
+17:33:04 <rrs> it's from the LoL book ...
+17:33:39 <Bike> does this fix it?
+17:33:48 -!- the2ndlaw [~l@84.233.246.170] has left #lisp
+17:34:14 rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has joined #lisp
+17:34:38 -!- srcerer [~chatzilla@dns2.klsairexpress.com] has quit [Quit: ChatZilla 0.9.90.1 [Firefox 23.0.1/20130814063812]]
+17:36:16 srcerer [~chatzilla@dns2.klsairexpress.com] has joined #lisp
+17:36:55 <rrs> ok ... let me try that ... right, it does ...
+17:38:05 -!- scmaccal [~scmaccal@169.244.99.10] has quit [Read error: Connection reset by peer]
+17:38:52 scmaccal [~scmaccal@169.244.99.10] has joined #lisp
+17:39:54 <rrs> thanks, i guess i should thik through it again to see why i can capture the inner gensym with ,g!abc but not the outer
+17:40:04 <Bike> right. , unquotes once, giving you the gensym. , again unquotes again, giving you the value of the gensym, but the gensym is unbound.
+17:40:23 <rrs> with ,,g!abc
+17:43:55 -!- jlongster [~user@pool-173-53-114-190.rcmdva.fios.verizon.net] has quit [Remote host closed the connection]
+17:44:22 ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has joined #lisp
+17:51:30 fisxoj [~fisxoj@2620:101:f000:9c00:224:7eff:feda:1209] has joined #lisp
+17:53:08 -!- kushal [~kdas@fedora/kushal] has quit [Quit: Leaving]
+17:56:41 DalekBaldwin [~Adium@74.212.183.186] has joined #lisp
+17:57:28 -!- doomlord_ [~servitor@host109-151-64-15.range109-151.btcentralplus.com] has quit [Read error: Connection reset by peer]
+17:58:01 jlongster [~user@pool-173-53-114-190.rcmdva.fios.verizon.net] has joined #lisp
+17:58:30 scripty [~scripty@117.216.147.174] has joined #lisp
+18:02:34 -!- rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has quit [Read error: Connection reset by peer]
+18:06:18 -!- beach [~user@ABordeaux-651-1-170-195.w90-5.abo.wanadoo.fr] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+18:07:08 doomlord_ [~servitor@host109-151-64-15.range109-151.btcentralplus.com] has joined #lisp
+18:07:21 jrghiglia [~user@dynamic-adsl-78-13-176-250.clienti.tiscali.it] has joined #lisp
+18:08:14 yacks [~py@103.6.159.103] has joined #lisp
+18:08:53 -!- developernotes [~developer@173-18-189-145.client.mchsi.com] has quit []
+18:09:33 spintronic [jovan@162-202-67-158.lightspeed.livnmi.sbcglobal.net] has joined #lisp
+18:11:20 rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has joined #lisp
+18:11:31 -!- ASau [~user@p5797F03E.dip0.t-ipconnect.de] has quit [Ping timeout: 246 seconds]
+18:11:34 -!- sirdancealo2 [~sirdancea@194.228.11.188] has quit [Ping timeout: 256 seconds]
+18:12:07 <spintronic> (+ 2 2)
+18:12:22 <didi> => 4
+18:12:40 <spintronic> heh heh a human lisp machine
+18:13:24 <didi> It's very buggy tho.
+18:13:47 <eudoxia> as soon as the technology becomes available i'd like to get some kind of neuro augmentation that runs a CL compiler
+18:13:53 <eudoxia> so i could code ~on the go~
+18:13:58 <spintronic> ha ha
+18:14:45 <adeht> first people got into cars..... then cars got into people
+18:15:18 <eudoxia> hahahahahah
+18:16:58 -!- eudoxia [~eudoxia@r179-24-22-51.dialup.adsl.anteldata.net.uy] has quit [Quit: Leaving]
+18:17:04 <spintronic> There are 978 symbols in the COMMON-LISP package. Who here has them all memorized?
+18:18:05 -!- attila_lendvai [~attila_le@unaffiliated/attila-lendvai/x-3126965] has quit [Quit: Leaving.]
+18:18:23 <didi> specbot, probably.
+18:19:19 <Tuxedo> I probably can't even remember all the keywords in C89.
+18:19:24 <Tuxedo> And there were only 32 of those.
+18:20:11 -!- fisxoj [~fisxoj@2620:101:f000:9c00:224:7eff:feda:1209] has quit [Ping timeout: 245 seconds]
+18:20:20 <spintronic> So neuro augmentation is really necessary then.
+18:20:41 ehu [~ehu@ip167-22-212-87.adsl2.static.versatel.nl] has joined #lisp
+18:21:46 -!- Munksgaard [~philip@shop3.diku.dk] has quit [Ping timeout: 256 seconds]
+18:24:01 sirdancealo2 [~sirdancea@194.228.11.188] has joined #lisp
+18:24:02 -!- rainbyte16 [~rainbyte@190.191.129.32] has quit [Quit: Leaving]
+18:24:25 drmeister [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+18:24:52 -!- hlavaty` [~user@friedrichstrasse.knowledgetools.de] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+18:27:08 -!- ejohnson [~Thunderbi@c-67-181-201-173.hsd1.ca.comcast.net] has quit [Ping timeout: 240 seconds]
+18:27:47 klltkr [~klltkr@unaffiliated/klltkr] has joined #lisp
+18:28:06 Overv [~Overv@5356AD35.cm-6-7c.dynamic.ziggo.nl] has joined #lisp
+18:28:26 -!- Overv [~Overv@5356AD35.cm-6-7c.dynamic.ziggo.nl] has left #lisp
+18:29:52 -!- bitonic` [~user@xdsl-188-155-179-93.adslplus.ch] has quit [Ping timeout: 248 seconds]
+18:30:08 -!- ozzloy_ is now known as ozzloy
+18:30:17 -!- ozzloy [~ozzloy@ozzloy.lifeafterking.org] has quit [Changing host]
+18:30:17 ozzloy [~ozzloy@unaffiliated/ozzloy] has joined #lisp
+18:30:41 <Tuxedo> I'm counting on it.
+18:31:21 -!- Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has quit [Ping timeout: 252 seconds]
+18:31:49 -!- nipra [~nipra@122.177.23.253] has quit [Ping timeout: 246 seconds]
+18:33:15 Bike [~Glossina@wl-nat105.it.wsu.edu] has joined #lisp
+18:33:32 oudeis [~oudeis@bzq-79-182-131-40.red.bezeqint.net] has joined #lisp
+18:36:41 <jasom> spintronic: It's much easier to remember what all of them *do* than it is to memorize the list of them (since most names are mnemonic)
+18:36:42 <pjb> didi: (lisp-implementation-type)
+18:36:55 <pjb> didi: (truncate 10 3)
+18:37:12 <jasom> => 3 ; 1
+18:37:23 <pjb> didi: (make-pathname :name "HELLO" :type "TEXT" :case :common)
+18:37:59 -!- p_l [~pl@tsugumi.brage.info] has quit [Ping timeout: 260 seconds]
+18:38:39 ericmathison [~ericmathi@172-15-249-133.lightspeed.irvnca.sbcglobal.net] has joined #lisp
+18:38:46 <jasom> Tuxedo: I can tell you what any given keyword from c89 does, though I probably can't list them all
+18:38:47 <didi> => memory fault; dumping
+18:39:25 ASau [~user@p5797F03E.dip0.t-ipconnect.de] has joined #lisp
+18:40:48 <Tuxedo> I got about half of them just now.
+18:41:11 <jasom> jasom's tenth rule: any sufficiently experienced lisp developer has a buggy ill-specified implementation of half of common lisp in his/her brain
+18:41:32 <Tuxedo> I'm kind of proud that I forgot "volatile", in particular.
+18:41:47 <jasom> Tuxedo: I do embedded development for a living, so no way I forget that one
+18:42:19 <jasom> I'd probably for get the dozen or so reserved for future use
+18:42:22 -!- mishoo [~mishoo@178.138.98.217] has quit [Read error: Connection reset by peer]
+18:42:33 mishoo [~mishoo@93.113.190.121] has joined #lisp
+18:42:39 <JuanDaugherty> jasom: where does the "tenth" come in?
+18:42:43 <redline6561> I remember recently seeing a cute CL macro for lisp-1 style function invocation. Does anyone remember where it was?
+18:43:05 <JuanDaugherty> (since "any" usually implies a larger fraction)
+18:43:33 <JuanDaugherty> or I guess what are the other 9
+18:43:51 <sellout-> JuanDaugherty: sellouts eighty-fourth rule: All made-up rules have a random sequence number included to increase credibility.
+18:43:55 <jasom> JuanDaugherty: http://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule
+18:44:16 <JuanDaugherty> k
+18:45:17 p_l [~pl@tsugumi.brage.info] has joined #lisp
+18:46:25 <jasom> I actually spent some time digging through the C standard, and you can make a strongly garbage collected C implementation that doesn't violate the C spec
+18:46:42 -!- cruxeter1us is now known as cruxeternus
+18:47:25 <jasom> since any access to an object by a non-character type defines the type of an object.
+18:47:52 <jasom> so heterogenously using the results of a malloc is techincally undefined behavior
+18:48:48 <Quadrescence> jasom, IIRC, the Symbolics implementation of C had free(3) as a no-op
+18:48:58 <Quadrescence> but I may be misremembering
+18:49:09 <jasom> and implementations are not required to provide conversions between integers and pointers (but if they do, it must be reversible assuming the integer is large enough)
+18:49:50 <Tuxedo> Luckily, all the C code ever written is very strictly adherent to the spec.
+18:51:04 <Quadrescence> hm, maybe you haven't written anything substantial then? ;)
+18:51:22 przl [~przlrkt@p5792247C.dip0.t-ipconnect.de] has joined #lisp
+18:52:00 <Tuxedo> Nor read anything substantial.
+18:52:01 <sellout-> Tuxedo / jasom: Yeah, actually, I was working on a platform with a system-wide GC and other scoped memory stuff that would allow a conforming C implementation (EG, with bounds-checking), but not a lot of the abused tricks that work elsewhere.
+18:52:41 <sellout-> Never did actually get to write a C complier for it, though :/
+18:55:14 <jasom> Didn't someone do a full C implementation in CL?
+18:55:21 <p_l> in ZetaLisp
+18:55:28 -!- mishoo [~mishoo@93.113.190.121] has quit [Ping timeout: 240 seconds]
+18:55:28 <jasom> p_l: no, more recently
+18:55:53 <p_l> hmm... I don't think so. Well, unless you consider something that runs some kind of bytecode etc.
+18:56:32 mishoo [~mishoo@178.138.98.217] has joined #lisp
+18:56:40 <p_l> I think there's an unfinished-but-running JVM done in CL, as well as working compiling JavaScript implementation (thus a target for C->JS->CL drug trip)
+18:57:35 <jasom> https://github.com/vsedach/Vacietis
+18:57:40 <fortitude> jasom: beat me to it
+18:57:46 -!- ludocode_ [~quassel@75-119-234-94.dsl.teksavvy.com] has quit [Ping timeout: 240 seconds]
+18:58:01 ludocode [~quassel@206-248-156-157.dsl.teksavvy.com] has joined #lisp
+18:58:46 <jasom> p_l: and it was inspired by zeta c
+18:59:03 <p_l> hmm
+19:02:57 rainbyte16 [~rainbyte@190.191.129.32] has joined #lisp
+19:03:30 -!- dtw [~dtw@pdpc/supporter/active/dtw] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+19:04:44 knob9876 [~knob@76.76.202.244] has joined #lisp
+19:05:56 tolk [~user@host175.190-138-194.telecom.net.ar] has joined #lisp
+19:06:26 -!- scmaccal [~scmaccal@169.244.99.10] has quit [Ping timeout: 268 seconds]
+19:07:50 -!- knob [~knob@76.76.202.244] has quit [Ping timeout: 240 seconds]
+19:19:36 -!- rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has quit [Read error: Connection reset by peer]
+19:19:47 -!- hiroakip [~hiroaki@77-23-26-6-dynip.superkabel.de] has quit [Read error: Connection reset by peer]
+19:25:12 MoHaX [~luke@178.122.111.79] has joined #lisp
+19:25:12 namccarty [~namccarty@74-131-94-214.dhcp.insightbb.com] has joined #lisp
+19:30:51 rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has joined #lisp
+19:31:05 -!- drmeister [~drmeister@farnsworth.chem.temple.edu] has quit [Remote host closed the connection]
+19:31:18 -!- przl [~przlrkt@p5792247C.dip0.t-ipconnect.de] has quit [Quit: leaving]
+19:32:36 -!- nisstyre [~yours@oftn/member/Nisstyre] has quit [Quit: Leaving]
+19:33:06 youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has joined #lisp
+19:33:45 ethank [~ethank@175.210.205.42] has joined #lisp
+19:37:28 -!- ethank [~ethank@175.210.205.42] has quit []
+19:37:52 -!- ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has quit [Remote host closed the connection]
+19:38:24 ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has joined #lisp
+19:40:16 -!- ggole [~ggole@106-68-158-195.dyn.iinet.net.au] has quit []
+19:40:53 -!- desophos [~desophos@n138h11.dhcp.oxy.edu] has quit [Ping timeout: 248 seconds]
+19:42:03 Yanez [~Thunderbi@159.178.28.52] has joined #lisp
+19:42:27 -!- Bike [~Glossina@wl-nat105.it.wsu.edu] has quit [Ping timeout: 240 seconds]
+19:42:56 -!- rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has quit [Ping timeout: 248 seconds]
+19:43:28 -!- knob9876 [~knob@76.76.202.244] has quit [Quit: Leaving]
+19:44:37 Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has joined #lisp
+19:45:54 -!- MoHaX [~luke@178.122.111.79] has quit [Ping timeout: 268 seconds]
+19:46:57 joe9 [~user@ip70-179-153-227.fv.ks.cox.net] has joined #lisp
+19:50:39 kushal [~kdas@fedora/kushal] has joined #lisp
+19:51:58 ejohnson [~Thunderbi@c-67-181-201-173.hsd1.ca.comcast.net] has joined #lisp
+19:52:32 desophos [~desophos@n138h11.dhcp.oxy.edu] has joined #lisp
+19:53:23 MoHaX [~luke@178.122.223.48] has joined #lisp
+19:58:43 jewel [~jewel@105-237-57-251.access.mtnbusiness.co.za] has joined #lisp
+19:59:23 rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has joined #lisp
+20:01:43 drmeister [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+20:03:28 -!- cnl [~pony@95.83.189.134] has quit [Ping timeout: 264 seconds]
+20:05:25 -!- prxq_ is now known as prxq
+20:08:28 nug700 [~nug700@209-181-103-104.phnx.qwest.net] has joined #lisp
+20:10:48 -!- drmeister [~drmeister@farnsworth.chem.temple.edu] has quit [Ping timeout: 240 seconds]
+20:10:53 drmeiste_ [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+20:13:58 -!- jewel [~jewel@105-237-57-251.access.mtnbusiness.co.za] has quit [Ping timeout: 256 seconds]
+20:14:04 -!- spintronic [jovan@162-202-67-158.lightspeed.livnmi.sbcglobal.net] has quit [Quit: Lost terminal]
+20:14:16 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 268 seconds]
+20:14:40 -!- antgreen [green@nat/redhat/x-stnpoucqqvtnisng] has quit [Ping timeout: 265 seconds]
+20:14:53 hiroakip [~hiroaki@77-23-26-6-dynip.superkabel.de] has joined #lisp
+20:18:30 -!- xk05 [~xk05@30.176-62-69.ftth.swbr.surewest.net] has quit [Ping timeout: 256 seconds]
+20:18:49 -!- dmiles_afk [~dmiles@c-98-246-180-47.hsd1.or.comcast.net] has quit [Read error: Connection reset by peer]
+20:19:39 -!- klltkr [~klltkr@unaffiliated/klltkr] has quit [Ping timeout: 248 seconds]
+20:19:48 spion [~spion@unaffiliated/spion] has joined #lisp
+20:19:58 -!- yano [yano@freenode/staff/yano] has quit [Quit: WeeChat, The Better IRC Client: http://weechat.org/]
+20:20:00 -!- spion [~spion@unaffiliated/spion] has left #lisp
+20:21:00 dmiles_afk [~dmiles@c-98-246-180-47.hsd1.or.comcast.net] has joined #lisp
+20:21:14 -!- drmeiste_ [~drmeister@farnsworth.chem.temple.edu] has quit [Remote host closed the connection]
+20:21:54 -!- nightfly [sage@destiny.cat.pdx.edu] has quit [Ping timeout: 256 seconds]
+20:22:12 yano [yano@freenode/staff/yano] has joined #lisp
+20:27:41 -!- rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has quit [Quit: rpg]
+20:27:45 -!- mishoo [~mishoo@178.138.98.217] has quit [Read error: Connection reset by peer]
+20:29:47 drmeister [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+20:29:59 sdemarre [~serge@22.164-64-87.adsl-dyn.isp.belgacom.be] has joined #lisp
+20:31:09 JohnnyWho [~JohnnyWho@ppp-94-65-195-33.home.otenet.gr] has joined #lisp
+20:33:38 xk05 [~xk05@30.176-62-69.ftth.swbr.surewest.net] has joined #lisp
+20:33:48 -!- angavrilov [~angavrilo@217.71.227.190] has quit [Remote host closed the connection]
+20:36:13 <dim> Xach: using buildapp, which priority is given to the manifest wrt the --asdf-tree multiple options?
+20:37:27 *dim* hopes it depend on the CLI order
+20:38:50 <dim> ok it's the case
+20:38:51 drmeiste_ [~drmeister@farnsworth.chem.temple.edu] has joined #lisp
+20:38:54 <dim> and I fixed it ;-)
+20:39:05 -!- scripty [~scripty@117.216.147.174] has left #lisp
+20:39:30 kdas__ [~kdas@114.143.166.78] has joined #lisp
+20:40:56 -!- kushal [~kdas@fedora/kushal] has quit [Disconnected by services]
+20:41:04 -!- kdas__ is now known as kushal
+20:41:16 -!- kushal [~kdas@114.143.166.78] has quit [Changing host]
+20:41:16 kushal [~kdas@fedora/kushal] has joined #lisp
+20:42:22 -!- yacks [~py@103.6.159.103] has quit [Ping timeout: 246 seconds]
+20:47:57 -!- corni [~corni@drupal.org/user/136353/view] has quit [Quit: Ex-Chat]
+20:48:44 ldionmarcil [~maden@98.143.210.218] has joined #lisp
+20:48:55 -!- ldionmarcil [~maden@98.143.210.218] has quit [Changing host]
+20:48:55 ldionmarcil [~maden@unaffiliated/maden] has joined #lisp
+20:49:53 -!- Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has quit [Quit: brb]
+20:52:05 -!- xk05 [~xk05@30.176-62-69.ftth.swbr.surewest.net] has quit [Quit: Leaving]
+20:52:49 -!- Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has quit [Ping timeout: 240 seconds]
+20:53:10 -!- Okasu [~1@unaffiliated/okasu] has quit [Quit: leaving]
+20:53:52 -!- stepnem [~stepnem@internet2.cznet.cz] has quit [Ping timeout: 248 seconds]
+20:57:02 rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has joined #lisp
+20:59:16 Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has joined #lisp
+21:00:06 -!- rainbyte16 [~rainbyte@190.191.129.32] has quit [Quit: Leaving]
+21:01:03 -!- scampbell [~scampbell@mail.scampbell.net] has quit [Quit: Leaving]
+21:01:10 -!- gravicappa [~gravicapp@ppp91-77-187-226.pppoe.mtu-net.ru] has quit [Remote host closed the connection]
+21:01:47 bananagram [~bot@c-76-30-158-226.hsd1.tx.comcast.net] has joined #lisp
+21:02:38 mlamari_ [~quassel@72.183.103.226] has joined #lisp
+21:03:30 Bike [~Glossina@wl-nat101.it.wsu.edu] has joined #lisp
+21:04:01 dsp__ [~dsp@technoanimal.net] has joined #lisp
+21:04:08 -!- mlamari [~quassel@72.183.103.226] has quit [Read error: Connection reset by peer]
+21:04:08 -!- dsp_ [~dsp@technoanimal.net] has quit [Read error: Connection reset by peer]
+21:04:18 -!- ivan\ [~ivan@unaffiliated/ivan/x-000001] has quit [Ping timeout: 264 seconds]
+21:04:49 -!- Kabaka [~Kabaka@botters/kabaka] has quit [Ping timeout: 240 seconds]
+21:04:56 ceverett [~ceverett@FL1-119-244-165-183.okn.mesh.ad.jp] has joined #lisp
+21:05:14 -!- antoszka [~antoszka@unaffiliated/antoszka] has quit [Quit: +++ killed by SIGSEGV +++]
+21:05:28 yacks [~py@103.6.159.103] has joined #lisp
+21:05:30 -!- Yanez [~Thunderbi@159.178.28.52] has quit [Ping timeout: 264 seconds]
+21:05:53 -!- zxq9 [~ceverett@FL1-119-244-165-183.okn.mesh.ad.jp] has quit [Remote host closed the connection]
+21:05:56 gyutyuglf [gyutyuglf@86.126.58.151] has joined #lisp
+21:06:06 -!- EvW [~Thunderbi@a82-92-190-215.adsl.xs4all.nl] has quit [Ping timeout: 264 seconds]
+21:06:22 ivan\ [~ivan@unaffiliated/ivan/x-000001] has joined #lisp
+21:06:45 EvW [~Thunderbi@a82-92-190-215.adsl.xs4all.nl] has joined #lisp
+21:07:10 -!- zenoli [~pk@109.201.152.13] has quit [Ping timeout: 240 seconds]
+21:07:29 -!- alezost [~user@128-70-203-73.broadband.corbina.ru] has quit [Quit: ERC Version 5.3 (IRC client for Emacs)]
+21:07:30 Yanez [~Thunderbi@159.178.28.52] has joined #lisp
+21:08:27 jgjgjgkjg [~wde@78-129-38.adsl.cyta.gr] has joined #lisp
+21:08:58 antoszka [~antoszka@unaffiliated/antoszka] has joined #lisp
+21:10:06 <dim> So I'm dumping a lisp image (and kernel) into a standalone binary executable file that I then want to ship. Currently, only supported implementation is SBCL. Is it possible for that binary to expose the --dynamic-space-size to its users?
+21:11:15 -!- gyutyuglf [gyutyuglf@86.126.58.151] has left #lisp
+21:13:29 bitonic` [~user@xdsl-188-155-179-93.adslplus.ch] has joined #lisp
+21:17:01 klltkr [~klltkr@unaffiliated/klltkr] has joined #lisp
+21:19:15 -!- Yanez [~Thunderbi@159.178.28.52] has quit [Quit: Yanez]
+21:20:20 -!- arnas [arnsa@78-63-18-208.static.zebra.lt] has quit []
+21:20:59 -!- klltkr [~klltkr@unaffiliated/klltkr] has quit [Read error: Operation timed out]
+21:23:40 -!- Mon_Ouie [~Mon_Ouie@subtle/user/MonOuie] has quit [Ping timeout: 256 seconds]
+21:23:41 zophy [~sy@host-98-218-220-24.midco.net] has joined #lisp
+21:24:26 -!- maxter [~maxter@gaffeless.chaperon.volia.net] has quit [Remote host closed the connection]
+21:24:39 <rpg> dim: I'm not in a position to answer.  You might try #sbcl if you don't have any luck here.
+21:25:26 Mon_Ouie [~Mon_Ouie@subtle/user/MonOuie] has joined #lisp
+21:25:26 <dim> mmm, will try at a better time tomorrow ;-)
+21:25:29 ckoch786 [~cory@107-219-7-73.lightspeed.toldoh.sbcglobal.net] has joined #lisp
+21:26:19 -!- jgjgjgkjg [~wde@78-129-38.adsl.cyta.gr] has quit [Quit: quit]
+21:27:25 -!- mrSpec [~Spec@unaffiliated/mrspec] has quit [Remote host closed the connection]
+21:30:04 -!- JohnnyWho [~JohnnyWho@ppp-94-65-195-33.home.otenet.gr] has quit [Quit: Leaving]
+21:30:06 Munksgaard [~philip@80-71-132-106.u.parknet.dk] has joined #lisp
+21:32:04 -!- shridhar is now known as shridhar_afk
+21:33:57 -!- kliph [~user@unaffiliated/kliph] has quit [Ping timeout: 248 seconds]
+21:34:40 -!- sdemarre [~serge@22.164-64-87.adsl-dyn.isp.belgacom.be] has quit [Ping timeout: 264 seconds]
+21:35:33 -!- ejohnson [~Thunderbi@c-67-181-201-173.hsd1.ca.comcast.net] has quit [Ping timeout: 248 seconds]
+21:35:38 k0001_ [~k0001@host115.190-137-200.telecom.net.ar] has joined #lisp
+21:36:36 <jasom> dim: f you don't specify :save-runtime-options then you don't need to do anything to expose --dynamic-space-size
+21:37:17 <dim> let's try that then, I don't know (yet) what buildapp is doing here
+21:37:33 <jasom> dim: buildap uses :save-runtime-options
+21:37:36 <dim> (COMMAND-LINE-ARGUMENTS::PROCESS-OPTION "dynamic-space-size" NIL NIL #<unavailable argument> NIL NIL)
+21:37:49 <dim> and I'm managing the command line myself it seems
+21:38:14 <dim> what would the the CL code to apply that option?
+21:38:17 <jasom> dim: the way it works by default is the runtime options are still parsed by sbcl if you don't use :save-runtime-options in s-l-a-d
+21:38:34 <jasom> dim: but your toplevel function has to parse all the toplevel options
+21:38:36 nisstyre [~yours@oftn/member/Nisstyre] has joined #lisp
+21:38:48 <jasom> if you do use :save-runtime-options in s-l-a-d then all options are treated as toplevel options
+21:38:49 <dim> so you say that if I register the option it just happens?
+21:39:04 -!- k0001 [~k0001@host2.190-229-208.telecom.net.ar] has quit [Ping timeout: 260 seconds]
+21:39:04 <jasom> dim: no, you need to not use buildapp, or modify it to not pas :save-runtime-options
+21:39:22 -!- rrs [~rrs@76.191.32.18] has quit [Ping timeout: 268 seconds]
+21:39:22 <dim> ok then that's for later
+21:39:34 <dim> anyway to change the value after the image is started?
+21:40:23 <jasom> I don't think so; I would imagine it would be something like (setf (sb-ext:dynamic-space-size) ...) if you could but I think that's an error
+21:41:41 -!- kushal [~kdas@fedora/kushal] has quit [Ping timeout: 245 seconds]
+21:41:51 -!- jlongster [~user@pool-173-53-114-190.rcmdva.fios.verizon.net] has quit [Ping timeout: 260 seconds]
+21:42:17 -!- shridhar_afk is now known as shridhar
+21:42:19 -!- rpg [~rpg@23-25-144-217-static.hfc.comcastbusiness.net] has quit [Ping timeout: 248 seconds]
+21:43:02 <jasom> various annoyances like this are why I stopped using buildapp and just said "I don't care if quicklisp is in my memory image"
+21:44:00 -!- Shinmera [~linus@xdsl-188-155-176-171.adslplus.ch] has quit [Quit: Zzz]
+21:45:02 -!- drmeister [~drmeister@farnsworth.chem.temple.edu] has quit [Remote host closed the connection]
+21:45:07 -!- billstclair [~billstcla@unaffiliated/billstclair] has quit [Quit: Linkinus - http://linkinus.com]
+21:48:23 -!- Wukix` is now known as Wukix
+21:49:03 DataLinkDroid [~DataLinkD@1.148.148.193] has joined #lisp
+21:49:28 <dim> I don't even know if quicklisp is in my memory image ;-)
+21:50:06 -!- zophy [~sy@host-98-218-220-24.midco.net] has quit [Read error: Operation timed out]
+21:51:32 -!- fortitude [~mts@rrcs-24-97-165-124.nys.biz.rr.com] has quit [Quit: leaving]
+21:53:55 billstclair [~billstcla@unaffiliated/billstclair] has joined #lisp
+21:54:48 <Xach> dim: they are in order they appear on the command line
+21:54:50 <jasom> Anyway, I replaced buildapp with a small shell-script that I'm happy with.
+21:55:04 Fare [fare@nat/google/x-clitgjkkglzrfudn] has joined #lisp
+21:55:07 <dim> Xach: that's what I found, I had a bug related to that
+21:55:29 <Xach> a bug in buildapp?
+21:55:36 <dim> in my usage of it, sorry
+21:55:50 <Xach> ah
+21:56:04 <dim> it was loading the quicklisp Postmodern rather than my locally hacked version (there's a bug I'm fixing there)
+21:56:17 <dim> https://github.com/marijnh/Postmodern/issues/39 for the curious ;-)
+21:56:42 <Xach> ah
+21:56:45 <dim> Xach: would you be interested into buildapp exposing the --dynamic-space-size option in the produced binaries?
+21:56:57 dsevilla [~user@175.Red-83-54-234.dynamicIP.rima-tde.net] has joined #lisp
+21:59:58 -!- sellout- [~Adium@66.185.108.211] has quit [Quit: Leaving.]
+22:00:15 <jasom> Xach: it's as simple as allowing an option to not pass :save-runtime-options to save-lisp-and-die
+22:00:43 effy_ [~quassel@222.129.233.89] has joined #lisp
+22:00:48 xk05 [~xk05@c-98-244-43-125.hsd1.ca.comcast.net] has joined #lisp
+22:00:50 -!- effy [~quassel@222.129.233.89] has quit [Ping timeout: 264 seconds]
+22:00:54 mlamari [~quassel@72.183.103.226] has joined #lisp
+22:01:39 *Fare* doesn't remember if UIOP handes :save-runtime-options or not
+22:01:50 -!- DalekBaldwin [~Adium@74.212.183.186] has quit [Quit: Leaving.]
+22:02:03 <Fare> (it does)
+22:02:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:02:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:02:35 <jasom> Fare: does UIOP include utilities for building memory images?
+22:02:43 <Fare> yes
+22:02:50 klltkr [~klltkr@unaffiliated/klltkr] has joined #lisp
+22:03:00 <Fare> and ASDF includes a program-op to use them.
+22:03:23 <jasom> shiny
+22:03:28 <Fare> it also includes support for pre-dump hooks and post-restore hooks
+22:03:41 <Fare> works on plenty of implementations too
+22:03:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:03:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:04:23 -!- mlamari_ [~quassel@72.183.103.226] has quit [Ping timeout: 265 seconds]
+22:04:24 <Fare> hooks have to be manually run when you restart an image into a REPL as opposed to an application
+22:04:27 -!- joe9 [~user@ip70-179-153-227.fv.ks.cox.net] has quit [Remote host closed the connection]
+22:05:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:05:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:07:09 Blkt [~Blkt@2a01:4f8:150:80a1::aaaa] has joined #lisp
+22:07:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:07:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:08:37 <jasom> Fare: Any better place to read up on it than image.lisp?
+22:08:48 <Fare> no :-/
+22:09:00 <Fare> test/test-program.script
+22:09:09 <Fare> and its helper files
+22:09:33 <dim> Fare: do you provide examples on how to use it and maybe a binary utility ala buildapp so that you can prepare an clean image that's not just a dump of your current development REPL?
+22:09:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:09:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:10:48 -!- Munksgaard [~philip@80-71-132-106.u.parknet.dk] has quit [Ping timeout: 240 seconds]
+22:11:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:11:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:12:22 <Fare> test/hello-world-example.asd test/hello.lisp
+22:12:30 <Fare> cl-launch uses it
+22:12:53 <Fare> cl-launch could be rewritten to be more compatible with buildapp (except portable)
+22:13:07 <dim> that would be good news I guess
+22:13:15 <dim> just don't forget docs with examples
+22:13:34 <Fare> cl-launch has plenty of docs
+22:13:38 *dim* is spending his evening on documenting pgloader
+22:13:41 <Fare> xcvb and exscribe are examples
+22:13:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:13:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:14:01 <Fare> I should probably mention exscribe and/or xcvb in the cl-launch docs
+22:14:06 -!- ehu [~ehu@ip167-22-212-87.adsl2.static.versatel.nl] has quit [Ping timeout: 252 seconds]
+22:15:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:15:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:16:01 -!- oudeis [~oudeis@bzq-79-182-131-40.red.bezeqint.net] has quit [Quit: This computer has gone to sleep]
+22:17:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:17:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:19:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:19:22 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:21:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:21:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:21:47 <dim> H4ns: we now have docs at http://git.tapoueh.org/?p=pgloader.git;a=blob;f=pgloader.1.md;h=165935df2847a4b44a31be267136e1386237f67b;hb=HEAD --- so you can maybe get to the next step in the vandetta ;-)
+22:22:06 nightfly [sage@destiny.cat.pdx.edu] has joined #lisp
+22:23:17 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:23:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:24:21 drmeister [~drmeister@166.137.86.118] has joined #lisp
+22:24:47 -!- jtza8 [~jtza8@105-236-101-9.access.mtnbusiness.co.za] has quit [Remote host closed the connection]
+22:25:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:25:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:27:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:27:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:27:52 -!- ldionmarcil [~maden@unaffiliated/maden] has quit [Remote host closed the connection]
+22:29:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:29:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:29:32 [SLB]` [~slabua@unaffiliated/slabua] has joined #lisp
+22:30:08 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+22:30:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:30:54 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:31:05 zenoli [~pk@109.201.152.9] has joined #lisp
+22:31:43 sapphire_388 [~quassel@global-1-8.nat.csx.cam.ac.uk] has joined #lisp
+22:32:05 -!- [SLB] [~slabua@unaffiliated/slabua] has quit [Ping timeout: 245 seconds]
+22:32:05 -!- [SLB]` is now known as [SLB]
+22:32:11 -!- nisstyre [~yours@oftn/member/Nisstyre] has quit [Quit: Leaving]
+22:32:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:32:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:33:04 -!- sapphire_388 [~quassel@global-1-8.nat.csx.cam.ac.uk] has quit [Remote host closed the connection]
+22:34:23 -!- pavelpenev [~quassel@130-204-14-33.2075264485.ddns.cablebg.net] has quit [Remote host closed the connection]
+22:34:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:34:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:35:52 -!- MoHaX [~luke@178.122.223.48] has quit [Ping timeout: 240 seconds]
+22:36:06 -!- bitonic` [~user@xdsl-188-155-179-93.adslplus.ch] has quit [Read error: Operation timed out]
+22:36:27 bitonic [~user@xdsl-188-155-179-93.adslplus.ch] has joined #lisp
+22:36:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:36:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:38:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:38:23 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:38:25 -!- drmeister [~drmeister@166.137.86.118] has quit [Read error: Connection reset by peer]
+22:38:38 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 264 seconds]
+22:39:59 -!- Nuupi [~IceChat9@a91-154-110-47.elisa-laajakaista.fi] has quit [Quit: Take my advice. I don't use it anyway]
+22:40:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:40:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:41:24 sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has joined #lisp
+22:41:51 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:41:51 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:43:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:43:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:44:51 -!- kwmiebach [~kwmiebach@xdsl-213-168-110-45.netcologne.de] has quit [Quit: Leaving]
+22:45:17 drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has joined #lisp
+22:45:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:45:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:47:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:47:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:48:22 boyscare1 [~bm3719@c-67-166-183-175.hsd1.va.comcast.net] has joined #lisp
+22:48:46 -!- youlysses [~user@24-217-211-79.dhcp.stls.mo.charter.com] has quit [Read error: Connection reset by peer]
+22:49:05 pillton [~user@140.253.50.147] has joined #lisp
+22:49:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:49:23 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:49:34 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Remote host closed the connection]
+22:50:11 -!- cmatei [~cmatei@78.96.108.146] has quit [Remote host closed the connection]
+22:51:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:51:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:51:23 cmatei [~cmatei@78.96.108.146] has joined #lisp
+22:51:34 uzo1 [~uzo@99.102.150.108] has joined #lisp
+22:52:42 -!- uzo1 [~uzo@99.102.150.108] has quit [Max SendQ exceeded]
+22:53:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:53:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:53:24 uzo1 [~uzo@99.102.150.108] has joined #lisp
+22:53:45 -!- uzo2 [~uzo@adsl-99-110-98-127.dsl.sfldmi.sbcglobal.net] has quit [Ping timeout: 245 seconds]
+22:54:26 <Xach> I wrote buildapp because I could not understand the cl-launch docs.
+22:54:27 -!- uzo1 [~uzo@99.102.150.108] has quit [Max SendQ exceeded]
+22:54:52 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:54:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:54:56 uzo1 [~uzo@99.102.150.108] has joined #lisp
+22:55:23 <jasom> Xach: yeah, I just looked at cl-launch and wow does it have a lot of options
+22:55:31 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+22:56:05 <jasom> okay, now I want to see if cl-launch will work in plush just for the fun of it
+22:56:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:56:22 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:58:16 umontabea [~abeaumont@77.231.225.237] has joined #lisp
+22:58:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:58:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:59:17 dss_ [~earsplit@shepsoft.net] has joined #lisp
+22:59:52 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+22:59:52 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+22:59:52 -!- umontabea [~abeaumont@77.231.225.237] has quit [Remote host closed the connection]
+23:00:16 umontabea [~abeaumont@77.231.225.237] has joined #lisp
+23:00:53 -!- dss_ [~earsplit@shepsoft.net] has left #lisp
+23:01:20 *jasom* also needs to hard-code in the version of the parser that plush uses, since I relied on the specific backtracking implementation which I think has changed
+23:01:21 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:01:21 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:03:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:03:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:04:58 -!- dsevilla [~user@175.Red-83-54-234.dynamicIP.rima-tde.net] has quit [Remote host closed the connection]
+23:05:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:05:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:05:33 -!- whiteline [~user@unaffiliated/whiteline] has quit [Ping timeout: 240 seconds]
+23:07:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:07:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:09:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:09:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:09:39 robot-beethoven [~user@c-24-118-142-0.hsd1.mn.comcast.net] has joined #lisp
+23:10:52 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:10:52 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:11:16 -!- bitonic [~user@xdsl-188-155-179-93.adslplus.ch] has quit [Ping timeout: 245 seconds]
+23:12:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:12:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:13:07 <Fare> what's plush?
+23:13:08 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 240 seconds]
+23:13:29 <Fare> Xach: you could have asked.
+23:14:07 <jasom> Fare: my mostly-complete sh written in lisp
+23:14:23 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:14:23 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:15:13 <jasom> Fare: I did it more to learn more about sh than to make anything useful
+23:15:32 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+23:16:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:16:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:16:20 <jasom> I realized that I knew less about sh than I did about many languages I use less often, so I wrote an sh implementation to learn more.  It might also be useful for running lisp from a shell as it could do so without needing to load up a lisp
+23:18:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:18:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:19:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:19:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:20:57 rrs [~rrs@146-115-82-89.c3-0.sbo-ubr1.sbo.ma.cable.rcn.com] has joined #lisp
+23:21:24 -!- LiamH [~healy@pdp8.nrl.navy.mil] has quit [Quit: Leaving.]
+23:21:24 kliph [~user@unaffiliated/kliph] has joined #lisp
+23:21:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:21:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:23:24 -!- Bike [~Glossina@wl-nat101.it.wsu.edu] has quit [Ping timeout: 252 seconds]
+23:23:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:23:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:25:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:25:23 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:27:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:27:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:28:38 -!- klltkr [~klltkr@unaffiliated/klltkr] has quit [Read error: Operation timed out]
+23:29:17 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:29:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:30:32 -!- Karl_dscc [~localhost@p578FC4FE.dip0.t-ipconnect.de] has quit [Remote host closed the connection]
+23:31:17 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:31:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:32:12 -!- synacktic [~jordyd@unaffiliated/jordyd] has quit [Ping timeout: 252 seconds]
+23:33:18 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:33:19 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:34:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:34:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:35:30 -!- rrs [~rrs@146-115-82-89.c3-0.sbo-ubr1.sbo.ma.cable.rcn.com] has quit [Read error: Operation timed out]
+23:35:52 austinja [~austinja@c-50-133-251-129.hsd1.ma.comcast.net] has joined #lisp
+23:36:00 -!- Natch [~Natch@c-cdcee155.25-4-64736c10.cust.bredbandsbolaget.se] has quit [Read error: Connection reset by peer]
+23:36:03 -!- k0001_ [~k0001@host115.190-137-200.telecom.net.ar] has quit [Ping timeout: 252 seconds]
+23:36:21 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:36:22 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:37:04 -!- sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has quit [Ping timeout: 248 seconds]
+23:37:17 <Xach> Fare: Asked what?
+23:37:25 Bike [~Glossina@gannon-wless-gw.resnet.wsu.edu] has joined #lisp
+23:37:26 synacktic [~jordyd@unaffiliated/jordyd] has joined #lisp
+23:38:02 <Xach> jasom: I like exercises like that.
+23:38:08 sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has joined #lisp
+23:38:17 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:38:18 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:38:31 -!- DataLinkDroid [~DataLinkD@1.148.148.193] has quit [Ping timeout: 256 seconds]
+23:38:41 <Xach> Writing To Learn
+23:39:09 DataLinkDroid [~DataLinkD@101.171.34.16] has joined #lisp
+23:39:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:39:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:40:31 -!- seangrov` [~user@c-69-181-197-122.hsd1.ca.comcast.net] has quit [Ping timeout: 246 seconds]
+23:41:32 sellout-1 [~Adium@97-118-97-34.hlrn.qwest.net] has joined #lisp
+23:41:40 nug700_ [~nug700@209-181-102-38.phnx.qwest.net] has joined #lisp
+23:41:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:41:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:42:25 -!- nug700 [~nug700@209-181-103-104.phnx.qwest.net] has quit [Ping timeout: 248 seconds]
+23:43:04 -!- sellout- [~Adium@c-98-245-81-139.hsd1.co.comcast.net] has quit [Ping timeout: 264 seconds]
+23:43:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:43:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:44:56 -!- lduros [~user@fsf/member/lduros] has quit [Read error: Connection reset by peer]
+23:45:05 <Fare> Xach: about parts you didn't understand, so I would have made them more understandable
+23:45:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:45:48 <Xach> I don't understand why it's so complicated.
+23:45:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:47:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:47:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:48:08 <Xach> But that is all in the past, I have something that suits my needs much more closely today.
+23:49:22 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:49:22 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:50:08 drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has joined #lisp
+23:50:53 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:50:53 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:52:20 -!- ehaliewicz [~user@50-0-51-11.dsl.static.sonic.net] has quit [Read error: No route to host]
+23:52:42 -!- harish_ [~harish@175.156.117.104] has quit [Ping timeout: 256 seconds]
+23:52:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:52:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:54:48 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:54:49 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:54:51 -!- drmeister [~drmeister@pool-173-59-25-58.phlapa.fios.verizon.net] has quit [Ping timeout: 260 seconds]
+23:56:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:56:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+23:58:47 K1rk [~Kirk@equinox.epecweb.com] has joined #lisp
+23:58:48 -!- K1rk [~Kirk@equinox.epecweb.com] has quit [Excess Flood]
+

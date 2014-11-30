@@ -1,0 +1,242 @@
+http://beza1e1.tuxen.de/articles/later_bug_tracker.html
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 12:59:26 GMT
+Server: Apache/2.2.14 (Ubuntu)
+Last-Modified: Thu, 23 May 2013 17:23:44 GMT
+ETag: "7203b-23de-4dd65f1bd6800"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3966
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Yet another bug tracker ― Andreas Zwinkau</title>
+
+<link rel="stylesheet" href="../style.css" type="text/css" />
+<link rel="stylesheet" href="../local.css" type="text/css" />
+
+<meta name="date" content="2010-08-21" />
+</head>
+<body>
+
+<header>
+<div id="header">
+<h1>Yet another bug tracker</h1>
+</div>
+</header>
+
+<div id="content">
+<article>
+<p>Currently i am developing a bug tracker
+and this documents my thought process of why and what.</p>
+
+<p>Nowadays i tend to use <code>git</code> for everything.
+Writing a little LaTeX document means
+committing to a local git repository.
+A short <code>git init</code> and <code>git commit -a -m "initial"</code> is so easy,
+there is no reason not to do it.
+The nice <code>git diff</code> alone is valuable enough to justify the overhead, 
+because after the lunch break i can dive into work faster.
+Additionally it is relaxing to know everything backed up and versioned in a repository.</p>
+
+<p>Now where is a bug tracker that is as easy and
+unobtrusive as my little git tool?
+Command-line usage already weeds out all the web-based solutions
+like Bugzilla, Trac, FogBugz, or Mantis.
+Likewise hosted solutions.</p>
+
+<h2>ditz</h2>
+
+<p>One command-line bug tracker is <a href="http://ditz.rubyforge.org/">ditz</a>.
+I dislike ditz, because it is constantly nagging me with questions.
+Here an example session:</p>
+
+<pre><code>&#036; ditz init
+I wasn't able to find a configuration file ./.ditz-config.
+We'll set it up right now.
+Your name (enter for "Andreas Zwinkau"): 
+Your email address (enter for "beza1e1@dhcppc1"): 
+Directory to store issues state in (enter for "bugs"): 
+Project name (enter for "test"): 
+Issues can be tracked across the project as a whole, or the project can be
+split into components, and issues tracked separately for each component.
+Track issues separately for different components? (y/n): 
+Track issues separately for different components? (y/n): n
+Ok, bugs directory created successfully.
+&#036; ditz add
+Title: flux compensator
+Description (ctrl-d, ., or /stop to stop, /edit to edit, /reset to reset):
+We need one
+
+Is this a (b)ugfix, a (f)eature, or a (t)ask? t
+Issue creator (enter for "Andreas Zwinkau &lt;beza1e1@dhcppc1&gt;"): 
+Comments (ctrl-d, ., or /stop to stop, /edit to edit, /reset to reset):
+no comment
+
+Added issue test-1.
+You may have to inform your SCM that the following files have been added:
+  bugs/issue-08f4205acae64135354e65264cb10462d95b6974.yaml
+</code></pre>
+
+<p>I feel like using a Microsoft Office wizard dialog.
+The git power user feeling is better.
+The <a href="http://rubyforge.org/pipermail/ditz-talk/2009-November/000489.html">development status of ditz</a>,
+is "done",
+which is similiar to "dead",
+but with less bugs.</p>
+
+<h2>bugs everywhere</h2>
+
+<p>The alternative is <a href="http://bugseverywhere.org">bugs everywhere</a> (in short "be".)
+A similar scenario like above, but much shorter.</p>
+
+<pre><code>&#036; be set-root
+Guessing id 'beza1e1 &lt;beza1e1@dhcppc1&gt;'
+No revision control detected.
+Directory initialized.
+&#036; be new "flux compensator"
+Guessing id 'beza1e1 &lt;beza1e1@dhcppc1&gt;'
+Guessing id 'beza1e1 &lt;beza1e1@dhcppc1&gt;'
+Created bug with ID bc9
+</code></pre>
+
+<p>Much more unobtrusive than ditz.
+But note that 
+<a href="http://docs.bugseverywhere.org/tutorial.html#initialization">the documentation</a>
+is outdated.
+<code>be init</code> only shows an unhelpful error message.
+So website and documentation feel quite unmaintained.
+At least, remove obsolete stuff!</p>
+
+<p>Also i have some philosophical issues with be,
+therefore i wrote my own.</p>
+
+<h2>later</h2>
+
+<p>The usage is <a href="http://github.com/beza1e1/later">later</a> is similar to be.</p>
+
+<pre><code>&#036; later init
+&#036; later add "flux compensator"
+issue stored as f12ec37e-1336-4190-9cd4-8cc22e6b1c59
+</code></pre>
+
+<p>The advantages of <code>later</code> are:</p>
+
+<ul>
+<li><strong>flexible plugin mechanism</strong>:
+Some things have no clear good solution.
+For example should a git-integrated tracker store issues with each branch
+or in a branch of its own?
+In other words: Are bugs branch or project specific?
+As long as there is no clear winner,
+the code belongs into a plugin,
+so the core application is flexible.</li>
+<li><strong>wiki style</strong>:
+Traditionally, bug trackers only allow to add comments,
+but not to change anything.
+I believe the wiki approach, where everybody can edit everything,
+works better among developers.
+Discussion should take place on a mailing list,
+not within a bug report.
+For this special design decision it is <a href="http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php">opinionated software</a>.
+The edit command will open an issue in your <code>&#036;EDITOR</code>
+and let you edit <em>everything</em> in it.</li>
+<li><strong>not distributed</strong>:
+While <code>later</code> can be adapted to a distributed workflow,
+a centralized backend plugin could be used as well.</li>
+</ul>
+
+<p>Of course, there are some disadvantages, too.
+For example <code>later</code> is (currently) the wrong decision
+if end users, managers, translators or graphic designers are involved.
+There is no project management functionality built in.
+These things may be added via plugins at some point,
+but they will be of secondary importance
+to the lonesome-developer-with-a-console scenario.</p>
+
+<p>Do you want to play with it? Try this:</p>
+
+<pre><code>&#036; git clone http://github.com/beza1e1/later.git
+Initialized empty Git repository in /home/beza1e1/test/later/.git/
+remote: Counting objects: 82, done.
+remote: Compressing objects: 100% (78/78), done.
+remote: Total 82 (delta 36), reused 0 (delta 0)
+Unpacking objects: 100% (82/82), done.
+&#036; cd later
+&#036; ./later list
+ Web frontend                                       (confirmed, ee902fe7)
+ What to do on no-command-given?                    (confirmed, e2df0108)
+</code></pre>
+
+<p>I am also using <code>later</code> in my home directory as a todo list.
+This is a sign of its usability and generality to me.</p>
+
+<p><a href="http://github.com/beza1e1/later">Try it</a>!
+Write a plugin!</p>
+
+<hr />
+
+<p><a href="http://www.reddit.com/r/programming/comments/d3e73/yet_another_commandline_bug_tracker/">reddit discussion</a>,
+<a href="http://news.ycombinator.com/item?id=1620168">hacker news discussion</a></p>
+
+</article>
+
+<div id="signed">
+<!--<a href="../index.html"><img src="../images/signature.png" alt="Andreas Zwinkau"/></a><br />-->
+© <span class="date">2010-08-21</span></div>
+
+<div>
+	<a class="social" href="http://delicious.com/save" onclick="window.open('http://delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=550,height=550'); return false;"><img src="../images/social_icons/delicious.png" height="10" width="10" alt="delicious" /></a>
+
+	<a class="social" href="http://www.reddit.com/submit" onclick="window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="../images/social_icons/reddit.png" alt="reddit" border="0" /></a>
+
+	<a class="social" href="http://digg.com/submit" onclick="window.location = 'http://www.digg.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="../images/social_icons/digg.png" alt="digg" border="0" /></a>
+</div>
+</div><!--content-->
+
+<footer>
+<div id="footer">
+<div id="navigation">
+<a href="../index.html">homepage</a>
+<a href="../articles.html">essays</a>
+<a href="../tumblelog.html">tumblelog</a>
+<a href="../publications.html">publications</a>
+</div>
+
+<div id="subtext">
+<p>Andreas Zwinkau appreciates <a href="mailto:qznc@web.de">email to qznc@web.de</a>,
+if you have a comment.</p>
+<p>If you want to thank me,
+send <a href="http://en.wikipedia.org/wiki/Bitcoin">bitcoins</a>
+to <span class="bitcoin">1MbYZWL69zypqbRMVtLCbiDALU4ijUxXm3</span>
+or <a class="FlattrButton" href="https://flattr.com/submit/auto?user_id=qznc&url=http://beza1e1.tuxen.de&title=Blog of qznc&description=Blog of qznc&tags=blog,compiler&category=text">
+flattr me</a>.
+</div><!--subtext-->
+
+<div id="searchbox">
+   <form method="get" action="http://google.com/search"> <p>
+   <input type="search" name="q" placeholder="search this site with Google" />
+   <input type="hidden" name="sitesearch" value="beza1e1.tuxen.de" />
+   <input type="submit" value="search this site" />
+   </p> </form>
+</div><!-- searchbox -->
+
+<div style="clear:both"> </div>
+</div><!-- #footer -->
+</footer>
+
+<!-- Clicky Analytics -->
+<a title="Google Analytics Alternative" href="http://getclicky.com/149685"><img alt="Google Analytics Alternative" src="http://static.getclicky.com/media/links/badge.gif" border="0" /></a>
+<script src="http://static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">clicky.init(149685);</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="http://static.getclicky.com/149685ns.gif" /></p></noscript>
+<a href="/qznc.html">qznc</a>
+
+</body>
+</html>
+

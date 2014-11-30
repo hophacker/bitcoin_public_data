@@ -1,0 +1,226 @@
+http://currentbitcoinprice.com/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Thu, 24 Jul 2014 12:24:17 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 5412
+Connection: close
+X-Powered-By: Express
+ETag: "-2118116314"
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Current Bitcoin Price - Updating Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- CSS -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+
+      /* Sticky footer styles
+      -------------------------------------------------- */
+
+      html,
+      body {
+        height: 100%;
+        /* The html and body elements cannot have any padding or margin. */
+      }
+
+      /* Wrapper for page content to push down footer */
+      #wrap {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        /* Negative indent footer by it's height */
+        margin: 0 auto -60px;
+      }
+
+      /* Set the fixed height of the footer here */
+      #push,
+      #footer {
+        height: 60px;
+      }
+      #footer {
+        background-color: #f5f5f5;
+      }
+
+      /* Lastly, apply responsive CSS fixes as necessary */
+      @media (max-width: 767px) {
+        #footer {
+          margin-left: -20px;
+          margin-right: -20px;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+      }
+
+    /*  #wrap > .container {
+        padding-top: 60px;
+      }
+      */
+      .container .credit {
+        margin: 20px 0;
+      }
+
+      code {
+        font-size: 80%;
+      }
+
+#pricebox {
+  padding-top: 200px;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+}
+
+#last{
+  font-size:80px;
+}
+
+#subline{
+  padding-top:30px;
+}
+
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+
+    <!-- Part 1: Wrap all page content here -->
+
+
+<div id="wrap">
+      <!-- Begin page content -->
+      <div id="pricebox">
+
+<!--<font size="10">Current price of a single Bitcoin is...</font>-->
+
+<div id='last'>$0</div>
+<p id='subline'><div id='low' style='display:inline;'>Low: $0</div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id='high' style='display:inline; '>High: $0</div></p>
+
+
+   
+
+    </div>
+
+
+    </div>
+
+    <div id="footer">
+      <div class="container">
+      
+
+          <div id="bottombar" class="muted credit" style='width:100%; display:inline; align:right'><br><b>Donations: <a href="bitcoin:155TY9EpfpML46QA5bhYxRkxXpcJJFZfxU">155TY9EpfpML46QA5bhYxRkxXpcJJFZfxU</a></b>&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="https://play.google.com/store/apps/details?id=com.beyondem.bitcoinlive">
+  <img alt="Android app on Google Play"
+       src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+</a>
+
+<div id="settings" style="align:center; display:inline; margin-left:10px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input onclick="toggleRefresh()" type="checkbox" name="auto" id ="auto" value="auto" style="display:inline" checked> &nbsp;Auto Refresh</div>
+           <p class="navbar-text pull-right">
+<A href='http://currentlitecoinprice.com' target='_blank'>Current Litecoin Price</a> 
+ <!-- | MTGox | <a href='/btce'>BTC-E</a>-->
+
+
+            
+            </p>
+
+</div>
+      </div>
+    </div>
+
+
+   <script src="jquery.js"></script>
+   <script>
+var lastlast = 0;
+var lastlow = 0
+var lasthigh = 0
+
+var lastcolor = "black";
+var lowcolor = "black";
+var highcolor = "black";
+function getData(){
+$.get("/api", { curr: "btc"},
+   function(data) {
+     console.log("-" + data + "-");
+     processData(data);
+   });
+   
+   }
+
+
+   function getColor(oldprice,newprice,prevcolor){
+    var color =  "black";
+    if (oldprice > newprice){
+      //drop
+      color = "red";
+    }else if (oldprice < newprice){
+      //icrease
+      color = "green"
+    }else if (oldprice == newprice){
+      //same
+      color = prevcolor;
+    }
+    return color;
+   }
+
+   function processData(data){
+    var decoded = JSON.parse(data);
+   // console.log("last: " + decoded.last);
+    var last = document.getElementById("last");
+     var low = document.getElementById("low");
+      var high = document.getElementById("high");
+    lastcolor = getColor(lastlast,decoded.last,lastcolor);
+     lowcolor = getColor(lastlow,decoded.low,lowcolor);
+    highcolor = getColor(lasthigh,decoded.high,highcolor);
+
+    last.innerHTML = "<font color='" + lastcolor + "'>$" + decoded.last + "</font>";
+    low.innerHTML = "Low: <font color='" + lowcolor + "'>$" + decoded.low + "</font>";
+ high.innerHTML = "High: <font color='" + highcolor + "'>$" + decoded.high + "</font>";
+
+document.title = decoded.last + " - Current Bitcoin Price";
+
+
+ lastlast = decoded.last;
+ lastlow = decoded.low;
+ lasthigh = decoded.high;
+   }
+var timer;
+ //  var timer = setInterval("getData()",3000);
+
+   function toggleRefresh(){
+    var checkbox = document.getElementById("auto").checked;
+    if (checkbox){
+      timer = setInterval("getData()",3000);
+    }else{
+      clearInterval(timer);
+    }
+   }
+
+   toggleRefresh();
+   </script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-4515844-86']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </body>
+</html>
+

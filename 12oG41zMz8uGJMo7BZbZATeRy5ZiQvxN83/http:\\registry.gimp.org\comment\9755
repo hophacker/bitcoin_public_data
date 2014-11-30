@@ -1,0 +1,113 @@
+http://registry.gimp.org/comment/9755
+Interpolation Plugin | GIMP Plugin Registry
+Skip to main content
+GIMP Plugin Registry Main menuAbout
+Documentation
+Forums
+GIMP User Group
+Get Help
+Stay Updated!
+gimp.org
+Navigation
+FAQ & How To's
+Content By Name
+Feed aggregator
+Popular content
+Report Spam Here
+Tags
+If you'd like to upload plug-ins, please create an account below. You do not need one for download. Enjoy :-) User login
+Username *
+Password *
+Request new password
+Syndicate
+You are hereHome Interpolation Plugin
+August 19, 2010 - 01:29 — stamit
+Rate 1
+2
+3
+4
+5
+Total votes: 0Rate this item!
+This is an interpolation plug-in for the GIMP. It works by doing plane/curve fitting and calculating weighted averages. It takes samples from a grid of pixels from 'known' image areas, trying to fit a plane or a curve to each, and then uses those samples to estimate the 'unknown' image areas.
+Upper-left: original image, upper-right: result after interpolation,
+lower left: selection (a.k.a. output mask), lower right: input mask
+0.2 version is now based on the standard gimp-plugin-template and so should be easy to compile on any system. There are some fixes and additions. If you find any bugs in the code, please send me a patch or a bug report.
+0.4 has an improved UI with a preview, support for using the active brush as a kernel, and a convenience option for internally subtracting the selection from the input mask.
+0.5 can work with gamma-compressed images (internally transforming them into linear space and back again, with no loss of bit-depth, since floating-point numbers are used), can handle large images by taking samples only from a grid of points (instead of from every pixel) and has a few more new things. See the ChangeLog for details.
+0.6 now supports quadratic approximation (x*x, x*y and y*y terms), has better arranged data (so as to make it easier to support new curve-fitting methods, or custom combinations of functions), can use a separate 'slopes' mask (so that the set of pixels used for calculating slopes can be different than the set of "slopes samples" used to calculate the output pixels), has sinc kernels, has 'cap' and 'base' settings for radius-based kernels, has separate horizontal and vertical kernel window settings (optional) and has a few bug-fixes. By using a separate "slopes mask" in combination with the newer "least squares" methods, you can use the filter in a completely new way: Instead of calculating a plane for each input pixel (or grid square) based on its near neighborhood, you can calculate planes (or curves) at sample points *within* the selection, based on a wide area (slopes window) that includes input pixels.
+1.0 is simply 0.6 with a few bug fixes, scripting support, an option for hiding the progress bars and an updated translation. This is it.
+There is also a homepage for this little project. I also wrote a small tutorial
+Bitcoin donations appreciated: 12oG41zMz8uGJMo7BZbZATeRy5ZiQvxN83
+AttachmentSize interpolate.tar.gz9.26 KB gimp-plugin-interpolate-0.2.tar.gz149.65 KB gimp-plugin-interpolate-0.3.tar.gz150.28 KB gimp-plugin-interpolate-0.4.tar.gz147.09 KB gimp-plugin-interpolate-0.5.tar.gz152.11 KB gimp-plugin-interpolate-0.6.tar.gz156.99 KB gimp-plugin-interpolate-1.0.tar.gz160.96 KB Tags: gradientgaussianinterpolationplanelinearweighted averageGIMP Version: 2.6Code License: GPLv3 Log in to post comments
+Comments
+December 17, 2011 - 07:27 — wacmaster
+I didn't see
+the plug-in compiled for 32 bits so i compiled 1.0 for Windows 32.
+You can get it and more info here
+http://www.gimpchat.com/viewtopic.php?f=9&t=3341&p=42390#p42387
+Also works in Windows 32 bit Gimp-2.7.4 versions
+Not tested in Gimp-2.7.5 yet.
+Log in to post comments
+May 7, 2011 - 14:02 — samj
+Interpolation Plugin - Binary Gimp 64 bits Windows
+Bonjour,
+http://aljacom.com/~gimp/gimp-plugin-interpolate-1.0-64bits.zip
+223 485 bytes
+Log in to post comments
+October 11, 2010 - 14:34 — samj
+Windows version (0.5)
+link :
+http://www.aljacom.com/~gimp/gimp-plugin-interpolate-0.5-i686.zip
+Log in to post comments
+December 4, 2010 - 22:55 — giogimp
+How to install ?
+How to install on windows ?
+Log in to post comments
+September 21, 2010 - 23:34 — mahvin
+Need more information
+I'm clearly not understanding how to use this plug-in, but not for the lack of trying. The good news is that I did manage to get it compiled and running in Ubuntu. Thanks.
+The instructions seem simple enough: use the color tool, select white spots, create a mask (if you fail to create a mask, the plug-in won't show it as an option, so that's clearly a given) However, I've tried running the mask inverted and non-inverted and the interpolation renders nothing at all. I'm assuming default settings on the plug-in itself will at least render your example image. It's obvious to me that I am missing a step or not using the mask correctly or not following a set of protocol for how the plug-in should be used.
+I've attempted two scenarios using your example duck image. First, I duplicated the layer, selected white spots on duplicate, created a mask, ran the plug-in. Second, I opened two identical images, converted one to a mask, ran the plug-in on the original image. What am I missing?
+Log in to post comments
+October 12, 2010 - 16:20 — liberace
+Confused
+I am also confused how about to use the plug in. The duck picture I used as an example. Made a duplicate layer, added a layer mask (white full opacity). But after painting the duck black I cant select the white spots. How to do this?
+Could someone please make a detailed step by step instruction based on the latest 0.5 version of the plugin?
+Thanks
+Log in to post comments
+October 17, 2010 - 20:11 — stamit
+Making the input mask
+Instead of painting the duck black manually, you can do this: Select the duck by using the lasso tool, invert the selection and save it to a channel. That's what I did to make the example image.
+Log in to post comments
+October 17, 2010 - 20:09 — stamit
+Selecting the white spots
+You can select the white spots by using the "Select by color" tool from the GIMP tool-box. You can also use the "magic wand" on the water and then invert the selection.
+After selecting the white spots, you should "grow" the selection by 2 pixels, so that all the pixels that are whiter than normal are included in the selection. This may vary, depending on the method you used to make the selection, so experiment a bit with different selections.
+Log in to post comments
+October 17, 2010 - 20:01 — stamit
+Not layers, channels
+You need to make *channels*, not layers. The way I make channels is by making a selection first and then do "Selection > Save to Channel".
+To do basic work with the filter, you don't have to do anything special other than select the 'object' you want and run "Interpolate" with the default options. The instructions I gave below for 0.4, also apply to 0.5 and 0.6.
+Log in to post comments
+September 22, 2010 - 18:40 — stamit
+The example image
+To do the same thing I did with the example image, you have to do this: First, create a mask that has only the water pixels (make a white channel and paint black in place of the duck). This is the input mask that you have to save to a channel. Then, select the white spots by using the "select by color" tool (or by using the magic wand tool on the water and then inverting the selection). Expand the selection a little so that all the white-spot-affected pixels are selected (making sure the duck remains completely unselected). And then run the filter The input mask you created will be in the drop-down menu, so you won't have to do anything other than clicking OK when you see the dialog.
+Log in to post comments
+Pages1
+2
+3
+next ›
+last »
+Unless otherwise noted, the rights for the individual plugins are with their respective authors. Logo image by Jakub Steiner.
+Questions
+No questions yet ... Search form
+Search Active forum topics
+Banner for website
+Lasm's Color Punch
+Wall paper Designs More Updated Questions
+Direct link? Last change 2 weeks 1 day No answers, yet! Why can I not find this Plugin? Last change 1 month 2 weeks 1 Answer(s) Could you add the link to the new fill with foreground color Last change 1 month 3 weeks 2 Answer(s) more Recent comments
+You can use flash-slideshow 4 hours 59 min ago
+Release of G'MIC 1.5.9.3 2 weeks 6 days ago
+Release of G'MIC 1.5.9.2 1 month 5 days ago
+Recent content
+Batch Edit Color Balance, Brightness and Contrastpendel Path shape creator 5pgarcia Export Layerskhalim19 Done.khalim19 Done.khalim19 Direct link?Francois_C GIMP Bookragtag info about layersrob.brz1 GIMP Extensions Pack for WindowsGIMP Extensions Gimp Registry Futureingo-test 

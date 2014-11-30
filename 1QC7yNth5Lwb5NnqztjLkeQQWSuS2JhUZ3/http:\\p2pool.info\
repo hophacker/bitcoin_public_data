@@ -1,0 +1,257 @@
+http://p2pool.info/
+HTTP/1.0 200 OK
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Last-Modified: Fri, 20 Jun 2014 23:11:11 GMT
+ETag: "335099234"
+Content-Type: text/html
+Accept-Ranges: bytes
+Content-Length: 3306
+Connection: close
+Date: Tue, 22 Jul 2014 19:44:18 GMT
+Server: lighttpd/1.4.28
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+
+    <meta charset="utf-8">
+    <title>Pool Stats - p2pool.info</title>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="scripts/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+    <link href="content/bootstrap-responsive.css" rel="stylesheet" />
+    <link href="content/p2pool.css" rel="stylesheet" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a href="index.html" class="homelink">
+                    <img class="pull-left" src="content/logo.png" alt="p2pool" /></a>
+                <ul class="nav">
+                    <li><a href="https://en.bitcoin.it/wiki/P2Pool">About</a></li>
+                    <li><a href="https://bitcointalk.org/index.php?topic=18313.0">Forum</a></li>
+                    <li><a data-toggle="modal" href="#modal-donate">Donate</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a data-toggle="modal" href="#modal-settings">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="main-container">
+        <div id="welcome">
+            P2Pool is a decentralized Bitcoin mining pool that works by creating a peer-to-peer
+            network of miner nodes. <a href="https://en.bitcoin.it/wiki/P2Pool">Learn More</a>.</div>
+        <div id="status" class="alert alert-info">
+            Loading hashrate data...</div>
+        <div id="chart" class="chart" data-bind="visible: canShowChart">
+            <div class="chart-loading">
+                Loading...</div>
+        </div>
+        <div class="alert alert-error" style="display: none" data-bind="visible: !canShowChart && !dismissSvgAlert">
+            <a class="close" data-dismiss="alert" id="alert-svg">×</a> The p2pool hash rate
+            chart requires a browser that supports either SVG or VML. Your browser does not.
+        </div>
+        <div id="tab-area">
+            <div id="current-stats">
+                Pool Hashrate: <span id="current-rate" data-bind="text: statsLoaded() ? (hashrate()/1000).toPrecision(3) + ' TH/s' : 'loading...'">
+                </span>Estimated Time to Block: <span id="ttfb" data-bind="html: estimatedTimeToBLock()">
+                </span>Current Round: <span id="current-round" data-bind="html: blocksLoaded() ? currentRoundDuration() : '<b>loading...</b>'">
+                </span>
+            </div>
+            <ul id="tabs" class="nav nav-tabs">
+                <li class="active"><a href="#blocks" data-toggle="tab">Recent Blocks</a></li>
+                <li><a href="#payouts" data-toggle="tab">Current Payouts</a></li>
+                <li><a href="#users" data-toggle="tab">Active Users</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="blocks">
+                    <div id="actualExpected">
+                        <span class="luckMessage">Pool Luck<sup class="helptip" data-title="Pool Luck" data-content="In essense, this is a measure of how many blocks were produced relative to how many blocks were expected in each time window.<br /><br />Numbers larger than 100% mean that more blocks were found than were predicted (i.e. the pool was lucky).<br /><br />Numbers smaller than 100% mean that fewer blocks were found than were predicted (i.e. the pool was unlucky).">(?)</sup>
+                            (7 days, 30 days, 90 days): </span><span class="luck" data-bind="text: blocksLoaded() ? $root.formatPercent(sevenDays()) : '...', css: {green: sevenDays() >= 100, red: sevenDays() < 100}">
+                            </span><span class="luck" data-bind="text: blocksLoaded() ? $root.formatPercent(thirtyDays())  : '...', css: {green: thirtyDays() >= 100, red: thirtyDays() < 100}">
+                            </span><span class="luck" data-bind="text: blocksLoaded() ? $root.formatPercent(ninetyDays())  : '...', css: {green: ninetyDays() >= 100, red: ninetyDays() < 100}">
+                            </span><a class="hide" href="luck/" data-bind="css: {hide: !blocksLoaded()}">(view
+                                luck charts)</a>
+                    </div>
+                    <div class="intro">
+                        The list below includes all known p2pool blocks. Orphaned blocks appear with <span
+                            class="orphaned">strikethrough</span>. <b>Note:</b> The list below will not include orphaned blocks since the start of 2014.</div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th class="block-number" nowrap>Block</th>
+                            <th class="block-when" nowrap>When</th>
+                            <th class="block-transaction" nowrap>Generation Tx</th>
+                            <th class="block-duration" nowrap>Round Duration</th>
+                            <th class="block-percent" nowrap>vs. Expected<sup class="helptip" data-title="Actual vs. Expected"
+                                data-placement="left" data-content="This column compares how long a round took vs. how long it was predicted to take given the pool's hashrate and the bitcoin difficulty at that time.<br /><br />Numbers smaller than 100% mean that a round was faster than predicted (i.e. the round was lucky).<br /><br />Numbers larger than 100% mean that a round took longer than predicted (i.e. the round was unlucky).">(?)</sup>
+                            </th>
+                        </thead>
+                        <tbody>
+                            <!-- ko if: !blocksLoaded() -->
+                            <tr>
+                                <td colspan="5">
+                                    Loading...
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko foreach: {data: sortedBlocks, afterAdd: fadeIn} -->
+                            <tr style="display: none;" data-bind="css: {orphaned: IsOrphaned()}">
+                                <td nowrap>
+                                    <a target="_blank" data-bind="attr: {href: BlockUrl}, text: BlockHeight"></a>
+                                </td>
+                                <td data-bind="text: When, attr: {'title': Time}" nowrap>
+                                </td>
+                                <td nowrap>
+                                    <div class="block-txhash">
+                                        <a target="_blank" data-bind="attr: {href: TxUrl}, text: ShortTxHash"></a>
+                                        ...
+                                    </div>
+                                </td>
+                                <td class="block-duration" data-bind="html: DurationMarkup" nowrap>
+                                </td>
+                                <td class="block-percent" data-bind="text: PercentExpected, css: {green: ActualShares() <= ExpectedShares(), red: ActualShares() > ExpectedShares()}"
+                                    nowrap>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="payouts">
+                    <div class="intro">
+                        If a block is found immediatly, it should include the following payments.</div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th class="address" nowrap>Address</th>
+                            <th class="payment" nowrap>Payment</th>
+                            <th class="star">&nbsp;</th>
+                        </thead>
+                        <tbody>
+                            <!-- ko if: !payoutsLoaded() -->
+                            <tr>
+                                <td colspan="2" style="width: 400px;">
+                                    Loading...
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko foreach: {data: payouts} -->
+                            <tr data-bind="css: {starred: $root.isStarred($data)}">
+                                <td nowrap>
+                                    <a target="_blank" data-bind="attr: {href: 'http://blockchain.info/address/' + Address()}, text: Address()">
+                                    </a>
+                                </td>
+                                <td data-bind="text: Payment()" nowrap>
+                                </td>
+                                <td class="star">
+                                    <span class="star" data-bind="click: $root.toggleStar">&nbsp;</span>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="users">
+                    <div class="intro">
+                        The following users / addresses have submitted at least 1 valid share in the past
+                        24 hours. <b>Note:</b> Hashrates are <i>very</i> rough estimates based on the number
+                        of shares submitted in the past day. They may be off by 10-20% or more due to variance.
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th class="address" nowrap>Address</th>
+                            <th class="payment" nowrap>Estimated Hashrate</th>
+                            <th class="star">&nbsp;</th>
+                        </thead>
+                        <tbody>
+                            <!-- ko if: !usersLoaded() -->
+                            <tr>
+                                <td colspan="2" style="width: 400px;">
+                                    Loading...
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko foreach: {data: users} -->
+                            <tr data-bind="css: {starred: $root.isStarred($data)}">
+                                <td nowrap>
+                                    <a target="_blank" data-bind="attr: {href: 'http://blockchain.info/address/' + Address()}, text: Address()">
+                                    </a>
+                                </td>
+                                <td class="rate" data-bind="text: Hashrate()" nowrap>
+                                </td>
+                                <td class="star">
+                                    <span class="star" data-bind="click: $root.toggleStar">&nbsp;</span>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                    <div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal hide" id="modal-donate">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Make a Donation</h3>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-section">Support p2pool.info</p>
+                    <p>If like p2pool.info and you would like to help cover the costs associated with running
+                        it, you can send a donation to:</p>
+                    <p><b>1QC7yNth5Lwb5NnqztjLkeQQWSuS2JhUZ3</b></p>
+                    <p>Thanks for your support.</p>
+                    <p class="modal-section">Support p2pool miners</p>
+                    <p>If you like to would make a donation to the active p2pool miners, there are instructions
+                        for doing so on the p2pool wiki <a href="https://en.bitcoin.it/wiki/P2Pool#Donating_to_P2Pool_miners">
+                            here</a>.</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+            <div class="modal hide" id="modal-settings">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Settings</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-vertical">
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" data-bind="checked: playSound">
+                                Enable audio alerts</label>
+                            <p class="help-block">If enabled, a cha-ching sound effect will play when the pool finds
+                                a block. Note, this only works on modern browsers.</p>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+            <audio id="audio-newblock">
+                <source src="content/newblock.mp3" type="audio/mp3" />
+            </audio>
+            <!-- /container -->
+            <script type="text/javascript" src="scripts/jquery-1.7.1.min.js"></script>
+            <script type="text/javascript" src="scripts/store-json2.min.js"></script>
+            <script type="text/javascript" src="scripts/knockout.js"></script>
+            <script type="text/javascript" src="scripts/knockout.mapping-latest.js"></script>
+            <script type="text/javascript" src="scripts/highstock.src.js"></script>
+            <script type="text/javascript" src="scripts/bootstrap.min.js"></script>
+            <script type="text/javascript" src="scripts/p2pool.js"></script>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,274 @@
+http://www.codeproject.com/Articles/28050/Generate-PDF-Using-C?fid=1517061&df=90&mpp=10&sort=Position&spc=None&tid=4287643&PageFlow=FixedWidth
+Generate PDF Using C# - CodeProject 10,723,449 members (69,948 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Desktop Development » Files and Folders » Utilities
+ArticleAlternatives
+Comments (78)
+View this article's Workspace
+Fork this Workspace
+Generate PDF Using C# Predrag Tomasevic, 1 Feb 2009
+4.74 (40 votes)
+1
+2
+3
+4
+5
+4.74/5 - 40 votes4 removedμ 4.45, σa 1.95 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Using OpenOffice to convert different document types to PDF.	Download source - 286 KB
+OpenOffice 2.4.1 was used during writing of article. At the end of the article there is link to the instructions that will make code work with OpenOffice 3.
+Introduction
+I must confess that I’m not a big fan of PDF. Still, it somehow manages to wiggle in almost every project I'm on – clients want to send out documents, Word is bounded to Windows, HTML is lame, PDF it is. Unfortunately, the situation with it and C# haven’t changed much in couple past years - if there were no new, fancy, priced components, I would conclude that it’s almost the same as it was in .NET 1.1 times – it is a pain to create PDFs.
+For those of you who have access to components which can convert popular formats to PDF, this article is pretty much useless. But, for those who don’t want or simply can’t shell out over $1000 for a chance to convert other formats to PDF – I hope that this solution will prove as an attractive alternative.
+Idea
+During a talk with my friend Toni Ruža (who is primarily a Python developer) about a way to easily convert some WordML reports to PDF, he pointed me to the headless OpenOffice mode. It seems that it has been around for quite some time, but as it is mainly targeted at Java developers, it is no wonder that there were no big fuss about it in C# groups. Still, it promises much – you install OpenOffice, start it in Service mode, send commands over the API, and get to use any feature it provides. More than anything else, my interest was to load any supported format into OpenOffice and then export it as PDF.
+Just to note, in this article, I'll talk about creating PDF from other documents, not from scratch. If you are looking for a way to do that, I'm encouraging you to first take a look at my Generating Word Reports / Documents article. Follow it, and you'll easily create WordML files (like the one used here) from a database or XML.
+Solution architecture
+I was saddened to find out that the headless mode of OpenOffice just minimizes GUI operations, not totally avoiding them. As someone who has a pretty nasty experience with Word.Application.Open() (using interactive applications such as Word by programmatically mimicking user actions), I started thinking on how to isolate OpenOffice and query it independently of the main application process, thus enabling loose coupling and a more stable environment. The result was a Windows Service which wraps the OpenOffice process, taking care of the security context and the usage, while providing the needed functionality over Remoting (am I a service-oriented freak or what? ).
+Here is a diagram presenting the classes used in the process:
+Figure 1 – Class diagram
+ConversionToPDF is the main class when it comes to performing useful work. It employs various classes from the unoidl.com.sun namespace to communicate with OpenOffice, and mimics operations such as opening a file, exporting it as PDF, etc. It also uses the OfficeController class which is responsible for the lifecycle of OpenOffice’s process – it starts, monitors, and finally kills soffice.exe when not used, to preserve resources.
+Receiver is the class that my Windows Service registers for usage over Remoting. It implements the IReceiver interface (needed functionality), and serves as the bridge between the main applications and OpenOffice.
+Finally, I’ve created the GenericSender class for those not familiar with Remoting. It provides the Init method that accepts an address on which the Windows Service wrapper listens (by default, it is tcp://localhost:6543/OpenOfficeServiceReceiver) and initializes a proxy receiver (available as a property). From that point forwards, everything is simple as GenericSender.Receiver.ConvertToPDF(...).
+How to start everything on my machine?
+Let’s do this in a step-by-step fashion:
+Download OpenOffice from here, and perform the standard installation. I’ve developed and tested a solution using version 2.4 of OO. If you are setting up everything on an x64 machine, be sure to add the OO program directory (by default: c:\Program Files (x86)\OpenOffice.org 2.4\program) to the PATH environment variable as described in this forum post. If you change the environment variable, be sure to restart the machine in order to commit and reload the changes. Download the source code that accompanies this article, and Build Solution using the Release configuration in Visual Studio 2008. When the build is complete, check OpenOfficeService/bin/Release and run svc_inst.bat. After that, you should see the OpenOffice Wrapper Service in the list of services when you go to Control Panel -> Administrative Tools -> Services. Right click on it, select Properties, go to the Log on tab, and check Allow service to interact with desktop. Before you can start the service, you need to tweak the license agreement. Because the wrapper service will run under the LocalSystem account, you need to somehow tell OpenOffice that the LocalSystem user “accepted” the terms of use. To prevent the license agreement dialog from popping up and blocking everything, you need to modify the file at %OOInstallPath%\share\registry\data\org\openoffice\Setup.xcu by finding this part:
+&lt;prop oor:name="ooSetupInstCompleted"&gt;
+  &lt;value&gt;false&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="ooSetupShowIntro"&gt;
+  &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+and replacing it with (note that LicenseAcceptDate must be later than the OpenOffice installation time):
+&lt;prop oor:name="ooSetupInstCompleted" oor:type="xs:boolean"&gt;
+ &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="LicenseAcceptDate" oor:type="xs:string"&gt;
+ &lt;value&gt;2008-07-22T14:00:00&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="FirstStartWizardCompleted" oor:type="xs:boolean"&gt;
+ &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+This step is taken from here, and I would like to thank Mirko Nasato for his great guide.
+Be sure to start any OpenOffice application (Start -> Programs -> OpenOffice.org -> OpenOffice.org Writer, for example), and validate that it loads without any glitches in order to be sure that OO is properly installed and setup.
+Verify the service configuration (next chapter), start the OpenOffice Wrapper Service, and use it to convert a document. If you have downloaded the source code, you can right click on Default.aspx (Test Applications -> PDFWeb project) in Solution Explorer and choose View in Browser... Here is a code excerpt that uses the GenericSender from OpenOfficeService.Objects.dll to perform the conversion:
+protected void GiveMePDFButton_Click(object sender, EventArgs e)
+{
+    // Initialize Receiver in GenericSender
+    OpenOfficeService.Objects.GenericSender.Init(
+        "tcp://localhost:6543/OpenOfficeServiceReceiver");
+
+    // Translate path and load up file in byte array, convert it
+    string source = Server.MapPath("~/SomeWordML.xml");
+    byte[] wordML = File.ReadAllBytes(source);
+
+    byte[] result = 
+      OpenOfficeService.Objects.GenericSender.Receiver.ConvertToPDF(wordML);
+
+    // Write response to client
+    Response.AddHeader("content-type", "application/pdf");
+    Response.AddHeader("Content-Disposition", 
+                       "attachment; filename=result.pdf");
+
+    Response.BinaryWrite(result);
+}
+Figure 2 – Testing page
+Believe it or not, that’s it! You now have a functioning PDF converter which can be queried from C#, by Remoting.
+During the wrapper implementation, I thought about multi-threading and (hopefully) made calling the ConvertToPDF thread safe. Conversion requests are queued and processed one by one, so the Open Office Wrapper Service can be used by more than one application and, why not, from multiple machines too (the generic sender for the application running on other machines should then be initialized with tcp://%machineHostingService%:6543/OpenOfficeServiceReceiver).
+Configuration
+Currently, there are the following settings for the Open Office Wrapper Service:
+Port – It’s the port on which the service will listen for requests. By default, it is 6543. ProcessName – The name of the OpenOffice process (used when searching the process list to see if OO is alive). When you start OpenOffice in headless mode, it is soffice.bin (instead of soffice.exe). PathToOpenOffice – Self-explanatory, eh? If you have installed OpenOffice on a path other than the default, you should change this setting (the default path is c:\Program Files\OpenOffice.org 2.4\program\soffice.exe; on x64 machines, add (x86) after Program Files). SecondsIdleAllowed – When a conversion request is submitted, OpenOfficeController checks if OO is running in the background, and if not, starts soffice.exe in headless mode. By default, if no new request is made in 60 seconds, the OpenOffice process will be killed. CheckIntervalInSeconds – The interval in which the service evaluates OpenOffice usage (bound to the previous setting). By default, it is 30 seconds. RequestTimeoutInSeconds – The time in which a response is expected from OpenOffice. If the item stays in the queue for too long or OpenOffice gets too big a file for processing, a Timeout Exception will be thrown. The default wait is 30 seconds. Running in-process?
+I would like to mention once again that the Windows Service I wrote is only there to provide a security context and serve as a bridge to OpenOfficeWrapper.dll that implements the main stuff when it comes to communicating with OpenOffice. If you wish, you can directly reference OpenOfficeWrapper.dll and perform PDF conversions in-process, but you must be sure that your application will be run with sufficient security privileges! In my testing, the conversion was successful only if I run the application under an account that belonged to the Administrator group.
+Also, you could run into trouble when trying to run OpenOfficeWrapper on x64 versions of Windows. I’ve had tons of trouble trying to get my Web Application to convert PDF by using the OpenOfficeWrapper in process on a Windows 2003 x64 machine. So, if you really do not need to have everything in your application’s process, leave the code that wraps OpenOffice separated, and use it through a Windows Service.
+Words of warnings and words of thanks
+To me, the documentation of OpenOffice is terrible. OK, I could be another C# "quasi-developer" who finds it easier to look at examples than to crawl through bunch of Wiki pages, diagrams, and forum posts just to get a couple lines of code that opens a document. But, for me - after an absolute champion of useless information, unrelated links, and broken searches in the MSDN - the OO developer portal is one more example of how you do not want your documentation to be organized. From what I’ve seen, OpenOffice is a great product considering the cost ($0), and it is a shame that I can’t say the same for its documentation.
+On the other hand, posts of server users on the OOoForum are really helpful; I would specifically like to thank LarsB, tcedi, and DannyB. Most of the conversion code in ConvertToPDF.cs is taken from LarsB’s Commandline PDF convertor; so, thank you man – I hope you’ll continue to post useful snippets.
+Conclusion
+With this article, I aimed at a simple goal – to provide an easy-to-follow, free, and versatile solution for converting documents to PDF by using C#. I am aware that there are technically more robust solutions, but I do not know any of them that’s free. If you know – please post it in the comments section along with an impression of this article.
+Enjoy! References
+Instructions on making code work with OpenOffice 3, (thanks to goa_kiwi)
+History
+January 8th, 2009 - Added references.
+July 22nd, 2008 - Initial version of the article.
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+View All ThreadsFirst Prev Next
+Method not found: 'unoidl.com.sun.star.uno.XComponentContext uno.util.Bootstrap.bootstrap()'."} general_aelius21-Jun-12 2:58 Hello I'm using OpenOffice 3.4.0, and I'm getting the following error :
+Method not found: 'unoidl.com.sun.star.uno.XComponentContext uno.util.Bootstrap.bootstrap()'."}
+Server stack trace: at OpenOfficeWrapper.ConversionToPDF.Generate(String sourcePath, String destinationPath)
+at OpenOfficeWrapper.ConversionToPDF.Generate(String sourcePath) in E:\Projecten\Demos\PDFGeneration\OpenOfficeWrapper\ConversionToPDF.cs:line 60
+at OpenOfficeService.Receiver.ConvertToPDF(String source) in E:\Projecten\Demos\PDFGeneration\OpenOfficeService\Receiver.cs:line 52
+at System.Runtime.Remoting.Messaging.StackBuilderSink._PrivateProcessMessage(IntPtr md, Object[] args, Object server, Int32 methodPtr, Boolean fExecuteInContext, Object[]& outArgs)
+at System.Runtime.Remoting.Messaging.StackBuilderSink.PrivateProcessMessage(RuntimeMethodHandle md, Object[] args, Object server, Int32 methodPtr, Boolean fExecuteInContext, Object[]& outArgs)
+at System.Runtime.Remoting.Messaging.StackBuilderSink.SyncProcessMessage(IMessage msg, Int32 methodPtr, Boolean fExecuteInContext)
+Exception rethrown at [0]: at System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)
+at System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)
+at OpenOfficeService.Objects.IReceiver.ConvertToPDF(String source)
+at PDFWeb._Default.ExcelToPDFButton_Click(Object sender, EventArgs e) in E:\Projecten\Demos\PDFGeneration\PDFWeb\Default.aspx.cs:line 40
+at System.Web.UI.WebControls.Button.OnClick(EventArgs e)
+at System.Web.UI.WebControls.Button.RaisePostBackEvent(String eventArgument)
+at System.Web.UI.WebControls.Button.System.Web.UI.IPostBackEventHandler.RaisePostBackEvent(String eventArgument)
+at System.Web.UI.Page.RaisePostBackEvent(IPostBackEventHandler sourceControl, String eventArgument)
+at System.Web.UI.Page.RaisePostBackEvent(NameValueCollection postData)
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+Can someone help me with this?
+Re: Method not found: 'unoidl.com.sun.star.uno.XComponentContext uno.util.Bootstrap.bootstrap()'."} Member 955983130-Jan-13 16:39 Pls refer to Comments and Discussions of below URL
+,What Predrag Tomasevic said at 30 Jan '09 - 1:11
+Generate PDF Using C#[^]
+Last Visit: 31-Dec-99 18:00 Last Update: 10-Jul-14 9:21Refresh1
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 23 Jul 2008
+Views 290,544
+Downloads 7,573
+Bookmarked 251 times
+C#1.0 C#2.0 C#3.0 .NET3.5 VS2008 C# XML Windows .NET Dev , + Related Articles
+Pdfizer, a dumb HTML to PDF converter, in C#
+Text2PDF
+PDF reporting using ASP.NET MVC3
+PdfView - Peeking into the Internals of PDFs
+Fill in PDF Form Fields using the Open Source iTextSharp Dynamic Link Library
+Programmatically Complete PDF Form Fields using Visual Basic and the iTextSharp DLL
+Manipulate (Add/Edit) PDF using .NET
+Filling PDF Form using iText PDF Library
+A SOA approach to dynamic DOCX-PDF report generation - Part 2
+PDF Viewer Control Without Acrobat Reader Installed
+Gios PDF .NET library
+Creating PDF documents with iTextSharp
+Generating Dynamic PDF Documents using the Open Source Scryber Library
+A PDF Forms Parser
+Generating Server Side PDFs using PDFKit and Node.js
+Add Images and Textboxes to PDF
+Simplest PDF Generating API for JPEG Image Content
+How to Read, Write and Edit PDF Files and Metadata using LEADTOOLS
+Exporting a DataTable to PDF
+Generate Thumbnail Images from PDF Documents
+Scan and Read the Barcode from PDF File
+Related Research
+How to Apply Changes to Your DB2 Database with Minimal Risk
+IDC: The Intelligent Integrated Enterprise Toad Oracle: Discover the Top 10 Most Useful Toad Features
+IDC: How Red Hat's JBoss Enterprise Application Platform is Extending Business Value
+Permalink | Advertise |
+Privacy |
+Mobile
+Web01 |
+2.8.140709.1 |
+Last Updated 2 Feb 2009	Article Copyright 2008 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

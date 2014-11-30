@@ -1,0 +1,580 @@
+http://thomassileo.com/blog/2013/09/17/playing-with-python-and-cgminer-rpc-api/
+HTTP/1.1 200 OK
+Server: nginx/1.2.7
+Date: Tue, 22 Jul 2014 21:31:39 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 31301
+Last-Modified: Fri, 16 May 2014 12:50:40 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/style.css">
+  <!-- <link rel="stylesheet/less" type="text/css" href="/theme/css/style.less">
+  <script src="/theme/js/less-1.3.3.min.js" type="text/javascript"></script> -->
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/pygments.min.css">
+  <link rel="stylesheet" type="text/css" href="/theme/css/ipython.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,600italic">
+  <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/cosmic-sans-neue-mono" rel="stylesheet" type="text/css"/>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@trucsdedev">
+  <meta name="twitter:creator" content="@trucsdedev">
+  <meta name="twitter:domain" content="thomassileo.com">
+  <link rel="canonical" href="http://thomassileo.com/blog/2013/09/17/playing-with-python-and-cgminer-rpc-api/">
+<meta name="twitter:title" content="Playing with Python and cgminer RPC API">
+<meta name="twitter:description" content="I recently received an ASIC miner, and I use the popular cgminer, an ASIC miner (written in C) for Bitcoin (and Litecoin). Cgminer ...">
+<style type="text/css">
+main article div#article_text .ipynb pre {
+  background: none;
+  margin: 0;
+  padding: 4px;
+}
+</style>
+  <meta charset="utf-8" />
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0">
+  <meta name="author" content="Thomas Sileo">
+
+    <link href="http://thomassileo.com/atom.xml" type="application/atom+xml" rel="alternate" title="Thomas Sileo Full Atom Feed" />
+    
+  <meta name="date" contents="2013-09-17 16:05:00" />
+
+  <title>
+    Playing with Python and cgminer RPC API - Thomas Sileo  </title>
+</head>
+
+<body>
+  <aside>
+    <div id="user_meta">
+      <a href="http://thomassileo.com">
+        <img src="http://thomassileo.s3.amazonaws.com/logo.jpg" alt="logo" class="user_logo">
+      </a>
+      <h2><a href="http://thomassileo.com">Thomas Sileo</a></h2>
+      <p>/home/thomas</p>
+      <ul>
+                                <li><a href="http://thomassileo.com/about/">About</a></li>                                        <li><a href="http://thomassileo.com/search/">Search</a></li>                        <li><a href="/archives.html">Archives</a></li>
+                        <li><a href="https://github.com/tsileo"><i class="icon-large icon-github"></i> GitHub</a></li>
+                <li><a href="https://twitter.com/trucsdedev"><i class="icon-large icon-twitter"></i> Twitter</a></li>
+              </ul>
+    </div>
+  </aside>
+
+  <main>
+        <article>
+  <div id="article_title">
+<h1><a href="http://thomassileo.com/blog/2013/09/17/playing-with-python-and-cgminer-rpc-api/" rel="bookmark" title="Permalink to Playing with Python and cgminer RPC API">Playing with Python and cgminer RPC API</a></h1>
+
+    <p class="article_meta"><time datetime="2013-09-17T16:05:00" pubdate>Tue 17 September 2013</time> by <a rel="author" href="https://plus.google.com/105383704566845547994">Thomas Sileo</a></p>
+  </div>
+  <div id="article_text">
+    <div class="ipynb">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I recently received an ASIC miner, and I use the popular <a href="https://github.com/ckolivas/cgminer">cgminer</a>, an ASIC miner (written in C) for <a href="http://bitcoin.org">Bitcoin</a> (and Litecoin).</p>
+<p>Cgminer provides an RPC API that let you retrieve stats about your device(s), and I'm buidling an open source monitoring dashboard, <a href="https://rigsmonitoring.com">RigsMonitoring</a> writen in Python, accessing the API with Python is easy using <a href="http://docs.python.org/2/howto/sockets.html">sockets</a>.</p>
+<img src="http://thomassileo.s3.amazonaws.com/rsz_server_and_bfl_5ghs_low.jpg" style="width:100%;-webkit-border-radius:5px;border-radius:5px;background-clip:padding-box;" />
+<h2 class="ipynb" id="enable-cgminer-api">Enable cgminer API</h2>
+<p>To enable the API, you need to add <code>--api-listen</code> and <code>--api-allow W:0/0</code>.</p>
+<pre class="ipynb"><code>sudo nohup ./cgminer -o stratum.bitcoin.cz:3333 -u myworker -p mypass --api-allow W:0/0 --api-listen&amp;</code></pre>
+<h2 class="ipynb" id="accessing-the-api-with-python">Accessing the API with Python</h2>
+<p>A detailled documentation is available in the <a href="https://github.com/ckolivas/cgminer/blob/master/API-README">API-README</a> file.</p>
+<p>The API talks <strong>JSON</strong>, listens on port <strong>4048</strong> by default, and a basic request looks like <code>{&quot;command&quot;:&quot;CMD&quot;,&quot;parameter&quot;:&quot;PARAM&quot;}</code>.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[14]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">4028</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Make a request with the <strong>summary</strong> command, JSON encoded.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[15]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;command&#39;</span><span class="p">:</span> <span class="s">&#39;summary&#39;</span><span class="p">}))</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[15]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+22
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, receive the response (alway JSON encoded):</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[16]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">resp</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">buf</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">+=</span> <span class="n">buf</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[17]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">resp</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[17]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+&apos;{&quot;STATUS&quot;:[{&quot;STATUS&quot;:&quot;S&quot;,&quot;When&quot;:1378733100,&quot;Code&quot;:11,&quot;Msg&quot;:&quot;Summary&quot;,&quot;Description&quot;:&quot;cgminer 3.3.4&quot;}],&quot;SUMMARY&quot;:[{&quot;Elapsed&quot;:8061,&quot;MHS av&quot;:5363.24,&quot;Found Blocks&quot;:0,&quot;Getworks&quot;:303,&quot;Accepted&quot;:3379,&quot;Rejected&quot;:16,&quot;Hardware Errors&quot;:1,&quot;Utility&quot;:25.15,&quot;Discarded&quot;:604,&quot;Stale&quot;:0,&quot;Get Failures&quot;:0,&quot;Local Work&quot;:12271,&quot;Remote Failures&quot;:0,&quot;Network Blocks&quot;:23,&quot;Total MH&quot;:43233140.8015,&quot;Work Utility&quot;:75.47,&quot;Difficulty Accepted&quot;:10137.00000000,&quot;Difficulty Rejected&quot;:48.00000000,&quot;Difficulty Stale&quot;:0.00000000,&quot;Best Share&quot;:8944,&quot;Device Hardware%&quot;:0.0099,&quot;Device Rejected%&quot;:0.4734,&quot;Pool Rejected%&quot;:0.4713,&quot;Pool Stale%&quot;:0.0000}],&quot;id&quot;:1}\x00&apos;
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can notice the null byte <code>00</code> at the end of the response.</p>
+<p>Finally, we shutdown the socket.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[18]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And decode the response (without the null byte):</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[20]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[20]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+{u&apos;STATUS&apos;: [{u&apos;Code&apos;: 11,
+   u&apos;Description&apos;: u&apos;cgminer 3.3.4&apos;,
+   u&apos;Msg&apos;: u&apos;Summary&apos;,
+   u&apos;STATUS&apos;: u&apos;S&apos;,
+   u&apos;When&apos;: 1378733100}],
+ u&apos;SUMMARY&apos;: [{u&apos;Accepted&apos;: 3379,
+   u&apos;Best Share&apos;: 8944,
+   u&apos;Device Hardware%&apos;: 0.0099,
+   u&apos;Device Rejected%&apos;: 0.4734,
+   u&apos;Difficulty Accepted&apos;: 10137.0,
+   u&apos;Difficulty Rejected&apos;: 48.0,
+   u&apos;Difficulty Stale&apos;: 0.0,
+   u&apos;Discarded&apos;: 604,
+   u&apos;Elapsed&apos;: 8061,
+   u&apos;Found Blocks&apos;: 0,
+   u&apos;Get Failures&apos;: 0,
+   u&apos;Getworks&apos;: 303,
+   u&apos;Hardware Errors&apos;: 1,
+   u&apos;Local Work&apos;: 12271,
+   u&apos;MHS av&apos;: 5363.24,
+   u&apos;Network Blocks&apos;: 23,
+   u&apos;Pool Rejected%&apos;: 0.4713,
+   u&apos;Pool Stale%&apos;: 0.0,
+   u&apos;Rejected&apos;: 16,
+   u&apos;Remote Failures&apos;: 0,
+   u&apos;Stale&apos;: 0,
+   u&apos;Total MH&apos;: 43233140.8015,
+   u&apos;Utility&apos;: 25.15,
+   u&apos;Work Utility&apos;: 75.47}],
+ u&apos;id&apos;: 1}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 class="ipynb" id="cgminer-api-wrapper">Cgminer API wrapper</h2>
+<p>Now that we successfully called the API, here is a basic wrapper, with argument support:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[3]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<span class="k">class</span> <span class="nc">CgminerAPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Cgminer RPC API wrapper. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4028</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+
+    <span class="k">def</span> <span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize a socket connection,</span>
+<span class="sd">        send a command (a json encoded dict) and</span>
+<span class="sd">        receive the response (and decode it).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;command&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># Parameter must be converted to basestring (no int)</span>
+                <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;parameter&#39;</span><span class="p">:</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">arg</span><span class="p">)})</span>
+
+            <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+            <span class="n">received</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">received</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sock</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4096</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="n">chunk</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">msg</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">out</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Check that the wrapper is actually working, by calling the <code>command</code> method:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[4]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">cgminer</span> <span class="o">=</span> <span class="n">CgminerAPI</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[5]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">cgminer</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s">&#39;summary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[5]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+{u&apos;STATUS&apos;: [{u&apos;Code&apos;: 11,
+   u&apos;Description&apos;: u&apos;cgminer 3.3.4&apos;,
+   u&apos;Msg&apos;: u&apos;Summary&apos;,
+   u&apos;STATUS&apos;: u&apos;S&apos;,
+   u&apos;When&apos;: 1378918507}],
+ u&apos;SUMMARY&apos;: [{u&apos;Accepted&apos;: 69859,
+   u&apos;Best Share&apos;: 1498416,
+   u&apos;Device Hardware%&apos;: 0.0005,
+   u&apos;Device Rejected%&apos;: 0.3646,
+   u&apos;Difficulty Accepted&apos;: 209577.0,
+   u&apos;Difficulty Rejected&apos;: 768.0,
+   u&apos;Difficulty Stale&apos;: 0.0,
+   u&apos;Discarded&apos;: 12286,
+   u&apos;Elapsed&apos;: 193470,
+   u&apos;Found Blocks&apos;: 0,
+   u&apos;Get Failures&apos;: 2,
+   u&apos;Getworks&apos;: 6147,
+   u&apos;Hardware Errors&apos;: 1,
+   u&apos;Local Work&apos;: 259407,
+   u&apos;MHS av&apos;: 4676.09,
+   u&apos;Network Blocks&apos;: 371,
+   u&apos;Pool Rejected%&apos;: 0.3651,
+   u&apos;Pool Stale%&apos;: 0.0,
+   u&apos;Rejected&apos;: 256,
+   u&apos;Remote Failures&apos;: 1,
+   u&apos;Stale&apos;: 3,
+   u&apos;Total MH&apos;: 904683321.2956,
+   u&apos;Utility&apos;: 21.67,
+   u&apos;Work Utility&apos;: 65.32}],
+ u&apos;id&apos;: 1}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Have you noticed the <code>__getattr__</code> magic method, it return the <code>command</code> so instead of calling the command method, we can call the method that correspond to the command we want, it allows us to:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[6]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">cgminer</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[6]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+{u&apos;STATUS&apos;: [{u&apos;Code&apos;: 11,
+   u&apos;Description&apos;: u&apos;cgminer 3.3.4&apos;,
+   u&apos;Msg&apos;: u&apos;Summary&apos;,
+   u&apos;STATUS&apos;: u&apos;S&apos;,
+   u&apos;When&apos;: 1378918691}],
+ u&apos;SUMMARY&apos;: [{u&apos;Accepted&apos;: 69925,
+   u&apos;Best Share&apos;: 1498416,
+   u&apos;Device Hardware%&apos;: 0.0005,
+   u&apos;Device Rejected%&apos;: 0.3671,
+   u&apos;Difficulty Accepted&apos;: 209775.0,
+   u&apos;Difficulty Rejected&apos;: 774.0,
+   u&apos;Difficulty Stale&apos;: 0.0,
+   u&apos;Discarded&apos;: 12302,
+   u&apos;Elapsed&apos;: 193655,
+   u&apos;Found Blocks&apos;: 0,
+   u&apos;Get Failures&apos;: 2,
+   u&apos;Getworks&apos;: 6155,
+   u&apos;Hardware Errors&apos;: 1,
+   u&apos;Local Work&apos;: 259678,
+   u&apos;MHS av&apos;: 4676.69,
+   u&apos;Network Blocks&apos;: 372,
+   u&apos;Pool Rejected%&apos;: 0.3676,
+   u&apos;Pool Stale%&apos;: 0.0,
+   u&apos;Rejected&apos;: 258,
+   u&apos;Remote Failures&apos;: 1,
+   u&apos;Stale&apos;: 3,
+   u&apos;Total MH&apos;: 905662573.8391,
+   u&apos;Utility&apos;: 21.66,
+   u&apos;Work Utility&apos;: 65.33}],
+ u&apos;id&apos;: 1}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And it even handles argument:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[7]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="n">cgminer</span><span class="o">.</span><span class="n">asc</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[7]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre class="ipynb">
+{u&apos;ASC&apos;: [{u&apos;ASC&apos;: 0,
+   u&apos;Accepted&apos;: 69928,
+   u&apos;Device Hardware%&apos;: 0.0005,
+   u&apos;Device Rejected%&apos;: 0.367,
+   u&apos;Diff1 Work&apos;: 210881,
+   u&apos;Difficulty Accepted&apos;: 209784.0,
+   u&apos;Difficulty Rejected&apos;: 774.0,
+   u&apos;Enabled&apos;: u&apos;Y&apos;,
+   u&apos;Hardware Errors&apos;: 1,
+   u&apos;ID&apos;: 0,
+   u&apos;Last Share Difficulty&apos;: 3.0,
+   u&apos;Last Share Pool&apos;: 0,
+   u&apos;Last Share Time&apos;: 1378918702,
+   u&apos;Last Valid Work&apos;: 1378918705,
+   u&apos;MHS 5s&apos;: 5412.69,
+   u&apos;MHS av&apos;: 4676.78,
+   u&apos;Name&apos;: u&apos;BAJ&apos;,
+   u&apos;No Device&apos;: False,
+   u&apos;Rejected&apos;: 258,
+   u&apos;Status&apos;: u&apos;Alive&apos;,
+   u&apos;Temperature&apos;: 35.0,
+   u&apos;Total MH&apos;: 905752768.1523,
+   u&apos;Utility&apos;: 21.66}],
+ u&apos;STATUS&apos;: [{u&apos;Code&apos;: 106,
+   u&apos;Description&apos;: u&apos;cgminer 3.3.4&apos;,
+   u&apos;Msg&apos;: u&apos;ASC0&apos;,
+   u&apos;STATUS&apos;: u&apos;S&apos;,
+   u&apos;When&apos;: 1378918707}],
+ u&apos;id&apos;: 1}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 class="ipynb" id="pycgminer">Pycgminer</h2>
+<p>I released the code on pypi and you can check out the project on github: <a href="https://github.com/tsileo/pycgminer">pycgminer</a>.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[4]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight-ipynb"><pre class="ipynb"><span class="kn">from</span> <span class="nn">pycgminer</span> <span class="kn">import</span> <span class="n">CgminerAPI</span>
+    
+<span class="n">cgminer</span> <span class="o">=</span> <span class="n">CgminerAPI</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">cgminer</span><span class="o">.</span><span class="n">devs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="vbox output_wrapper">
+<div class="output vbox">
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_stream output_stdout">
+<pre class="ipynb">
+{u&apos;STATUS&apos;: [{u&apos;STATUS&apos;: u&apos;S&apos;, u&apos;Msg&apos;: u&apos;1 ASC(s) - &apos;, u&apos;Code&apos;: 9, u&apos;When&apos;: 1379356749, u&apos;Description&apos;: u&apos;cgminer 3.3.4&apos;}], u&apos;DEVS&apos;: [{u&apos;Difficulty Accepted&apos;: 755613.0, u&apos;Temperature&apos;: 36.0, u&apos;Difficulty Rejected&apos;: 3070.0, u&apos;Status&apos;: u&apos;Alive&apos;, u&apos;Device Rejected%&apos;: 0.4048, u&apos;Rejected&apos;: 942, u&apos;ID&apos;: 0, u&apos;ASC&apos;: 0, u&apos;Hardware Errors&apos;: 7, u&apos;Accepted&apos;: 231709, u&apos;No Device&apos;: False, u&apos;Last Share Pool&apos;: 0, u&apos;Diff1 Work&apos;: 758437, u&apos;Name&apos;: u&apos;BAJ&apos;, u&apos;Total MH&apos;: 3255572325.457, u&apos;Enabled&apos;: u&apos;Y&apos;, u&apos;Device Hardware%&apos;: 0.0009, u&apos;Last Valid Work&apos;: 1379356749, u&apos;Last Share Time&apos;: 1379356749, u&apos;MHS av&apos;: 5153.57, u&apos;MHS 5s&apos;: 5380.7, u&apos;Last Share Difficulty&apos;: 4.0, u&apos;Utility&apos;: 22.01}], u&apos;id&apos;: 1}
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Don't hesitate to submit a pull request!</p>
+<h2 class="ipynb" id="feedback">Feedback</h2>
+<p>Don't hesitate to let me know if you have any questions/suggestions !</p>
+</div>
+</div>
+  </div>
+
+  <div id="sharing">
+<p><i class="icon-large icon-share-alt"></i> Share this article</p>
+
+<div class="share"></div>
+ 
+  </div>
+
+<div id="btc-tip">
+  <p style="font-weight: 600;"><i class="icon-large icon-btc" style="color:#2595c5;"></i> Tip with Bitcoin</p>
+  <div id="btc-system">
+  <p>Tip me with Bitcoin and vote for this post!</p>
+  <p><strong><a href="bitcoin:1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2">1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2</a></strong></p>
+  </div>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://panzi.github.io/SocialSharePrivacy/javascripts/jquery.socialshareprivacy.min.js"></script>
+
+<script async data-isso="/isso/" data-isso-lang="en" src="/isso/js/embed.min.js"></script>
+<section id="isso-thread" data-title="Playing with Python and cgminer RPC API"></section>
+<noscript>Please enable JavaScript to view the comments.</noscript>
+
+    <script>
+    var tip_system_api = 'http://thomassileo.com:5100';
+    var tip_system_url = 'http://thomassileo.com/blog/2013/09/17/playing-with-python-and-cgminer-rpc-api/';
+      (function() {
+    var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true;
+    s.src = 'http://thomassileo.s3.amazonaws.com/tip.min.js'
+    document.body.appendChild(s);
+  })();
+    </script>
+<script type="application/x-social-share-privacy-settings">{"title":"Playing with Python and cgminer RPC API","path_prefix":"http://panzi.github.io/SocialSharePrivacy/","layout":"line","services":{"buffer":{"status":false},"delicious":{"status":false},"disqus":{"status":false},"facebook":{"status":false},"fbshare":{"status":false},"linkedin":{"status":false},"mail":{"status":false},"pinterest":{"status":false},"stumbleupon":{"status":false},"tumblr":{"status":false},"xing":{"status":false},"hackernews":{"status":false},"flattr":{"uid":"tsileo"},"twitter":{"via":"trucsdedev"}}}</script>
+
+    <script type="text/javascript">
+$(document).ready(function () {
+    $('.share').socialSharePrivacy();
+});
+</script>
+
+</article>
+
+    <footer>
+      <p><a href="http://thomassileo.com/" class="button_accent">&larr; Back to Index</a></p>
+    </footer>
+
+    <div id="ending_message">
+      <p>&copy <strong>Thomas Sileo</strong>. Powered by <a href="http://getpelican.com">Pelican</a>.</p>
+    </div>
+  </main>
+<script type="text/javascript">
+var clicky_site_ids = clicky_site_ids || [];
+clicky_site_ids.push(66561091);
+(function() {
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = '//static.getclicky.com/js';
+  ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+})();
+</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66561091ns.gif" /></p></noscript><script>
+(function(){var a=document.TSanalytics_id,d=0,c=1;if(-1==document.cookie.indexOf("TSanalytics_u=")){var d=1,b=new Date;b.setTime(b.getTime()+864E5);document.cookie="TSanalytics_u=1; expires="+b.toGMTString()+"; path=/"}-1==document.cookie.indexOf("TSanalytics_r=")&&(c=0,document.cookie="TSanalytics_r=1; expires=Sun, 18 Jan 2038 00:00:00 GMT; path=/");b=encodeURIComponent;a="?id="+a+("&nv="+d);a+="&rv="+c;a+="&location="+b(document.location);a+="&width="+screen.width;a+="&height="+screen.height;a+=
+"&hl="+("undefined"!=typeof history&&"undefined"!=typeof history.length)?0:history.length;a+="&ua="+b(navigator.userAgent);a+="&referrer="+b("undefined"==typeof document.referrer?"":document.referrer);c="na";"undefined"!=typeof navigator.cookieEnabled&&(c=navigator.cookieEnabled?"y":"n");a+="&cookie="+c;(new Image(1,1)).src="http://tomt0m.noip.me/"+a})();
+</script>
+  </body>
+</html>

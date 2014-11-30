@@ -1,0 +1,681 @@
+http://tzdata-javascript.org/
+HTTP/1.1 200 OK
+Server: Apache/2.2.16 (Debian)
+Last-Modified: Tue, 17 Jun 2014 13:17:24 GMT
+ETag: "27aa0-4e6b-4fc07f6e4c100"
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Type: text/html
+Content-Length: 6459
+X-Varnish-cache: Fetch (obj)
+Date: Sun, 13 Jul 2014 11:41:50 GMT
+X-Varnish: 1909350510
+Age: 0
+Via: 1.1 varnish
+Connection: close
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!--
+$Id$
+-->
+	<head>
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="/style.css" title="default" />
+		<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+		<title>
+			tzdata-javascript - A JS library for working with timezones
+		</title>
+<!--
+		<script type="text/javascript" src="http://tzdata-javascript.org/tzdata-javascript.js">
+		</script>
+-->
+<!-- -->
+		<script type="text/javascript" src="//tzdata-javascript.org/tzdata-javascript.js">
+		</script>
+<!-- -->
+		<script type="text/javascript">
+			/*
+			 * Original code for addEvent() from http://ejohn.org/blog/flexible-javascript-events
+			 *
+			 * Updated to include the old school way of adding events
+			 */
+			function addEvent(obj,type,fn)
+			{
+				/*
+				 * All this because of stupid, stupid IE...
+				 */
+				if(obj.addEventListener)	/* The RIGHT way to do it... */
+					obj.addEventListener(type,fn,false);
+				else
+					if(obj.attachEvent)	/* The IE way to do it... */
+					{
+						obj["e"+type+fn]=fn;
+						obj[type+fn]=function()
+						{
+							obj["e"+type+fn](window.event);
+						}
+						obj.attachEvent("on"+type,obj[type+fn]);
+					}
+					else			/* The old school way of doing it... */
+						eval("obj.on"+type+"=fn");
+			}
+
+			var timezones=
+				[
+					{
+						name:	"Los Angeles",
+						tz:		"America/Los_Angeles",
+					},
+					{
+						name:	"New York",
+						tz:		"America/New_York",
+					},
+					{
+						name:	"UTC",
+						tz:		"UTC",
+					},
+					{
+						name:	"London",
+						tz:		"Europe/London",
+					},
+					{
+						name:	"Copenhagen",
+						tz:		"Europe/Copenhagen",
+					},
+					{
+						name:	"Hong Kong",
+						tz:		"Asia/Hong_Kong",
+					},
+					{
+						name:	"Shanghai",
+						tz:		"Asia/Shanghai",
+					},
+					{
+						name:	"Tokyo",
+						tz:		"Asia/Tokyo",
+					},
+					{
+						name:	"Sydney",
+						tz:		"Australia/Sydney",
+					},
+				];
+
+			var svg_clock_image="/demos/analog_clock/analog_clock.svg";
+			var svg_clock_x_scale=1;
+			var svg_clock_y_scale=1;
+			var svg_clock_smooth=1;	// Move hour and minute hand a small fraction every second
+
+			function create_svg_clock(timezone)
+			{
+				if(typeof(timezone.zoneinfo)==="undefined")
+				{
+					timezone.zoneinfo=
+						new tzdata_javascript.zoneinfo(
+							timezone.tz
+						);
+				}
+
+				if(typeof(timezone.zoneinfo)==="undefined")
+				{
+					return;
+				}
+
+				var svg_req=new XMLHttpRequest();
+				svg_req.open(
+					"GET",
+					svg_clock_image,
+					false
+				);
+				svg_req.send(null);
+
+				if(svg_req.status!=200)
+				{
+					return;
+				}
+
+				var svg_data=svg_req.responseXML.firstChild;
+
+				var div=document.createElement("div");
+
+				div.style.setProperty("float","left",null);
+				div.style.setProperty("text-align","center",null);
+
+				var svg=document.createElementNS(
+					"http://www.w3.org/2000/svg",
+					"svg"
+				);
+
+				var child;
+
+				while(child=svg_data.firstChild)
+				{
+					svg_data.removeChild(child);
+					svg.appendChild(child);
+				}
+
+				var width=svg_data.getAttribute("width");
+				var height=svg_data.getAttribute("height");
+
+				svg.getElementById("clock").setAttribute(
+					"transform",
+					"scale("+svg_clock_x_scale+","+svg_clock_y_scale+")"
+				);
+
+				svg.setAttribute("width",svg_clock_x_scale*width);
+				svg.setAttribute("height",svg_clock_y_scale*height);
+
+				timezone.hour_hand=svg.getElementById("hour_hand");
+				timezone.minute_hand=svg.getElementById("minute_hand");
+				timezone.second_hand=svg.getElementById("second_hand");
+
+				div.appendChild(svg);
+
+				div.appendChild(document.createElement("br"));
+
+				div.appendChild(
+					document.createTextNode(
+						timezone.name
+					)
+				);
+
+				return(div);
+			}
+
+			function update_svg_clock(timezone,timestamp)
+			{
+				var localtime=timezone.zoneinfo.localtime(timestamp);
+
+				var hour=localtime.hour%12;
+				var minute=localtime.minute;
+				var second=localtime.second;
+				var millisecond=localtime.millisecond;
+
+				if(svg_clock_smooth)
+				{
+					hour+=minute/60;
+					hour+=second/(60*60);
+					hour+=millisecond/(60*60*1000);
+
+					minute+=second/60;
+					minute+=millisecond/(60*1000);
+
+					second+=millisecond/1000;
+				}
+
+				var hour_angle=hour*(360/12);
+				var minute_angle=minute*(360/60);
+				var second_angle=second*(360/60);
+
+				timezone.hour_hand.setAttribute(
+					"transform",
+					"rotate("+hour_angle+")"
+				);
+
+				timezone.minute_hand.setAttribute(
+					"transform",
+					"rotate("+minute_angle+")"
+				);
+
+				timezone.second_hand.setAttribute(
+					"transform",
+					"rotate("+second_angle+")"
+				);
+			}
+
+			function create_text_clock(timezone)
+			{
+				if(typeof(timezone.zoneinfo)==="undefined")
+				{
+					timezone.zoneinfo=
+						new tzdata_javascript.zoneinfo(
+							timezone.tz
+						);
+				}
+
+				if(typeof(timezone.zoneinfo)==="undefined")
+				{
+					return;
+				}
+
+				var tr=document.createElement("tr");
+
+				var th=document.createElement("th");
+
+				th.appendChild(
+					document.createTextNode(
+						timezone.name
+					)
+				);
+
+				tr.appendChild(th);
+
+				timezone.td=document.createElement("td");
+
+				tr.appendChild(timezone.td);
+
+				return(tr);
+			}
+
+			function update_text_clock(timezone,timestamp)
+			{
+				var text=timezone.zoneinfo.strftime("%+",timestamp);
+
+				timezone.td.innerHTML=text;
+			}
+
+			addEvent(
+				window,
+				"load",
+				function()
+				{
+					var now=new Date().valueOf();
+
+					var svg_clocks=document.getElementById("svg_clocks");
+
+					var text_clocks=document.getElementById("text_clocks");
+
+					timezones.forEach(
+						function(timezone)
+						{
+							timezone.zoneinfo=
+								new tzdata_javascript.zoneinfo(
+									timezone.tz
+								);
+
+							if(!timezone.zoneinfo)
+							{
+								return;
+							}
+
+							timezone.svg=create_svg_clock(timezone);
+
+							update_svg_clock(timezone,now);
+
+							svg_clocks.appendChild(timezone.svg);
+
+							timezone.tr=create_text_clock(timezone);
+
+							update_text_clock(timezone,now);
+
+							text_clocks.appendChild(timezone.tr);
+						}
+					);
+
+					setInterval(
+						function()
+						{
+							var now=new Date().valueOf();
+
+							timezones.forEach(
+								function(timezone)
+								{
+									update_svg_clock(timezone,now);
+
+									update_text_clock(timezone,now);
+								}
+							);
+						},
+						1000
+					);
+				}
+			);
+		</script>
+	</head>
+	<body>
+		<h1>
+			tzdata-javascript
+		</h1>
+		<div id="svg_clocks">
+		</div>
+		<div style="clear: both;"></div>
+		<table id="text_clocks">
+			<tr>
+				<th colspan="2" style="padding: 0px; text-align: center;">
+					World clock
+				</th>
+			</tr>
+		</table>
+		<h2 id="introduction">
+			Introduction
+		</h2>
+		<p>
+			Standard JavaScript only supports two timezones, UTC and "the local timezone being used when the browser was started". On most platforms, it's not possible to change the local timezone of the browser without restarting the browser. In the cases where it is possible to change the local timezone without a browser restart, it has to be done at the operating system level and it's something a webpage can't request without the assistance of the user.
+			<br />
+			tzdata-javascript is a JavaScript library that enables the usage of multiple timezones on the same webpage without the assistance of the user.
+		</p>
+		<div style="clear: both;"></div>
+		<h2 id="latest_news">
+			Latest news
+		</h2>
+		<ul>
+			<li>
+				2014-06-17: The default zoneinfo data has been changed to version 2014e.
+			</li>
+			<li>
+				2014-05-15: The default zoneinfo data has been changed to version 2014c.
+			</li>
+			<li>
+				2014-04-01: Various bug fixes in the demos.
+			</li>
+			<li>
+				2014-03-15: The default zoneinfo data has been changed to version 2014a.
+			</li>
+<!--
+			<li>
+				2014-01-23: Added a <tt>strptime()</tt> function. An example of usage will follow shortly...
+			</li>
+-->
+			<li>
+				2014-01-01: Happy New Year! The default zoneinfo data has been changed to version 2013i.
+			</li>
+			<li>
+				2013-12-12: The default zoneinfo data has been changed to version 2013h.
+			</li>
+			<li>
+				2013-11-30:	Peter Hardy noticed that some timezones were missing. The 178 missing timezones have now been converted and copied to the mirrors.
+			</li>
+			<li>
+				2013-11-22:	The "localtime" time zone is broken on Microsoft Windows and has therefore been removed from the default list of time zones. Blame Microsoft.
+			</li>
+			<li>
+				2013-09-10: The default zoneinfo data has been changed to version 2013d.
+			</li>
+			<li>
+				<a href="/older-news.html">Older news</a>
+			</li>
+		</ul>
+		<h2 id="usage">
+			Usage
+		</h2>
+		<h3 id="loading-the-library">
+			Load the library
+		</h3>
+		<p>
+			Add the following HTML snippet to the <tt>&lt;head&gt;</tt>-section of your HTML page.
+		</p>
+		<pre>
+&lt;script type="text/javascript" src="http://tzdata-javascript.org/tzdata-javascript.js"&gt;
+&lt;/script&gt;
+		</pre>
+		<h3 id="optional-settings">
+			Optionally change some settings
+		</h3>
+		<p>
+			All settings are located under <tt>tzdata_javascript.settings</tt>.
+		</p>
+		<pre>
+&lt;script type="text/javascript"&gt;
+	/*
+	 * The library works out of the box, but if you want to lessen the
+	 * load of the library webserver (please do!) or if you want to
+	 * use some "home-made" timezones, you can change the base URL of
+	 * the zoneinfo files.
+	 *
+	 * The name of the requested timezone will be appended to the base
+	 * URL, e.g.:
+	 *
+	 * http://example.com/zones/UTC
+	 * http://example.com/zones/Europe/Copenhagen
+	 *
+	 * Default:		"http://zoneinfo.tzdata-javascript.org/zoneinfo/"
+	 */
+	tzdata_javascript.settings.baseURL="http://example.com/zones/";
+
+	/*
+	 * To avoid downloading the same timezones over and over again, the
+	 * library will catch the various timezones, if "localStorage" is
+	 * supported in the browser.
+	 *
+	 * This option tells the library whether or not it should try to
+	 * use an already cached version of a timezone.
+	 *
+	 * You normally want to keep this "true", but if you suspect that
+	 * your cached timezones has become corrupted, you can bypass the
+	 * cache by changing this setting to "false". See also the next
+	 * setting, which enables the (re-)caching of timezones.
+	 *
+	 * Default:		true
+	 */
+	tzdata_javascript.settings.localStorage.read=false;
+
+	/*
+	 * This option tells the library if it should cache the timezones
+	 * as they are downloaded.
+	 *
+	 * You normally want this to happen, but localStorage is often
+	 * limited to 2, 5 or 10 MB per site. If your site uses a lot of
+	 * timezones, you might run out of localStorage, if you try to
+	 * cache all of them.
+	 *
+	 * To give you an idea about how much space the timezones use, the
+	 * 415 timezones used in the worldmap demo takes up just under 2 MB
+	 * of space in total.
+	 *
+	 * Default:		true
+	 */
+	tzdata_javascript.settings.localStorage.write=false;
+&lt;/script&gt;
+		</pre>
+		<h3 id="loading-timezones">
+			Load and use timezones
+		</h3>
+		<p>
+			Finally load and use one or more timezones. The timezones are specified using the well known names from the Olson database and can be loaded either synchronous or asynchronous. It's often simpler to use the synchronous interface, but it should be avoided if you use a lot of timezones that ain't cached already.
+		</p>
+		<pre>
+&lt;script type="text/javascript"&gt;
+	var la=new tzdata_javascript.zoneinfo("America/Los_Angeles");
+	var utc=new tzdata_javascript.zoneinfo("UTC");
+	var cph=new tzdata_javascript.zoneinfo("Europe/Copenhagen");
+
+	var now=new Date().valueOf();
+
+	var localtime_la=la.localtime(now);
+	var localtime_cph=cph.localtime(now);
+
+	var difference=
+		localtime_cph.ttinfo.offset-
+		localtime_la.ttinfo.offset;
+
+	alert(
+		la.strftime("%+",now)+"\n"+
+		utc.strftime("%+",now)+"\n"+
+		cph.strftime("%+",now)+"\n"+
+		"\n"+
+		"Copenhagen is currently "+
+		(difference/(60*1000))+
+		" minutes ahead of Los Angeles"
+	);
+&lt;/script&gt;
+		</pre>
+		<p>
+			The asynchronous interface uses a call-back function.
+		</p>
+		<pre>
+&lt;script type="text/javascript"&gt;
+	new tzdata_javascript.zoneinfo(
+		"UTC",
+		function(timezone,zoneinfo)
+		{
+			var now=new Date().valueOf();
+
+			alert(
+				"In the '"+timezone+"' timezone, it's:\n"+
+				zoneinfo.strftime("%+",now)
+			);
+		}
+	);
+&lt;/script&gt;
+		</pre>
+		<p>
+			The library has a "localtime" time zone, you can use if you want to use the same functions as you use for the regular time zones from the Olson database. Internally, the "localtime" time zone uses the standard <tt>getHours()</tt>, <tt>getMinutes()</tt> etc. functions of the <tt>Date</tt> object, completely bypassing the internal functions of the <tt>tzdata-javascript</tt> library.
+		</p>
+		<h4 class="warning" id="warning-about-microsoft-windows">
+			Warning to users of Microsoft Windows
+		</h4>
+		<p class="warning">
+			Since the "localtime" time zone uses the functions provided by the operating system, not the <tt>tzdata-javascript</tt> library, faults in the operating system might appear when you use the "localtime" time zone.
+			<br />
+			Microsoft is notoriously bad at keeping track of transition times between "standard time" and "summer time". Users of Microsoft Windows should therefore be warned against using the "localtime" time zone if they plan to use timestamps outside the current year.
+			<br />
+			<strong>
+				Problems are VERY likely to show up! You have been warned!
+			</strong>
+		</p>
+		<p>
+			As an example of the problem, let's compare the "Europe/London" timezone and what Microsoft Windows users located in the UK will see if they use the "localtime" time zone.
+			<br />
+			England ran an experiment in which they used GMT+1 the entire time between October 27th 1968 and October 31st 1971, i.e. "summer time" all the time.
+			<br />
+			Epoch (timestamp=0) is defined as "1970-01-01 T 00:00:00.000 UTC". Converted using the "Europe/London" timezone that's "1970-01-01 T 01:00:00.000 BTS". Note that the hours is "01" and the timezone abbreviation is "BST", i.e. "British Summer Time".
+			<br />
+			Unfortunately for Microsoft Windows users in the UK, timestamp=0 will be converted to "1970-01-01 T 00:00:00.000" if they use the "localtime" time zone. As you can see, the hours is "00", which is clearly wrong.
+			<br />
+			To confirm that this isn't a bug in the <tt>tzdata-javascript</tt> library, you can try running the following code on a Microsoft Windows machine located in England.
+		</p>
+		<pre>
+&lt;script type="text/javascript"&gt;
+	var epoch=new Date(0);
+
+	alert("This should be 0, no matter where you are: "+epoch.getUTCHours());
+
+	alert("This should be 1, if you're in England: "+epoch.getHours());
+&lt;/script&gt;
+		</pre>
+		<p>
+			As you can see the code above does not use the <tt>tzdata-javascript</tt> library at all, so any errors in the output must come from somewhere else.
+			<br />
+			You're also more than welcome to run the code on Apple Mac OS, Linux or one of the BSDs. Neither of them should have any problems.
+		</p>
+		<h3 id="list-of-timezones">
+			List of timezones
+		</h3>
+		<p>
+			To get a list of (some of) the supported timezones, you can use this:
+		</p>
+		<pre>
+&lt;script type="text/javascript"&gt;
+	/*
+	 * Synchronously:
+	 */
+	var timezones=tzdata_javascript.timezones();
+	var timezone_array=Object.keys(timezones).sort();
+
+	timezone_array.forEach(timezone)
+	{
+		console.log(timezone);
+	}
+
+	/*
+	 * Asynchronously:
+	 */
+	tzdata_javascript.timezones(
+		function(timezones)
+		{
+			var timezone_array=Object.keys(timezones).sort();
+
+			timezone_array.forEach(timezone)
+			{
+				console.log(timezone);
+			}
+		}
+	);
+&lt;/script&gt;
+		</pre>
+		<p class="warning">
+			Due to the problem with Microsoft Windows mentioned above, "localtime" was removed from the default list of time zones on November 22nd 2013.
+			<br />
+			You can still use the "localtime" time zone, if you really want to, it just won't show up in any auto-generated list (e.g. drop-down menus) unless you actively take steps to make it so.
+		</p>
+		<h2 id="features">
+			Features
+		</h2>
+		<ul>
+			<li>
+				<a href="features/daylight_savings_time.html">Daylight Savings Time</a> transitions are fully supported.
+			</li>
+		</ul>
+		<h2 id="demos-and-examples">
+			Demos and examples
+		</h2>
+		<ul>
+			<li>
+				<a href="demos/compare/">Time compare</a>
+				<br />
+				Show the same point in time in multiple timezones. You can go back and forth in time (keep the buttons pressed to move faster through time) and change the timezones.
+			</li>
+			<li>
+				<a href="demos/overview/">Timezone overview</a>
+				<br />
+				You can add and remove timezones on the fly. The selected timezones are stored in a cookie, so you get the same list of timezones next time you load the page.
+			</li>
+			<li>
+				<a href="demos/worldmap/">World map</a>
+				<br />
+				A Google Map with 415 timezone markers. Hover over a marker to see the current time at that location. Click a marker to keep the info window open. It's possible to drag the map and zoom in and out.
+			</li>
+			<li>
+				<a href="demos/simple_canvas_clock/">Simple canvas clock</a>
+				<br />
+				A simple analog clock drawn using HTML canvas.
+			</li>
+			<li>
+				<a href="demos/simple_svg_clock/">Simple SVG clock</a>
+				<br />
+				Another simple analog clock. This one is using SVG.
+			</li>
+			<li>
+				<a href="demos/analog_clock/">Analog clock</a>
+				<br />
+				Same as above, but the SVG is in a file by itself, which should make it easier to replace the graphics with a "prettier" version.
+			</li>
+			<li>
+				<a href="demos/analog_clock_2/">Analog clock 2</a>
+				<br />
+				Just to demonstrate how easy it is to replace the graphics. This on also shows the date, time, timezone abbreviation and timezone as text.
+			</li>
+			<li>
+				<a href="demos/svg/">SVG</a>
+				<br />
+				SVG files can contain embedded JavaScript code. This demo doesn't use any HTML at all. Press the red button to change the timezone, the green button to change the timestamp (empty for a live clock), the blue button to scale the SVG image and the black button to do all of that in one go.
+			</li>
+		</ul>
+		<h2 id="donations">
+			Donations
+		</h2>
+		<p>
+			If you think this project is useful, you're more than welcome to donate:
+		</p>
+		<ul>
+			<li>Bitcoins: <a href="bitcoin:16P7ANsjD47bRaKyPwsBdoXSH2Q1mKSX8c?label=tzdata-javascript"><tt>16P7ANsjD47bRaKyPwsBdoXSH2Q1mKSX8c</tt></a></li>
+			<li>Flattr:
+				<object type="text/html" data="https://api.flattr.com/button/view/?uid=tzdata-javascript&amp;button=compact&amp;url=http%3A%2F%2Ftzdata-javascript.org%2F" title="Flattr" width="110" height="20">
+					<a href="https://flattr.com/thing/1606994/tzdata-javascript-A-JS-library-for-working-with-timezones"><img src="https://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" /></a>
+				</object>
+			</li>
+			<li>
+				Paypal:
+				<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=2YEMUQG2JLS82"><tt>paypal@tzdata-javascript.org</tt></a>
+				<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=2YEMUQG2JLS82"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" width="74" height="21" alt="Donate" /></a>
+			</li>
+		</ul>
+<!--
+		<h2 id="sponsors">
+			Sponsors
+		</h2>
+		<p>
+			The zoneinfo files ("zoneinfo.tzdata-javascript.org") are currently being hosted by stderr.dk. Thank you very much for the donation of bandwidth.
+		</p>
+-->
+		<hr />
+		<div>
+			<a href="https://www.fsf.org/register_form?referrer=5295"><img src="images/fsf_member_5295.png" alt="[FSF Associate Member #5295]" width="88" height="31" /></a>
+			<a href="http://validator.w3.org/check?uri=referer"><img src="images/valid-xhtml11.png" width="88" height="31" alt="Valid XHTML 1.1" /></a>
+			<a href="http://jigsaw.w3.org/css-validator/check?uri=referer"><img src="images/vcss.gif" width="88" height="31" alt="Valid CSS!" /></a>
+		</div>
+	</body>
+</html>
+

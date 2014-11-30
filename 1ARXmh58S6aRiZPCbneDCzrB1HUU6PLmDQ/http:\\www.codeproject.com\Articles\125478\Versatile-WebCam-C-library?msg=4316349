@@ -1,0 +1,531 @@
+http://www.codeproject.com/Articles/125478/Versatile-WebCam-C-library?msg=4316349
+Versatile WebCam C# library - CodeProject 10,723,880 members (75,419 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Multimedia » Audio and Video » Video
+ArticleAlternatives
+Comments (133)
+View this article's Workspace
+Fork this Workspace
+Versatile WebCam C# library Predrag Tomasevic, 29 Jan 2013
+4.97 (98 votes)
+1
+2
+3
+4
+5
+4.97/5 - 98 votes2 removedμ 4.94, σa 1.04 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Easy to use C# WebCam library that's not plagued with weird DLL references or PInvoke calls	.Download source - 115 KB (original, Visual Studio 2008, pre-Windows 7, .NET Framework 3.5)
+Download source (VS2010) - 123 KB (modifications by Jake Drew, Visual Studio 2010, Windows7, .NET Framework 4)
+Index
+Introduction
+Disclaimer
+So, how to capture image from a WebCam?
+Problem(s)
+Conclusion
+History
+Introduction
+It was 2005 and time to start coding a project for Imagine Cup when I first stumbled upon the need to capture images from a webcam. Luckily, I was in a pretty good team and the teammate who took this task upon himself (Filip Popović) wrapped up a Visual Studio project after a couple days of scouring the web and reading a bunch of articles (including CodeProject ones of course .
+Since then, whenever I needed to capture an image from a webcam I would go back to that
+old code from 2005. And even though the code served me well, I wasn’t pleased with it.
+The problem was in the foundation of the solution – Filip utilized PInvoke and used the clipboard
+for copying an image into a Bitmap that could be manipulated within C#. Not that I blame
+him or anything – me being unable to improve his solution over the years was the
+bigger problem.
+Every
+search I tried
+ended up in finding something similar (this is the only solution I liked); and the more I read about the subject the
+more I realized that I missed certain knowledge (C++ and DirectShow) in order to develop
+something better.
+That’s the first reason I’m writing this article – if you are good when it comes to C++ and
+DirectShow, please read on and see if you can help. The second reason is that I also
+wanted to make this article a merging point for all fellow C# developers with the
+same problem – I see that StackOverflow is overflowing with questions on this subject
+and most solutions out there are either really (really, really) badly written or
+way too conceptual.
+So, don’t worry that this article will be simple call for help . The solution
+I am sharing as a foundation is pretty well performing and robust, and I am
+sure that when you finish reading this article, you’ll finally have a solid library
+on which you can depend on when it comes to easily capturing images from a WebCam
+in C#.
+Disclaimer
+The current library I’m using is completely extracted from
+Touchless SDK
+(if you have couple seconds definitely check it out – Touchless is one of those
+cool projects that simply invite you to start playing with them). Meaning that I’m
+not claiming any authorship; all I did was take out the parts that are not WebCam
+related in order to promote easier reuse. If this article does spark improvements,
+I will make sure that they are integrated back into the Touchless SDK as a way of saying
+thanks to Michwass and his crew for the terrific job they’ve done.
+So, how do we capture an image from a WebCam?
+Once you download the source code that is attached to the article you should have the following three projects:
+Demo – simple Windows Forms project that demonstrates how a WebCam is used. It references
+WebCamWrapper which in turn references WebCamLib.
+WebCamLib – this is where the magic is happening – it is a C++ project with just two
+files (WebCamLib.h and WebCamLib.cpp) that queries a WebCam using DirectShow and returns
+results.
+WebCamWrapper – a C# wrapper on top of the C++ project that enables easy integration into
+the .NET world.
+For a starting point I recommend a code view of Demo\MainForm.cs. This form implements
+most of the operations you can think of when it comes to WebCam access. First is
+the iteration through the WebCams hooked up to the computer:
+private void MainForm_Load(object sender, EventArgs e)
+{
+    if (!DesignMode)
+    {
+        comboBoxCameras.Items.Clear();
+        foreach (Camera cam in CameraService.AvailableCameras)
+            comboBoxCameras.Items.Add(cam);
+
+        if (comboBoxCameras.Items.Count &gt; 0)
+            comboBoxCameras.SelectedIndex = 0;
+    }
+}
+The CameraService class you see in the code is contained in the WebCamWrapper project
+and is the main wrapper over the main class CameraMethods that is the only class implemented
+in the C++ WebCamLib project. CameraService exposes AvailableCameras as a list of Camera
+classes that contain the logic for a certain WebCam. Once the user makes a choice of camera,
+you’ll obviously want to start the capture:
+private CameraFrameSource _frameSource;
+private static Bitmap _latestFrame;
+
+private void btnStart_Click(object sender, EventArgs e)
+{
+    if (_frameSource != null &amp;&amp; _frameSource.Camera == comboBoxCameras.SelectedItem)
+        return;
+
+    thrashOldCamera();
+    startCapturing();
+}
+_frameSource is the variable in which we’ll save the currently selected Camera. Touchless
+developers decided not to tie their capture source exclusively to WebCam (good choice
+obviously) so they made a generic IFrameSource interface that CameraFrameSource implements…
+and that’s how this class ended up as a container instead of the
+Camera class directly.
+The rest of the code is pretty self-explanatory – if we select the same frame source,
+we’ll just exit; if not we will thrash the old camera and start a new one. Onto the startCapturing
+method:
+private void startCapturing()
+{
+    try
+    {
+        Camera c = (Camera)comboBoxCameras.SelectedItem;
+        setFrameSource(new CameraFrameSource(c));
+        _frameSource.Camera.CaptureWidth = 320;
+        _frameSource.Camera.CaptureHeight = 240;
+        _frameSource.Camera.Fps = 20;
+        _frameSource.NewFrame += OnImageCaptured;
+
+        pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
+        _frameSource.StartFrameCapture();
+    }
+    catch (Exception ex)
+    {
+        comboBoxCameras.Text = "Select A Camera";
+        MessageBox.Show(ex.Message);
+    }
+}
+
+private void setFrameSource(CameraFrameSource cameraFrameSource)
+{
+    if (_frameSource == cameraFrameSource)
+        return;
+
+    _frameSource = cameraFrameSource;
+}
+
+private void drawLatestImage(object sender, PaintEventArgs e)
+{
+    if (_latestFrame != null)
+    {
+        e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+    }
+}
+
+public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, 
+                            Touchless.Vision.Contracts.Frame frame, double fps)
+{
+    _latestFrame = frame.Image;
+    pictureBoxDisplay.Invalidate();
+}
+We start off by fetching the selected Camera from the
+ComboBox which we then use to
+create and set the CameraFrameSource. Lines after that influence the capture parameters
+(be sure to remember these three lines as we will be getting back to them later)
+and after that we have a subscription to two events.
+The first event, NewFrame, is raised whenever WebCamLib captures an image from the WebCam.
+As you can see, we save that image into a local variable _latestFrame and from there
+you can do any additional image processing you like. The second event is just a fancy
+(and more efficient) way of saying pictureBoxDisplay.Image = frame.Image. For some
+reason, setting the Image property on a PictureBox too often causes flicker and we obviously
+do not want that – instead we resort to invalidating the PictureBox and then handling
+its paint event to draw the current image from the WebCam.
+Now that all that is implemented, we just StartFrameCapture and enjoy the view from
+our WebCam. Try it out – press F5 and then click the ‘Start’ button once the Form loads up.
+When you grow tired of watching yourself, simply close the form. Once you are back
+in Visual Studio, check out the thrashOldCamera method (that is utilized from the Form_Closing
+and btnStop_Click methods also):
+private void thrashOldCamera()
+{
+    if (_frameSource != null)
+    {
+        _frameSource.NewFrame -= OnImageCaptured;
+        _frameSource.Camera.Dispose();
+        setFrameSource(null);
+        pictureBoxDisplay.Paint -= new PaintEventHandler(drawLatestImage);
+    }
+}
+Well, nothing too fancy – we unsubscribe from the two mentioned events, set the _frameSource
+variable to null, and call Dispose on Camera so that the C++ WebCamLib can perform cleanup
+operations.
+Believe it or not – that’s it. There is nothing more critical to explain or implement
+in order to use images from your WebCam in C#. The extra code that exists in
+MainForm.cs
+is just there for saving the current image:
+private void btnSave_Click(object sender, EventArgs e)
+{
+    if (_frameSource == null)
+        return;
+
+    Bitmap current = (Bitmap)_latestFrame.Clone();
+    using (SaveFileDialog sfd = new SaveFileDialog())
+    {
+        sfd.Filter = "*.bmp|*.bmp";
+        if (sfd.ShowDialog() == DialogResult.OK)
+        {
+            current.Save(sfd.FileName);
+        }
+    }
+
+    current.Dispose();
+}
+And bringing up the configuration dialog:
+private void btnConfig_Click(object sender, EventArgs e)
+{
+    // snap camera
+    if (_frameSource != null)
+        _frameSource.Camera.ShowPropertiesDialog();
+}
+Problem(s)
+As you can see from the code – the implementation is pretty easy and clean (unlike some
+other approaches that use WIA, obscure DLLs, clipboard, or hard disk for saving images,
+etc.), meaning that there are not many problems. Actually, currently there is only
+one problem I can identify. You remember these three lines?
+_frameSource.Camera.CaptureWidth = 320;
+_frameSource.Camera.CaptureHeight = 240;
+_frameSource.Camera.Fps = 20;
+Well, it turns out that they are not working as advertised. First, let’s talk about
+FPS. If we dive into the Camera class (line 254) here is what we will see (the method that
+gets called after an image is captured from the webcam):
+private void ImageCaptured(Bitmap bitmap)
+{
+    DateTime dtCap = DateTime.Now;
+
+    // Always save the bitmap
+    lock (_bitmapLock)
+    {
+        _bitmap = bitmap;
+    }
+
+    // FPS affects the callbacks only
+    if (_fpslimit != -1)
+    {
+        if (_dtLastCap != DateTime.MinValue)
+        {
+            double milliseconds = ((dtCap.Ticks - _dtLastCap.Ticks) / TimeSpan.TicksPerMillisecond) * 1.15;
+            if (milliseconds + _timeBehind &gt;= _timeBetweenFrames)
+            {
+                _timeBehind = (milliseconds - _timeBetweenFrames);
+                if (_timeBehind &lt; 0.0)
+                {
+                    _timeBehind = 0.0;
+                }
+            }
+            else
+            {
+                _timeBehind = 0.0;
+                return; // ignore the frame
+            }
+        }
+    }
+
+    if (OnImageCaptured != null)
+    {
+        var fps = (int)(1 / dtCap.Subtract(_dtLastCap).TotalSeconds);
+        OnImageCaptured.Invoke(this, new CameraEventArgs(bitmap, fps));
+    }
+
+    _dtLastCap = dtCap;
+}
+Even if you just glanced at the method, you probably saw that most of it is dedicated
+to calculating the time between frames and ditching the frame if it came too soon. Which
+is not too bad, I guess – controlling the frame rate on C# level rather than on hardware
+level will probably not kill you.
+But what about finding out the other two lines, which influence the size of the captured
+image, also not working (line 235 in Camera.cs)?
+private void CaptureCallbackProc(int dataSize, byte[] data)
+{
+    // Do the magic to create a bitmap
+    int stride = _width * 3;
+    GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+    var scan0 = (int)handle.AddrOfPinnedObject();
+    scan0 += (_height - 1) * stride;
+    var b = new Bitmap(_width, _height, -stride, PixelFormat.Format24bppRgb, (IntPtr)scan0);
+    b.RotateFlip(_rotateFlip);
+    // Copy the image using the Thumbnail function to also resize if needed
+    var copyBitmap = (Bitmap)b.GetThumbnailImage(_width, _height, null, IntPtr.Zero);
+    //var copyBitmap = (Bitmap)b.Clone();
+
+    // Now you can free the handle
+    handle.Free();
+
+    ImageCaptured(copyBitmap);
+}
+As you can see, the image size is actually faked. Majority of cameras I’ve tested out
+will tend to return images in the 640x480 size. Which is fine in most cases – if you
+need a smaller image, b.GetThumbnailImage will allow you to easily resize it.
+However, if you wish a higher resolution image, you are stuck and that’s not a good
+thing.
+So, anyone from the C++ world is more than welcome to help with this. The following links
+I’ve read gave me the impression that all that’s needed to be done is somehow invoke
+the Video Format window in C++, the same way we are now invoking the Video Source Configuration
+window (for setting Brightness, Contracts, etc):
+Setting up Webcam properties with DirectShow forum post
+EasyWebCam project
+– for most part it is bad, but it does have a Video Format window. I decompiled WebCam_Capture.dll
+from the project only to find out that everything is implemented using PInvoke -
+meaning that it’s useless for our approach. So, if somebody can bring up that same
+window using C++ and DirectShow – please help out by extending the existing CameraMethods class.
+Conclusion
+I hope that you leave this article with that warm and fuzzy feeling of happiness
+knowing that you can now easily communicate with your WebCam even though you are
+just a simple C# developer.
+In case you have anything to add, be my guest and go wild - I’ll be watching the
+comments section. Any calls for help (even this simple approach is not simple enough
+for you), suggestions (you did the same thing using a different approach), criticism (you
+did the same thing using a different approach and you don’t like this one), or offers for
+help… are all welcome.
+History
+January 1st, 2013 - Added a link to the source modified by Jake Dreww[^]. Still searching for a working solution when it comes to resolution settings. Some leads:Sklett and Dan C.[[^]
+bntr[^]
+November 7th, 2010 - Initial version of the article.
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+FirstPrevNext
+Fixed Version of this Project Member 859464027-Dec-12 4:39 Someone has posted a version of this that builds. It works beautifully and the full post is good to read also.
+https://jakemdrew.wordpress.com/2012/01/10/controlling-your-web-camera-using-c/#comment-109[^]
+Constantly getting error: Jamie McGowen17-Oct-12 15:26 Error	25	File 'WebCamLib.dll' targeting 'AMD64' is not compatible with the project's target platform 'x86'	If I change the target to x64 then the issue goes away but then I can only install on a 64 bit system. Any words of wisdom?
+Re: Constantly getting error: merano7-Jan-13 12:02 An DLL runs in the context of the calling process. To solve the problem with running code across different platforms you have do use a DLL with the same bit-ness as the calling process. So you need more than one DLL. If you dont like this you can use different processes (x86 or x64) witch can communicate using Inter Process Communication.
+see:
+http://stackoverflow.com/questions/5788540/anycpu-c-sharp-dll-in-64bit-process-loads-32bit-dll
+Exception AbhishekBihani16-Oct-12 0:07 Hi,
+I have try to use this code , but it throws "Error Starting camera"
+Please reply.
+resolution and camera properties (vs2010) bntr25-Aug-12 5:36 The solution here is supplemented with setting resolution and camera properties:
+Versatile-WebCam-C-library-2010-Properties.zip
+(based on Jake's code)
+My vote of 5 Md. Marufuzzaman11-Aug-12 8:42 Very nice !!
+My vote of 1 Member 898152623-Jul-12 9:04 Wont work
+Excelent elkami8520-Jul-12 11:23 Great Job dude
+this is what im looking for.
+i dont like it the clipboard solutions, it run well but, the clipboard its
+for the user.
+Congrats for this and thanks
+My vote of 5 Roven606-Jun-12 0:09 After 4 hours of googling for a working demo . . . here it is!
+Thanks a lot!
+My vote of 5 juaduedi11-May-12 12:03 Good work(to fix the .h build problem i used Jake Drew solution)
+My vote of 5 general_leo3-May-12 0:15 Clear code and great explanations.
+storing the captured image temporarily ritik kumar23-Feb-12 4:15 I need the webcam to capture the image after a fixed time and store it temporarily(as long as the application is running). Is it (by any means) possible?Please reply, Any help regarding this will be appreciated.
+My vote of 5 adeeb masoud23-Feb-12 2:03 very helpful article, thank you very much for sharing
+Can WebCamWrappper also use previous .net frameworks (2.0 -3.5) ? matthias_7919-Feb-12 21:40 Can WebCamWrappper also use previous .net frameworks (2.0 -3.5) or must 4.0 definitley be used ?
+Re: Can WebCamWrappper also use previous .net frameworks (2.0 -3.5) ? ritik kumar23-Feb-12 4:10 I don't know about .net framework 2.0 but it definitely works pretty fine with .net framework 3.5.
+Compiled DLL Connor Christian18-Jan-12 4:47 Can I also get the compiled DLL? Please let me know if this is possible. Thank you.
+My vote of 5 Kanasz Robert18-Jan-12 0:48 Good article.
+Visual Studio 2010 Working Source Code Jake Drew9-Jan-12 15:14 I followed the instructions in one of the posts below and got this project to compile in VS 2010. Here is a link to the VS2010 project, if anyone is interested.
+http://jakemdrew.wordpress.com/2012/01/10/controlling-your-web-camera-using-c/[^]
+Re: Visual Studio 2010 Working Source Code Monnom Olivier13-Jan-12 4:19 Excellent, good job !
+Re: Visual Studio 2010 Working Source Code juaduedi11-May-12 11:55 It really works!!Saved me a lot of time. Thanks
+Re: Visual Studio 2010 Working Source Code Roger C Garrett29-May-12 15:56 I can't get it to compile. I'm using C# 2010 Express and when I load the solution it reports that the WebCamLib.vcproj cannot be opened because its project type (.vcproj) is not supported by this version of the application. Does this mean that it only works with the full version of C# and not the Express version? Or is it something else?
+:(
+My vote of 5 nick_¨vanc5-Jan-12 22:31 Perfect, just what I needed!
+Compiled version? s.gnali2-Jan-12 1:33 Can you upload (or send me) a compiled version of DLL and Wrapper?
+I have MANY troubles compiling it (due to version and platform issues).
+Thanks!
+Stefano
+getting exception System.BadImageFormatException was unhandled pearl_srivastava19-Dec-11 18:18 System.BadImageFormatException was unhandled
+Message="Could not load file or assembly 'WebCamLib, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies. An attempt was made to load a program with an incorrect format."
+Source="Touchless.Vision"
+FileName="WebCamLib, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+FusionLog="=== Pre-bind state information ===\r\nLOG: User = ngahp1-PC\\ngahp1\r\nLOG: DisplayName = WebCamLib, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null\n (Fully-specified)\r\nLOG: Appbase = file:///D:/visual studio/samplecodes/web cam proj/Demo/bin/Debug/\r\nLOG: Initial PrivatePath = NULL\r\nCalling assembly : Touchless.Vision, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.\r\n===\r\nLOG: This bind starts in default load context.\r\nLOG: No application configuration file found.\r\nLOG: Using machine configuration file from C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\config\\machine.config.\r\nLOG: Policy not being applied to reference at this time (private, custom, partial, or location-based assembly bind).\r\nLOG: Attempting download of new URL file:///D:/visual studio/samplecodes/web cam proj/Demo/bin/Debug/WebCamLib.DLL.\r\nERR: Failed to complete setup of assembly (hr = 0x8007000b). Probing terminated.\r\n"
+StackTrace:
+at Touchless.Vision.Camera.CameraService.d__0.MoveNext()
+at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+at Touchless.Vision.Camera.CameraService.get_AvailableCameras() in D:\visual studio\samplecodes\web cam proj\WebCamWrapper\Camera\CameraService.cs:line 40
+at Demo.MainForm.MainForm_Load(Object sender, EventArgs e) in D:\visual studio\samplecodes\web cam proj\Demo\MainForm.cs:line 26
+at System.Windows.Forms.Form.OnLoad(EventArgs e)
+at System.Windows.Forms.Control.CreateControl(Boolean fIgnoreVisible)
+at System.Windows.Forms.Control.CreateControl()
+at System.Windows.Forms.Control.WmShowWindow(Message& m)
+at System.Windows.Forms.Control.WndProc(Message& m)
+at System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+at System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+InnerException:
+Re: getting exception System.BadImageFormatException was unhandled tutifruti2228-Jan-12 3:15 change the platform target depending on your CPU type 64/32bit
+Last Visit: 31-Dec-99 18:00 Last Update: 10-Jul-14 15:05Refresh« Prev123456 Next »
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 7 Nov 2010
+Views 275,627
+Downloads 47,034
+Bookmarked 353 times
+C# Windows .NET Dev Beginner WinForm Related Articles
+WPF: Webcam Control
+Camera_Net Library
+Webcam Web Service
+Controlling Your Web Camera Using C#
+Capturing audio/video in Silverlight 4: a surprising fact about CaptureSource
+Use OpenCVdotNet to Capture Object on Webcam
+WebCam Fast Image Capture Service using WIA
+Anaglyph ShaderEffect in WPF
+Capture Live Video from various Video Devices.
+Real-time video image processing / frame grabber using a minimalistic approach
+Webcam Web Service
+Acquiring Images from Scanners and Webcams in Visual Studio LightSwitch
+C# WebCam Service with FTP and Installer
+Find your inner exception
+VideoTexture Class and Webcam Application for XNA
+.NET DataTable To JSON Format Conversion Tool for WCFServices
+Mathemathics Framework
+Deep Serialization: Binary and SOAP Serialization with a Generic Twist
+Realtime Webcam Sudoku Solver
+Webcam Web Service using Direct Internet Message Encapsulation (DIME)
+Related Research
+Toad Oracle: Tips to Simplify Database Administration and Development
+Ten Tips of Web App Testing
+Data Modeling for Effective Data Warehousing and Business Intelligence
+Essential Keys to Mobile Usability
+Permalink | Advertise |
+Privacy |
+Mobile
+Web02 |
+2.8.140709.1 |
+Last Updated 29 Jan 2013	Article Copyright 2010 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

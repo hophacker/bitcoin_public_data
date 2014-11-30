@@ -1,0 +1,381 @@
+http://www.wedesoft.de/oop-with-goops.html
+HTTP/1.1 200 OK
+Date: Sat, 26 Jul 2014 19:13:49 GMT
+Server: Apache/2.2.16 (Debian) mod_ssl/2.2.16 OpenSSL/0.9.8o
+Last-Modified: Tue, 22 Jul 2014 13:31:18 GMT
+ETag: "16394d6-62a0-4fec83d0cb580"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 6073
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!-- This website is generated using Webgen (see http://webgen.rubyforge.org/).
+     The design uses a template from dcarterdesign (see http://www.dcarter.co.uk/).
+     You can find the source code of this webpage at http://github.com/wedesoft/www.wedesoft.de/ .  -->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <title>OOP with GNU Guile and GOOPS</title>
+
+  <meta http-equiv="content-language" content="en" />
+  <meta name="author" content="Jan Wedekind" />
+  <meta name="copyright" content="&copy; 2014 Jan Wedekind" />
+  <meta name="generator" content="webgen - http://webgen.rubyforge.org" />
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <link rel="stylesheet" type="text/css" href="style/colour.css" />
+  <link rel="alternate" type="application/rss+xml" title="Jan Wedekind" href="http://feeds.feedburner.com/wedesoft?format=xml" />
+
+<!-- <script type="text/javascript" src="style/snowstorm.js"></script> -->
+
+</head>
+
+<body onload="init();">
+
+  <div id="main">
+    <div id="links">
+      <a href="http://www.debian.org/">Debian</a> | <a href="http://pidgin.im/">Pidgin</a> | <a href="http://adblockplus.org/">Adblock+</a> | <a href="abp:subscribe?location=https://easylist-downloads.adblockplus.org/easyprivacy.txt&amp;title=EasyPrivacy">EasyPrivacy</a> | <a href="abp:subscribe?location=https://secure.fanboy.co.nz/fanboy-addon.txt&amp;title=fanboy-annoyances">Annoyances</a> | <a href="http://enigmail.mozdev.org/">Enigmail</a> | <a href="http://www.twinklephone.com/">Twinkle</a> | <a href="http://www.washington.edu/alpine/">Alpine</a> <img src="pics/english.png" alt="[en]" title="English"/> | <img src="pics/deutsch_.png" alt="[de]"/>
+    </div>
+    <div id="logo"><h1>Jan Wedekind</h1><h2>8791&nbsp;DECD&nbsp;99E1&nbsp;396D&nbsp;BF51&nbsp;&nbsp;607A&nbsp;F0F2&nbsp;B042&nbsp;2E96&nbsp;51BA</h2></div>
+    <div id="menu">
+      <ul><li class="webgen-menu-level1"><a href="index.html">Home</a></li><li class="webgen-menu-level1"><a href="projects.html">Projects</a></li><li class="webgen-menu-level1"><a href="cv.html">About Me</a></li><li class="webgen-menu-level1"><a href="contact.html">Contact</a></li><li class="webgen-menu-level1"><a href="news.html">News</a></li></ul>
+    </div>
+    <div id="content">
+      <div id="column2">
+
+        <span class="right">|&lt;&nbsp;&lt;&lt;&nbsp;<a href="bison-flex-automake.html" title="older news item">&gt;&gt;</a>&nbsp;<a href="guru-yogi-rameshs-laughing-yoga.html" title="oldest news item">&gt;|</a></span>
+        <h1>OOP with GNU Guile and GOOPS (2014/03/02)</h1>
+
+        
+<p>Having worked with the Ruby programming language for many years I started to get
+interested in Scheme. The Scheme programming language has a small and powerful
+core supporting closures, hygienic macros, first-class continuations, and of
+course the famous interpreter functions <em>eval</em> and <em>apply</em>.</p>
+
+<p><span class="center"><a href="pics/lisp-programmers.jpg"><img src="pics/lisp-programmers.jpg" width="400" alt="How a Common Lisp programmer views users of other languages" /></a></span></p>
+
+<p>However one thing I don’t like about Scheme is that there are different function
+names for each type of arguments. <em>E.g.</em> adding numbers is done with <strong>+</strong>, adding
+lists is done with <strong>append</strong>, and adding strings is done with <strong>string-append</strong>.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(<span style="color:#080;font-weight:bold">+</span> <span style="color:#00D">2</span> <span style="color:#00D">3</span>)
+<span style="color:#777">; 5</span>
+(append '(<span style="color:#00D">1</span>) '(<span style="color:#00D">2</span> <span style="color:#00D">3</span>))
+<span style="color:#777">; (1 2 3)</span>
+(string-append <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a</span><span style="color:#710">&quot;</span></span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bc</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#777">; &quot;abc&quot;</span>
+</pre></div>
+</div>
+
+<p>The same program would be much less verbose if <strong>+</strong> was extended to work with
+strings and lists, too:</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(<span style="color:#080;font-weight:bold">+</span> <span style="color:#00D">2</span> <span style="color:#00D">3</span>)
+<span style="color:#777">; 5</span>
+(<span style="color:#080;font-weight:bold">+</span> '(<span style="color:#00D">1</span>) '(<span style="color:#00D">2</span> <span style="color:#00D">3</span>))
+<span style="color:#777">; (1 2 3)</span>
+(<span style="color:#080;font-weight:bold">+</span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a</span><span style="color:#710">&quot;</span></span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bc</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#777">; &quot;abc&quot;</span>
+</pre></div>
+</div>
+
+<h3>GOOPS: The Guile extension for object-oriented programming</h3>
+
+<p><span class="right"><a href="http://www.gnu.org/software/guile/"><img src="pics/guile.png" width="175" alt="GNU Guile" /></a></span>
+It turns out that GNU Guile (the Scheme interpreter of the GNU project) has
+a mature extension which facilitates this. <a href="https://www.gnu.org/software/goops/">GOOPS</a> is inspired by the
+<a href="https://en.wikipedia.org/wiki/Common_Lisp_Object_System">Common Lisp Object System (CLOS)</a>. GOOPS not only provides polymorphic
+methods, it even lets you replace existing functions with polymorphic ones:</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-method (<span style="color:#080;font-weight:bold">+</span> (a &lt;list&gt;) (b &lt;list&gt;)) (append a b))
+(define-method (<span style="color:#080;font-weight:bold">+</span> (a &lt;string&gt;) (b &lt;string&gt;)) (string-append a b))
+(<span style="color:#080;font-weight:bold">+</span> <span style="color:#00D">2</span> <span style="color:#00D">3</span>)
+<span style="color:#777">; 5</span>
+(<span style="color:#080;font-weight:bold">+</span> '(<span style="color:#00D">1</span>) '(<span style="color:#00D">2</span> <span style="color:#00D">3</span>))
+<span style="color:#777">; (1 2 3)</span>
+(<span style="color:#080;font-weight:bold">+</span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a</span><span style="color:#710">&quot;</span></span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bc</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#777">; &quot;abc&quot;</span>
+</pre></div>
+</div>
+
+<p>The <em>define-class</em> method is the normal way to define a class. GOOPS requires
+you to define the instance attributes when defining the class. The following
+example defines a class <strong>&lt;a&gt;</strong> with attribute <strong>x</strong> and a <strong>+</strong> method. The
+<strong>make</strong> method is used to create the instance <strong>a</strong> of the class <strong>&lt;a&gt;</strong>.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-class &lt;a&gt; ()
+  (x <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-value</span> <span style="color:#00D">0</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-keyword</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:getter</span> get-x))
+(define-method (<span style="color:#080;font-weight:bold">+</span> (u &lt;a&gt;) (v &lt;a&gt;))
+  (make &lt;a&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> (<span style="color:#080;font-weight:bold">+</span> (slot-ref u 'x) (slot-ref v 'x))))
+&lt;a&gt;
+<span style="color:#777">; #&lt;&lt;class&gt; &lt;a&gt; 2103c30&gt;</span>
+(define a (make &lt;a&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#00D">123</span>))
+a
+<span style="color:#777">; #&lt;&lt;a&gt; 22a2440&gt;</span>
+(get-x a)
+<span style="color:#777">; 123</span>
+(<span style="color:#080;font-weight:bold">+</span> a a)
+<span style="color:#777">; #&lt;&lt;a&gt; 23713e0&gt;</span>
+(get-x (<span style="color:#080;font-weight:bold">+</span> a a))
+<span style="color:#777">; 246</span>
+</pre></div>
+</div>
+
+<h3>Constructors and the next method</h3>
+
+<p><span class="center"><img src="pics/god-uses-lisp.jpg" width="600" alt="God uses Lisp" /></span></p>
+
+<p>One can define a shorthand for instantiating objects. <em>E.g.</em> one can define a
+method which sets the attribute <strong>#:x</strong> to the argument multiplied by two.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-class &lt;a&gt; ()
+  (x <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-value</span> <span style="color:#00D">0</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-keyword</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:getter</span> get-x))
+(define (make-a x2) (make &lt;a&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> (<span style="color:#080;font-weight:bold">*</span> <span style="color:#00D">2</span> x2)))
+(define a2 (make-a <span style="color:#00D">123</span>))
+<span style="color:#777">; #&lt;&lt;a&gt; 1689740&gt;</span>
+(get-x a2)
+<span style="color:#777">; 246</span>
+</pre></div>
+</div>
+
+<p>IMHO it is better though to define a modified constructor directly. This is more
+involved but also possible.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(use-modules (ice-9 optargs))
+(define-class &lt;a&gt; ()
+  (x <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-value</span> <span style="color:#00D">0</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-keyword</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:getter</span> get-x))
+(define-method (initialize (self &lt;a&gt;) initargs)
+  (let-keywords initargs <span style="color:#069">#f</span> (x2)
+    (next-method self (<span style="color:#080;font-weight:bold">list</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> (<span style="color:#080;font-weight:bold">*</span> <span style="color:#00D">2</span> x2)))))
+(define a3 (make &lt;a&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x2</span> <span style="color:#00D">123</span>))
+(get-x a3)
+<span style="color:#777">; 246</span>
+</pre></div>
+</div>
+
+<p>Note the call to <strong>next-method</strong>. This essentially calls the
+<a href="http://www.gnu.org/software/guile/docs/goops/Next-method.html">next less specialized method</a> for that generic function. Here is another
+example using an inheriting class <strong>&lt;b&gt;</strong> to illustrate the concept.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-class &lt;a&gt; ())
+(define-class &lt;b&gt; (&lt;a&gt;))
+(define-method (<span style="color:#080;font-weight:bold">test</span> (self &lt;a&gt;)) <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a</span><span style="color:#710">&quot;</span></span>)
+(define-method (<span style="color:#080;font-weight:bold">test</span> (self &lt;b&gt;)) (string-append (next-method) <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">b</span><span style="color:#710">&quot;</span></span>))
+(<span style="color:#080;font-weight:bold">test</span> (make &lt;a&gt;))
+<span style="color:#777">; &quot;a&quot;</span>
+(<span style="color:#080;font-weight:bold">test</span> (make &lt;b&gt;))
+<span style="color:#777">; &quot;ab&quot;</span>
+</pre></div>
+</div>
+
+<h3>Metaclasses</h3>
+
+<p><span class="center"><img src="pics/meta.jpg" width="325" alt="Metaprogramming" /></span></p>
+
+<p>Note that GOOPS does not implicitly create a metaclass. The following example
+shows how to define a metaclass <strong>&lt;m&lt;c&gt;&gt;</strong> with a class method.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-class &lt;m&lt;c&gt;&gt; (&lt;class&gt;))
+(define-method (<span style="color:#080;font-weight:bold">test</span> &lt;m&lt;c&gt;&gt;) <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">m</span><span style="color:#710">&quot;</span></span>)
+(define-class &lt;c&gt; ()
+  (x <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-keyword</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:getter</span> get-x) <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:metaclass</span> &lt;m&lt;c&gt;&gt;)
+(define o (make &lt;c&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#00D">5</span>))
+o
+<span style="color:#777">; #&lt;&lt;c&gt; 2825d40&gt;</span>
+(<span style="color:#080;font-weight:bold">test</span> (class-of o))
+<span style="color:#777">; &quot;m&quot;</span>
+</pre></div>
+</div>
+
+<h3>Inspection</h3>
+
+<p><span class="center"><img src="pics/inspection.jpg" width="448" alt="Inspection" /></span></p>
+
+<p>One can also use GOOPS to change the way how objects get displayed and what the
+<em>REPL</em> writes to the terminal. <em>E.g.</em> one can define the method <strong>write</strong> for
+the class <strong>&lt;a&gt;</strong> to change the way the Guile REPL displays objects of that
+class.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-class &lt;a&gt; ()
+  (x <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-value</span> <span style="color:#00D">0</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:init-keyword</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:getter</span> get-x))
+(define a (make &lt;a&gt; <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:x</span> <span style="color:#00D">5</span>))
+a
+<span style="color:#777">; #&lt;&lt;a&gt; 2c64140&gt;</span>
+(define-method (write (self &lt;a&gt;) port)
+  (<span style="color:#080;font-weight:bold">format</span> port <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">(make &lt;a&gt; #:x ~a)</span><span style="color:#710">&quot;</span></span> (slot-ref self 'x)))
+a
+<span style="color:#777">; (make &lt;a&gt; #:x 5)</span>
+</pre></div>
+</div>
+
+<p>Furthermore one can implement the method <strong>display</strong> to define the way objects
+get displayed in formatted output.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(define-method (display (self &lt;a&gt;) port)
+  (<span style="color:#080;font-weight:bold">format</span> port <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">*~a*</span><span style="color:#710">&quot;</span></span> (slot-ref self 'x)))
+(<span style="color:#080;font-weight:bold">format</span> <span style="color:#069">#t</span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">~a~&amp;</span><span style="color:#710">&quot;</span></span> a)
+<span style="color:#777">; *5*</span>
+</pre></div>
+</div>
+
+<h3>Conclusion</h3>
+
+<p>I have now <a href="https://github.com/wedesoft/aiscm">used GOOPS</a> for a little while. Coming from Ruby there are a few
+gotchas when using GOOPS and Guile’s module system. For example one needs to use
+a <strong>#:re-export</strong> statement when using a module to replace the core binding for
+the <strong>+</strong> operator.</p>
+
+<p>All in all GOOPS makes quite a mature impression and I think it makes Scheme much
+more amenable to developers who are used to thinking in terms of objects and
+classes.</p>
+
+<p>To quote Guile’s foreign function interface documentation:</p>
+
+<blockquote>
+<p>The more one hacks in Scheme, the more one realizes that there are
+actually two computational worlds: one which is warm and alive, that
+land of parentheses, and one cold and dead, the land of C and its ilk.</p>
+</blockquote>
+
+<p>Any comments and suggestions are welcome <img src="pics/bounce.gif" width="19" alt="" /></p>
+
+<h3>Further remarks</h3>
+
+<p>If necessary it is also possible to create objects, classes, and metaclasses
+dynamically. The following example instantiates the object <strong>v</strong> of class
+<strong>&lt;v&gt;</strong> of metaclass <strong>&lt;m&lt;v&gt;&gt;</strong>. Furthermore the generic <strong>test</strong> is
+implemented for <strong>&lt;v&gt;</strong>.</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>(use-modules (oop goops))
+(define-generic <span style="color:#080;font-weight:bold">test</span>)
+(define &lt;m&lt;v&gt;&gt; (make &lt;class&gt;
+                     <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:dsupers</span> `(,&lt;class&gt;)
+                     <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:slots</span> '()
+                     <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:name</span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">&lt;m&lt;v&gt;&gt;</span><span style="color:#710">&quot;</span></span>))
+(define &lt;v&gt; (make &lt;m&lt;v&gt;&gt;
+                  <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:dsupers</span> `(,&lt;object&gt;)
+                  <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:slots</span> '()
+                  <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:name</span> <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">&lt;v&gt;</span><span style="color:#710">&quot;</span></span>))
+(add-method! <span style="color:#080;font-weight:bold">test</span> (make &lt;method&gt;
+                        <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:specializers</span> `(,&lt;v&gt;)
+                        <span style="color:#F00;background-color:#FAA">#</span><span style="color:#A60">:procedure</span> (lambda (self) <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">v</span><span style="color:#710">&quot;</span></span>)))
+(define v (make &lt;v&gt;))
+v
+<span style="color:#777">; #&lt;&lt;v&gt; 2d5a750&gt;</span>
+(<span style="color:#080;font-weight:bold">test</span> v)
+<span style="color:#777">; &quot;v&quot;</span>
+</pre></div>
+</div>
+
+<p><strong>Update:</strong></p>
+
+<p>I <a href="https://twitter.com/wedesoft/status/440568251748073473">tweeted</a> about the article and submitted it to <a href="https://news.ycombinator.com/item?id=7331142">Hackernews</a> and the
+<a href="http://lists.gnu.org/archive/html/guile-user/2014-03/msg00000.html">GUILE user list</a>.</p>
+
+<p><strong>See also:</strong></p>
+
+<ul>
+  <li><a href="http://www.gnu.org/software/guile/">GNU Guile</a></li>
+  <li><a href="https://www.gnu.org/software/goops/">GOOPS</a>
+    <ul>
+      <li><a href="http://www.gnu.org/software/guile/manual/html_node/Generic-Function-and-Method-Examples.html">Generic functions and methods example</a></li>
+    </ul>
+  </li>
+  <li><a href="http://sicpebook.wordpress.com/ebook/">Structure and Interpretation of Computer Programs</a></li>
+  <li><a href="http://www.ccs.neu.edu/home/matthias/BTLS/">The Little Schemer</a></li>
+  <li><a href="http://www.ccs.neu.edu/home/matthias/BTSS/">The Seasoned Schemer</a></li>
+  <li><a href="http://www.ccs.neu.edu/home/matthias/BRS/">The Reasoned Schemer</a></li>
+</ul>
+
+
+
+        <div id="bitcoin">
+          <a href="bitcoin:1J5iJCttbLkdNFtJu1joLTJDLhtEUx1T12?amount=0.004&amp;label=wedesoft&amp;message=donation">
+            <img src="pics/donate.png" alt="donate 4 mBTC"/>
+          </a>
+        </div>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+         var disqus_shortname = 'wedesoft';
+         (function() {
+           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+           dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+           (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+        </script>
+        <noscript><p>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></p></noscript>
+        <p><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a></p>
+        <!-- <script type="text/javascript"> open comment
+          google_ad_client = "ca-pub-1474039437530181";
+          google_ad_slot = "1622774695";
+          google_ad_width = 336;
+          google_ad_height = 280;
+          dash dash close comment?
+        </script> -->
+        <!-- <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        </script> -->
+
+      </div>
+      <div id="column1">
+        <div class="sidebaritem">
+          <h1>Latest News</h1>
+          <div class="summary-selected"><h2>2014/03/02</h2>
+<p>Why I like Object Oriented Programming using GNU Guile and GOOPS<br/>
+<a href="oop-with-goops.html" title="OOP with GNU Guile and GOOPS">More...</a></p></div>
+<div class="summary"><h2>2013/09/04</h2>
+<p>Creating a calculator with Bison, Flex, and Automake<br/>
+<a href="bison-flex-automake.html" title="Implement an Interpreter using Bison, Flex, and Automake">More...</a></p></div>
+<div class="summary"><h2>2012/11/07</h2>
+<p>The choice of programming language plays a fundamental role in the implementation of machine vision systems ...<br/>
+<a href="ruby-computer-vision-thesis.html" title="Developing machine vision software with Ruby instead of C/C++">More...</a></p></div>
+<div class="summary"><h2>2012/08/02</h2>
+<p>Building a dynamically linked C program for Android<br/>
+<a href="android-c-program.html" title="Android Hello World">More...</a></p></div>
+<div class="summary"><h2>2012/07/21</h2>
+<p>Running the Racket programming language on an Android phone<br/>
+<a href="racket-on-android.html" title="Racket on Android">More...</a></p></div>
+<div class="summary"><h2>2012/06/10</h2>
+<p>Comparison of the Clojure programming language with Scheme/LISP<br/>
+<a href="clojure-for-schemers.html" title="Clojure for Schemers">More...</a></p></div>
+<div class="summary"><h2>2011/10/20</h2>
+<p>Can we attract good and bad things with our mind?<br/>
+<a href="law-of-attraction.html" title="Law of attraction">More...</a></p></div>
+<div class="summary"><h2>2011/09/25</h2>
+<p>Detecting the corners of a calibration grid<br/>
+<a href="chequerboard.html" title="Chequerboard Corner Detection">More...</a></p></div>
+<p>...</p>
+
+          <div class="rss">
+            <a href="http://feeds.feedburner.com/wedesoft?format=xml">RSS Feed</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      &copy; 2014 <a href="http://www.wedesoft.de/">J.Wedekind</a> | <a href="#" onmouseover="this.href='mai' + 'lto:' + 'ja' + 'nxwed'.replace( /n./, 'n@' ) + 'esoft.' + 'de'">j<span style="display: none">.nosp@m.</span>an<span>@</span>wedes<span style="display: none">.nosp@m.</span>oft.de</a> | <a href="gnupg-wedekind.asc">GPG</a> | <a href="http://validator.w3.org/check?uri=referer" rel="nofollow">XHTML 1.1</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer" rel="nofollow">CSS</a> | <a href="http://www.wedesoft.de/test/">PAL</a> | <a href="http://www.domainbox.de/">Domainbox</a> | <a href="http://illustmaker.abi-station.com/index_en.shtml">Abi-Station</a> | <a href="http://www.dcarter.co.uk/">dcarter design</a>
+    </div>
+  </div>
+</body>
+</html>
+

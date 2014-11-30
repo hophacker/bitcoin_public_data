@@ -1,0 +1,1001 @@
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 15:15:48 GMT
+Server: Apache/2.2.3 (CentOS)
+X-Powered-By: PHP/5.3.13
+X-Pingback: http://www.bimonkey.com/xmlrpc.php
+Link: <http://www.bimonkey.com/?p=310>; rel=shortlink
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="language" content="en" />
+
+<title>SQL Server SSIS Pivot Transformation | BI Monkey</title>
+<link rel="Shortcut Icon" href="http://www.bimonkey.com/wp-content/themes/shades-of-blue/images/favicon.ico" type="image/x-icon" />
+
+<link rel="stylesheet" href="http://www.bimonkey.com/wp-content/themes/shades-of-blue/style.css" type="text/css" media="screen" />
+<link rel="alternate" type="application/rss+xml" title="BI Monkey RSS Feed" href="http://www.bimonkey.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="BI Monkey Atom Feed" href="http://www.bimonkey.com/feed/atom/" />
+<link rel="pingback" href="http://www.bimonkey.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="BI Monkey &raquo; The Pivot Transformation Comments Feed" href="http://www.bimonkey.com/2009/06/the-pivot-transformation/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.bimonkey.com/xmlrpc.php?rsd" />
+<link rel='prev' title='Cannot View Data Mining Model in BIDS &#8211; function does not exist' href='http://www.bimonkey.com/2009/06/cannot-view-data-mining-model-in-bids-function-does-not-exist/' />
+<link rel='next' title='Quick book review: Data Mining with SQL Server 2005' href='http://www.bimonkey.com/2009/06/quick-book-review-data-mining-with-sql-server-2005/' />
+<link rel='shortlink' href='http://www.bimonkey.com/?p=310' />
+
+<!-- All in One SEO Pack 2.1.5 by Michael Torbert of Semper Fi Web Design[353,398] -->
+<meta name="description" content="An introduction to the use and configuration of the SSIS Pivot Transformation, including a downloadable sample package." />
+
+<meta name="keywords" content="sql server, ssis, integration services, pivot,integration services,pivot" />
+
+<link rel="canonical" href="http://www.bimonkey.com/2009/06/the-pivot-transformation/" />
+<!-- /all in one seo pack -->
+
+</head>
+
+<body>
+
+<div id="header">
+
+    <div class="headerleft">
+		        	<h4><a href="http://www.bimonkey.com/">BI Monkey</a></h4>
+            
+       		<p>James Beresford on Microsoft BI and Consulting in Sydney, Australia</p>
+    </div>
+		
+	<div class="headerright">
+    
+	<ul id="nav">
+		            <li><a href="http://www.bimonkey.com">Home</a></li>
+            
+        <li class="page_item page-item-2051"><a href="http://www.bimonkey.com/training/">Training</a></li>
+<li class="page_item page-item-741"><a href="http://www.bimonkey.com/framework/">ETL Control Framework</a></li>
+<li class="page_item page-item-64 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/">About</a>
+<ul class='children'>
+	<li class="page_item page-item-146 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/">Help</a>
+	<ul class='children'>
+		<li class="page_item page-item-79"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/using-ssis-samples-from-this-site/">Using SSIS samples from this site</a></li>
+		<li class="page_item page-item-243"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/ssis-component-samples-list/">SSIS Component Samples List</a></li>
+	</ul>
+</li>
+	<li class="page_item page-item-546"><a href="http://www.bimonkey.com/about-the-bi-monkey/consulting-and-technical-services/">Consulting and Technical Services</a></li>
+</ul>
+</li>
+	</ul>
+    
+	</div>
+
+</div>
+
+<div class="clear"></div>
+
+<div id="wrap">
+<div id="content">
+
+	<div id="contentleft">
+	
+		<div class="postarea">
+
+			            
+			<div class="post">
+			
+                <h1>The Pivot Transformation</h1>
+                    
+                    <div class="postauthor">
+                        <p>Posted by <a href="http://www.bimonkey.com/author/bi-monkey/" title="Posts by BI Monkey" rel="author">BI Monkey</a> on Tuesday, June 9, 2009 &middot; <a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/#comments">32 Comments</a>&nbsp;</p>
+                    </div>
+                
+                <p>In this post I will be covering the Pivot Transformation. Due to the lack of a GUI or wizard for this component, it&#8217;s difficult to configure properly and painful to use, so I will try to walk through it as thoroughly as possible. I found the MSDN documentation on this component a bit confusing as well, so hopefully this will prove to be clearer.</p>
+<p>The sample package can be found <a title="SQL 2005 SSIS Pivot Transformation Sample Package (Right click, save as)" href="http://www.bimonkey.com/uploads/componentreview/Pivot%20Transformation%20Basics%202005.dtsx">here for 2005</a> and guidelines on use are <a title="Using samples from BI Monkey" href="http://www.bimonkey.com/support/using-ssis-samples-from-this-site/">here</a>.</p>
+<h2>What does the Pivot Transformation do?</h2>
+<p>This bit is fairly straightforward &#8211; it takes row values and converts them to columns, moving &#8211; <strong>but not aggregating</strong> -  a value as it does so. So if your data looked like this:</p>
+<div style="width: 227px" class="wp-caption alignnone"><img title="Pre Pivot Data" src="http://www.bimonkey.com/uploads/componentreview/pivot1.jpg" alt="b" width="217" height="94" /><p class="wp-caption-text">Fig 1: Pre Pivot Data</p></div>
+<p>Pivoting on &#8220;Food Type&#8221; using &#8220;Cost&#8221; as a value would turn it into this:</p>
+<div style="width: 322px" class="wp-caption alignnone"><img title="Post Pivot Data" src="http://www.bimonkey.com/uploads/componentreview/pivot2.jpg" alt="b" width="312" height="63" /><p class="wp-caption-text">Fig 2: Post Pivot Data</p></div>
+<h2>How to configure the Pivot Transformation</h2>
+<p>In the sample package Data Flow 1 I start with a query which delivers Line Totals and Order Quantities summarised by Product and Order Year. What I want to do is Pivot so I have Order Year on the rows, the values from Product Category as the Columns and the sum of Line Totals as the Value, as laid out below:</p>
+<div style="width: 515px" class="wp-caption alignnone"><img title="Pivot Target" src="http://www.bimonkey.com/uploads/componentreview/pivot3.jpg" alt="b" width="505" height="102" /><p class="wp-caption-text">Fig 3: The Desired Pivot Results</p></div>
+<h3>Step 1: Configure the Inputs</h3>
+<p>The first step is to open the Pivot Transformation and on the <strong>Input Columns</strong> tab select the columns that are going to be used in the Pivot. Once that is done, switch to the <strong>Input and Output Properties</strong> tab. Here we are going to set how each column is used in the Pivot operation. This is done by setting the <strong>PivotUsage</strong> property of the Input Columns. This can be found by expanding Pivot Default Input &gt; Input Columns and selecting the relevant Input Column. Down at the bottom of the list under the Custom header is the property PivotUsage. This can be set to one of four values:</p>
+<ul>
+<li><strong>0 &#8211; </strong>the column is passed through unaffected</li>
+<li><strong>1 &#8211; </strong>the column values become the <strong>rows</strong> of the pivot (aka the <em>Set Key</em>)</li>
+<li><strong>2 &#8211; </strong>the column<strong> </strong>values become the <strong>column names</strong> of the pivot<em> (aka the Pivot Column)</em><strong><br />
+</strong></li>
+<li><strong>3 -</strong> the column values that are <strong>pivoted</strong> in the pivot</li>
+</ul>
+<p>So, in my example, I set OrderYear to 1, Product to 2 and Line Totals to 3.</p>
+<div style="width: 610px" class="wp-caption alignnone"><img title="Configuring the Pivot Transformation Inputs" src="http://www.bimonkey.com/uploads/componentreview/pivot4.jpg" alt="b" width="600" height="409" /><p class="wp-caption-text">Fig 4: Configuring the Pivot Transformation Inputs</p></div>
+<p>Now something you have to configure upstream from this is that whatever column will be the rows of the pivot (PivotKeyUsage = 1) needs to be sorted for the component to work properly. The Pivot component iteslf doesn&#8217;t force this (as it does in a Merge Join) so you need to go back and make sure that your column is sorted by the time it hits the pivot. Setting the IsSorted and SortKeyPosition properties of the Set Key column upstream will make no difference as the Pivot Transformation won&#8217;t actually pay any attention to these settings, but it may cause unexpected results if the data itself isn&#8217;t sorted. You can see how this affects the output by running Data Flow 1a, which is the same as Data Flow 1 but not sorted properly.</p>
+<h3>Step 2: Configure the Outputs</h3>
+<p>Despite everything you&#8217;ve done so far, this component will have exactly zero outputs &#8211; each has to be manually defined. So you will need an output for your Rows (In my example, OrderYear) and an output for each of your Pivoted column&#8217;s values that you want to output. So in my example I will need to create an output for each Product Category that is in the source data &#8211; you cannot ignore a value as the component will return an error. For example, if I forgot to add a column for Components, I would get the error &#8220;<span style="color: #ff0000;">The pivot key value &#8220;Components&#8221; is not valid</span>&#8221; when I tried to execute.</p>
+<p>To create an output, on the Inputs and Outputs tab expand the Pivot Default Output &gt; OutputColumns and start clicking the Add Column button until you have enough columns. Then for each column you need to set the following properties:</p>
+<ul>
+<li>Name &#8211; the name for the output column &#8211; so if you were pivoting a value of Bike, you could rename it to Bicycle in the output</li>
+<li>PivotKeyValue &#8211; the value in the pivoted column that will go into this output</li>
+<li>SourceColumn &#8211; the Lineage ID of the column that is to be used in the pivot. What this means is you need to go back to your input columns, and get the value of the LineageID property of the column that you set the PivotUsage of to 3 for pivoted columns, and the LineageID of the Column you set to PivotUsage of 1 for the Row Column.</li>
+</ul>
+<div style="width: 462px" class="wp-caption alignnone"><img title="Configuring the Pivot Transformation Outputs" src="http://www.bimonkey.com/uploads/componentreview/pivot5.jpg" alt="b" width="452" height="309" /><p class="wp-caption-text">Fig 5: Configuring the Pivot Transformation Outputs</p></div>
+<p>Having fun yet? Unlikely, but fortunately you are done.</p>
+<h2>Multiple Pivots and the T-SQL Alternative</h2>
+<p>In the sample package Data Flow 2, I demonstrate a configuration of the Pivot Transformation that actually pivots two data values. This is achieved by adding a duplicate set of columns for the Pivot Column to receive the pivoted values in, and can be achieved mostly by duplicating the actions in Step 2 to create a new set of Pivot Columns.</p>
+<p>I also demonstrate the Pivot T-SQL command in Data Flow 3 &#8211; this generates the same output as in Data Flow 1 but the aggregation and pivoting is done in a single operation with none of the awkward configuration required by the Pivot Transformation in SSIS. I won&#8217;t be going into the syntax for these queries here but lkinks to the MSDN documentation are at the end of this post.</p>
+<h2>Where to use the Pivot Transformation?</h2>
+<p>Because of the pain involved in configuring it, I would suggest you only use it when you absolutely have to and can&#8217;t push the operation back to the source. This is not least because the pivot &#8211; unlike Excel Pivot Tables or a T-SQL pivot &#8211; cannot aggregate, it needs aggregation first on the pivoted column. In my example, if I didn&#8217;t have an aggregate operation in the query, I would get the error &#8220;<span style="color: #ff0000;">Duplicate pivot key value &#8220;Bikes&#8221;</span>&#8221; as it tried to pivot another row which had a Product Category of &#8220;Bike&#8221;. The T-SQL Pivot query in SQL Server is far more powerful with its variety of aggregation options &#8211; even though it will initially be a bit awkward to write those queries to a non-expert. Additionally using T-SQL will allow you to lock down the number of columns &#8211; if you get a new value in the Pivot Column it won&#8217;t kill your package.</p>
+<p>All in all the Pivot Transformation is badly implemented from a UI perspective, and weak from a data processing viewpoint due to it&#8217;s lack of aggregation capability.</p>
+<p>MSDN Documentation for the Pivot Transformation can be found here for <a title="SQL 2008 Pivot Transformation Documentation on MSDN" href="http://msdn.microsoft.com/en-us/library/ms140308.aspx">2008</a> and here for <a title="SQL 2005 Pivot Transformation Documentation on MSDN" href="http://msdn.microsoft.com/en-us/library/ms140308(SQL.90).aspx">2005</a>.</p>
+<p>MSDN Documentation for the Pivot T-SQL command can be found here for <a title="SQL 2008 T-SQL Pivot Documentation on MSDN" href="http://msdn.microsoft.com/en-us/library/ms177410.aspx">2008</a> and here for <a title="SQL 2005 T-SQL Pivot Documentation on MSDN" href="http://msdn.microsoft.com/en-us/library/ms177410(SQL.90).aspx">2005</a>.</p>
+<p>If you&#8217;re still struggling, try looking at these other posts:</p>
+<ul>
+<li><a title="Better Know A SSIS Transform – The Pivot Transform" href="http://blogs.pragmaticworks.com/devin_knight/2009/06/better-know-a-ssis-transform-the-pivot-transform.html">Devin Knight at PragmaticWorks</a></li>
+<li><a title="SSIS Pivot Component Example" href="http://www.proteanit.com/b/2007/08/02/ssis-pivot-component/">Protean</a></li>
+<li><a title="Pivot and UnPivot with SSIS" href="http://www.sql-server-performance.com/articles/per/ssis_pivot_unpivot_p1.aspx">Dinesh Asanka at SQLServerPerformance.com</a></li>
+</ul>
+<p><a href="http://bittip.it/" class="bittip-button" default-amount="0.005" request="count" url="" donation-message="" donation-address="1FKrdG88RWBLDn3QcM3swyrrYMLcu9uDC"></a></p><script>(function() {var s = document.createElement('script');var t = document.getElementsByTagName('script')[0];s.type = 'text/javascript';s.async = true;var url; if (window.location.protocol == 'https:'){url = 'https://bitcoinsberlin.com/wp-content/uploads/2013/01/button-loader.js'} else { url = 'http://bittip.it/cdn/button-loader.js';};s.src = url;t.parentNode.insertBefore(s, t);})();</script><div class="clear"></div>
+                        
+                <!--
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+			xmlns:dc="http://purl.org/dc/elements/1.1/"
+			xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+		<rdf:Description rdf:about="http://www.bimonkey.com/2009/06/the-pivot-transformation/"
+    dc:identifier="http://www.bimonkey.com/2009/06/the-pivot-transformation/"
+    dc:title="The Pivot Transformation"
+    trackback:ping="http://www.bimonkey.com/2009/06/the-pivot-transformation/trackback/" />
+</rdf:RDF>                -->
+                
+                <div class="postmeta">
+                    <p>Filed under <a href="http://www.bimonkey.com/category/microsoft-bi/ssis/" title="View all posts in Integration Services" rel="category tag">Integration Services</a> &middot; Tagged with <a href="http://www.bimonkey.com/tag/ssis/" rel="tag">Integration Services</a>, <a href="http://www.bimonkey.com/tag/pivot/" rel="tag">Pivot</a></p>
+                </div>
+                
+                <div class="clear"></div>
+                
+                <div class="authorbox">
+                    <p><img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=64&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D64&amp;r=G' class='avatar avatar-64 photo' height='64' width='64' /><strong>About BI Monkey</strong><br /></p>
+                    <div class="clear"></div>
+                </div>
+                    
+            </div>
+			
+		</div>
+			
+        <div class="postcomments">
+            
+			
+
+		<h3 id="comments">Comments</h3>
+	<strong>32 Responses to &#8220;The Pivot Transformation&#8221;</strong>
+	<ol class="commentlist">
+			<li class="comment even thread-even depth-1" id="comment-27">
+				<div id="div-comment-27" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/03f3875713713024549a21373200bd17?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Paul</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-27">
+			June 11, 2009 at 9:42 am</a>		</div>
+
+		<p>BI Monkey, I am enjoying your blog &#8230; good work, and please keep it going as it is a good resource and very informative on some of the finer points of development.  Question for you though, have you had any experience with the slowly changing dimension component within SSIS.  I am having all sorts of trouble when processing over 500,000 records as this object is very slow.  Are there any tricks you know of to speed it up?</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-28">
+				<div id="div-comment-28" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-28">
+			June 11, 2009 at 10:14 am</a>		</div>
+
+		<p>Hi Paul, glad you are finding it useful.</p>
+<p>The Slowly Changing Dimension component is inherently very slow because of the way it works. Each row that comes in is checked against the reference table one at a time by a database query (you can watch this happening in SQL Profiler). This is quite quick as an individual operation but as you are finding, anything over about 10,000 records becomes unacceptably slow. </p>
+<p>The only real tuning you can do to the SCD component is to make sure your reference table is indexed on the business keys the SCD component is using to identify unique rows.</p>
+<p>The alternative is to use a custom component which caches the reference table in memory &#8211; there is one available at SQL BI called TableDifference (<a href="http://www.sqlbi.com/Projects/TableDifference/tabid/74/language/en-US/Default.aspx" rel="nofollow">http://www.sqlbi.com/Projects/TableDifference/tabid/74/language/en-US/Default.aspx</a>) &#8211; which in my testing proved to be very very quick indeed. I&#8217;m hoping that the SCD component will be able to cache the reference table in a future version.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-30">
+				<div id="div-comment-30" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e6a8dd5a98c8543155e8ec859f5327e7?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.datamart.cl' rel='external nofollow' class='url'>Michael Prendergast</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-30">
+			June 11, 2009 at 12:07 pm</a>		</div>
+
+		<p>I have also tested TableDifference in the past, and being a very fast component compared to SCD algorithm, as a consultant, I must warn my customers that&#8217;s an opensource (freeware) component not endorsed by MS, and in general, they tend to &#8220;pay&#8221; the extra time SCD takes, instead of installing a non MS component in a production environment&#8230; </p>
+<p>By the way, congratulations for your blog, very useful, straightforward, clean&#8230;</p>
+<p>Michael</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-32">
+				<div id="div-comment-32" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-32">
+			June 11, 2009 at 1:07 pm</a>		</div>
+
+		<p>Micheal, thanks.</p>
+<p>I think a reluctance to use custom components is a bit shortsighted &#8211; I think one of the real strengths of SSIS is that you can extend its capabilites in this way. At a prior consultancy we employed CozyRoc (www.cozyroc.com) to build us a component which saved huge amounts of development time and actually reduced risks due to cutting out potential for developer error. I can easily envisage &#8220;component packs&#8221; suited to certain tasks &#8211; a lot of DW processing is quite generic and could easily be consolidated into a handful of tasks.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-273">
+				<div id="div-comment-273" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/634b66d4d5c8f28023da2d7538dc4b2d?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Scott Daves</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-273">
+			September 11, 2009 at 8:36 am</a>		</div>
+
+		<p>So my PivotUsage type 3 field is a varchar(1500) &#8211; that makes each of my output columns the same.  It will not let me change the field type in the control even though the drop down is enabled, it gives me an error every time.  Is it possible to change datatypes?  Otherwise, I&#8217;m going to have to do a Data Copy component to shorten most of these fields and some derived columns to turn some of these into numeric values.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-274">
+				<div id="div-comment-274" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-274">
+			September 11, 2009 at 9:26 am</a>		</div>
+
+		<p>Scott &#8211; you are right, you cannot change the datatype of a column as it passes through the Pivot component &#8211; if you see the text of the error you get when you try to change data types it is &#8220;<em>Error at 1 &gt; Pivot Example [Pivot [667]]: The component &#8220;Pivot&#8221; (667) does not allow setting output column datatype properties</em>.&#8221; So it&#8217;s a bit boneheaded that it&#8217;s an option you can (try to) change.</p>
+<p>So yes &#8211; you&#8217;ll have to change the the column data type before or after using a data conversion.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-485">
+				<div id="div-comment-485" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/0eb0b96173a49f0c54f5fbfd578f3bd2?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Steph</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-485">
+			October 16, 2009 at 3:54 am</a>		</div>
+
+		<p>This is an interesting comment.  What I am trying to do is with one field, the field creates duplicate rows for each employee when they have multiple codes&#8230;can I use the Pivot transformation to put these codes into one row, so that I have one row per employee and each of the codes on the same line too?  (They really want them in the same field, but I do not see that possibility).</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-524">
+				<div id="div-comment-524" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-524">
+			October 27, 2009 at 8:23 pm</a>		</div>
+
+		<p>Steph, that is what the component does &#8211; where are you having trouble? It would help if you illustrate with a sample of your source data and the expected result.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-840">
+				<div id="div-comment-840" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/94e9609c12ae0e4be5e323dc8c09c1f6?s=48&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Miscellaneous Caver</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-840">
+			January 8, 2010 at 11:24 pm</a>		</div>
+
+		<p>Yes, delivering this kind of quality in an actual paid product way past beta is nothing short of embarrassing.</p>
+<p>But it is better than your blog may suggest: Unmapped values in the key do not need to kill your package &#8211; there&#8217;s an ErrorRowDisposition available on the *input* column *after* setting PivotUsage. As SSIS BIDS is too braindead to size dialogs appropriately you&#8217;re bound to miss it. Setting this to RD_IgnoreFailure works; RD_RedirectRow is IMO badly broken (at least in 2005) &#8211; everyting gets redirected no matter what, and the default output will contain all rows but the pivoted columns will be NULL.</p>
+<p>What the transformation *does* is actually acceptable (I can forgive the redirect row bug, the refusal to move text or blob data, and a few others). I do not miss an aggregation capability &#8211; after all, pivoting in T-SQL most of the time you end up needlessly spending an aggregation on stuff you know will have exactly one non-NULL input. This component forces you to explicitly plan any needed aggregations which is not necessarily a bad thing. The UI, on the other hand, is as evil as it is because they didn&#8217;t write any! And we already know the generic editor (advanced being a misnomer) is so ugly because it is meant to be absolutely generic &#8211; notwithstanding that even considering this it is still needlessly painful.</p>
+<p>What I can&#8217;t forgive is that they gave us bananaware without fixing it for all of 1 RTM version and 5 service packs later.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-847">
+				<div id="div-comment-847" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-847">
+			January 10, 2010 at 7:20 pm</a>		</div>
+
+		<p>Agreed, I perhaps may have been a little tough, but as this post is one of the consistently most viewed on this blog, I can only assume the great majority of users remain utterly baffled by it. </p>
+<p>The SSIS Dev Team is supposedly putting more focus on the UI for the next release, so we may hope to see improvements in the future&#8230;</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-1230">
+				<div id="div-comment-1230" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/67ba19c7731ed4b09bf9d82617ca413c?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Tonya</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-1230">
+			February 13, 2010 at 7:17 am</a>		</div>
+
+		<p>I&#8217;m trying to pivot a data set with several PivotKeyValues (18)  and had everything working when testing with one value and several outputs &#8211; 6 columns for different output fields based on one PivotKeyValue. When I add a new output for the same fields based on a different value of the PivotKeyValue I get this error: Error at Data Flow Task [Pivot[101]]: More than one output column (such as &#8220;disp_strt_dte_A&#8221; (3047)) is mapped to input column &#8220;disp_strt_dte&#8221; (952).</p>
+<p>Any ideas for getting it to work or do I need to scrap this and start over using T-SQL?</p>
+<p>Thanks for your help!</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-1493">
+				<div id="div-comment-1493" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/6675b8688eaa04ffae4e51bc106cfd72?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Miscellaneous Caver</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-1493">
+			March 26, 2010 at 1:06 am</a>		</div>
+
+		<p>Correction: ErrorRowDisposition = RD_RedirectRow seems to work under specific conditions.</p>
+<p>As stated, in a normal scenario with a working pivot that maps input values to output columns, and that uses RD_IgnoreFailure to skip over existing keys with missing output column assignment and/or duplicate keys per row, as soon as you change RD_IgnoreFailure to RD_RedirectRow, all those mapped columns will become NULL, and the error output will contain all rows.</p>
+<p>If, however, you have a pivot which only passes through fields of PivotUsage 0 or 1, and have *only* boolean tests on the pivot key (SourceColumn=-1), then switching to RD_RedirectRow seems to actually work.</p>
+<p>Interesting how something so far detached from the world of emotions can generate so much hate&#8230;</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-2080">
+				<div id="div-comment-2080" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/01adf1836bdbb34aab478a0d3a1e853d?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://blog.sairanadeem.com' rel='external nofollow' class='url'>Nadeem Ahmed</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-2080">
+			July 23, 2010 at 3:19 pm</a>		</div>
+
+		<p>BI Monkey, a very straightforward example and exactly what i was looking for.</p>
+<p>Nadeem<br />
+blog.sairanadeem.com</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-2779">
+				<div id="div-comment-2779" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/00d2fd039d9ae76fb880452d16f9e1fa?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Yvonne Oak</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-2779">
+			October 25, 2010 at 11:57 pm</a>		</div>
+
+		<p>Hi,<br />
+How would you take the example &#8220;Fig 2: Post Pivot Data&#8221; and turn it into &#8220;Fig 1: Pre Pivot Data&#8221;?  Would you use the Pivot or the Unpivot.  Can you do that example?<br />
+thanks,<br />
+Yvonne</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor even thread-even depth-1" id="comment-2785">
+				<div id="div-comment-2785" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-2785">
+			October 26, 2010 at 9:47 am</a>		</div>
+
+		<p>Hi Yvonne &#8211; you would use the Unpivot &#8211; see my post on the Unpivot transform for the example you asked for</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-3423">
+				<div id="div-comment-3423" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/b0a30875ee974ab4b14d888623aab900?s=48&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Jaanu</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-3423">
+			December 1, 2010 at 2:44 am</a>		</div>
+
+		<p>I have a table with 16 columns and its a parent child related table.<br />
+I have 1700 rows in the table and it is unpivoted and i need to pivot the table and flatten the hieraechy i.e from node to leaf<br />
+except for the ID column all other columns have repeating values.<br />
+can you suggest me how to use pivot transformation for this.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor even thread-even depth-1" id="comment-3461">
+				<div id="div-comment-3461" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-3461">
+			December 2, 2010 at 5:46 am</a>		</div>
+
+		<p>Jaanu, can you provide a sample of source data and target data?</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-8161">
+				<div id="div-comment-8161" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/9eb9eed4283e808ae3183f0d2815ec47?s=48&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Ronaldo</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-8161">
+			May 11, 2011 at 5:17 pm</a>		</div>
+
+		<p>Dear BI Monkey,</p>
+<p>I have some problems with the pivot transformation, it keeps giving me error message of &#8220;Output column &#8220;Region 1&#8243; (549) cannot be mapped to PivotKey input column&#8221;<br />
+What does it mean?<br />
+My input column are :<br />
+- Week &#8211;&gt; pivot usage 1<br />
+- Region &#8211;&gt; pivot usage 2<br />
+- Sales &#8211;&gt; pivot usage 3</p>
+<p>My Output column are :<br />
+- Week &#8211;&gt; link to input column &#8220;Week&#8221;<br />
+- Region 1 &#8211;&gt; link to input column &#8220;Region&#8221;, with PivotKeyValue = Region 1<br />
+- Region 2 &#8211;&gt; link to input column &#8220;Region&#8221;, with PivotKeyValue = Region 2<br />
+- Region 3 &#8211;&gt; link to input column &#8220;Region&#8221;, with PivotKeyValue = Region 3<br />
+- Region 4 &#8211;&gt; link to input column &#8220;Region&#8221;, with PivotKeyValue = Region 4</p>
+<p>What is the mistake of that setting?<br />
+Please kindly help<br />
+Thank you</p>
+<p>Regards,</p>
+<p>Ronaldo</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor even thread-even depth-1" id="comment-8165">
+				<div id="div-comment-8165" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-8165">
+			May 11, 2011 at 8:40 pm</a>		</div>
+
+		<p>I can&#8217;t see what you&#8217;re doing wrong from what you&#8217;ve quoted. Feel free to email me the package and I&#8217;ll take a look.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-10311">
+				<div id="div-comment-10311" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/6a65a75c4a80050a345fa541d3abc987?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Elmozamil Elamir</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-10311">
+			July 6, 2011 at 10:12 pm</a>		</div>
+
+		<p>Hi,<br />
+Thanks you for your efforts and time to write this paper.<br />
+I use SSIS to transform data from Adventureworks2008 database and return date and quantity, after I configure it as I read it return an error that tell me (Duplicate pivot key value &#8220;9&#8243;) Sometimes for 12 and so I googled but I didn&#8217;t ge any help please your help.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-12301">
+				<div id="div-comment-12301" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/80634b804608062568687e9f8f70280f?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Srinivas</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-12301">
+			September 22, 2011 at 1:28 am</a>		</div>
+
+		<p>Hi BI Monkey,</p>
+<p>simple pivoting is fine and I follow BI Monkey, but now the requirement is like Food Type rows are changeing dynamically,</p>
+<p>FoodFor	FoodType	Cost<br />
+BI Monkey	Peanuts	10<br />
+BI Monkey	Cashews	20<br />
+BI Monkey	Coffee	15</p>
+<p>The above one is simple one and can do it.</p>
+<p>but now it has increased like below:</p>
+<p>FoodFor	FoodType	Cost<br />
+BI Monkey	Peanuts	10<br />
+BI Monkey	Cashews	20<br />
+BI Monkey	Coffee	15<br />
+BI Monkey	Juice	25     New record<br />
+BI Monkey	Coke	12     New record</p>
+<p>Food Type is changing Dynamically and how to handle this scenario in SSIS using Pivot is biggest Challenge.</p>
+<p>Please can any one help me out from this, the requirement is very urgent&#8230;</p>
+<p>thanks in Advance</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-12314">
+				<div id="div-comment-12314" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-12314">
+			September 22, 2011 at 12:54 pm</a>		</div>
+
+		<p>Hi Srinivas </p>
+<p>Unfortunately the Pivot component cannot handle changing keys &#8211; there&#8217;s no way to dynamically allow for new Pivot Keys. </p>
+<p>The only workaround I can think of is to use surrogate keys for your values, so you pivot on values 1 to 20 (or however many you think you will need). That way you can set up the component for a bigger range of values than you currently have without having to worry about what those values actually are.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-13096">
+				<div id="div-comment-13096" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/af81f4cb6f3173a59e9fec3878f5ab9b?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Steve Francis</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-13096">
+			October 21, 2011 at 8:46 am</a>		</div>
+
+		<p>I found this example while playing with SQL 2012 CTP 3 and the interface is still rubbish.  I still don&#8217;t understand why a GUI would require the user to look up a numeric code on the internet to specify column usage.  I also fail to see why information in one part of the interface can&#8217;t be presented in another.  Altogether the GUI interface is far too generic &#8211; just a way to type in raw parameters to an API.  I think MS have forgotten the lessons from PARC (Where the GUI was invented).</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-13099">
+				<div id="div-comment-13099" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-13099">
+			October 21, 2011 at 9:48 am</a>		</div>
+
+		<p>Steve &#8211; one of the features coming in SQL2012 proper should be a decent UI for the Pivot Transformation &#8211; I saw it demo&#8217;d at PASS and it does look much better.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-17429">
+				<div id="div-comment-17429" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/897bb21aa16df57e1c933b6c2fa4b524?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Gabeinn</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-17429">
+			April 11, 2012 at 6:28 am</a>		</div>
+
+		<p>Thanks a lot was really useful.</p>
+<p>Regards,</p>
+<p>Gabe</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-19892">
+				<div id="div-comment-19892" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/a6805700f19088ade67d1a88f1d20049?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">bhargav</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-19892">
+			June 5, 2012 at 4:50 am</a>		</div>
+
+		<p>Thanks but for some reason i&#8217;m not able to see the custom properties when i click on the INPUT Columns, any advice</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-208584">
+				<div id="div-comment-208584" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/12b8113526fb70b6f68dca1fb9f0a020?s=48&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://n/a' rel='external nofollow' class='url'>Stefan</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-208584">
+			January 24, 2014 at 9:23 pm</a>		</div>
+
+		<p>I use the pivot transform in SSIS.</p>
+<p>As with the nature of my data, some of the numeric values that gets pivoted, results in NULL values.</p>
+<p>How do I go about in SSIS, to remove the NULL values and replace them with 0 instead?</p>
+<p>Is there a property in the pivot transform I can use, or should I test all results for NULL in a derived column control?</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-208918">
+				<div id="div-comment-208918" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-208918">
+			January 26, 2014 at 6:36 am</a>		</div>
+
+		<p>You&#8217;ll have to fix it up post pivot using a derived column, as you suspected. I&#8217;m not aware of any property you can set.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+	</ol>
+	<div class="navigation">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+	
+		<h3>Trackbacks</h3>
+	<strong>Check out what others are saying about this post...</strong>
+	<ol class="commentlist">
+			<li class="pingback even thread-even depth-1" id="comment-49">
+				<div id="div-comment-49" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href='http://www.bimonkey.com/2009/07/the-unpivot-transformation/' rel='external nofollow' class='url'>SQL Server SSIS Unpivot Transformation | BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-49">
+			July 2, 2009 at 10:15 pm</a>		</div>
+
+		<p>[...] this post I will be covering the Unpivot Transformation, the normalising sister component of the Pivot Transformation. Fortunately it is much easier to use. The sample package can be found here for 2005 and [...]</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="trackback odd alt thread-odd thread-alt depth-1" id="comment-97">
+				<div id="div-comment-97" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href='http://www.proteanit.com/b/2007/08/02/ssis-pivot-component/' rel='external nofollow' class='url'>Protean</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-97">
+			July 24, 2009 at 8:31 pm</a>		</div>
+
+		<p><strong>SSIS Pivot Component Example&#8230;</strong></p>
+<p>It may be me, but as yet I haven&#8217;t seen too much written about the SSIS pivot and unpivot components.<br />
+Whilst they are not the easiest to configure, when faced with the option of importing to SQL Server and using a UNION or the new PIVOT clauses, &#8230;</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="pingback even thread-even depth-1" id="comment-10120">
+				<div id="div-comment-10120" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href='http://faisalhafiz.wordpress.com/2011/06/30/pivot-function-in-sql-server/' rel='external nofollow' class='url'>PIVOT function in SQL Server &laquo; Faisal Hafiz</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-10120">
+			June 30, 2011 at 2:26 pm</a>		</div>
+
+		<p>[...] <a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/" rel="nofollow">http://www.bimonkey.com/2009/06/the-pivot-transformation/</a> [...]</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="pingback odd alt thread-odd thread-alt depth-1" id="comment-10249">
+				<div id="div-comment-10249" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href='http://faisalhafiz.wordpress.com/2011/07/04/pivot-transformation-is-ssis/' rel='external nofollow' class='url'>Pivot Transformation is SSIS &laquo; Faisal Hafiz</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/comment-page-1/#comment-10249">
+			July 4, 2011 at 6:02 pm</a>		</div>
+
+		<p>[...] <a href="http://www.bimonkey.com/2009/06/the-pivot-transformation/" rel="nofollow">http://www.bimonkey.com/2009/06/the-pivot-transformation/</a> [...]</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+	</ol><br /><br />
+		
+ 
+
+
+<div id="respond">
+
+<h3>Speak Your Mind</h3>
+<strong>Tell us what you're thinking... <br />and oh, if you want a pic to show with your comment, go get a <a href="http://en.gravatar.com" >gravatar</a>!</strong>
+
+<div class="cancel-comment-reply">
+	<small><a rel="nofollow" id="cancel-comment-reply-link" href="/2009/06/the-pivot-transformation/#respond" style="display:none;">Click here to cancel reply.</a></small>
+</div>
+
+
+<form action="http://www.bimonkey.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>Website</small></label></p>
+
+
+</code></small></p>
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type='hidden' name='comment_post_ID' value='310' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="f795ad119d" /></p><script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/jquery/jquery.js'></script>
+<script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/jquery/jquery-migrate.min.js'></script>
+<script type='text/javascript' src='http://www.bimonkey.com/wp-content/plugins/akismet/_inc/form.js'></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="247"/></p>
+</form>
+</div>
+
+
+        
+        </div>
+
+				
+	</div>
+	
+<div id="sidebar">
+
+	<ul id="sidebarwidgeted">
+	<li id="text-489037891" class="widget widget_text"><h4>BI Monkey advertising</h4>			<div class="textwidget"><script type="text/javascript"><!--
+google_ad_client = "pub-2746505496048779";
+/* Small Square */
+google_ad_slot = "6548399759";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+		</li>
+<li id="text-489037893" class="widget widget_text"><h4>BI Monkey Training</h4>			<div class="textwidget"><div style="width:195px; text-align:center;" ><iframe  src="https://www.eventbrite.com.au/countdown-widget?eid=11410774935" frameborder="0" height="603" width="195" marginheight="0" marginwidth="0" scrolling="no" allowtransparency="true"></iframe><div style="font-family:Helvetica, Arial; font-size:10px; padding:5px 0 5px; margin:2px; width:195px; text-align:center;" ><a style="color:#ddd; text-decoration:none;" target="_blank" href="http://www.eventbrite.com.au/r/ecount">Online event registration</a><span style="color:#ddd;"> for </span><a style="color:#ddd; text-decoration:none;" target="_blank" href="https://bimonkeydwtraining.eventbrite.com.au/?ref=ecount">Build your Data Warehouse in SQL Server & SSIS with the BI Monkey</a> <span style="color:#ddd;">powered by</span> <a style="color:#ddd; text-decoration:none;" target="_blank" href="http://www.eventbrite.com.au?ref=ecount">Eventbrite</a></div></div></div>
+		</li>
+<li id="text-489037892" class="widget widget_text"><h4>BI Monkey&#8217;s Amazon referral</h4>			<div class="textwidget"><a target="_blank" href="http://www.amazon.co.uk/?_encoding=UTF8&camp=1634&creative=19450&linkCode=ur2&tag=bimo0c-21">Help the BI Monkey buy stuff by shopping at Amazon</a><img src="https://ir-uk.amazon-adsystem.com/e/ir?t=bimo0c-21&l=ur2&o=2" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></div>
+		</li>
+<li id="pages-2" class="widget widget_pages"><h4>Pages</h4>		<ul>
+			<li class="page_item page-item-64 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/">About</a>
+<ul class='children'>
+	<li class="page_item page-item-546"><a href="http://www.bimonkey.com/about-the-bi-monkey/consulting-and-technical-services/">Consulting and Technical Services</a></li>
+	<li class="page_item page-item-146 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/">Help</a>
+	<ul class='children'>
+		<li class="page_item page-item-243"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/ssis-component-samples-list/">SSIS Component Samples List</a></li>
+		<li class="page_item page-item-79"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/using-ssis-samples-from-this-site/">Using SSIS samples from this site</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class="page_item page-item-741"><a href="http://www.bimonkey.com/framework/">ETL Control Framework</a></li>
+<li class="page_item page-item-2051"><a href="http://www.bimonkey.com/training/">Training</a></li>
+		</ul>
+		</li>
+<li id="tag_cloud-2" class="widget widget_tag_cloud"><h4>Tags</h4><div class="tagcloud"><a href='http://www.bimonkey.com/tag/analysis-services/' class='tag-link-21' title='9 topics' style='font-size: 12.952380952381pt;'>Analysis Services</a>
+<a href='http://www.bimonkey.com/tag/analytics/' class='tag-link-149' title='3 topics' style='font-size: 9.1428571428571pt;'>Analytics</a>
+<a href='http://www.bimonkey.com/tag/audit/' class='tag-link-45' title='2 topics' style='font-size: 8pt;'>Audit</a>
+<a href='http://www.bimonkey.com/tag/automation/' class='tag-link-162' title='3 topics' style='font-size: 9.1428571428571pt;'>Automation</a>
+<a href='http://www.bimonkey.com/tag/azure/' class='tag-link-133' title='7 topics' style='font-size: 12pt;'>Azure</a>
+<a href='http://www.bimonkey.com/tag/c/' class='tag-link-109' title='5 topics' style='font-size: 10.857142857143pt;'>C#</a>
+<a href='http://www.bimonkey.com/tag/cloud/' class='tag-link-111' title='5 topics' style='font-size: 10.857142857143pt;'>cloud</a>
+<a href='http://www.bimonkey.com/tag/columnstore/' class='tag-link-118' title='3 topics' style='font-size: 9.1428571428571pt;'>Columnstore</a>
+<a href='http://www.bimonkey.com/tag/compression/' class='tag-link-151' title='3 topics' style='font-size: 9.1428571428571pt;'>Compression</a>
+<a href='http://www.bimonkey.com/tag/data-mining/' class='tag-link-22' title='7 topics' style='font-size: 12pt;'>Data Mining</a>
+<a href='http://www.bimonkey.com/tag/data-quality-services/' class='tag-link-117' title='19 topics' style='font-size: 15.809523809524pt;'>Data Quality Services</a>
+<a href='http://www.bimonkey.com/tag/data-types/' class='tag-link-63' title='3 topics' style='font-size: 9.1428571428571pt;'>Data Types</a>
+<a href='http://www.bimonkey.com/tag/data-warehouse/' class='tag-link-131' title='3 topics' style='font-size: 9.1428571428571pt;'>Data Warehouse</a>
+<a href='http://www.bimonkey.com/tag/dax/' class='tag-link-170' title='3 topics' style='font-size: 9.1428571428571pt;'>DAX</a>
+<a href='http://www.bimonkey.com/tag/demo-machine/' class='tag-link-130' title='7 topics' style='font-size: 12pt;'>Demo Machine</a>
+<a href='http://www.bimonkey.com/tag/denali/' class='tag-link-115' title='13 topics' style='font-size: 14.380952380952pt;'>Denali</a>
+<a href='http://www.bimonkey.com/tag/derived-column/' class='tag-link-70' title='3 topics' style='font-size: 9.1428571428571pt;'>Derived Column</a>
+<a href='http://www.bimonkey.com/tag/excel/' class='tag-link-19' title='4 topics' style='font-size: 10.095238095238pt;'>Excel</a>
+<a href='http://www.bimonkey.com/tag/flat-file/' class='tag-link-38' title='7 topics' style='font-size: 12pt;'>Flat File</a>
+<a href='http://www.bimonkey.com/tag/framework/' class='tag-link-105' title='3 topics' style='font-size: 9.1428571428571pt;'>Framework</a>
+<a href='http://www.bimonkey.com/tag/ftp/' class='tag-link-137' title='3 topics' style='font-size: 9.1428571428571pt;'>FTP</a>
+<a href='http://www.bimonkey.com/tag/fuzzy/' class='tag-link-65' title='3 topics' style='font-size: 9.1428571428571pt;'>Fuzzy</a>
+<a href='http://www.bimonkey.com/tag/hadoop/' class='tag-link-123' title='18 topics' style='font-size: 15.619047619048pt;'>Hadoop</a>
+<a href='http://www.bimonkey.com/tag/hdinsight/' class='tag-link-145' title='6 topics' style='font-size: 11.52380952381pt;'>HDInsight</a>
+<a href='http://www.bimonkey.com/tag/hive/' class='tag-link-134' title='3 topics' style='font-size: 9.1428571428571pt;'>Hive</a>
+<a href='http://www.bimonkey.com/tag/indexes/' class='tag-link-29' title='3 topics' style='font-size: 9.1428571428571pt;'>Indexes</a>
+<a href='http://www.bimonkey.com/tag/ssis/' class='tag-link-5' title='88 topics' style='font-size: 22pt;'>Integration Services</a>
+<a href='http://www.bimonkey.com/tag/kilimanjaro/' class='tag-link-26' title='2 topics' style='font-size: 8pt;'>Kilimanjaro</a>
+<a href='http://www.bimonkey.com/tag/mdx/' class='tag-link-171' title='3 topics' style='font-size: 9.1428571428571pt;'>MDX</a>
+<a href='http://www.bimonkey.com/tag/ole-db/' class='tag-link-35' title='4 topics' style='font-size: 10.095238095238pt;'>OLE DB</a>
+<a href='http://www.bimonkey.com/tag/performancepoint/' class='tag-link-36' title='4 topics' style='font-size: 10.095238095238pt;'>PerformancePoint</a>
+<a href='http://www.bimonkey.com/tag/pivot/' class='tag-link-57' title='4 topics' style='font-size: 10.095238095238pt;'>Pivot</a>
+<a href='http://www.bimonkey.com/tag/project-gemini/' class='tag-link-23' title='3 topics' style='font-size: 9.1428571428571pt;'>Project Gemini</a>
+<a href='http://www.bimonkey.com/tag/ssrs/' class='tag-link-6' title='5 topics' style='font-size: 10.857142857143pt;'>Reporting Services</a>
+<a href='http://www.bimonkey.com/tag/row-count/' class='tag-link-56' title='3 topics' style='font-size: 9.1428571428571pt;'>Row Count</a>
+<a href='http://www.bimonkey.com/tag/script-task/' class='tag-link-43' title='7 topics' style='font-size: 12pt;'>Script Task</a>
+<a href='http://www.bimonkey.com/tag/service-packs/' class='tag-link-37' title='2 topics' style='font-size: 8pt;'>Service Packs</a>
+<a href='http://www.bimonkey.com/tag/slowly-changing-dimension/' class='tag-link-79' title='5 topics' style='font-size: 10.857142857143pt;'>Slowly Changing Dimension</a>
+<a href='http://www.bimonkey.com/tag/sql-agent/' class='tag-link-40' title='2 topics' style='font-size: 8pt;'>SQL Agent</a>
+<a href='http://www.bimonkey.com/tag/sql-server/' class='tag-link-25' title='31 topics' style='font-size: 17.809523809524pt;'>SQL Server</a>
+<a href='http://www.bimonkey.com/tag/sybis/' class='tag-link-148' title='6 topics' style='font-size: 11.52380952381pt;'>SYBIS</a>
+<a href='http://www.bimonkey.com/tag/t-sql/' class='tag-link-28' title='14 topics' style='font-size: 14.666666666667pt;'>T-SQL</a>
+<a href='http://www.bimonkey.com/tag/testing/' class='tag-link-41' title='2 topics' style='font-size: 8pt;'>Testing</a>
+<a href='http://www.bimonkey.com/tag/training/' class='tag-link-16' title='5 topics' style='font-size: 10.857142857143pt;'>Training Sites</a>
+<a href='http://www.bimonkey.com/tag/xml/' class='tag-link-34' title='2 topics' style='font-size: 8pt;'>XML</a></div>
+</li>
+<li id="search-2" class="widget widget_search"><form role="search" method="get" id="searchform" class="searchform" action="http://www.bimonkey.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>
+<li id="linkcat-128" class="widget widget_links"><h4>Data Quality Services</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blogs.msdn.com/b/dqs/" title="DQS Team Blog">DQS Team Blog</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-8" class="widget widget_links"><h4>Microsoft Developer Network</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://social.msdn.microsoft.com/Forums/windowsazure/en-US/home?forum=hdinsight" title="MSDN HDInsight Forum" target="_blank">MSDN HDInsight Forum</a></li>
+<li><a href="http://social.msdn.microsoft.com/Forums/en-US/sqlintegrationservices/threads" title="MSDN SQL Server Integration Services Forum &#8211; great place to get help on SSIS">MSDN SSIS Forum</a></li>
+<li><a href="http://msdn.microsoft.com/en-us/sqlserver/cc511477.aspx" title="Integration Services page of the SQL Server Developer Center">SQL Server Developer Center &#8211; SSIS</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-24" class="widget widget_links"><h4>Relevant Blogs</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.bp-msbi.com/" title="Boyan Penev on Microsoft BI, especially SSAS &amp; MDX">Boyan Penev on MS BI</a></li>
+<li><a href="http://www.jamesserra.com/" title="James Serra on things Microsoft and SQL Server">James Serra</a></li>
+<li><a href="http://jsimonbi.wordpress.com" title="John Simon on BI Microsoft Business Intelligence and Data Warehousing">John Simons BI Blog</a></li>
+<li><a href="http://mattmasson.com/" title="Matt Masson (SSIS Teams&#8217; Lead) Blog">Matt Masson (SSIS Teams&#039; Lead) Blog</a></li>
+<li><a href="http://www.mssqlgirl.com/" title="Julie&#8217;s journey as a Microsoft SQL Server [Professional | Girl]">Ms SQL Girl</a></li>
+<li><a href="http://analytics.typepad.com/oz-analytics/" title="Steve Bennetts blog about analytics, business intelligence, data warehousing, information and performance management in Australia">Oz Analytics</a></li>
+<li><a href="http://ssisbi.com/" title="About SSIS and Business Intelligence">SSIS BI &#8211; Duane Douglas</a></li>
+<li><a href="http://blogs.conchango.com/jamiethomson/" title="Jamie Thompson&#8217;s excellent SSIS blog">SSIS Junkie</a></li>
+<li><a href="http://blogs.msdn.com/mattm/default.aspx" title="SSIS Development Team Blog">SSIS Team Blog</a></li>
+<li><a href="http://toddmcdermid.blogspot.com/" title="Posts about SQL Server, Data Warehousing, Integration Services, .Net Development, and other tools of the trade">Todd McDermid&#039;s Blog</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-17" class="widget widget_links"><h4>Resources</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://ssisetlframework.codeplex.com/" title="The Codeplex home of the BI Monkey SSIS ETL Framework">BI Monkey SSIS ETL Framework</a></li>
+<li><a href="http://www.sqlserverdatamining.com/ssdm/" title="SQL Server Data Mining resource site">SQLServerDataMining.com</a></li>
+<li><a href="http://ssisctc.codeplex.com/" title="This is a community project for developing additional tasks and components for SSIS, and identifying other CodePlex projects that do the same. 34 Connection Managers, Tasks, and Components exist on CodePlex &#8211; find them here.">SSIS Community Tasks and Components</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-16" class="widget widget_links"><h4>Training Sites</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.learnintegrationservices.com/" title="SSIS Training Videos" target="_blank">LearnIntegrationServices.com</a></li>
+<li><a href="http://www.learnmicrosoftbi.com/" title="Craig Utley&#8217;s blog on Microsoft BI with great SSAS training videos">LearnMicrosoftBI.com</a></li>
+<li><a href="http://www.youtube.com/channel/UCCCfvrqpqo4krycPTrQT4LA">SQL Pass DW/BI VC Youtube Channel</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-15" class="widget widget_links"><h4>Useful Groups</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://analystfirst.com/" title="Analyst Community in Australia focusing on teh people, not the software">Analyst First</a></li>
+<li><a href="http://www.sqlserver.org.au" title="Australian SQL Server User Group &#8211; regular meetings and sessions about MS SQL Server and MS BI" target="_blank">Australian SQL Server User Group</a></li>
+<li><a href="http://www.linkedin.com/groups?gid=1834854" title="BI&amp;DW Australia (LinkedIn Group)">BI&amp;DW Australia (LinkedIn)</a></li>
+<li><a href="http://www.iapa.org.au/" title="The IAPA mission is to unite, inform, support and promote business analytics professionals in Australia">Institute of Analytics Professionals of Australia</a></li>
+<li><a href="http://www.meetup.com/SYBISGROUP/" title="A Social group for all BI professionals in Sydney, managed on MeetUp" target="_blank">Sydney BI Social Group</a></li>
+
+	</ul>
+</li>
+
+<li id="categories-431567681" class="widget widget_categories"><h4>Categories</h4>		<ul>
+	<li class="cat-item cat-item-4"><a href="http://www.bimonkey.com/category/microsoft-bi/ssas/" title="SQL Server Analysis Services">Analysis Services</a>
+</li>
+	<li class="cat-item cat-item-149"><a href="http://www.bimonkey.com/category/business-intelligence/analytics/" title="View all posts filed under Analytics">Analytics</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://www.bimonkey.com/category/bi-monkey-news/" title="Personal news about the BI Monkey">BI Monkey News</a>
+</li>
+	<li class="cat-item cat-item-122"><a href="http://www.bimonkey.com/category/business-intelligence/big-data/" title="View all posts filed under Big Data">Big Data</a>
+</li>
+	<li class="cat-item cat-item-67"><a href="http://www.bimonkey.com/category/business-intelligence/" title="View all posts filed under Business Intelligence">Business Intelligence</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.bimonkey.com/category/consulting/" title="Consulting practices and approaches, and discussions of real life experiences">Consulting</a>
+</li>
+	<li class="cat-item cat-item-58"><a href="http://www.bimonkey.com/category/microsoft-bi/ssas/data-mining-ssas-microsoft-bi/" title="View all posts filed under Data mining">Data mining</a>
+</li>
+	<li class="cat-item cat-item-117"><a href="http://www.bimonkey.com/category/microsoft-bi/data-quality-services/" title="View all posts filed under Data Quality Services">Data Quality Services</a>
+</li>
+	<li class="cat-item cat-item-145"><a href="http://www.bimonkey.com/category/microsoft-bi/hdinsight/" title="View all posts filed under HDInsight">HDInsight</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.bimonkey.com/category/microsoft-bi/ssis/" title="SQL Server Integration Services">Integration Services</a>
+</li>
+	<li class="cat-item cat-item-132"><a href="http://www.bimonkey.com/category/microsoft-bi/master-data-services/" title="View all posts filed under Master Data Services">Master Data Services</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.bimonkey.com/category/microsoft-bi/" title="Microsoft Business Intelligence and SQL Server">Microsoft BI</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://www.bimonkey.com/category/microsoft-bi/pps/" title="View all posts filed under Performance Point Server">Performance Point Server</a>
+</li>
+	<li class="cat-item cat-item-112"><a href="http://www.bimonkey.com/category/microsoft-bi/powerpivot/" title="PowerPivot for Excel">PowerPivot</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="http://www.bimonkey.com/category/presentations/" title="Updates about, and resources from Presentations given by the BI Monkey">Presentations</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="http://www.bimonkey.com/category/professional-certification/" title="Items relating to professional certification">Professional Certification and Training</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.bimonkey.com/category/microsoft-bi/ssrs/" title="SQL Server Reporting Services">Reporting Services</a>
+</li>
+	<li class="cat-item cat-item-155"><a href="http://www.bimonkey.com/category/social-enterprise/" title="Social Enterprise - engaging the business through communication and collaboration">Social Enterprise</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.bimonkey.com/category/sqlserver/" title="SQL Server">SQL Server</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.bimonkey.com/category/uncategorized/" title="View all posts filed under Uncategorized">Uncategorized</a>
+</li>
+		</ul>
+</li>
+	</ul>
+			
+</div>
+</div>
+
+<div class="clear"></div>
+
+</div>
+
+<div id="footer">
+
+    <div class="footer1">
+        <ul id="footerwidgeted-1">
+            <li id="text-431574361" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer2">
+        <ul id="footerwidgeted-2">
+            <li id="text-431574661" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer3">
+        <ul id="footerwidgeted-3">
+            <li id="text-431573541" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer4">
+        <ul id="footerwidgeted-4">
+            <li id="text-431574001" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>
+    
+<div class="clear"></div>
+    
+</div>
+                
+<div id="copyright">
+
+    <div class="copyright">
+		<p>&copy; 2014 <a href="http://www.bimonkey.com/">BI Monkey</a> &middot; <a href="http://www.studiopress.com/themes/shades">Shades of Blue</a> theme by <a href="http://www.studiopress.com" >StudioPress</a> &middot; <a href="http://wordpress.org">WordPress</a> &middot; <a rel="nofollow" href="http://www.bimonkey.com/wp-login.php">Log in</a></p>
+    </div>
+    
+</div>
+                                    
+<script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/comment-reply.min.js'></script>
+
+    
+	<script src="http://www.bimonkey.com/wp-content/themes/shades-of-blue/js/dropdown.js" type="text/javascript"></script>
+
+</body>
+</html>

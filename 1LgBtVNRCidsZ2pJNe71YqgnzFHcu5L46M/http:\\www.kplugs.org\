@@ -1,0 +1,684 @@
+http://www.kplugs.org/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 15:26:03 GMT
+Server: Apache mod_fcgid/2.3.10-dev
+Last-Modified: Fri, 30 May 2014 22:42:54 GMT
+ETag: "11e00b5-8f07-4faa5c4264a68"
+Accept-Ranges: bytes
+Content-Length: 36615
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>KPlugs</title>
+		<meta name = "viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="css/bootstrap.min.css" rel="stylesheet" />
+		<link href="css/styles.css" rel="stylesheet" />
+	</head>
+
+	<body data-spy="scroll" data-target="#kplugs-navbar">
+
+		<script src="js/typewriter-bundle.min.js"></script>
+		<div id="kplugs-navbar" class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				
+				<a href="#home" class="navbar-brand">KPlugs</a>
+
+				<button class="navbar-toggle" data-toggle="collapse" data-target="#navcollapse">
+					<span class = "icon-bar"></span>
+					<span class = "icon-bar"></span>
+					<span class = "icon-bar"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navcollapse">
+					
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="#home">Home</a></li>
+						<li><a href="#download" onclick="javascript:NavHide()">Download</a></li>
+						<li><a href="#examples" onclick="javascript:NavHide()">Examples</a></li>
+						<li><a href="#faq" onclick="javascript:NavHide()">FAQ</a></li>
+						<li><a href="#contact" onclick="javascript:NavHide()">Contact us</a></li>
+						<li><a href="#donate" data-toggle="modal">Donate</a></li>
+
+					</ul>
+
+				</div>
+			</div>
+		</div>
+
+
+		<div class="container" style="position: relative;">
+			<div class="home" id="home" style="padding-bottom:60px" ></div>
+			<div class="panel panel-default">
+				
+
+				<div class="panel-body">
+					<div class="page-header" style="padding-top:5px; padding-left:20px">
+
+						<a href="//github.com/avielw/kplugs" onclick="
+			ga('send', 'event', 'Link', 'GitHub');" class="navbar-brand"><img src="images/forkgithub.png" alt="Fork me on GitHub" style="position: absolute; top: 50px; left: 0px; border: 0; width: 120px; height: auto; opacity: 0.8;" /></a>
+						<p><img src="images/kplugs.png" class="logo" /><h3><small>a user-mode interface for plugging into the linux kernel</small></h3></p>
+					</div>
+					<p>KPlugs is a Linux kernel module which provides an interface for dynamically executing scripts inside the Linux kernel. KPlugs uses a simple bytecode interpreter (the KPlugs Virtual Machine), and an interface that allows a user to dynamically load scripts into the kernel and execute them directly from user space. Because the interface is dynamic, it's easy to implement a user-mode library that wraps anything in the kernel!</p>
+
+					<p>KPlugs comes with a <strong>Python</strong> library that compiles a subset of the Python language to the KPlugs bytecode, and lets you easily load and execute your "kernel Python script".</p>
+					<p>The Python compiler is very basic and was made to fit our own purposes, but if it's not exactly what you are looking for, you can modify it to create your own subset.</p>
+
+					<span>
+						<b>A few reasons why KPlugs is a strong and unique tool:</b>
+						<ul>
+							<li style="margin-bottom:10px">The bytecode is generic and is not specific to any scripting language. If you prefer another language to Python, write a compiler for your preferred language that compiles to KPlugs bytecode, and you'll be able to run scripts written in that language in the kernel!</li>
+							<li style="margin-bottom:10px">When you load a function, the return value is a valid function pointer for all intents and purposes. You can call it from kernel mode or pass it as a callback to a kernel function, as long as you have the right calling convention (see the <a href="#faq">FAQ</a>).</li>
+							<li style="margin-bottom:10px">The VM provides a safe environment for the bytecode to run, where every operation is checked to avoid system crashes. This works even though you are free to pass user space and kernel space buffers interchangeably to your function at your convenience; KPlugs does all the worrying for you. Of course, if you incorrectly call external functions in your bytecode, they may crash.</li>
+							<li style="margin-bottom:10px">The bytecode is a high-level interpreted language (supporting exceptions, for example), but its basic variable type is the standard CPU word. This allows you to write code in a high level scripting language such as Python on one hand, and interface naturally with common kernel functions on the other hand.</li>
+						</ul>
+					</span>
+				</div>
+			</div>
+
+
+			<div id="download" style="padding-bottom:60px" ></div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="page-header">
+						<h2>Download</h2>
+					</div>
+					<p>Get the last version sources <a href="//github.com/avielw/kplugs/archive/master.zip" onclick="ga('send', 'event', 'Link', 'Download');">here</a>.</p>
+				</div>
+			</div>
+
+			<div id="examples" style="padding-bottom:60px" ></div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="page-header">
+			
+						<h2>Examples</h2>
+					</div>
+
+					<p>
+						<b>A simple KPlugs Python script:</b>
+					</p>
+					
+					<div class="panel panel-default">
+						<div id="exampleCode1">
+							<pre class="panel-title" style="font-size: 13px; line-height: 125%"><span style="color: #0000f0">#!/usr/bin/python</span>
+
+<span style="color: #008000; font-weight: bold">import </span>kplugs
+
+<span style="color: #800000; font-weight: bold">try:</span>
+    kernel_func = <span style="color: #BA2121">r&#39;&#39;&#39;
+
+def hello_world(string):
+    <a id="pop_buffer1" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="We initialize string to be a buffer.">buffer(string, 0x100)</a>
+    <a id="pop_print1" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Will print the buffer using the kernel function 'printk'.">print</a> "%s" % string
+&#39;&#39;&#39;</span>
+
+    plug = kplugs.Plug()
+    hello_world = plug.<a id="pop_compile1" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="Compiles the string kernel_func. returns a list of kernel functions">compile</a>(kernel_func)[<span style="color: #BA2121">0</span>]
+    hello_world(<span style="color: #BA2121">&quot;Hello World!&quot;</span>)
+
+<span style="color: #800000; font-weight: bold">finally:</span>
+    kplugs.<a id="pop_release1" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="This function should always be called at the end of the script no matter what!">release_kplugs</a>()
+
+</pre>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse"  href="#exampleExec1">
+									<h4>Execution</h4>
+								</a>
+							</h4>
+						</div>
+						<div id="exampleExec1" class="panel-collapse collapse">
+							<div class="panel-body example1-console interactive-code"></div>
+						</div>
+					</div>
+
+					<br />
+					
+					<p>
+						<b>The KPlugs Python library comes with some example classes (and you are encouraged to use them in your scripts):</b>
+					</p>
+					<ul>
+					   <li>kplugs.Mem - access all of the computer's memory of the computer (kernel and all processes' user space)</li>
+					   <li>kplugs.Symbol - resolve kernel symbols</li>
+					   <li>kplugs.Hook - hook kernel functions with a KPlugs function</li>
+					   <li>kplugs.Caller - call an exported kernel function</li>
+					</ul>
+
+					<div class="panel panel-default">
+						<div id="exampleCode2">
+							<pre class="panel-title" style="font-size: 13px; line-height: 125%"><span style="color: #0000f0">#!/usr/bin/python</span>
+
+<span style="color: #008000; font-weight: bold">import </span>kplugs
+<span style="color: #008000; font-weight: bold">import </span>struct
+
+<span style="color: #800000; font-weight: bold">try:</span>
+    plug = kplugs.Plug()
+    mem = kplugs.Mem()
+    sym = kplugs.Symbol()
+    caller = kplugs.Caller()
+    hook = kplugs.Hook()
+
+    jiffies = sym[<span style="color: #BA2121">&quot;jiffies&quot;</span>] <span style="color: #0000f0"># Getting the current time</span>
+    kernel_buf = mem.alloc(kplugs.<a id="pop_word2" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="KPlugs works with a basic variable type called a 'word'. The size of a 'word' is the size of an address in this architecture.">WORD_SIZE</a>) <span style="color: #0000f0"># Allocating a buffer in kernel space</span>
+    mem[kernel_buf] = mem[jiffies:jiffies+kplugs.WORD_SIZE] <span style="color: #0000f0"># Copying the current time to our kernel buffer</span>
+    <span style="color: #800000; font-weight: bold">print</span> <span style="color: #BA2121">"The current time is: "</span>, struct.unpack(<span style="color: #BA2121">"P"</span>, mem[kernel_buf:kernel_buf+kplugs.WORD_SIZE])[<span style="color: #BA2121">0</span>]
+
+    kernel_func = <span style="color: #BA2121">r&#39;&#39;&#39;
+
+def my_hook(kp, regs):
+    <a id="pop_print2" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Will print the buffer using the kernel function 'printk'.">print</a> &quot;The registers are stored in %p&quot; % regs
+    return 0
+&#39;&#39;&#39;</span>
+    my_hook = plug.<a id="pop_compile2" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="Compiles the string kernel_func. returns a list of kernel functions">compile</a>(kernel_func)[<span style="color: #BA2121">0</span>]
+    hook.hook(<span style="color: #BA2121">&quot;vmalloc&quot;</span>, my_hook) <span style="color: #0000f0"># Hook the kernel function - vmalloc</span>
+    p = caller[<span style="color: #BA2121">&quot;vmalloc&quot;</span>](<span style="color: #BA2121">0x100</span>) <span style="color: #0000f0"># Execute the kernel function - vmalloc. the hook should be executed</span>
+    caller[<span style="color: #BA2121">&quot;vfree&quot;</span>](p)
+    hook.unhook(my_hook)
+
+<span style="color: #800000; font-weight: bold">finally:</span>
+    kplugs.<a id="pop_release2" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="This function should always be called at the end of the script no matter what!">release_kplugs</a>()
+
+</pre>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" data-parent="#codegroup2" href="#exampleExec2">
+									<h4>Execution</h4>
+								</a>
+							</h4>
+						</div>
+						<div id="exampleExec2" class="panel-collapse collapse">
+							<div class="panel-body example2-console interactive-code"></div>
+						</div>
+					</div>
+
+					<br />
+
+					<p>
+						<b>Exception handling:</b>
+					</p>
+
+					<div class="panel panel-default">
+						<div id="exampleCode3">
+							<pre class="panel-title" style="font-size: 13px; line-height: 125%"><span style="color: #0000f0">#!/usr/bin/python</span>
+
+<span style="color: #008000; font-weight: bold">import </span>kplugs
+
+<span style="color: #800000; font-weight: bold">try:</span>
+    kernel_func = <span style="color: #BA2121">r&#39;&#39;&#39;
+<a id="pop_static3" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="This macro tells the compiler that this function is a static function - The compiler will not return the Function class of this function.">STATIC</a>(&quot;my_helper&quot;)
+
+def my_function():
+    try:
+        my_helper()
+        <a id="pop_print3" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Will print the buffer using the kernel function 'printk'.">print</a> "OK"
+    except word as err:
+        print "Exception number: %d" % -err
+        raise err
+
+def my_helper():
+	<a id="pop_undef3" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Trying to execute the kernel function 'undefined_function' which does not exists, so an exception will be thrown.">KERNEL_undefined_function</a>()
+
+&#39;&#39;&#39;</span>
+
+    plug = kplugs.Plug()
+    my_function = plug.<a id="pop_compile3" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="Compiles the string kernel_func. returns a list of kernel functions">compile</a>(kernel_func)[<span style="color: #BA2121">0</span>]
+    my_function()
+
+<span style="color: #800000; font-weight: bold">finally:</span>
+    kplugs.<a id="pop_release3" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="This function should always be called at the end of the script no matter what!">release_kplugs</a>()
+
+</pre>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse"  href="#exampleExec3">
+									<h4>Execution</h4>
+								</a>
+							</h4>
+						</div>
+						<div id="exampleExec3" class="panel-collapse collapse">
+							<div class="panel-body example3-console interactive-code"></div>
+						</div>
+					</div>
+
+					<br />
+
+					<p>
+						<b>Using kernel functions:</b>
+					</p>
+
+<div class="panel panel-default">
+						<div id="exampleCode4">
+							<pre class="panel-title" style="font-size: 13px; line-height: 125%"><span style="color: #0000f0">#!/usr/bin/python</span>
+
+<span style="color: #008000; font-weight: bold">import </span>kplugs
+<span style="color: #008000; font-weight: bold">import </span>ctypes
+
+<span style="color: #800000; font-weight: bold">try:</span>
+    kernel_func = <span style="color: #BA2121">r&#39;&#39;&#39;
+BUFFER_SIZE = 0x10
+ERROR_POINT = 12 # taken from types.h
+
+def get_initramfs(user_initram):
+    buffer(user_initram, BUFFER_SIZE)
+    pointer(initram)
+    pointer(sizeptr)
+
+    initram = <a id="pop_kall14" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Trying to execute the kernel function 'kallsyms_lookup_name'. if the function does not exists an exception will be thrown.">KERNEL_kallsyms_lookup_name</a>(&quot;__initramfs_start&quot;)
+    sizeptr = <a id="pop_kall24" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="Trying to execute the kernel function 'kallsyms_lookup_name'. if the function does not exists an exception will be thrown.">KERNEL_kallsyms_lookup_name</a>(&quot;__initramfs_size&quot;)
+    if initram == 0 or sizeptr == 0:
+        raise ERROR_POINT
+
+    size = <a id="pop_deref4" style="cursor:help; text-decoration: underline; color: #BA2121" data-container="body" data-toggle="popover" data-placement="top" data-content="get the word that sizeptr points to.">DEREF</a>(sizeptr)
+    if size > BUFFER_SIZE:
+        size = BUFFER_SIZE
+    KERNEL_memcpy(user_initram, initram, size)
+    return size
+&#39;&#39;&#39;</span>
+
+    plug = kplugs.Plug()
+    buf = ctypes.c_buffer(<span style="color: #BA2121">0x10</span>)
+    get_initramfs = plug.compile(kernel_func)[<span style="color: #BA2121">0</span>]
+    size = get_initramfs(ctypes.addressof(buf))
+    <span style="color: #800000; font-weight: bold">print</span> <span style="color: #BA2121">&quot;The initramfs starts with: &#39;%s&#39;&quot;</span> % (buf.raw[:size].encode(<span style="color: #BA2121">&quot;hex&quot;</span>), )
+
+<span style="color: #800000; font-weight: bold">finally:</span>
+    kplugs.<a id="pop_release4" style="cursor:help; text-decoration: underline; color: #000" data-container="body" data-toggle="popover" data-placement="top" data-content="This function should always be called at the end of the script no matter what!">release_kplugs</a>()
+
+</pre>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse"  href="#exampleExec4">
+									<h4>Execution</h4>
+								</a>
+							</h4>
+						</div>
+						<div id="exampleExec4" class="panel-collapse collapse">
+							<div class="panel-body example4-console interactive-code"></div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+
+			<div id="faq" style="padding-bottom:60px" ></div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="page-header">
+						<h2>FAQ</h2>
+					</div>
+
+					<p><b>What is KPlugs?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>KPlugs is a linux kernel module that gives an interface for dynamically executing scripts inside the Linux kernel. The user can create KPlugs functions and execute them directly from user space. The functions then run on a virtual machine designed to be simple, but still give the user all he needs to safely implement any functionality. KPlugs comes with a Python library that compiles a subset of the Python language to the KPlugs bytecode, complete with bindings to the kernel module interface, allowing the user to simply load, execute and unload functions directly from a Python script.</p>
+					</div>
+
+					<p><b>License</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>KPlugs is licensed under <a href="//www.gnu.org/licenses/gpl-3.0.html">GPLv3</a>.</p>
+					</div>
+
+					<p><b>What architectures are supported by KPlugs?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>KPlugs was written for x86, both 32 and 64 bits. KPlugs can be changed to support any other architecture by adjusting the assembly file "calling_wrapper.s". More information on that inside the file.</p>
+					</div>
+
+					<p><b>What Linux versions are supported by KPlugs?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>KPlugs was only tested on Linux kernel version 3.7.1. However, because it uses only standard kernel functions, it should work on any recent kernel.</p>
+					</div>
+
+					<p><b>How do I use KPlugs?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>Download KPlugs from the <a href="#download">download</a> section.<br /><br />KPlugs is a kernel module and as such requires your kernel's sources to compile. The KPlugs Makefile assumes you have the sources of your Linux kernel in the standard location (/lib/modules/`uname -r`/). If you put the sources elsewhere, edit the Makefile and point it to the right location.<br />You should then be able to build the module using make.<br /><br />If everything worked, you should have two modules inside the Release and Debug directories: kplugs_release.ko and kplugs_debug.ko. The debug version just adds some debug prints to help you debug the kernel module if you wish.<br /><br />Finally, loading the kernel module is done by running "insmod ./kplugs_release.ko" (or kplugs_debug.ko if you want to debug the module).</p>
+					</div>
+
+					<p><b>How do I use the KPlugs Python library?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>The Python library is (surprisingly) located inside the python directory. It contains three files:<br/>
+						<ul>
+							<li><u>__init__.py</u> - A standard Python init file (just loads kplugs.py).</li>
+							<li><u>core.py</u> - Implements the Python subset compiler and the Plug class. The compiler uses the Python ast library.</li>
+							<li><u>kplugs.py</u> - Uses core.py to bring the user an easy interface to KPlugs.</li>
+						</ul>
+						To install the Python bindings, simply copy the python directory to your Python installation's Lib directory, and change the name to kplugs.<br /><br />
+						Now, when writing your Python script you should be able to "import kplugs" and use the library as shown in the <a href="#examples">examples</a> section.<br /><text style="color:#ff0000">Always call kplugs_release() at the end of your script, regardless of exit status.</text>  We recommend wrapping your script with a try...finally clause.<br /><br />We invite you to look inside kplugs.py. The file is pretty simple, and will help you understand how KPlugs works.</p>
+					</div>
+
+					<p><b>Why did you create your own bytecode instead of porting the Python engine to kernel mode?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>At first, we considered porting the entire Python engine. We eventually decided against it because of two main reasons:<br />
+						<ul>
+							<li>One of the things we wanted from KPlugs is the ability to call kernel functions, and to be called from a kernel function. The problem is that kernel functions works with words and pointers, and the Python engine works with Python objects. We would have to create a wrapper for every function to convert inputs to Python objects (and vice versa). The bytecode allows us to work directly with words and pointers, making the integration more natural.</li>
+							<li>We imagined KPlugs would be used when a certain kernel-only functionality is wanted. This doesn't mean that all the <u>logic</u> of the script has to run in kernel-mode. This makes porting the entire engine a potentially huge waste of time - and without good reason.</li>
+						</ul>
+						For these reasons we chose to present a <u>flexible</u> interface, and let you keep most of the code in user-space where it belongs. An added benefit is that users who want to use other scripting languate to use KPlugs are free to do so - they only need to write a compiler.</p>
+					</div>
+
+					<p><b>How do I create functions with KPlugs?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>The KPlugs module creates the device file "/dev/kplugs" to communicate with the user. Every file descriptor a user holds to that device is called a <u>plug</u>. Each plug receives a context. A user can load functions to a plug's private context, so that only he could use those functions (unless he gives another process a pointer to his function), or he could load them to a special context - The global context. When a user tries to execute a function using the KPlugs interface, KPlugs tries to find it in the plug's context first, and then it tries to find it in the global context.<br /></br >Functions loaded to a local context are automatically unloaded when its plug is unplugged - when the user closes the file descriptor, but functions loaded to the global context are unloaded only when the user issues the unload command (or if the KPlugs kernel module is removed using rmmod).<br /><br />KPlugs doesn't allow loading two functions with the same name to the same context. You may create an anonymous function - a function without a name. An anonymous function uses the function's address as an identifier instead of the function's name.</p>
+					</div>
+
+					<p><b>What are the KPlugs bytecode's variable types?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>KPlugs has four variable types: <u>word</u>, <u>pointer</u>, <u>buffer</u> and <u>array</u>:<br />
+						<ul>
+							<li><u>word</u> - An integer the size of the processor word.</li>
+							<li><u>pointer</u> - Like a word, but can be used to read and write to memory.</li>
+							<li><u>buffer</u> - A buffer of bytes.</li>
+							<li><u>array</u> - An array of words.</li>
+						</ul>
+						When the KPlugs VM accesses memory, it performs bounds checking in order to avoid crashes. <u>Pointers</u> are always considered unsafe and are checked before every dereference. <u>Buffers</u> and <u>arrays</u> are slightly more complicated because they can come from user space, but they can't move. for that reason, when a user's <u>buffer</u> or <u>array</u> is used, it is mapped to kernel space so it can be used safely during the function's execution.<br /><br />If you want to call a kernel function with a <u>buffer</u> (or an <u>array</u>) from user-space as an argument, you can just simply call it from your compiled KPlugs function (i.e., from the KPlugs bytecode), and the VM will map the <u>buffer</u> to kernel-space before calling the function. Naturally, It will not work with <u>pointers</u> because there is no way for KPlugs to know the size of the buffer the <u>pointer</u> points to.</p>
+					</div>
+
+					<p><b>How does KPlugs resolve function names at run-time?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>Most of the functions inside the Linux kernel use the same calling convention. This is why you can compile a kernel module and let other modules call your functions. The problem is that you have to know the function prototype at compile-time, which is obviously problematic when you want to load scripts inside the kernel. Other solutions such as <a href="//sourceware.org/systemtap">SystemTap</a> tackle this problem by compiling a module for every script you want to load.<br /><br />For KPlugs we had to find another solution because we wanted the symbols to be resolved at run-time. Most of the kernel functions use either fastcall or cdecl as their calling convention (the vast majority uses fastcall). Lucky for us, these two conventions don't require knowing beforehand how many arguments were passed to us, i.e., two identical functions with the same calling convention and a different number of arguments are compiled exactly the same.<br /><br />We exploit that fact when calling kernel functions from within bytecode. We create functions pointers for every calling convention, and use the right function pointer depending on the chosen calling convention for the specific function. The reason we need more than just the standard calling convention is because sometimes the compiler chooses another calling convention for functions with a variable number of arguments (like printk). For now KPlugs support the standard calling convention and the calling convention of variable-length argument functions. Knowing the function's calling convention, the KPlugs VM calls find_symbol to find the requested function's address, and can then set up the argument and call it.<br /><br />Also, when you create a KPlugs function you can choose the calling convention for it. Your choice doesn't have any effect when you call your function through the KPlugs interface, but it does when you call your function directly by its address. In that case a proper wrapper function (depending on which calling convention you chose) will be executed. The wrapper will get the caller's arguments (It can't know the exact number so it will just pop the maximum number of arguments that a function takes), and start the VM.</p>
+					</div>
+
+
+					<p><b>What if I have more questions?</b></p>
+					<div class="panel panel-default" style="padding-left:5px; padding-top:5px; padding-right:5px;">
+						<p>You can <a href="#contact">contact us</a>, and we'll answer your questions as soon as we can.</p>
+					</div>
+
+				</div>
+			</div>
+
+			<div id="contact" style="padding-bottom:60px" ></div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="page-header">
+						<h2>Contact us</h2>
+					</div>
+					<p>If you have any comment, we'd love to hear from you. Contact us at</p>
+					<a href="mailto:contact@kplugs.org">contact@kplugs.org</a>
+				</div>
+			</div>
+		</div>
+
+		<div id="main" class="container container-right">
+			<p align="right" style="margin-top: 10px">Created by Aviel Warschawski</p>
+		</div>
+
+		<div class="modal fade" id="donate">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<b>Donate</b>
+					</div>
+
+					<div class="modal-body">
+						<p>If you like this project and want to support its development, we'd love to get some help.</p>
+						<span>Bitcoin donations: <a href="bitcoin:1LgBtVNRCidsZ2pJNe71YqgnzFHcu5L46M?label=KPlugs">1LgBtVNRCidsZ2pJNe71YqgnzFHcu5L46M</a></span><br />
+						<span>Litecoin donations: <a href="litecoin:LfMQGEzJAVDiRxLmcHj6Kct9zA9XNvr6fV?label=KPlugs">LfMQGEzJAVDiRxLmcHj6Kct9zA9XNvr6fV</a></span>
+
+						<div class="container-fluid">
+							<div class="row">
+								<div class="col-sm-6">
+									<center><a href="bitcoin:1LgBtVNRCidsZ2pJNe71YqgnzFHcu5L46M?label=KPlugs"><img src="images/bitcoin.png" /></a></center>
+								</div>
+								<div class="col-sm-6">
+									<center><a href="litecoin:LfMQGEzJAVDiRxLmcHj6Kct9zA9XNvr6fV?label=KPlugs"><img src="images/litecoin.png" /></a></center>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="modal-footer">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		
+		<script>
+			function NavHide() {
+				if ($('#navcollapse').hasClass('in')) {
+					$('#navcollapse.in').collapse('toggle');
+				}
+			}
+
+			var typewriter = require('typewriter');
+			var tw1 = new typewriter($(".example1-console")[0]).withAccuracy(100)
+			    .withMinimumSpeed(14)
+			    .withMaximumSpeed(20)
+			    .build();
+
+			function AnimateExample1() {
+				if ($('#exampleExec1').hasClass('in')) {
+					tw1.waitRange(500, 500)
+					   .type("clear")
+					   .waitRange(500, 500)
+					   .clear()
+					   .put("# ")
+					   .waitRange(500, 500)
+					   .type("dmesg -C")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("./example1.py")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("dmesg")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("[995768.381170] Hello World!<br />")
+					   .put("# ")
+					   .waitRange(3500, 3500, function () {
+						if ($("#exampleExec1").hasClass('in')) {
+							$("#exampleExec1").animate({'height': document.getElementById('exampleExec1').offsetHeight + "px"})
+						}
+						AnimateExample1();
+					   })
+				} else {
+					tw1.clear()
+				       .put("# ")
+					   .waitRange(500, 500, function () {
+						AnimateExample1();
+					})
+				}
+			}
+
+			var typewriter = require('typewriter');
+			var tw2 = new typewriter($(".example2-console")[0]).withAccuracy(100)
+			    .withMinimumSpeed(14)
+			    .withMaximumSpeed(20)
+			    .build();
+
+			function AnimateExample2() {
+				if ($('#exampleExec2').hasClass('in')) {
+					tw2.waitRange(500, 500)
+					   .type("clear")
+					   .waitRange(500, 500)
+					   .clear()
+					   .put("# ")
+					   .waitRange(500, 500)
+					   .type("dmesg -C")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("./example2.py")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("The current time is:  249423869<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("dmesg")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("[996712.942376] The registers are stored in e92c7dc8<br />")
+					   .put("# ")
+					   .waitRange(3500, 3500, function () {
+						if ($("#exampleExec2").hasClass('in')) {
+							$("#exampleExec2").animate({'height': document.getElementById('exampleExec2').offsetHeight + "px"})
+						}
+						AnimateExample2();
+					   })
+				} else {
+					tw2.clear()
+				       .put("# ")
+					   .waitRange(500, 500, function () {
+						AnimateExample2();
+					})
+				}
+			}
+
+			var typewriter = require('typewriter');
+			var tw3 = new typewriter($(".example3-console")[0]).withAccuracy(100)
+			    .withMinimumSpeed(14)
+			    .withMaximumSpeed(20)
+			    .build();
+
+			function AnimateExample3() {
+				if ($('#exampleExec3').hasClass('in')) {
+					tw3.waitRange(500, 500)
+					   .type("clear")
+					   .waitRange(500, 500)
+					   .clear()
+					   .put("# ")
+					   .waitRange(500, 500)
+					   .type("dmesg -C")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("./example3.py")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("Traceback (most recent call last):<br />")
+					   .put("&nbsp;&nbsp;File \"./example3.py\", line 24, in &lt;module&gt;<br />")
+					   .put("&nbsp;&nbsp;&nbsp;&nbsp;my_function()<br />")
+					   .put("&nbsp;&nbsp;File \"/tmp/core.py\", line 483, in __call__<br />")
+					   .put("&nbsp;&nbsp;&nbsp;&nbsp;return self.plug(self, *args)<br />")
+					   .put("&nbsp;&nbsp;File \"/tmp/core.py\", line 159, in __call__<br />")
+					   .put("&nbsp;&nbsp;&nbsp;&nbsp;return self._exec_cmd(op, length, len(args) * WORD_SIZE, ptr, ctypes.addressof(args_buf))<br />")
+					   .put("&nbsp;&nbsp;File \"/tmp/core.py\", line 77, in _exec_cmd<br />")
+					   .put("&nbsp;&nbsp;&nbsp;&nbsp;raise Exception(Plug.ERROR_TABLE[exc])<br />")
+					   .put("Exception: Unknown function<br />")
+					   .put("# ")
+					   .waitRange(1000, 1000)
+					   .type("dmesg")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("[998374.022713] Exception number: -15<br />")
+					   .put("# ")
+					   .waitRange(3500, 3500, function () {
+						if ($("#exampleExec3").hasClass('in')) {
+							$("#exampleExec3").animate({'height': document.getElementById('exampleExec3').offsetHeight + "px"})
+						}
+						AnimateExample3();
+					   })
+				} else {
+					tw3.clear()
+				       .put("# ")
+					   .waitRange(500, 500, function () {
+						AnimateExample3();
+					})
+				}
+			}
+
+			var typewriter = require('typewriter');
+			var tw4 = new typewriter($(".example4-console")[0]).withAccuracy(100)
+			    .withMinimumSpeed(14)
+			    .withMaximumSpeed(20)
+			    .build();
+
+			function AnimateExample4() {
+				if ($('#exampleExec4').hasClass('in')) {
+					tw4.waitRange(500, 500)
+					   .type("clear")
+					   .waitRange(500, 500)
+					   .clear()
+					   .put("# ")
+					   .waitRange(500, 500)
+					   .type("./example4.py")
+					   .waitRange(100, 100)
+					   .put("<br />")
+					   .put("The initramfs starts with: '68696e7072696e742e636f6e66000020'<br />")
+					   .put("# ")
+					   .waitRange(3500, 3500, function () {
+						if ($("#exampleExec4").hasClass('in')) {
+							$("#exampleExec4").animate({'height': document.getElementById('exampleExec4').offsetHeight + "px"})
+						}
+						AnimateExample4();
+					   })
+				} else {
+				    tw4.clear()
+				       .put("# ")
+					   .waitRange(500, 500, function () {
+						AnimateExample4();
+					})
+				}
+			}
+
+			AnimateExample1();
+			AnimateExample2();
+			AnimateExample3();
+			AnimateExample4();
+
+			$("#pop_buffer1").popover("hide");
+			$("#pop_print1").popover("hide");
+			$("#pop_compile1").popover("hide");
+			$("#pop_release1").popover("hide");
+
+			$("#pop_word2").popover("hide");
+			$("#pop_print2").popover("hide");
+			$("#pop_compile2").popover("hide");
+			$("#pop_release2").popover("hide");
+
+			$("#pop_static3").popover("hide");
+			$("#pop_undef3").popover("hide");
+			$("#pop_print3").popover("hide");
+			$("#pop_compile3").popover("hide");
+			$("#pop_release3").popover("hide");
+
+			$("#pop_kall14").popover("hide");
+			$("#pop_kall24").popover("hide");
+			$("#pop_deref4").popover("hide");
+			$("#pop_compile4").popover("hide");
+			$("#pop_release4").popover("hide");
+
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			ga('create', 'UA-51419561-1', 'kplugs.org');
+			ga('send', 'pageview');
+
+		</script>
+
+	</body>
+</html>
+

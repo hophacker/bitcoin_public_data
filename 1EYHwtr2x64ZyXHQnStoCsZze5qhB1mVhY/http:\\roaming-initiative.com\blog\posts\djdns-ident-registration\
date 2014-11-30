@@ -1,0 +1,148 @@
+http://roaming-initiative.com/blog/posts/djdns-ident-registration/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Thu, 24 Jul 2014 02:08:54 GMT
+Content-Type: text/html
+Content-Length: 8239
+Last-Modified: Sun, 20 Jul 2014 17:58:40 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/blog/css/main.css">
+        <link rel="alternate" type="application/atom+xml"
+            href="/blog/posts/index.xml" title="Atom Feed">
+        <title>DJDNS Identity Registration is LIVE!</title>
+    </head>
+    <body>
+        <div id="wrap">
+            <header>
+                <h1><a href="/blog/">ri/blog</a></h1>
+                <ul class="nav">
+                    <li class="home"> <a href="/blog/">home</a></li>
+                    <li class="about"><a href="/blog/about/">about</a></li>
+                    <li class="posts"><a href="/blog/posts/">posts</a></li>
+                    <li class="tags"> <a href="/blog/tags/">tags</a></li>
+                </ul>
+            </header>
+            <ul class="sidebar">
+    
+    <li>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY"><img src="/blog/images/bitcoinLogo.png" alt="Bitcoin Logo"/></a>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY">Bitcoin!</a>
+    </li>
+    <li><script data-gittip-username="campadrenalin"
+        src="//gttp.co/v1.js"></script>
+    </li>
+    <li><a href="http://validator.w3.org/feed/check.cgi?url=http%3A//roaming-initiative.com/blog/posts/index.xml"><img src="/blog/images/valid-atom.png" alt="[Valid Atom 1.0]" title="Validate my Atom 1.0 feed" /></a></li>
+    <li><a href="/blog/posts/index.xml">Atom feed</a></li>
+</ul>
+
+            <div id="main">
+
+<article>
+    <div class="metadata">
+        <h1>DJDNS Identity Registration is LIVE!</h1>
+        <div class="facts">
+    <span class="date">10/12/2013</span>
+    -
+    
+        
+            
+            <a href="/blog/tags/djdns/">djdns</a>
+        
+             - 
+            <a href="/blog/tags/ejtp/">ejtp</a>
+        
+    
+</div>
+
+    </div>
+    <div class="content">
+        
+
+<p>I released a major DJDNS feature today, and while it&rsquo;s still a bit rough, it should be serviceable as a base for the next steps of decentralization. In case you haven&rsquo;t heard the news already, it&rsquo;s the ability to store EJTP Identities in the DJDNS registry, and retrieve them over a <a href="http://roaming-initiative.com:16232/">simple HTTP API</a>.</p>
+
+<p>Normally this would feel like a big deal on its own (which it is) rather than just a stepping stone to the &ldquo;real stuff&rdquo;, but that&rsquo;s crunch time for ya.</p>
+
+<h1 id="toc_0">What is it?</h1>
+
+<p>When DJDNS is decentralized, it will use the EJTP Identity Format to store the cryptographic key information of the participants, and verify that a user&rsquo;s actions are their own. Authentication is extremely important. The question is, where do you store this information, so that everyone can retrieve Identity objects as they need?</p>
+
+<p>The answer is - in the DJDNS registry itself! It&rsquo;s a perfect place to store arbitrary data associated with domains. And when you have an Identity name in email format, such as &ldquo;this@that.com&rdquo; (which is the Identity name convention)&hellip; well, hard to get more &ldquo;associated with domains&rdquo; than that. DJDNS can look up cryptographic identities in the same data (and mostly the same <em>way</em>) as it does IP addresses.</p>
+
+<h1 id="toc_1">When will this be working?</h1>
+
+<p>It&rsquo;s working now! I&rsquo;ve had this up most of the day, I&rsquo;ve just been holding off on announcing it until it was a bit more documented, and the tooling was a bit smoothed out.</p>
+
+<p><a href="http://roaming-initiative.com:16232/">http://roaming-initiative.com:16232/</a></p>
+
+<h1 id="toc_2">How do I use it?</h1>
+
+<h2 id="toc_3">Retrieving identities</h2>
+
+<p>The API server will run on port 16232 on any DJDNS installation (port number will eventually be configurable). Since this is a very primitive API, with no transport security of its own, it is recommended to either run your own local DJDNS server to make your requests over localhost, or connect to a server over Hyperboria.</p>
+
+<p>Eventually we will have native support for key signatures and/or transport security. For now, this is still kind of a hack to bootstrap the decentralized registry.</p>
+
+<h2 id="toc_4">Storing identities</h2>
+
+<p>There are 2 main steps to this. First you have to make an identity, then you have to store it in the registry.</p>
+
+<h3 id="toc_5">Making an identity</h3>
+
+<p>After installing the latest version of <a href="https://github.com/campadrenalin/EJTP-lib-python">EJTP</a> via git, run <code>ejtp-identity new-interactive</code> to create a new identity. It walks you through every step, trying to explain the purpose of each part. It&rsquo;s still a rough tool - trust me on this, you want a 1024bit RSA key - but at the end, you should have a cache file with your Identity in it.</p>
+
+<p>Now, <strong>you don&rsquo;t want to publish your private key</strong>, so you need to make a public version to work with, as follows:</p>
+
+<pre><code>ejtp-identity details -ep yourname@domain.com \
+    --cache-source=&quot;/path/to/cache&quot; &gt; public.cache
+</code></pre>
+
+<p>&hellip;filling in your Identity name and cache file location accordingly.</p>
+
+<h3 id="toc_6">Adding it to the registry</h3>
+
+<p>Now that you have something to add to the registry, it&rsquo;s time to do so. Mostly, this is the same as any change to the registry - you edit your private page, submit the changes as a pull request to Github, and I pull the changes. The only potentially complicated bit is, <em>what changes am I making to my private page?</em></p>
+
+<p>Look at <a href="https://github.com/campadrenalin/djdns-hype-flat/blob/master/private/ri.json">my page</a> or <a href="https://github.com/campadrenalin/python-djdns/blob/master/docs/IDENTITY_REGISTRATION.md">the documentation</a> for reference. You&rsquo;re adding the contents of your public cache file, to the branch with the matching domain, under the key &ldquo;users&rdquo;. <strong>IF YOUR IDENTITY NAME&rsquo;S DOMAIN DOES NOT MATCH THE BRANCH, YOUR IDENTITY WILL NOT BE ACCESSIBLE.</strong></p>
+
+<p>While I refuse to make any adjustments on your behalf for this kind of thing (I don&rsquo;t want any question about whether I&rsquo;ve tampered with the crypto data), I&rsquo;ll definitely help you make sure your page is set up right, verify that your identities are accessible, etc.</p>
+
+<p>When it&rsquo;s merged, I&rsquo;ll give you a link in the github comments, to the API URL where people can download your public identity data. It&rsquo;s pretty easy for you to figure out on your own, but why not get straight to the celebrating and the reassurance of &ldquo;oh god it works&rdquo;?</p>
+
+<h1 id="toc_7">What did it take to make this work?</h1>
+
+<ul>
+<li>Add my own identity as a demo</li>
+<li>Traversal support in DJDNS</li>
+<li>HTTP API server in DJDNS</li>
+<li>EJTP new-interactive wizard</li>
+<li>What feels like <a href="https://github.com/campadrenalin/python-djdns/blob/master/docs/IDENTITY_REGISTRATION.md">lots</a> <a href="https://github.com/campadrenalin/python-djdns/blob/master/docs/EXTENSIBILITY.md">of</a> <a href="http://roaming-initiative.com:16232/">documentation</a>, but probably still isn&rsquo;t enough.</li>
+</ul>
+
+<h1 id="toc_8">What&rsquo;s next?</h1>
+
+<p>Next, I have to clean up the DEJE protocol into some sort of working state again. I kind of made a mess with a halfway-done protocol refactor, which I&rsquo;ll have to cut short by either aborting the refactor for now entirely, or hurrying to finish it. I&rsquo;m not totally decided which yet.</p>
+
+<p>Then, it&rsquo;s a matter of setting up HTTP bootstrap to download initial, verifiable copies of DJDNS pages, which we can then sync-to-current-version over the DEJE protocol thanks to easy access to EJTP identities.</p>
+
+    </div>
+</article>
+            </div>
+        </div>
+        <footer>
+            <ul>
+                <li class="item">&copy; Philip Horger 2012-2014</li>
+                <li class="item"><a href="mailto:philip@roaming-initiative.com">philip@roaming-initiative.com</a></li>
+                <li class="item"><a href="http://reddit.com/u/rainfly_x">rainfly_x</a></li>
+                <li class="filler"></li>
+            </ul>
+        </footer>
+    </body>
+</html>
+
+

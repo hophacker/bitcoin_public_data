@@ -1,0 +1,1127 @@
+http://distro.libertarianleft.org/?referredby=c4ss.org
+HTTP/1.0 200 OK
+Date: Tue, 22 Jul 2014 13:23:35 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.4.6-1ubuntu1.1
+Set-Cookie: d41d8cd98f00b204e9800998ecf8427e=6b0e7u1eh5gfk89uvffi7gsvf3; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+X-Pingback: http://distro.libertarianleft.org/xmlrpc.php
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 39904
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<!--[if IE 6]>
+<html id="ie6" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Distro of the Libertarian Left | quality editions of anarchist classics &amp; provocative perspectives on today&#039;s radicalism</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://distro.libertarianleft.org/wp-content/themes/all-distro/style.css" />
+<link rel="pingback" href="http://distro.libertarianleft.org/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="http://distro.libertarianleft.org/wp-content/themes/twentyeleven/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<link rel="alternate" type="application/rss+xml" title="Distro of the Libertarian Left &raquo; Feed" href="http://distro.libertarianleft.org/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Distro of the Libertarian Left &raquo; Comments Feed" href="http://distro.libertarianleft.org/comments/feed/" />
+<link rel='stylesheet' id='bm-author-donations-style-css'  href='http://distro.libertarianleft.org/wp-content/plugins/bitmate-author-donations/style.css?ver=3.5' type='text/css' media='all' />
+<link rel='stylesheet' id='contact-form-7-css'  href='http://distro.libertarianleft.org/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=3.2.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://distro.libertarianleft.org/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://distro.libertarianleft.org/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://distro.libertarianleft.org/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 3.5" />
+<script type="text/javascript">
+
+function recalculateBulkPrice (what) {
+	var N = what.value;
+	var priceFirst = parseFloat(jQuery('#price-for-first-USD').val());
+	var priceRest = parseFloat(jQuery('#price-for-rest-USD').val());
+
+	if (!isNaN(N) && Number(N) > 0) {
+		N = parseFloat(N);
+		var price = priceFirst + (priceRest * (N-1));
+		jQuery('#price-for-bulk-USD').text('$' + price.toFixed(2))
+	} else {
+		jQuery('#price-for-bulk-USD').text('N/A')
+	}
+}
+function rollUpCart (e) {
+	e.preventDefault();
+
+	var h = jQuery('#shopping-cart').height();
+	var hh3 = jQuery('#shopping-cart h3').height();
+
+	jQuery('#shopping-cart').toggleClass('rolled-up');
+
+	var calcHeight=(h-hh3);
+	if (!jQuery('#shopping-cart').is('.rolled-up')) {
+		calcHeight = 'auto';
+		jQuery('#shopping-cart table').css('height', calcHeight).slideDown(750);
+	} else {
+		jQuery('#shopping-cart table').css('height', calcHeight).slideUp(750);
+	}
+}
+
+jQuery(document).ready( function () {
+	//jQuery('#shopping-cart h3').click ( rollUpCart );
+	jQuery('.add-it').click( function (e) {
+		e.preventDefault();
+
+		var url = 'http://'
+			+"distro.libertarianleft.org"			+'/cart/';
+				
+		var quant = Number(jQuery(this).closest('.add-to-cart-bulk').find('input[type="number"]').val());
+		if (isNaN(quant)) quant = 1;
+			
+		var id = jQuery(this).closest('.add-to-cart, .add-to-cart-bulk').find('input[name="item_id"]').val();
+		var referral = jQuery('#referral-name').val();
+			
+		var href;
+		if (href = jQuery(this).attr('href')) {
+			var params = href.replace(/^[^?]*[?](.*)$/, '$1').split('&');
+			var sep = (id.indexOf('?') >= 0 ? '&' : '?');
+			id = id + sep + params.join('&');
+		}
+
+		jQuery('#shopping-cart').removeClass('rolled-up');
+		jQuery('#shopping-cart .cart-contents').slideUp('slow', function () {
+				
+			jQuery.ajax({
+				url: url,
+				type: "POST",
+				data: {
+					action: 'add',
+					product: id,
+					quantity: quant,
+					referral: referral
+				},
+				statusCode: {
+					200: function (data, status) {
+						var cart = jQuery('#shopping-cart .cart-contents');
+						cart.html(data).closest('#shopping-cart').addClass('filled').fadeIn('slow');
+						ajaxifyCartActions(cart);
+						cart.slideDown('slow');
+					}, /* 200 OK */
+					204: function (data, status) {
+						var cart = jQuery('#shopping-cart');
+						cart.fadeOut('slow', function () {
+							cart.removeClass('filled').find('.cart-contents').html('');
+						} );
+					}
+				}
+			});
+		});
+	} );
+	ajaxifyCartActions(jQuery('#shopping-cart'));
+	jQuery('#shopping-cart.filled').fadeIn('medium');
+	
+	jQuery('.tabbed .tabs a').click ( visibilityTabClick );
+	jQuery('.tabbed .tabs a.current').click ();
+} );
+
+function visibilityTabClick ( e ) {
+
+	var tabset = jQuery(this).closest('.tabs');
+	var container = jQuery(this).closest('.tabbed');
+	
+	tabset.find('a').removeClass('current');
+	jQuery(this).addClass('current');
+	
+	container.find('.tab-content').removeClass('active');
+	container.find(this.hash).addClass('active');
+	
+	container.find('.tab-content').filter(':not(.active)').hide(500);
+	container.find('.tab-content').filter('.active').show(500);
+	
+	e.preventDefault();
+	return false;
+}
+
+function ajaxifyCartActions (cart) {
+	cart.find('#shopping-cart-action').text('Do');
+	cart.find('td .action').each( function () {
+		var idx = jQuery(this).find('input[name="index"]').val();
+		if (typeof(idx) != 'undefined') {
+			jQuery(this).html('<div class="remove-it" id="remove-it-'+idx+'">✖</div>');
+		}
+	} );
+	cart.find('h3').click ( rollUpCart );
+	
+	cart.find('.remove-it').css('cursor', 'pointer').click(removeItemFromCart);
+
+	jQuery('#shipping-button').click( function (e) {
+			e.preventDefault();
+			
+			// Get URL to send form to, and method to use to send it.
+			var form = jQuery(this).closest('form');
+			var url = form.attr('action');
+			var verb = form.attr('method');
+			
+			// This is uglier than I'd like.
+			var formData = {
+				action: form.find('#shipping-action').val(),
+				shipping: form.find('#shipping-type').val()
+			};
+			jQuery('#shopping-cart').removeClass('rolled-up');
+			jQuery('#shopping-cart .cart-contents').slideUp('slow', function () {
+				jQuery.ajax({
+					url: url,
+					type: verb,
+					data: formData,
+					statusCode: {
+						200: function (data, status) {
+							var cart = jQuery('#shopping-cart .cart-contents');
+							cart.html(data).closest('#shopping-cart').addClass('filled').fadeIn('slow');
+							ajaxifyCartActions(cart);
+							cart.slideDown('slow');
+						}, /* 200 OK */
+						204: function (data, status) {
+							var cart = jQuery('#shopping-cart');
+							cart.fadeOut('slow', function () {
+								cart.removeClass('filled').find('.cart-contents').html('');
+							} );
+						}
+					}
+				});
+			});
+			
+			return false;
+	} );
+	
+
+}
+
+function removeItemFromCart (e) {
+	var idx = Number(this.id.replace(/^remove-it-/, ''));
+	if (!isNaN(idx)) {
+		var url = 'http://'
+			+"distro.libertarianleft.org"			+'/cart/';
+		jQuery(this).closest('tr').slideUp('slow', function () {
+			jQuery.ajax({
+				url: url,
+				type: "POST",
+				data: {
+					action: 'remove',
+					index: idx 
+				},
+				statusCode: {
+					200: function (data, status) {
+						var cart = jQuery('#shopping-cart .cart-contents');
+						cart.html(data).closest('#shopping-cart').addClass('filled');
+						ajaxifyCartActions(cart);
+						cart.slideDown('slow');
+					}, /* 200 OK */
+					204: function (data, status) {
+						var cart = jQuery('#shopping-cart');
+						cart.fadeOut('slow', function () {
+							cart.removeClass('filled').find('.cart-contents').html('');
+						} );
+					}
+				}
+			});
+		});
+	}
+}
+</script>
+	<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+	<style type="text/css">
+			#site-title,
+		#site-description {
+			position: absolute !important;
+			clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+			clip: rect(1px, 1px, 1px, 1px);
+		}
+		</style>
+	
+<!-- WordPress Facebook Open Graph protocol plugin (WPFBOGP v2.0.10) http://rynoweb.com/wordpress-plugins/ -->
+<meta property="fb:app_id" content="1485364041682001"/>
+<meta property="og:url" content="http://distro.libertarianleft.org"/>
+<meta property="og:title" content="Distro of the Libertarian Left"/>
+<meta property="og:site_name" content="Distro of the Libertarian Left"/>
+<meta property="og:description" content="quality editions of anarchist classics &amp; provocative perspectives on today&#039;s radicalism"/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="http://distro.libertarianleft.org/wp-content/uploads/2011/09/market-anarchy-run.jpg"/>
+<meta property="og:locale" content="en_us"/>
+<!-- // end wpfbogp -->
+</head>
+
+<body class="home blog two-column right-sidebar">
+<div id="page" class="hfeed">
+	<header id="branding" role="banner">
+			<hgroup>
+				<h1 id="site-title"><span><a href="http://distro.libertarianleft.org/" title="Distro of the Libertarian Left" rel="home">Distro of the Libertarian Left</a></span></h1>
+				<h2 id="site-description">quality editions of anarchist classics &amp; provocative perspectives on today&#039;s radicalism</h2>
+			</hgroup>
+
+						<a href="http://distro.libertarianleft.org/">
+									<img src="http://distro.libertarianleft.org/wp-content/uploads/2013/08/all-distro-header.jpg" width="1000" height="288" alt="" />
+							</a>
+			
+							<div class="only-search with-image">
+					<form method="get" id="searchform" action="http://distro.libertarianleft.org/">
+		<label for="s" class="assistive-text">Search</label>
+		<input type="text" class="field" name="s" id="s" placeholder="Search" />
+		<input type="submit" class="submit" name="submit" id="searchsubmit" value="Search" />
+	</form>
+				</div>
+			
+			<nav id="access" role="navigation">
+				<h3 class="assistive-text">Main menu</h3>
+								<div class="skip-link"><a class="assistive-text" href="#content" title="Skip to primary content">Skip to primary content</a></div>
+				<div class="skip-link"><a class="assistive-text" href="#secondary" title="Skip to secondary content">Skip to secondary content</a></div>
+								<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="menu"><li id="menu-item-24" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-home menu-item-24"><a href="http://distro.libertarianleft.org/">Home</a></li>
+<li id="menu-item-23" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-23"><a href="http://distro.libertarianleft.org/catalog/">Catalog</a></li>
+<li id="menu-item-120" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-120"><a href="http://distro.libertarianleft.org/category/books/">Books</a></li>
+<li id="menu-item-25" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-25"><a href="http://distro.libertarianleft.org/category/zines/">Booklets &#038; Zines</a></li>
+<li id="menu-item-860" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-860"><a href="http://distro.libertarianleft.org/donate/">Donate</a></li>
+<li id="menu-item-545" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-545"><a href="http://distro.libertarianleft.org/contact/">Contact</a></li>
+</ul></div>			</nav><!-- #access -->
+	</header><!-- #branding -->
+
+
+	<div id="main">
+
+
+
+		<div id="primary">
+			<div id="content" role="main">
+
+			<div class="zine-series"><a title="Contemporary Radicalism" href="http://distro.libertarianleft.org/for/contemporary-radicalism/"><img width="543" height="850" src="http://distro.libertarianleft.org/wp-content/uploads/2013/05/iron-fist-behind-the-invisible-hand.jpg" class="attachment-full wp-post-image" alt="iron-fist-behind-the-invisible-hand" style="width: 85px; height: auto" height="" width="" title="Contemporary Radicalism" /></a><br/>
+			<a title="Contemporary Radicalism" href="http://distro.libertarianleft.org/for/contemporary-radicalism/">Contemporary Radicalism</a>
+			</div><div class="zine-series"><a title="Bookshelf of the Libertarian Left" href="http://distro.libertarianleft.org/for/bookshelf-of-the-libertarian-left/"><img width="1451" height="2241" src="http://distro.libertarianleft.org/wp-content/uploads/2013/08/2013-08-18-10.35.32-e1376847868506.jpg" class="attachment-full wp-post-image" alt="bookshelf of the libertarian left" style="width: 85px; height: auto" height="" width="" title="Bookshelf of the Libertarian Left" /></a><br/>
+			<a title="Bookshelf of the Libertarian Left" href="http://distro.libertarianleft.org/for/bookshelf-of-the-libertarian-left/">Bookshelf of the Libertarian Left</a>
+			</div><div class="zine-series"><a title="The Industrial Radical: Liberty the Mother not the Daughter of Order" href="http://distro.libertarianleft.org/for/the-industrial-radical/"><img width="667" height="859" src="http://distro.libertarianleft.org/wp-content/uploads/2013/08/irad-spring13-coverimage.png" class="attachment-full wp-post-image" alt="irad-spring13-coverimage" style="width: 85px; height: auto" height="" width="" title="The Industrial Radical: Liberty the Mother not the Daughter of Order" /></a><br/>
+			<a title="The Industrial Radical: Liberty the Mother not the Daughter of Order" href="http://distro.libertarianleft.org/for/the-industrial-radical/">The Industrial Radical</a>
+			</div><div class="zine-series"><a title="Anarchist Classics Series" href="http://distro.libertarianleft.org/for/anarchist-classics-series/"><img width="128" height="198" src="http://distro.libertarianleft.org/wp-content/uploads/2011/09/acs-full-run.jpg" class="attachment-full wp-post-image" alt="acs-full-run" style="width: 85px; height: auto" height="" width="" title="Anarchist Classics Series" /></a><br/>
+			<a title="Anarchist Classics Series" href="http://distro.libertarianleft.org/for/anarchist-classics-series/">Anarchist Classics Series</a>
+			</div><div class="zine-series"><a title="Market Anarchy Zine Series" href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/"><img width="170" height="170" src="http://distro.libertarianleft.org/wp-content/uploads/2011/09/market-anarchy-run.jpg" class="attachment-full wp-post-image" alt="market-anarchy-run" style="width: 85px; height: auto" height="" width="" title="Market Anarchy Zine Series" /></a><br/>
+			<a title="Market Anarchy Zine Series" href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/">Market Anarchy Zine Series</a>
+			</div>			
+						<nav id="nav-above">
+			<h3 class="assistive-text">Post navigation</h3>
+			<div class="nav-previous"><a href="http://distro.libertarianleft.org/page/2/?referredby=c4ss.org" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+			<div class="nav-next"></div>
+		</nav><!-- #nav-above -->
+	
+								
+					
+	<article id="post-117" class="post-117 post type-post status-publish format-standard sticky hentry category-uncategorized">
+		<header class="entry-header">
+					
+					
+							<hgroup>
+					<h2 class="entry-title"><a href="http://distro.libertarianleft.org/2011/10/14/quality-editions-of-anarchist-classics-provocative-perspectives-on-todays-radicalism/" title="Permalink to Quality Editions of Anarchist Classics. Provocative Perspectives on Today’s Radicalism." rel="bookmark">Quality Editions of Anarchist Classics. Provocative Perspectives on Today’s Radicalism.					</a></h2>
+					
+					<h3 class="entry-format">Featured</h3>
+				</hgroup>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://distro.libertarianleft.org/2011/10/14/quality-editions-of-anarchist-classics-provocative-perspectives-on-todays-radicalism/" title="9:27 pm" rel="bookmark"><time class="entry-date" datetime="2011-10-14T21:27:44+00:00">October 14, 2011</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/radgeek-2/" title="View all posts by Rad Geek" rel="author">Rad Geek</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<p><strong><span class="drop-caps">W</span>elcome to the <strong style="font-variant: small-caps">Alliance of the Libertarian Left Distro.</strong></strong> (Formerly a project of the <a href="http://sonv.libertarianleft.org/">Las Vegas Alliance of the Libertarian Left</a>, we have now moved into the cosmos, or Alabama, however you prefer to look at it.)</p>
+<div style="float: right; max-width: 33%; padding-left: 30px; padding-bottom: 10px">
+<a href="http://distro.libertarianleft.org/2011/10/14/quality-editions-of-anarchist-classics-provocative-perspectives-on-todays-radicalism/im000254/" rel="attachment wp-att-657"><img src="http://distro.libertarianleft.org/wp-content/uploads/2011/10/IM000254-300x226.jpg" style="width: 300px; max-width: 100%; height: auto;" /></a>
+</div>
+<p>We produce and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics">counter-economics</a>, and other movements for liberation.</p>
+<p>You can <a href="/category/zines">order any of our zines and booklets</a>, either as individual purchases for your own reference, or in larger print runs for ALL locals or other Anarchist groups to distribute in your community, through infoshops, distros, tabling events, or bookfairs. If you&#8217;d like to order one or more of the items in bulk, we can customize the print run to include custom covers and contact information specific to your local group. <a href="/contact">Contact us</a> for details if you have any questions.</p>
+		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="http://distro.libertarianleft.org/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a>			</span>
+									
+									<span class="sep"> | </span>
+						<span class="comments-link"><a href="http://distro.libertarianleft.org/2011/10/14/quality-editions-of-anarchist-classics-provocative-perspectives-on-todays-radicalism/#respond" title="Comment on Quality Editions of Anarchist Classics. Provocative Perspectives on Today’s Radicalism."><span class="leave-reply">Leave a reply</span></a></span>
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-117 -->
+
+				
+					
+	<article id="post-1090" class="post-1090 post type-post status-publish format-standard hentry tag-all-distro tag-c4ss tag-c4ss-studies tag-feed-44 tag-markets-not-capitalism tag-stigmergy-c4ss-blog tag-supporter-updates tag-the-state-of-the-center tag-tor tag-youtube">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/28639" title="Permalink to Director’s Report: June 2014" rel="bookmark">Director’s Report</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/28639" title="6:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-06-25T18:00:55+00:00">June 25, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/28639">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>June has been a great month for the Center for a Stateless Society (C4SS). We were able to publish more commentaries in June than in the previous three months.</p>
+<p>If you are a <a href="http://c4ss.org/support" >regular donor</a>, then I would like to thank you for your continued enthusiasm and support. If you are interested in supporting our mission “<a href="http://c4ss.org/about" >to explain</a> and defend the idea of vibrant social cooperation without aggression, oppression, or centralized authority” with a <a href="http://c4ss.org/support" >monthly $5 donation</a>, then I would like to give you an idea of you can expect from C4SS.</p>
+<p>For the month of June, C4SS published:</p>
+<p style="padding-left: 30px;">31 <a href="http://c4ss.org/content/category/commentary" >Commentaries</a> (6 more than May),<br />
+15 original <a href="http://c4ss.org/content/category/feature-articles" >Features</a> (1 more than May),<br />
+4 <a href="http://c4ss.org/content/category/the-weekly-abolitionist" >Weekly Abolitionists</a>,<br />
+8 <a href="http://c4ss.org/content/category/life-love-and-liberty" >Life, Love and Liberty</a>,<br />
+4 <a href="http://c4ss.org/content/category/weekly-libertarian-leftist-review" >Weekly Libertarian Leftist Reviews</a>,<br />
+3 <a href="http://c4ss.org/content/author/trevor-hultner" >Missing Commas</a>,<br />
+1 <a href="http://c4ss.org/content/category/wars-and-rumors-of-war" >Wars and Rumors of Wars</a>,<br />
+1 <a href="http://c4ss.org/content/category/entrepreneurial-anti-capitalism" >Entrepreneurial Anti-Capitalism</a>,<br />
+1 academic level <a href="http://c4ss.org/content/category/studies" >study</a>,<br />
+2 original <a href="http://c4ss.org/content/category/books" >Book Review</a> and<br />
+12 <a href="http://c4ss.org/content/category/c4ss-media" >C4SS Media uploads</a> to the <a href="https://www.youtube.com/user/c4ssvideos" >C4SS youtube channel</a>.</p>
+<p>Thanks to the dedication of our Media Coordinators, C4SS translated and published:</p>
+<p style="padding-left: 30px;">4 <a href="http://c4ss.org/content/category/italian" >Italian translations</a>,<br />
+22 <a href="http://c4ss.org/content/category/portuguese" >Portuguese translations</a> (1 more than May).</p>
+<p>Our purchase in Brazil continues to grow. In only three months the Portuguese C4SS facebook &#8220;<a href="https://www.facebook.com/SociedadesemEstado" >like</a>&#8221; page has gone from zero to well over a thousand. To mark the occasion, one of our friends made us this:</p>
+<div style="text-align: center;"><a href="https://www.facebook.com/SociedadesemEstado"><img class="alignnone  wp-image-28655" alt="10390192_416537568487217_6304102728547622055_n" src="http://c4ss.org/wp-content/uploads/2014/06/10390192_416537568487217_6304102728547622055_n.png" width="416" height="416" /></a></div>
+<p><a href="http://c4ss.org/content/category/missing-comma" >Missing Comma</a>&#8216;s <a href="http://c4ss.org/content/28135" >Trevor Hultner</a> has decided to take a month or two off, and, to your good fortune, <a title="Posts by Juliana Perciavalle" href="http://c4ss.org/content/author/juliana-perciavalle" >Juliana Perciavalle</a> has decided to join the C4SS team with a focus on maintaining the <a href="http://c4ss.org/content/28168" >Missing Comma</a> blog. Juliana and Trevor have also recorded <a href="http://c4ss.org/content/category/c4ss-media" >C4SS&#8217;s Feed 44</a> media project&#8217;s first podcast interview, discussing Juliana&#8217;s first two Missing Comma posts. Currently the number of downloads that the C4SS podcast channels have counted stands a little over eighty five hundred. You can follow Feed 44 through one of these outlets:</p>
+<ul>
+<li><a href="http://www.c4ss.org/"  rel="nofollow nofollow">http://www.c4ss.org/</a></li>
+<li><a href="http://www.youtube.com/user/c4ssvideos"  rel="nofollow nofollow">http://www.youtube.com/user/<wbr />c4ssvideos</a></li>
+<li><a href="https://itunes.apple.com/us/podcast/c4ss-media/id872405202?mt=2"  rel="nofollow nofollow">https://itunes.apple.com/us/<wbr />podcast/c4ss-media/<wbr />id872405202?mt=2</a></li>
+<li><a href="http://www.stitcher.com/podcast/smash-walls-radio/c4ss-media?refid=stpr"  rel="nofollow nofollow">http://www.stitcher.com/<wbr />podcast/smash-walls-radio/<wbr />c4ss-media?refid=stpr</a></li>
+<li><a href="https://twitter.com/C4SSmedia"  rel="nofollow nofollow">https://twitter.com/<wbr />C4SSmedia</a></li>
+</ul>
+<p>And as always, Bitcoin tips welcome:</p>
+<ul>
+<li>1N1pF6fLKAGg4nH7XuqYQbKYXNxCnHBWLB</li>
+</ul>
+<p><strong>The C4SS Tor Node</strong></p>
+<p>C4SS maintains, now going on three full years, a <a href="http://c4ss.org/content/28615" >Tor Relay Node</a>. We have completed fundraisers to support this node in the past to great success; so successful was the last one that we haven&#8217;t needed another one in quite some time. We encourage everyone to <a href="http://c4ss.org/statelesstor" rel="nofollow">consider operating a <em>Tor</em> relay node yourself</a>. If this, for whatever reason, is not an option, you can still support the <em>Tor</em> project and online anonymity with a <a href="http://gogetfunding.com/project/the-c4ss-q3-tor-node-fundraiser" >$5 donation to the C4SS <em>Tor</em> relay node</a>.</p>
+<div style="text-align: center;">
+<p><iframe src="http://gogetfunding.com/projects/widget/62755/3" height="430" width="250" frameborder="0" scrolling="no"></iframe></p>
+<div style="padding: 2px 0px 0px 20px; font-size: 10px; font-family: Arial;">Fundraising with <a href="http://gogetfunding.com/" >GoGetFunding</a></div>
+</div>
+<p><strong>The Point of Privilege Mutual Exchange</strong></p>
+<p style="padding-left: 30px;"><a href="http://c4ss.org/content/category/mutual-exchange" >Mutual Exchange</a> is the Center’s goal in two senses — we favor a society rooted in peaceful, voluntary cooperation, and we seek to foster understanding through ongoing dialogue. Mutual Exchange will provide opportunities for conversation about issues that matter to the Center’s audience.</p>
+<p><a href="http://c4ss.org/content/category/the-point-of-privilege" >The Point of Privilege</a> <a href="http://c4ss.org/content/category/mutual-exchange" >Mutual Exchange</a> generated eight responses from four contributors, with a possible ninth from Kevin Carson.</p>
+<ul>
+<li><a title="Posts by Casey Given" href="http://c4ss.org/content/author/casey-given" rel="author">Casey Given</a>: <a href="http://c4ss.org/content/28288">What’s the Point of Checking Your Privilege?</a>, <a href="http://c4ss.org/content/28357">Checking Privilege Divides, Fighting Oppression Unites</a>, <a href="http://c4ss.org/content/28363">A Point of Agreement on Privilege?</a> and <a href="http://c4ss.org/content/28574">Intersectionality in Action Renders Privilege in Theory Obsolete</a>.</li>
+<li><a title="Posts by Cathy Reisenwitz" href="http://c4ss.org/content/author/cathy-reisenwitz" rel="author">Cathy Reisenwitz</a>: <a href="http://c4ss.org/content/28371">Privilege Is a Plastic Spork</a>.</li>
+<li><a title="Posts by Kevin Carson" href="http://c4ss.org/content/author/kevin-carson" rel="author">Kevin Carson</a>: <a href="http://c4ss.org/content/27548">Why Privilege Theory is Necessary</a>, <a href="http://c4ss.org/content/28280">The Value of Privilege Theory: A Reply to Casey Given’s Rejoinder</a></li>
+<li><a title="Posts by Nathan Goodman" href="http://c4ss.org/content/author/nathan-goodman" rel="author">Nathan Goodman</a>: <a href="http://c4ss.org/content/28361">The Various Functions of Privilege Analysis</a>.</li>
+</ul>
+<p><strong><span style="line-height: 1.5em;">Carson&#8217;s Graeber Study (No. 17)</span></strong></p>
+<p>Since January 1st, 2009, C4SS has been able to <a href="http://c4ss.org/content/category/studies" >publish nineteen academic level studies</a> on issues important to a <em>left market anarchist</em> critique of the state and conceptions of a stateless society. Our studies, along with <a href="http://c4ss.org/press-room" >our press room</a> with almost fifteen hundred documented C4SS republications around the world, distinguishes us from the humble anarchist blog. Part of your <a href="http://c4ss.org/support" >monthly $5 donation</a> will go towards continuing this project.</p>
+<p><a href="http://c4ss.org/content/27752" >David Graeber’s Anarchist Thought: A Survey</a></p>
+<p style="padding-left: 30px;">&#8230; Graeber, as we already saw to be the case with Elinor Ostrom, is characterized above all by a faith in human creativity and agency, and an unwillingness to let a priori theoretical formulations either preempt either his perceptions of the particularity and “is-ness” of history, or to interfere with the ability of ordinary, face-to-face groupings of people on the spot to develop workable arrangements—whatever they may be—among themselves. Graeber is one of those anarchist (or anarchist-ish) thinkers who, despite possibly identifying with a particular hyphenated variant of anarchism, have an affection for the variety and particularity of self-organized, human-scale institutions that goes beyond ideological label. These people, likewise, see the relationships between individual human beings in ways that can’t be reduced to simple abstractions like the cash nexus or doctrinaire socialism. &#8230;</p>
+<p><strong>Entrepreneurial Anti-Capitalism </strong></p>
+<p>In June, <em>Net Neutrality</em>, that &#8220;unstable equilibrium,&#8221; died. I am sure that many open internet advocacy groups will fight valiantly to restore it, or pieces of it, but this is a dead end. The ISPs and the <a href="http://youtu.be/hkjkQ-wCZ5A" >Dingos in the FCC</a> will continue to throw mountains of cash and influence at the internet, until they get &#8211; completely &#8211; what they want. Capitalism is damage, time to route around it. To this end, the fourth <a href="http://c4ss.org/content/category/entrepreneurial-anti-capitalism" ><em>Entrepreneurial Anti-Capitalism</em></a> project that C4SS has backed are <a href="http://c4ss.org/content/27704" >radical mesh networks</a>:</p>
+<p style="padding-left: 30px;">&#8230; We at the <em>Center for a Stateless Society</em> believe strongly in the potency and importance of persuasion in building a freed world, but we also know that world won’t be built without hands-on grappling, activist organizing and building commons. That’s why we started the <a href="http://c4ss.org/content/category/entrepreneurial-anti-capitalism" ><em>Entrepreneurial Anti-capitalism</em></a> project, to pay forward the good fortune we’ve received and provide a helping hand to those doing amazing, necessary, frequently thankless work with very little.</p>
+<p style="padding-left: 30px;">It is our hope that others will follow <a href="http://blockchain.info/address/18qBbrPmCgvBHeVGzbj9yW7oDEVujFs8kC">our lead</a> in donating to these great projects. Each one accepts bitcoin at the following addresses:</p>
+<ul>
+<ul>
+<li>People’s Open Network: 12RxU4DpLpdWcmEBn7Tj325CCXBwt5i9Hc</li>
+<li>AlterMundi: 12mVSq3NBKTs3tCpWXyJqwdHq8p92ka6fq</li>
+<li>KC Freedom: 1Jmjmf2hDWsrSfnxiM27GZtNWmWGbPNEQM</li>
+</ul>
+</ul>
+<p>Look forward, in July, for our write up on the fifth <a href="http://c4ss.org/content/category/entrepreneurial-anti-capitalism" ><em>Entrepreneurial Anti-Capitalism</em></a> project, and how you can also support, the <a href="https://en.wikipedia.org/wiki/Anarchist_Black_Cross" ><em>Anarchist Black Cross</em></a> in <a href="http://www.abajolosmuros.org/" >Mexico City</a> and <a href="http://denverabc.wordpress.com/" >Denver</a>.</p>
+<p><strong>What is Left-Libertarianism?</strong></p>
+<p>Friedrich Nietzsche councils us, in his <em>The Genealogy of Morals</em>, that “…all ideas, in which a whole process is promiscuously comprehended, elude definition; it is only that which has no history, which can be defined.” This is not to say that these ideas cannot be approached, utilized, valued, defended or understood, only that their status as solid or definitive is, forever, in dispute. They must be approached genealogically, contextually or con-textually, instead of derivatively or positively. Quentin Skinner explains, &#8220;the history of thought should be viewed not as a series of attempts to answer a canonical set of questions, but as a sequence of episodes in which the questions as well as the answers have frequently changed.&#8221; Or, as Skinner concludes his introduction to his <em>Visions of Politics: Regarding Method</em>,</p>
+<p style="padding-left: 30px;">What the historical record strongly suggests is that no one is above the battle, because the battle is all there is.</p>
+<p>If this is true for such all purpose and all powerful words like &#8220;liberty,&#8221; &#8220;consent,&#8221; &#8220;property,&#8221; and &#8220;state,&#8221; then it is doubly true for the word &#8220;libertarian&#8221; &#8211; triple for &#8220;left libertarian.&#8221; We have occasionally <a href="http://c4ss.org/content/13979" >published</a>, <a href="http://c4ss.org/content/1010" >re-published</a> or <a href="http://invisiblemolotov.wordpress.com/2009/09/12/socialist-ends-market-means/" >collected</a> <a href="http://c4ss.org/content/category/left-libertarian-classics" >summaries and introductions</a> answering this episode&#8217;s question &#8220;<a href="http://c4ss.org/content/28216" >What is Left-Libertarianism?</a>&#8221; as we understand and defend it. But, since, we will never be &#8220;above the battle,&#8221; Kevin Carson has <em>thrown down</em> a refreshed and (near) three thousand word gauntlet:</p>
+<p style="padding-left: 30px;">&#8230; <a href="http://c4ss.org/content/28216" >We of the Libertarian Left</a>, as we understand it at C4SS, want to take back free market principles from the hirelings of big business and the plutocracy, and put them back to their original use: an all-out assault on the entrenched economic interests and privileged classes of our day. If the classical liberalism of Smith and Ricardo was an attack on the power of the Whig landed oligarchs and the moneyed interests, our left-libertarianism is an attack on the closest thing in our own time: global finance capital and the transnational corporations. We repudiate mainstream libertarianism’s role in defense of corporate capitalism in the 20th century, and its alliance with conservatism.</p>
+<p style="padding-left: 30px;">We of the Libertarian Left also want to demonstrate the relevance of free market principles, free association and voluntary cooperation in addressing the concerns of today’s Left: Economic injustice, the concentration and polarization of wealth, the exploitation of labor, pollution and waste, corporate power, and structural forms of oppression like racism, sexism, homophobia and transphobia. &#8230;</p>
+<p><strong>New Book Reviews</strong></p>
+<p>We have added to our list of book reviews to expect:</p>
+<ul>
+<li><a title="Posts by Ryan Calhoun" href="http://c4ss.org/content/author/ryan-calhoun" rel="author">Ryan Calhoun</a> has begun reviewing <a href="http://www.akpress.org/gonetocroatan.html" >Gone To Croatan: Origins of North American Drop Out Culture</a> for C4SS.</li>
+</ul>
+<p><strong>Zines!</strong></p>
+<p>C4SS has been a long time partner with <a href="http://c4ss.org/content/author/radgeek" >Charles Johnson</a>&#8216;s <em><a href="http://distro.libertarianleft.org/" >Alliance of the Libertarian Left Distro</a>. </em>This partnership brings with it a little &#8220;help the Center&#8221; finder&#8217;s fee. Just another way you can help support C4SS. The following zine list, highlighted below, has been selected to further showcase the topics discussed in June&#8217;s Mutual Exchange and Kevin Carson&#8217;s gauntlet.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/van-der-meer-network-economy-as-new-mutualism/?referredby=c4ss.org"><img class="alignnone  wp-image-18095" alt="newmutualism" src="http://c4ss.org/wp-content/uploads/2013/04/newmutualism.png" width="283" height="434" /></a> <a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/nathan-goodman-knowledge-problem-privilege/?referredby=c4ss.org"><img class="alignnone  wp-image-21066" alt="knowprob" src="http://c4ss.org/wp-content/uploads/2013/08/knowprob.png" width="280" height="433" /></a><br />
+<a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/gary-chartier-distinctiveness-of-left-libertarianism/?referredby=c4ss.org"><img class="alignnone  wp-image-19718" alt="DofLL" src="http://c4ss.org/wp-content/uploads/2013/06/DofLL.png" width="271" height="418" /></a> <a href="http://distro.libertarianleft.org/for/contemporary-radicalism/the-iron-fist-behind-the-invisible-hand/?referredby=c4ss.org"><img class="alignnone  wp-image-19704" alt="ironfist" src="http://c4ss.org/wp-content/uploads/2013/06/ironfist.png" width="270" height="420" /></a></div>
+<p><strong>We Haven’t Forgotten</strong></p>
+<p>We still have our David Graeber Symposium on the horizon, along with our Carson-Ward-Bookchin edition of Kropotkin’s “Fields, Factories and Workshops Tomorrow”.</p>
+<p><strong>Please Support Today!</strong></p>
+<p>Needless to say, all of this work is only sustainable through your support. If you think the various political and economic debates around the world are enhanced by the addition of<em>left libertarian market anarchist</em>, <em>freed market anti-capitalist</em> or <em>laissez faire socialist</em> solutions, challenges, provocations or participation, <a href="http://c4ss.org/support" >please donate $5, today</a>. Keep C4SS going and growing.</p>
+<p>ALL the best!</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=28639&amp;md5=c05e01b1efd705b8c5b265706d64f0c1" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/c4ss/" rel="tag">C4SS</a>, <a href="http://distro.libertarianleft.org/tag/c4ss-studies/" rel="tag">C4SS Studies</a>, <a href="http://distro.libertarianleft.org/tag/feed-44/" rel="tag">Feed 44</a>, <a href="http://distro.libertarianleft.org/tag/markets-not-capitalism/" rel="tag">Markets Not Capitalism</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>, <a href="http://distro.libertarianleft.org/tag/supporter-updates/" rel="tag">Supporter Updates</a>, <a href="http://distro.libertarianleft.org/tag/the-state-of-the-center/" rel="tag">The State of the Center:</a>, <a href="http://distro.libertarianleft.org/tag/tor/" rel="tag">Tor</a>, <a href="http://distro.libertarianleft.org/tag/youtube/" rel="tag">youtube</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1090 -->
+
+				
+					
+	<article id="post-1089" class="post-1089 post type-post status-publish format-standard hentry tag-all-distro tag-anarchism tag-anarchist tag-anarchy tag-feature-articles tag-kevin-carson tag-left-libertarian tag-libertarian tag-liberty tag-markets-not-capitalism tag-matrix-reality tag-orthodoxy tag-revolution">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/28609" title="Permalink to Orwell, Orthodoxy and Organization" rel="bookmark">Orwell, Orthodoxy and Organization</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/28609" title="2:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-06-25T14:00:59+00:00">June 25, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/m-lafave/" title="View all posts by M. LaFave" rel="author">M. LaFave</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/28609">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>This summer, I joined the reading group for <a href="http://c4ss.org/content/author/kevin-carson" >Kevin A. Carson</a>’s daunting, 600 page tome <a href="http://c4ss.org/content/20900" >Organization Theory</a>. In the first section, Carson presents a compelling mass of research and careful criticism of cross-ideological views of economies of scale. He argues that top economists, from Ronald Coase to John Kenneth Galbraith and Joseph Schumpeter, “accept ‘economies of scale’ as a sufficient explanation for the rise of the large corporation from a supposedly ‘laissez-faire’ economy”, failing to consider the systemic effects state intervention has on the architecture of large firms that would otherwise bow to real market forces.</p>
+<p>Five pages in, Carson takes a heavy swing at the Austrians over this issue. “The irony is that the Austrians”, he scolds, “who consider themselves such iconoclasts in savaging so much of the received wisdom of neoclassical economists and liberal managerialism, also accept without critical awareness many of its implicit assumptions… So it’s somewhat jarring to see them… become ardently triumphalist enthusiasts for the sheer Hegelian ‘is-ness’ of things when it comes to Wal-Mart and sweatshops. It’s a bit odd to be so anti-Hamiltonian, and yet so fond of an economy founded on Hamiltonianism.” &#8211; Ouch.</p>
+<p>Bad theory has an unfortunate tendency to slip between the cracks of active thought and critical inquiry, and Carson is not the first libertarian to bring it up. Henry Hazlitt warns us in the first sentence of the preface to <em>Economics in One Lesson</em>, “This book is an analysis of economic fallacies that are at last so prevalent that they have almost become a new orthodoxy.” Here, Hazlitt uses “orthodoxy” to refer to a generally authorized doctrine that includes both accurate and inaccurate insights, like subjective value theory and the broken window fallacy, respectively.</p>
+<p>George Orwell, however, takes the meaning of orthodoxy even further in <em>1984</em>, defining it to refer strictly to subversive ideas that have become the mainstream via their uncritical reception. In this passage, Winston is speaking with Syme, a dedicated and passionate agent of the state, who is tasked with compiling the latest edition of the Newspeak Dictionary:</p>
+<p style="padding-left: 30px;">Even the literature of the party will change. Even the slogans will change. How could you have a slogan like &#8220;freedom is slavery&#8221; when the concept of freedom has been abolished? The whole climate of thought will be different. In fact, there will be no thought, as we understand it now. Orthodoxy means not thinking-not needing to think. Orthodoxy is unconsciousness.</p>
+<p>This sort of Orwellian “unconsciousness” is precisely the state of mind that allows bad ideas to fester. Like a virus, these bogus theories permeate the uncritical mind and feed on passive acceptance, reproducing to latch onto new generations of economists, psychologists, scientists, and all other manner of inquiring minds who seek valid answers to key questions.</p>
+<p>This tendency of orthodoxy is important to recognize, because a passive thought process is unlikely to stop after letting just one unchecked notion skate by. Liability to let anything at all past the threshold of intellectual scrutiny could be indicative of a more systematic problem. As William Gillis put it, preferring the term “faith” to orthodoxy,</p>
+<p style="padding-left: 30px;">Faith is innately unethical. Ethics without vigilance is meaningless and faith is defined by an abdication of cognitive vigilance… a mind filled with hardened tumors of faith and the rot of lazy habits is a mind always at risk of more proactive cancers.</p>
+<p>Orwellian orthodoxy is a threat to all ideologies and fields of study and a potential menace to the development of inquiring minds, which is precisely why libertarians ought to oppose it most fervently.</p>
+<p>As libertarians, we take pride in logical discourse and ethical rigor. We condemn the hypocrisies and failed policies of the statist left and the nationalist right. Turning our gaze inward, we are relentless when discussing matters of what is “truly libertarian”, be that tactics, tastes, culture, and other <a href="http://c4ss.org/content/12460" >thick conceptions</a> of liberty. Rational thought led us to our conclusions about free markets and individual liberty, and, if exercised consistently, should keep us on the right track with more complex issues that crop up the further we delve into economic and philosophical theory.</p>
+<p>But despite our general steadfastness, Carson’s insight teaches us that we are not even safe from orthodoxy within the borders of libertarian thought. We too are liable to let an unexamined notion pass by unchecked, maybe because it confirms our preexisting feelings about the way something works, or perhaps because an idea simply carries the banner of “libertarian”. Either way, allowing these malignant manifestations of orthodoxy in is thoroughly un-libertarian.</p>
+<p>The pursuit of truth for truth’s sake is a constitutive part of libertarianism, and for this reason, libertarians qua libertarians owe it to themselves to form an intellectual climate that promotes perpetual scrutiny of all ideas, regardless of whether those ideas were forged by hand-wringing statists or well-intentioned fellow libertarians. This intellectual climate should resemble important features of the economic arrangements that Jason Lee Byas describes in his essay <a href="http://c4ss.org/content/s4ss.org/684/from-nl-1-1-toward-an-anarchy-of-production-pt-i-jason-lee-byas/" ><em>Toward an Anarchy of Production, Pt. I</em></a>. Calling for markets and the profit motive as agents of social change, he explains that,</p>
+<p style="padding-left: 30px;">by constantly approaching equilibrium yet never reaching it, unchained economic activity is exactly the kind of social dynamic that radicals desire: permanent revolution.</p>
+<p>Market forces are robust because they are unyielding in adaptation and growth. By “constantly approaching equilibrium”, markets continuously reach to perfect allocation of resources both material and immaterial. This profound dynamic, which simultaneously optimizes productive efficiency and social flourishing, must be mirrored by any ideological community that wishes to grow into the best version of itself. Through unforgiving intellectual resilience in the face of propositions both pleasant and precipitous, libertarianism can stand athwart orthodoxy and achieve the kind of intellectual dynamic that the liberty-minded deserve: permanent cognitive revolution.</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=28609&amp;md5=565778741fec4e0639bcac731eae3cc7" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/anarchism/" rel="tag">Anarchism</a>, <a href="http://distro.libertarianleft.org/tag/anarchist/" rel="tag">anarchist</a>, <a href="http://distro.libertarianleft.org/tag/anarchy/" rel="tag">anarchy</a>, <a href="http://distro.libertarianleft.org/tag/feature-articles/" rel="tag">Feature Articles</a>, <a href="http://distro.libertarianleft.org/tag/kevin-carson/" rel="tag">Kevin Carson</a>, <a href="http://distro.libertarianleft.org/tag/left-libertarian/" rel="tag">left-libertarian</a>, <a href="http://distro.libertarianleft.org/tag/libertarian/" rel="tag">libertarian</a>, <a href="http://distro.libertarianleft.org/tag/liberty/" rel="tag">Liberty</a>, <a href="http://distro.libertarianleft.org/tag/markets-not-capitalism/" rel="tag">Markets Not Capitalism</a>, <a href="http://distro.libertarianleft.org/tag/matrix-reality/" rel="tag">matrix reality</a>, <a href="http://distro.libertarianleft.org/tag/orthodoxy/" rel="tag">Orthodoxy</a>, <a href="http://distro.libertarianleft.org/tag/revolution/" rel="tag">Revolution</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1089 -->
+
+				
+					
+	<article id="post-1085" class="post-1085 post type-post status-publish format-standard hentry tag-all-distro tag-c4ss tag-c4ss-studies tag-feed-44 tag-markets-not-capitalism tag-stigmergy-c4ss-blog tag-supporter-updates tag-the-state-of-the-center tag-tor tag-youtube">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/27453" title="Permalink to Director’s Report: May 2014" rel="bookmark">Director’s Report</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/27453" title="10:40 pm" rel="bookmark"><time class="entry-date" datetime="2014-05-25T22:40:20+00:00">May 25, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/27453">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>May has been an interesting month for <em>The Center for a Stateless Society</em> (C4SS). We have added some new features and people to the roster and reached a couple of milestones in our development.</p>
+<p>If you are a <a href="http://c4ss.org/support" >regular donor</a>, then I would like to thank you for your continued enthusiasm and support. If you are interested in supporting our mission “<a href="http://c4ss.org/about" >to explain</a> and defend the idea of vibrant social cooperation without aggression, oppression, or centralized authority” with a <a href="http://c4ss.org/support" >monthly $5 donation</a>, then I would like to give you an idea of you can expect from C4SS.</p>
+<p><strong>Updated C4SS News Widget</strong></p>
+<p><a href="http://c4ss.org/c4ss-news-widget" >NEW! Now in 100% pure javascript</a>! One way you can support C4SS is by placing our news widget on your site. You can customize and create your own version of the C4SS News Widget. <a href="http://mutualist.blogspot.com/" >Kevin Carson</a> and <a href="http://nostate.com/" >Mike Gogulski</a> both have standard versions of the widget on their blogs, but they give you an idea of what it will look like on your sidebar.</p>
+<div style="text-align: center;"><iframe id="c4niframe" style="margin: 0px;" src="http://c4ss.org/c4ssnews/js1.0/c4ssnewsobject.html?w=360&amp;cbc=ffffff" height="360" width="360" frameborder="0" scrolling="no"></iframe></div>
+<p>For the month of May, C4SS published:</p>
+<p style="padding-left: 30px;">25 <a href="http://c4ss.org/content/category/commentary" >Commentaries</a> (1 more than April),<br />
+14 original <a href="http://c4ss.org/content/category/feature-articles" >Features</a> (4 more than April),<br />
+4 <a href="http://c4ss.org/content/category/the-weekly-abolitionist" >Weekly Abolitionists</a>,<br />
+7 <a href="http://c4ss.org/content/category/life-love-and-liberty" >Life, Love and Liberty</a>,<br />
+5 <a href="http://c4ss.org/content/category/weekly-libertarian-leftist-review" >Weekly Libertarian Leftist Reviews</a>,<br />
+3 <a href="http://c4ss.org/content/author/trevor-hultner" >Missing Commas</a>,<br />
+3 <a href="http://c4ss.org/content/category/wars-and-rumors-of-war" >Wars and Rumors of Wars</a>,<br />
+3 <a href="http://c4ss.org/content/category/hardly-working" >Hardly Working</a>,<br />
+1 original <a href="http://c4ss.org/content/category/books" >Book Review</a> and<br />
+17 <a href="http://c4ss.org/content/category/c4ss-media" >C4SS Media uploads</a> to the <a href="https://www.youtube.com/user/c4ssvideos" >C4SS youtube channel</a>.</p>
+<p>Thanks to the dedication of our Media Coordinators, C4SS translated and published:</p>
+<p style="padding-left: 30px;">9 <a href="http://c4ss.org/content/category/italian" >Italian translations</a>,<br />
+2 <a href="http://c4ss.org/content/category/spanish" >Spanish translations</a> and<br />
+21 <a href="http://c4ss.org/content/category/portuguese" >Portuguese translations</a>.</p>
+<p>For our supporters that have been following C4SS&#8217;s extension into South America, Brazilian interest and traffic has continued to best Canada and the United Kingdom combined.</p>
+<p><strong>New Features</strong></p>
+<p>C4SS has expanded your ability to support our work by joining the <a href="https://www.gittip.com/c4ssdotorg/" >GITTIP network</a>.</p>
+<p><script data-gittip-username="c4ssdotorg"
+        src="http://gttp.co/v1.js"></script></p>
+<p>We have a new blog in our line-up: Nick Ford&#8217;s <a href="http://c4ss.org/content/category/hardly-working" ><em>Hardly Working</em></a>. Ford has been aggressively cataloging classics in the field &#8220;work refusal&#8221; and criticism of the &#8220;cultural of work&#8221; or &#8220;Puritan Work Ethic&#8221; on his site <a href="http://abolishwork.com/" ><em>Abolish Work</em></a>. Now he offers, for C4SS, a weekly to bi-monthly look into this area of criticism:</p>
+<p style="padding-left: 30px;"><a href="http://c4ss.org/content/26916" >The goal of this blog is to promote a future</a> where none of us will have to work. And by “work” I <i>don’t</i> mean just giving effort, but labor that we give to others under <i>systematic duress</i>. A good example is the workers who work in retail or low-paying jobs because they have no other good options.</p>
+<p><a href="http://s4ss.org/" ><em>The Students for a Stateless Society</em></a> (S4SS) has release its second issue of <a href="http://c4ss.org/content/27320" ><em>The New Leveller</em></a>.</p>
+<div style="text-align: center;"><a href="http://c4ss.org/content/27320"><img class="alignnone  wp-image-27339" alt="newnewnewleveller" src="http://c4ss.org/wp-content/uploads/2014/05/newnewnewleveller-1024x463.jpg" width="614" height="278" /></a></div>
+<p style="padding-left: 30px;"><em>“Are you interested in individualist anarchism, or at least so frightened by it that you want to keep an eye on its progress? Are you frustrated by capitalism’s love for central planning and communism’s conservative view of human potential? Do you suspect that abolishing the institution responsible for war, police brutality, and mass incarceration might not be so dangerous after all?</em></p>
+<p style="padding-left: 30px;"><em>Then </em>The New Leveller<em> is for you!”</em></p>
+<p><strong>New People</strong></p>
+<p>C4SS has maintained a <a href="http://c4ss.org/content/948" ><em>Panel of Advisers</em></a> since mid-2009. Most of the original advisers have departed &#8211; leaving for other projects, differences of opinion or moving into other C4SS positions reflecting more responsibility. C4SS continues to grow and expand as an organization increasing a need for more points, or contributors, of information. To handle this organizational growth, we have begun to craft nested and semi-autonomous arrangements with S4SS, the C4SS Media Coordinators, sections of <a href="http://c4ss.org/content/category/stigmergy-c4ss-blog" >the Stigmergy Blog</a> and the C4SS Media Project. As these projects come into their own, our primary project, &#8220;<a href="http://c4ss.org/about" >the production and distribution of market anarchist media content, both scholarly and popular</a>&#8221; will require <a href="https://en.wikipedia.org/wiki/Linus's_Law" >more eyes to make our bugs shallow</a>. Our current advisers, Stephan Kinsella and Wendy McElroy, will now be aided by voices that have been either a part of the <a href="http://praxeology.net/all-left.htm" ><em>Alliance of the Libertarian Left</em></a> discussion for almost a decade or individuals that have challenged us to consider new puzzles or stressed our current solution sets. It is in this spirit, calling our attention to new opportunities and talent as well as helping C4SS craft content and make decisions regarding direction and policy, that we are happy to introduce our new advisers:</p>
+<ul>
+<li><a href="https://twitter.com/puellavulnerata" >Andrea Shepard</a></li>
+<li><a href="http://www.psychopolitik.com/author/b-psycho/" >Brain Nicholson</a></li>
+<li><a title="Posts by Cathy Reisenwitz" href="http://c4ss.org/content/author/cathy-reisenwitz" rel="author">Cathy Reisenwitz</a></li>
+<li><a href="https://twitter.com/GraysonXVX" >Grayson English</a></li>
+<li><a title="Posts by Jeff Ricketson" href="http://c4ss.org/content/author/jeff-ricketson" rel="author">Jeff Ricketson</a></li>
+<li><a href="https://twitter.com/zhinxy" >Kate Gallagher</a></li>
+<li><a style="line-height: 1.5em;" title="Posts by Logan Yershov" href="http://c4ss.org/content/author/logan-yershov" rel="author">Logan Yershov</a></li>
+</ul>
+<p><a href="http://c4ss.org/content/author/grant-mincy" >Grant Mincy</a> is C4SS&#8217;s expert on Appalachian activism and market/direct action based environmentalism. We are proud to announce that Mincy&#8217;s proposal for a new <a href="http://c4ss.org/content/category/studies" >C4SS Study</a> has been approved and funded. You can expect its publication within the next six to eight months. The study&#8217;s abstract and a sketch of its table of contents have been provided:</p>
+<p style="padding-left: 30px;"><em>A Study Proposal for the Center for a Stateless Society</em></p>
+<p style="padding-left: 30px;">Coal, along with other fossil fuels, are the primary sources of energy for the United States. To date, fossil fuels provide 85% of the nations energy. Coal is the primary source of energy for the United States, providing over half of the electricity consumed by Americans. On a global scale, the United States has the largest known reserves of bituminous and anthracite coal. Much of the coal that is mined in the United States comes from the Appalachian Mountains. Coal mining in the region has created systemic poverty, untold amounts of human suffering and a precipitous decline in biodiversity in one of the worlds oldest temperate rain-forests.</p>
+<p style="padding-left: 30px;">I propose a study for C4SS that will focus on both the natural and social history of the Appalachian coalfields, followed by a market anarchist path to liberation. The study will be broken into three different parts, laid out as follows:</p>
+<p style="padding-left: 30px;">Preface:</p>
+<ul>
+<ul>
+<li>General introduction to the study and why I am conducting it.</li>
+<li>A Brief Analysis of Natural History:
+<ul>
+<li><span style="line-height: 1.5em;">Geologic time and the rise of the Appalachians.</span></li>
+<li><span style="line-height: 1.5em;">Geologic time and the formation of coal.</span></li>
+<li><span style="line-height: 1.5em;">Geologic time and biodiversity.</span></li>
+</ul>
+</li>
+<li>Exploitation of coal reserves and its impact on the environment (special regard to water quality and biodiversity).</li>
+</ul>
+</ul>
+<p style="padding-left: 30px;">Social History:</p>
+<ul>
+<ul>
+<li>Appalachian community life.</li>
+<li>Initial markets and way of life</li>
+<li>Appalachia and the British coal connection.</li>
+<li>Coal and capital.</li>
+<li>Coal and the state.</li>
+<li>The first coal barons.</li>
+<li>The rise of king coal and the community store.</li>
+<li>The rise of labor &#8211; United Mine Workers</li>
+<li>Systemic Poverty.</li>
+<li>From pit mining to mountaintop removal.</li>
+<li>Coals dominance of Appalachian landscapes and both the Appalachian and national economy.</li>
+</ul>
+</ul>
+<p style="padding-left: 30px;">Praxis:</p>
+<ul>
+<ul>
+<li>Social movements.</li>
+<li>&#8220;Paper wrenching&#8221;.</li>
+<li>Transition economics/Counter economics.</li>
+<li>Toward democratic energy.</li>
+<li>The stateless society.</li>
+</ul>
+</ul>
+<p><strong>Milestones In Our Development </strong></p>
+<p>Erick Vasconcelos has finally gotten a market anarchist commentary into <a href="http://www.fijitimes.com/story.aspx?id=269219" ><em>The Fiji Times Online</em></a> with his &#8220;<a href="http://c4ss.org/content/27314" >Police Have Never Guaranteed Order</a>.&#8221;</p>
+<p>Kevin Carson&#8217;s &#8220;<a href="http://c4ss.org/content/26699" >With &#8216;Socialists&#8217; Like Lawrence and Wishart, Who Needs Capitalists?</a>&#8221; was cited over all other possible commentaries in Ben Mauk, &#8220;<a title="Steal This E-Book?" href="http://www.newyorker.com/online/blogs/currency/2014/05/steal-this-e-book.html">Steal This E-Book?</a>&#8221; blog post on <em><a href="http://www.newyorker.com/" >The New Yorker</a>. </em>The <em>Lawence and Wishart</em> controversy also warranted a follow up &#8211; and left market anarchist situation summary &#8211; with Kevin Carson&#8217;s &#8220;<a href="http://c4ss.org/content/27010" >Lawrence &amp; Wishart: The Stone That The Builders Refused</a>&#8220;.</p>
+<p><span style="line-height: 1.5em;">The growing challenge of <em>Uber</em> and <em>Lyft</em> on walled gardens and state dependent models of agitation and organization prompted a series of articles that ran the spectrum of praise to guarded praise to calls for better modes of analysis for the situation and players involved:</span></p>
+<ul>
+<li><a title="Posts by Gina Luttrell" href="http://c4ss.org/content/author/gina-luttrell" rel="author">Gina Luttrell</a>&#8216;s &#8220;<a href="http://c4ss.org/content/26886" >Uber and Lyft are the Best New Thing for Poor, Urban Communities</a>&#8220;</li>
+<li><a title="Posts by William Gillis" href="http://c4ss.org/content/author/william-gillis" rel="author">William Gillis</a>&#8216; <a href="http://c4ss.org/content/26935" >Barriers to Entry and Fake Scarcities</a></li>
+<li><a title="Posts by J. Edward Carp" href="http://c4ss.org/content/author/jonathan-carp" rel="author">J. Edward Carp</a>&#8216;s <a href="http://c4ss.org/content/27275" >Capital Uber Alles</a>?</li>
+<li><a title="Posts by Kevin Carson" href="http://c4ss.org/content/author/kevin-carson" rel="author">Kevin Carson</a>&#8216;s <a href="http://c4ss.org/content/27244" >One Cheer for Uber and Lyft</a></li>
+</ul>
+<p><a href="http://studentsforliberty.org/blog/author/clark-ruper/" rel="author">Clark Ruper</a>&#8216;s &#8220;<a href="http://studentsforliberty.org/blog/2014/05/06/between-radicalism-revolution/" >Between Radicalism &amp; Revolution: The Cautionary Tale of Students For a Democratic Society</a>,&#8221; over at <em>The Students for Liberty</em> blog kicked off an fruitful conversation regarding movement strategies, asking for greater perspective and refined goals in order to keep the tent of libertarianism big and the movement focused. Though we are sympathetic to the underlying motivations and Erasmian warnings against &#8220;enthusiasm&#8221;, we, ultimately, part ways in favor of a stigmergic and fractal libertarianism.</p>
+<ul>
+<li><a title="Posts by Jeff Ricketson" href="http://c4ss.org/content/author/jeff-ricketson" rel="author">Jeff Ricketson</a>&#8216;s &#8220;<a href="http://c4ss.org/content/27335" >Radicalism as Revolution: A Call for a Fractal Libertarianism</a>&#8220;</li>
+<li><a title="Posts by Kevin Carson" href="http://c4ss.org/content/author/kevin-carson" rel="author">Kevin Carson</a>&#8216;s &#8220;<a href="http://c4ss.org/content/27365" >Class, &#8216;Identity Politics&#8217; and Stigmergy: Why We Don’t Need &#8216;One Big Movement&#8217;</a>”</li>
+</ul>
+<p><span style="line-height: 1.5em;"><a href="http://c4ss.org/content/author/cory-massimino" >Cory Massimino</a> and <a href="http://c4ss.org/content/author/joseph-s-diedrich" >Joseph Diedrich</a> concluded their <a href="http://c4ss.org/content/category/mutual-exchange" ><em>Mutual Exchange</em></a> &#8220;<a href="http://c4ss.org/content/category/private-property-how-when-and-why" >Private Property: How, When and Why</a>&#8221; just in time for our newest <em>Mutual Exchange</em> over contested conceptions of privilege. This Mutual Exchange is, unfortunately, not in time to make <a href="http://c4ss.org/content/author/berserkrl" >Roderick T. Long</a>&#8216;s dead line for papers on the same topic: <a href="http://aaeblog.com/2014/05/03/call-for-abstracts-libertarianism-and-privilege/" ><em>Libertarianism and Privilege</em></a>. We hope that it will be a welcome parallel discussion with some cross-pollination. The opening article will be Casey Given&#8217;s, &#8220;What’s the Point of Checking Your Privilege?&#8221; with responses and critique from <a title="Posts by Nathan Goodman" href="http://c4ss.org/content/author/nathan-goodman" rel="author">Nathan Goodman</a>, <a title="Posts by Kevin Carson" href="http://c4ss.org/content/author/kevin-carson" rel="author">Kevin Carson</a> and </span><a title="Posts by Cathy Reisenwitz" href="http://c4ss.org/content/author/cathy-reisenwitz" rel="author">Cathy Reisenwitz</a>.</p>
+<p>We still have, in the works, reviews from,</p>
+<ul>
+<li><a href="http://c4ss.org/content/author/jonathan-carp" >Jonathan Carp</a> has been working on a review of AK Press’ “<a href="http://www.akpress.org/ready-for-revolution.html" >Ready for Revolution</a>“.</li>
+<li><a href="http://c4ss.org/content/author/nathan-goodman" >Nathan Goodman</a> is working on reviews for two of Victoria Law’s books from PM Press: “<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=514" >Resistance Behind Bars: The Struggles Of Incarcerated Women</a>” and “<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=502" >Don’t Leave Your Friends Behind: Concrete Ways to Support Families in Social Justice Movements and Communities</a>“.</li>
+<li><a href="http://c4ss.org/content/author/christiaan-elderhorst" >Christiaan Elderhorst</a> is working on a review of Michel Bauwen’s new book “<a href="http://www.houtekiet.be/boeken/p/detail/de-wereld-redden" >De Wereld Redden</a>“.</li>
+<li><a title="Posts by Natasha Petrova" href="http://c4ss.org/content/author/natasha-petrova" rel="author">Natasha Petrova</a> is finishing a review of Chris Matthew Sciabarra’s second edition of “<a href="https://www.nyu.edu/projects/sciabarra/randstar.htm" >Ayn Rand: The Russian Radical</a>&#8220;.</li>
+<li><a style="line-height: 1.5em;" title="Posts by Erick Vasconcelos" href="http://c4ss.org/content/author/erick-vasconcelos" rel="author">Erick Vasconcelos</a><span style="line-height: 1.5em;"> has agreed to review AK Press’ new book &#8220;</span><a href="http://www.akpress.org/newbrazil.html" >The New Brazil: Regional Imperialism and the New Democracy</a>&#8220;<i style="line-height: 1.5em;"> </i><span style="line-height: 1.5em;">and </span><a style="line-height: 1.5em;" href="http://c4ss.org/content/author/augusto-de-franco" >Augusto de Franco</a><span style="line-height: 1.5em;">‘s &#8220;</span><a style="line-height: 1.5em;" href="http://pt.slideshare.net/augustodefranco/hierarchy-explorations-of-augusto-de-franco-about-the-matrix-that-really-exists" >Hierarchy</a>&#8220;<span style="line-height: 1.5em;">.</span></li>
+<li><a style="line-height: 1.5em;" title="Posts by Joel Schlosberg" href="http://c4ss.org/content/author/joel-schlosberg" rel="author">Joel Schlosberg</a><span style="line-height: 1.5em;"> wants to </span><a style="line-height: 1.5em;" href="http://c4ss.org/content/25659" >further explore</a><span style="line-height: 1.5em;"> the ideas of Jeremy Rifkin by reviewing his latest book, &#8220;</span><a style="line-height: 1.5em;" href="http://www.amazon.com/Zero-Marginal-Cost-Society-Collaborative/dp/1137278463" >The Zero Marginal Cost Society</a>&#8220;<span style="line-height: 1.5em;">.</span></li>
+</ul>
+<p>We have added to our list of book reviews:</p>
+<ul>
+<li>Kevin Carson has received a review copy from <a href="http://www.pmpress.org/content/index.php" ><em>PM Press</em></a> of their new book, &#8220;<a href="https://secure.pmpress.org/index.php?l=product_detail&amp;p=628" >New Forms of Worker Organization: The Syndicalist and Autonomist Restoration of Class Struggle Unionism</a>&#8220;.</li>
+</ul>
+<p><em>Feed 44</em>, the C4SS Media Project&#8217;s working name for our two podcast channels - <a href="https://itunes.apple.com/us/podcast/c4ss-media/id872405202?mt=2" ><em>itunes</em></a> and <em><a href="http://www.stitcher.com/podcast/smash-walls-radio/c4ss-media?refid=stpr" >sticher</a> -</em> has been performing better than expected. <a title="Posts by Trevor Hultner" href="http://c4ss.org/content/author/trevor-hultner" rel="author">Trevor Hultner</a> sent me this update on the projects progress:</p>
+<p style="padding-left: 30px;">For the month of May (one week left until bandwidth reset), C4SS Media podcasts were downloaded a grand total of 8089 times, or approximately 577 downloads per episode. For the first month of podcasting, I would say that &#8220;Feed 44,&#8221; the unofficial-official name of C4SS&#8217;s podcast channel, has been a smash success.</p>
+<p style="padding-left: 30px;">While the only content currently on Feed 44 are recordings of past C4SS articles, in June C4SS Media plans to introduce new, original content to the mix. We&#8217;d also like to officially welcome Max LaFave, Juliana Perciavalle, Christopher King and Jason Lee Byas to the roster of content creators and voice talents.</p>
+<p><span style="line-height: 1.5em;">The <a href="http://c4ss.org/statelesstor" >C4SS Tor Node</a> has successfully been </span>transferred<span style="line-height: 1.5em;"> from Mike Gogulski, who is moving on to more interesting projects, to C4SS proper and paid up through July, 2014. You can check out the node&#8217;s status here: </span><a style="line-height: 1.5em;" href="http://torstatus.blutmagie.de/router_detail.php?FP=305c5b8efe243dda74e3a4fdf2b632705bc1b40a" >Tor Network Status &#8211; Router Detail</a><span style="line-height: 1.5em;">. Expect a fundraiser soon to keep this project going, now on its third </span>consecutive<span style="line-height: 1.5em;"> year. Find out how you can use <em>Tor</em> or set up your own <em>Tor Node</em>: &#8220;<a href="http://c4ss.org/content/19091" >Tor: The Onion Router</a>&#8220;.  </span></p>
+<p>Another milestone of humbling significance to our diligent social media coordinators is C4SS, finally, becoming <a href="http://www.urbandictionary.com/define.php?term=Tumblr%20Famous&amp;defid=5220578" >Tumblr famous</a>.</p>
+<div style="text-align: center;"><a href="http://c4ss.org/wp-content/uploads/2014/05/famoustumblr.png"><img class="alignnone size-full wp-image-27480" alt="famoustumblr" src="http://c4ss.org/wp-content/uploads/2014/05/famoustumblr.png" width="239" height="277" /></a></div>
+<p>C4SS has been a long time partner with <a href="http://c4ss.org/content/author/radgeek" >Charles Johnson</a>&#8216;s <em><a href="http://distro.libertarianleft.org/" >Alliance of the Libertarian Left Distro</a> </em>and would like to highlight the <em>Distro</em>&#8216;s newest additions to its <a href="http://c4ss.org/content/16826" >Market Anarchist</a> and <a href="http://c4ss.org/content/16819" >Classic Anarchist</a> zine collections. For every zine that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Another great way to support C4SS and brush up on some classic anarchism.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/anna-morgenstern-anarcho-capitalism-impossible/?referredby=c4ss.org"><img class="alignnone  wp-image-27182" alt="impossible" src="http://c4ss.org/wp-content/uploads/2014/05/impossible.png" width="283" height="433" /></a> <a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/markets-freed-from-capitalism/?referredby=c4ss.org"><img class="alignnone  wp-image-27184" alt="freed" src="http://c4ss.org/wp-content/uploads/2014/05/freed.png" width="281" height="434" /></a></div>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/anarchist-classics-series/english-mutualists-toward-natural-society-appendix/?referredby=c4ss.org"><img class="alignnone  wp-image-27186" alt="naturalsociety" src="http://c4ss.org/wp-content/uploads/2014/05/naturalsociety.png" width="281" height="434" /></a> <a href="http://distro.libertarianleft.org/for/anarchist-classics-series/dyer-d-lum-on-anarchy/?referredby=c4ss.org"><img class="alignnone  wp-image-27188" alt="LumAnarchy" src="http://c4ss.org/wp-content/uploads/2014/05/LumAnarchy.png" width="281" height="434" /></a></div>
+<p><strong>We Haven’t Forgotten</strong></p>
+<p>We still have our David Graeber Symposium on the horizon, along with our Carson-Ward-Bookchin edition of Kropotkin’s “Fields, Factories and Workshops Tomorrow”.</p>
+<p><strong>Please Support Today!</strong></p>
+<p>Needless to say, all of this work is only sustainable through your support. If you think the various political and economic debates around the world are enhanced by the addition of<em>left libertarian market anarchist</em>, <em>freed market anti-capitalist</em> or <em>laissez faire socialist</em> solutions, challenges, provocations or participation, <a href="http://c4ss.org/support" >please donate $5, today</a>. Keep C4SS going and growing.</p>
+<p>ALL the best!</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=27453&amp;md5=2f1d9e96e731559c54f12b3a09650667" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/c4ss/" rel="tag">C4SS</a>, <a href="http://distro.libertarianleft.org/tag/c4ss-studies/" rel="tag">C4SS Studies</a>, <a href="http://distro.libertarianleft.org/tag/feed-44/" rel="tag">Feed 44</a>, <a href="http://distro.libertarianleft.org/tag/markets-not-capitalism/" rel="tag">Markets Not Capitalism</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>, <a href="http://distro.libertarianleft.org/tag/supporter-updates/" rel="tag">Supporter Updates</a>, <a href="http://distro.libertarianleft.org/tag/the-state-of-the-center/" rel="tag">The State of the Center:</a>, <a href="http://distro.libertarianleft.org/tag/tor/" rel="tag">Tor</a>, <a href="http://distro.libertarianleft.org/tag/youtube/" rel="tag">youtube</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1085 -->
+
+				
+					
+	<article id="post-1084" class="post-1084 post type-post status-publish format-standard hentry tag-all-distro tag-anarchism tag-anarchist tag-anarchy tag-anarchy-classics-series tag-counter-economics tag-counter-power tag-distro-of-the-libertarian-left tag-economic-development tag-revolution">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/27173" title="Permalink to Support C4SS with Dyer D. Lum’s “On Anarchy”" rel="bookmark">Support C4SS with Dyer D. Lum’s “On Anarchy”</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/27173" title="12:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-05-17T12:00:15+00:00">May 17, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/27173">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has teamed up with the <a href="http://distro.libertarianleft.org/?referredby=c4ss.org" ><em>Distro of the Libertarian Left</em></a>. The <a href="http://distro.libertarianleft.org/catalog/?referredby=c4ss.org" ><em>Distro</em></a> produces and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics" >counter-economics</a>, and other movements for liberation. For every copy of Dyer D. Lum&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/dyer-d-lum-on-anarchy/?referredby=c4ss.org" >On Anarchy</a>&#8221; that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Support C4SS with Dyer D. Lum&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/dyer-d-lum-on-anarchy/?referredby=c4ss.org" >On Anarchy</a>&#8220;.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/anarchist-classics-series/dyer-d-lum-on-anarchy/?referredby=c4ss.org"><img class="alignnone  wp-image-27188" alt="LumAnarchy" src="http://c4ss.org/wp-content/uploads/2014/05/LumAnarchy.png" width="374" height="578" /></a></div>
+<p style="text-align: center;">$1.50 for the first copy. $0.75 for every additional copy.</p>
+<p><strong>This plea for Anarchism by Dyer D. Lum</strong> was published as articles in the Chicago revolutionary paper, <cite>The Alarm</cite>, and then reprinted, in 1887, as part of Albert R. Parson’s anthology, <a href="https://archive.org/details/anarchismitsphil00parsrich"><cite>Anarchism: Its Philosophy &amp; Scientific Basis</cite></a>, prepared by Parsons during his imprisonment, and published by his wife, Lucy Parsons, in 1887.</p>
+<blockquote><p><strong>“Modern society, monarchical, parliamentary, and re­pub­lican alike,</strong> cries with one voice: Law and order first and foremost, liberty and progress secondary and resul­tant. Anarchy says: Not so; law must not deny liberty, order must not precede progress; they are causes, not results. It proclaims progress first, to which order must adapt itself; liberty at all times, over which law has no control. . . . .”</p>
+<p><strong>“Anarchy is freedom from artificial regulation and re­strict­ion;</strong> and in freedom, the farmer, as well as the art­isan and all the classes into which society is now div­i­d­ed, will find that wider scope to activity will bring in­creas­ed com­fort; and in freedom to use of land and to org­an­ize credit, rent, interest, and profits will disappear to­gether like bats be­fore the dawning light; and in co-operation find full sec­ur­ity for wealth attained and opportunity for its applicat­ion. . . .”</p>
+<p><strong>“In anarchy labor and capital would be merged into one</strong> for capital would be without prerogatives and depen­dent upon labor, and owned by it. The laborer would find that to produce was to enjoy and the nightmare of desti­tution ban­ish­ed. The artisan would find in co-operation that nature alone remained to be exploited. . . .”</p></blockquote>
+<p><strong>Dyer D. Lum (1839-1893)</strong> was a revolutionary market anarchist, a labor organizer, and a pioneer of mutualist economics. He became involved in the labor movement through his trade as a bookbinder, and came into contact with Anarchists such as Albert Parsons and August Spies in Chicago. He was closely involved with support for the Haymarket martyrs during the 1880s – he took up the editorship of Albert Parson’s newspaper, <cite>The Alarm</cite>, after Parson’s death, and it was Lum who smuggled a dynamite cap to Louis Lingg in prison (which Lingg used to commit suicide ahead of the noose). A collaborator and lover of Voltairine de Cleyre’s, and a prolific writer of both books and articles for Anarchist papers such as <cite>Twentieth Century</cite>, <a href="http://fair-use.org/liberty/"><cite>Liberty</cite></a>, and <cite>The Alarm</cite>, Lum’s Anarchism combined the radical individualism and anti-capitalist market anarchism of the Boston Anarchists, with an emphasis on worker ownership, radical solidarity, and the militant labor organizing of his Chicago revolutionary milieu.</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=27173&amp;md5=6b0b06fcdcaa68cce36bdb7299efe2fd" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/anarchism/" rel="tag">Anarchism</a>, <a href="http://distro.libertarianleft.org/tag/anarchist/" rel="tag">anarchist</a>, <a href="http://distro.libertarianleft.org/tag/anarchy/" rel="tag">anarchy</a>, <a href="http://distro.libertarianleft.org/tag/anarchy-classics-series/" rel="tag">Anarchy Classics Series</a>, <a href="http://distro.libertarianleft.org/tag/counter-economics/" rel="tag">counter-economics</a>, <a href="http://distro.libertarianleft.org/tag/counter-power/" rel="tag">counter-power</a>, <a href="http://distro.libertarianleft.org/tag/distro-of-the-libertarian-left/" rel="tag">Distro of the Libertarian Left</a>, <a href="http://distro.libertarianleft.org/tag/economic-development/" rel="tag">economic development</a>, <a href="http://distro.libertarianleft.org/tag/revolution/" rel="tag">Revolution</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1084 -->
+
+				
+					
+	<article id="post-1083" class="post-1083 post type-post status-publish format-standard hentry tag-all-distro tag-anarchism tag-anarchist tag-anarchy tag-anarchy-classics-series tag-distro-of-the-libertarian-left">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/27172" title="Permalink to Support C4SS with Early English Mutualists’ “Toward Natural Society”" rel="bookmark">Support C4SS with Early English Mutualists’ “Toward Natural Society”</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/27172" title="12:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-05-16T12:00:13+00:00">May 16, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/27172">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has teamed up with the <a href="http://distro.libertarianleft.org/?referredby=c4ss.org" ><em>Distro of the Libertarian Left</em></a>. The <a href="http://distro.libertarianleft.org/catalog/?referredby=c4ss.org" ><em>Distro</em></a> produces and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics" >counter-economics</a>, and other movements for liberation. For every copy of Early English Mutualists&#8217; &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/english-mutualists-toward-natural-society-appendix/?referredby=c4ss.org" >Toward Natural Society</a>&#8221; that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Support C4SS with Early English Mutualists&#8217; &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/english-mutualists-toward-natural-society-appendix/?referredby=c4ss.org" >Toward Natural Society</a>&#8220;.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/anarchist-classics-series/english-mutualists-toward-natural-society-appendix/?referredby=c4ss.org"><img class="alignnone  wp-image-27186" alt="naturalsociety" src="http://c4ss.org/wp-content/uploads/2014/05/naturalsociety.png" width="374" height="578" /></a></div>
+<p style="text-align: center;">$1.50 for the first copy. $0.75 for every additional copy.</p>
+<p>This <strong>“Appendix”</strong> was printed with <a href="https://archive.org/details/inherentevilsal00burkgoog"><cite>The Inherent Evils of All State Govern­ments Demonstrated</cite></a>, a special reprint of the <a href="http://distro.libertarianleft.org/for/anarchist-classics-series/a-vindication-of-natural-society/"><cite>Vindication of Natural Society (ACS # 6)</cite></a> circulated by early English mutualists in 1858.</p>
+<blockquote><p><strong>“The law of progress in human society is identical with the tend­en­c­y to individualize. . . .</strong> The doctrine of the sovereignty of the individual, the most ultra-radical doctrine in theory and final purpose ever promulgated in the world, teaches, in principle, the pro­spect­ive dis­rupt­ion of every existing institution, utterly at variance with all that has hitherto been prac­tis­ed in the world. . . . State Govern­ments will never give real freedom to their subjects. When a people know what real liberty is, and what it is worth, they will assume it as their natural inheritance; and will resist any at­tempt to rob them of it, under the pretence of ‘gov­ern­ing’ them, as they would resist a band of robbers.”</p>
+<p><strong>“But not until the property-relations of man shall be placed on a foundation of Equity,</strong> can the sovereignty of the indivi­du­al be realized; nor can any other of the human relations be just or har­mon­ic. . . . With the full recognition of the equality and reciproc­ity of all rights and duties; with the use of land, and all oth­er nat­ur­al wealth, easi­ly attainable; with a circulating medi­um of exchange, expanding and contracting as wealth, or bona fide credit was created or consumed; and with the moral belief current in society that the prices of all com­mod­ities or services should be regulated by their absolute cost — the vicious system of profitism or profit-mongering, which now prevails, would cease; because those who now are compelled to resort to this nefarious mode of getting a living, would have other and more legitimate sources of live­lihood. . . . Equitable Society de­m­ands nothing impossible of humanity. . . . But words, words alone, will no longer suf­fice. And the remedy is, — homes for the homeless — food for the starving — Equity for all!”</p></blockquote>
+<p>Years after publishing the “Vindication” anonymously, after his author­ship of the essay was discovered, Burke claimed publicly that the anarchistic argument of the “Vindication” was really intended as satire, and a reductio ad absurdum of deistic defenses of “Natural Religion.” However, many early mutualists and anarchists were impressed by the argument and took it seriously; in the “Preface” to their reprint, the anonymous editors, English followers of the American individualist anarchist Josiah Warren, argued that Burke’s argument for philosophical anarchism was both convincing and sincerely made, and his attempts to disown it later should be rejected. While defending the philosophical Anarchism of the “Vindication,” they argued that it was incomplete, con­demn­ing “Arti­fic­ial Society” without offering guidance on how it might be ended, or “Nat­ur­al Society” brought into practical being. They added this “Appendix,” to “briefly [enunciate] the principles through which ‘Natural Society’ may be gradually realized,” draw­ing on the work of the American individualists Josiah Warren and Stephen Pearl Andrews. The result was a fascinating commentary and document of early English mutualism.</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=27172&amp;md5=00970214ecc7237dc5ddc0d67544a2ec" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/anarchism/" rel="tag">Anarchism</a>, <a href="http://distro.libertarianleft.org/tag/anarchist/" rel="tag">anarchist</a>, <a href="http://distro.libertarianleft.org/tag/anarchy/" rel="tag">anarchy</a>, <a href="http://distro.libertarianleft.org/tag/anarchy-classics-series/" rel="tag">Anarchy Classics Series</a>, <a href="http://distro.libertarianleft.org/tag/distro-of-the-libertarian-left/" rel="tag">Distro of the Libertarian Left</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1083 -->
+
+				
+					
+	<article id="post-1082" class="post-1082 post type-post status-publish format-standard hentry category-market-anarchy-zine-series tag-all-distro tag-anarchism tag-anarchist tag-anarchy tag-capitalism tag-class-war tag-distro-of-the-libertarian-left tag-economic-development tag-left-libertarian tag-libertarian tag-liberty">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/27170" title="Permalink to Support C4SS with Anna O. Morgenstern’s “Anarcho-‘Capitalism’ Is Impossible”" rel="bookmark">Support C4SS with Anna O. Morgenstern’s “Anarcho-‘Capitalism’ Is Impossible”</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/27170" title="12:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-05-14T12:00:10+00:00">May 14, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/27170">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has teamed up with the <a href="http://distro.libertarianleft.org/?referredby=c4ss.org" ><em>Distro of the Libertarian Left</em></a>. The <a href="http://distro.libertarianleft.org/catalog/?referredby=c4ss.org" ><em>Distro</em></a> produces and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics" >counter-economics</a>, and other movements for liberation. For every copy of <a href="http://c4ss.org/content/author/ineffabelle" >Anna O. Morgenstern</a>&#8216;s &#8220;<a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/anna-morgenstern-anarcho-capitalism-impossible/?referredby=c4ss.org" >Anarcho-‘Capitalism’ Is Impossible</a>&#8221; that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Support C4SS with <a href="http://c4ss.org/content/author/ineffabelle" >Anna O. Morgenstern</a>&#8216;s &#8220;<a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/anna-morgenstern-anarcho-capitalism-impossible/?referredby=c4ss.org" >Anarcho-‘Capitalism’ Is Impossible</a>&#8220;.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/anna-morgenstern-anarcho-capitalism-impossible/?referredby=c4ss.org"><img class="alignnone  wp-image-27182" alt="impossible" src="http://c4ss.org/wp-content/uploads/2014/05/impossible.png" width="377" height="577" /></a></div>
+<p style="text-align: center;">$1.50 for the first copy. $0.75 for every additional copy.</p>
+<blockquote><p>“What will happen under anarchy? <strong>EVERYTHING</strong>.”</p></blockquote>
+<p><strong>This booklet collects three Center for a Stateless Society (C4SS) feature articles</strong> by left-libertarian writer Anna O. Morgenstern, examining the rel­ation­ship between anarchism, capitalism and pro-capitalist “libertarian­ism,” including: <strong>“Anarcho-Capitalism is Im­pos­s­ible,”</strong> <strong>“Anarchism &amp; Capitalism: A Revisitation,”</strong> and <strong>“Market Anarchism vs. Market Statism.”</strong></p>
+<blockquote><p><strong>“Goals sometimes lead people toward certain means,</strong> but it is the means that determine results, not the goals. And if the anarcho-capitalists follow anarchist means, the results will be anarchy, not some impossible ‘anarcho-capital­ism.’ . . .</p>
+<p><strong>“Anarchy does not mean social utopia,</strong> it means a soci­e­t­y where there is no privileged authority. There will still be social evils to be dealt with under anarchy. But anarchy is an important step toward fighting those evils with­out giving birth to all new ones. My take on the impossibility of anarcho-capitalism is simply as follows:</p>
+<ul>
+<li>Under anarchism, mass accumulation and concentration of cap­it­al is impossible.</li>
+<li>Without concentration of capital, wage slavery is im­poss­ible.</li>
+<li>Without wage slavery, there’s nothing most people would re­cog­nize as ‘capitalism.’</li>
+</ul>
+<p><strong>“Even assuming an ‘anarcho-capitalist’ property re­g­ime,</strong> any­thing recognizable as ‘capitalism’ to any­one else could not exist. In fact the society would look a lot like what ‘an­archo-socialists’ think of as ‘social­ism.’ Not ex­act­ly like it, but much closer than anything they’d imagine as capitalism. . . .”</p></blockquote>
+<p>The essays in this collection first appeared in 2010 and 2014, as Featured Articles at the Center for a Stateless Society, a left-wing market anarchist think tank and media center. They appear here in print for the first time.</p>
+<p><strong>Anna O. Morgenstern</strong>, a Contributing Writer at the Center for a Stateless Society, has been an anarchist of one stripe or another for almost 30 years. Her intellectual interests include economic history, social psychology and volunt­ary organization theory. She writes frequent com­ment­ar­ies for the <a href="http://c4ss.org/">Center for a Stateless Society (<code>c4ss.org</code>)</a>.</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=27170&amp;md5=b3293c1ee0b2ca7e1d9fc41a6c27bc2b" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="http://distro.libertarianleft.org/category/zines/market-anarchy-zine-series/" title="View all posts in Market Anarchy Zine Series" rel="category tag">Market Anarchy Zine Series</a>			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/anarchism/" rel="tag">Anarchism</a>, <a href="http://distro.libertarianleft.org/tag/anarchist/" rel="tag">anarchist</a>, <a href="http://distro.libertarianleft.org/tag/anarchy/" rel="tag">anarchy</a>, <a href="http://distro.libertarianleft.org/tag/capitalism/" rel="tag">capitalism</a>, <a href="http://distro.libertarianleft.org/tag/class-war/" rel="tag">class war</a>, <a href="http://distro.libertarianleft.org/tag/distro-of-the-libertarian-left/" rel="tag">Distro of the Libertarian Left</a>, <a href="http://distro.libertarianleft.org/tag/economic-development/" rel="tag">economic development</a>, <a href="http://distro.libertarianleft.org/tag/left-libertarian/" rel="tag">left-libertarian</a>, <a href="http://distro.libertarianleft.org/tag/libertarian/" rel="tag">libertarian</a>, <a href="http://distro.libertarianleft.org/tag/liberty/" rel="tag">Liberty</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1082 -->
+
+				
+					
+	<article id="post-1034" class="post-1034 post type-post status-publish format-standard hentry tag-all-distro tag-c4ss tag-c4ss-studies tag-feed-44 tag-markets-not-capitalism tag-stigmergy-c4ss-blog tag-supporter-updates tag-the-state-of-the-center tag-youtube">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/26689" title="Permalink to Director’s Report: April 2014" rel="bookmark">Director’s Report</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/26689" title="8:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-04-25T20:00:27+00:00">April 25, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/26689">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has finished another month and we have a lot to talk about.</p>
+<p>On May first, the <em>new look</em> for our site will turn one. If you don&#8217;t remember our <em>original look</em>, <a href="https://web.archive.org/web/20130214083233/http://c4ss.org/" >enjoy</a>. As with everything at the Center, the new look is the result of amazing work from <a href="https://twitter.com/rechelon" >friends</a>, volunteers and, especially, donors.</p>
+<p>If you are a <a href="http://c4ss.org/support" >regular donor</a>, then we would like to thank you for your continued enthusiasm and support. If you are interested in supporting our mission &#8220;<a href="http://c4ss.org/about" >to explain</a> and defend the idea of vibrant social cooperation without aggression, oppression, or centralized authority&#8221; with a <a href="http://c4ss.org/support" >monthly $5 donation</a>, then I will give you an idea of you can expect.</p>
+<p>For the month of April, C4SS published:</p>
+<p style="padding-left: 30px;">24 <a href="http://c4ss.org/content/category/commentary" >Commentaries</a> (6 more than March),<br />
+8 original <a href="http://c4ss.org/content/category/feature-articles" >Features</a>,<br />
+4 <a href="http://c4ss.org/content/category/the-weekly-abolitionist" >Weekly Abolitionists</a>,<br />
+9 <a href="http://c4ss.org/content/category/life-love-and-liberty" >Life, Love and Liberty</a>,<br />
+4 <a href="http://c4ss.org/content/category/weekly-libertarian-leftist-review" >Weekly Libertarian Leftist Reviews</a>,<br />
+5 <a href="http://c4ss.org/content/author/trevor-hultner" >Missing Commas</a> (2 more than March),<br />
+3 <a href="http://c4ss.org/content/category/wars-and-rumors-of-war" >Wars and Rumors of Wars</a>,<br />
+3 original <a href="http://c4ss.org/content/category/books" >Book Reviews</a> (2 more than March) and<br />
+18 <a href="http://c4ss.org/content/category/c4ss-media" >C4SS Media uploads</a> to the <a href="https://www.youtube.com/user/c4ssvideos" >C4SS youtube channel</a> (10 more than March).</p>
+<p>The dedication of our Media Coordinators continues to draw international interest. Thanks to their efforts C4SS published:</p>
+<p style="padding-left: 30px;">14 <a href="http://c4ss.org/content/category/italian" >Italian translations</a> (12 more than March),<br />
+4 <a href="http://c4ss.org/content/category/spanish" >Spanish translations</a> and<br />
+25 <a href="http://c4ss.org/content/category/portuguese" >Portuguese translations</a> (8 more than March).</p>
+<p>Brazil continues to remain C4SS&#8217;s second most popular country; drawing almost more visitors than Canada and the United Kingdom combined.</p>
+<p>It is because of this interest that C4SS is excited to have <a title="Posts by Valdenor Júnior" href="http://c4ss.org/content/author/valdenor-junior" rel="author">Valdenor Júnior</a> join our team, writing commentaries and features focusing on and bringing attention to the politics and potential of Brazil to our readers.</p>
+<p>And thanks to the effort of our Spanish Media Coordinator, <a href="http://c4ss.org/content/author/alan-furth-es" >Alan Furth</a>, <a href="http://www.americaeconomia.com/analisis-opinion" ><em>América Economía</em></a>, a big Argentinean business magazine that is read all over Latin America, has requested that a number of our writers submit two paragraph bylines and author pictures to accompany the articles they anticipate publishing.</p>
+<p><strong>Beyond the numbers</strong></p>
+<p>I would like to draw your attention to our developing blog community. <a title="Posts by Trevor Hultner" href="http://c4ss.org/content/author/trevor-hultner" rel="author">Trevor Hultner</a> and <a title="Posts by Nathan Goodman" href="http://c4ss.org/content/author/nathan-goodman" rel="author">Nathan Goodman</a> have both taken a more direct role in their blogs. They have both created, for them, their own social media presences where they can better develop and interact with their respective audiences as well as highlight stories that relate to their focus. If you are interested in following Goodman&#8217;s <em><a href="http://c4ss.org/content/category/the-weekly-abolitionist" >The Weekly Abolitionist</a> </em>on <a href="https://www.facebook.com/AbolishPrisons" >Facebook</a> or Hultner&#8217;s <a href="http://c4ss.org/content/category/missing-comma" ><em>Missing Comma</em></a> on <a href="https://www.facebook.com/missingcommac4ss" >Facebook</a> and <a href="https://twitter.com/missingcomma" >Twitter</a>, please do!</p>
+<p><a title="Posts by Jonathan Carp" href="http://c4ss.org/content/author/jonathan-carp" rel="author">Jonathan Carp</a> is our newest regular blogger. His <a href="http://c4ss.org/content/category/wars-and-rumors-of-war" >Wars and Rumors of Wars</a> is dedicated to exploring &#8220;issues of war and peace, ranging from foreign and military affairs through the culture of militarism and the effects of war on soldiers and civilians to the details of anti-war activism.&#8221;</p>
+<p>We also have in the works two more blogs; one focusing on an critique of work and job culture, and another focusing on the open-source/open-hardware ethos and liberatory technology.</p>
+<p>The site has finally been moved, thanks to <a title="Posts by William Gillis" href="http://c4ss.org/content/author/william-gillis" rel="author">William Gillis</a>, to hosting services, recommended by <a title="Posts by Smari McCarthy" href="http://c4ss.org/content/author/smari-mccarthy" rel="author">Smari McCarthy</a>, in Iceland. Our decision to move was promoted by the unwillingness of our previous host to <em>have our back</em> when presented with <a href="http://www.techdirt.com/articles/20130925/01355924650/copyright-as-censorship-using-dmca-to-take-down-websites-accurately-calling-out-racist-comments.shtml?_format=full" >an insane DMCA takedown</a> and predicated on our new home understanding our mission, situation and impenitence.</p>
+<p>The <a href="http://c4ss.org/content/category/entrepreneurial-anti-capitalism" ><em>Entrepreneurial Anti-Capitalism</em></a> project has successfully participated in funding two important projects. We, along with friends, were able to raise $1,000 to support recover and relief efforts in the Philippines through the amazing work of local anarchists, <a href="http://onsiteinfoshopphilippines.wordpress.com/" >Onsite Infoshop</a>. And we contributed to a fundraiser that <a href="http://c4ss.org/content/26396" >will send two amazing wobblies</a> to Taiwan and Hong Kong. While there, they will help in translating the IWW Organizer&#8217;s Handbook, participate in direct action labor organizer training and share some &#8220;good and welfare&#8221; with our fellow workers across the pacific.</p>
+<p><a href="http://c4ss.org/content/22338" >Our first project</a>, <em>Dark Wallet</em>, has released a <a href="http://youtu.be/6VFopiRaXwQ" >new video</a> and <a href="http://darkwallet.is/" >website</a>. They plan to &#8220;go dark&#8221; this May Day.</p>
+<p><strong>The C4SS Internship</strong></p>
+<p>We are proud to announce that <a title="Posts by Cory Massimino" href="http://c4ss.org/content/author/cory-massimino" rel="author">Cory Massimino</a> has been selected to be C4SS&#8217;s first paid intern &#8211; more like paid OJT. Massimino is helping us craft a six month program that will develop the anticipated skills, time management and discipline needed to become an effective anarchist writer. The first three months you can expect Massimino to complete a series of book reviews, followed by three months of weekly op-eds. The first day of the internship is May Day, but he is already in the process of settling in with the C4SS crew.</p>
+<p>You can also expect a him and <a title="Posts by Joseph S. Diedrich" href="http://c4ss.org/content/author/joseph-s-diedrich" rel="author">Joseph S. Diedrich</a> to publish a <a href="http://c4ss.org/content/category/mutual-exchange" ><em>Mutual Exchange</em></a> exploring and challenging the arguments found in Diedrich&#8217;s recent C4SS Feature, <a href="http://c4ss.org/content/26383">Private Property, the Least Bad Option</a>.</p>
+<p><strong><span style="line-height: 1.5em;">Books and Book Reviews</span></strong></p>
+<p>We still have, in the works, reviews from,</p>
+<ul>
+<li><a href="http://c4ss.org/content/author/jonathan-carp" >Jonathan Carp</a> has been working on a review of AK Press’ “<a href="http://www.akpress.org/ready-for-revolution.html" >Ready for Revolution</a>“.</li>
+<li><a href="http://c4ss.org/content/author/nathan-goodman" >Nathan Goodman</a> is working on reviews for two of Victoria Law’s books from PM Press: “<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=514" >Resistance Behind Bars: The Struggles Of Incarcerated Women</a>” and “<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=502" >Don’t Leave Your Friends Behind: Concrete Ways to Support Families in Social Justice Movements and Communities</a>“.</li>
+<li><a href="http://c4ss.org/content/author/christiaan-elderhorst" >Christiaan Elderhorst</a> is working on a review of Michel Bauwen’s new book “<a href="http://www.houtekiet.be/boeken/p/detail/de-wereld-redden" >De Wereld Redden</a>“.</li>
+<li><a title="Posts by Natasha Petrova" href="http://c4ss.org/content/author/natasha-petrova" rel="author">Natasha Petrova</a> is finishing a review of Chris Matthew Sciabarra’s second edition of “<a href="https://www.nyu.edu/projects/sciabarra/randstar.htm" >Ayn Rand: The Russian Radical</a>“.</li>
+</ul>
+<p>And are happy to announce that we have added,</p>
+<ul>
+<li><a title="Posts by Erick Vasconcelos" href="http://c4ss.org/content/author/erick-vasconcelos" rel="author">Erick Vasconcelos</a> has agreed to review AK Press&#8217; new book <i><a href="http://www.akpress.org/newbrazil.html" >The New Brazil: Regional Imperialism and the New Democracy</a> </i>and <a href="http://c4ss.org/content/author/augusto-de-franco" >Augusto de Franco</a>&#8216;s <a href="http://pt.slideshare.net/augustodefranco/hierarchy-explorations-of-augusto-de-franco-about-the-matrix-that-really-exists" ><em>Hierarchy</em></a>.</li>
+<li><a title="Posts by Joel Schlosberg" href="http://c4ss.org/content/author/joel-schlosberg" rel="author">Joel Schlosberg</a> wants to <a href="http://c4ss.org/content/25659" >further explore</a> the ideas of Jeremy Rifkin by reviewing his latest book, <a href="http://www.amazon.com/Zero-Marginal-Cost-Society-Collaborative/dp/1137278463" ><em>The Zero Marginal Cost Society</em></a>.</li>
+</ul>
+<p>The first in a series of C4SS books are finally coming together. We are currently in talks with a talented graphic artist to design their covers. The collection is shaping up to look something like,</p>
+<ul>
+<li>The Anatomy of Escape (A Defense of the Commons)</li>
+<li>The Economics of States, Capitalism Defined. (A Defense of the Freed Market contra Capitalism)</li>
+<li>The Psychopathology of Authority (An Attack on Hierarchy)</li>
+<li>The Decentralized Ecosystem (A Defense of Environment contra the State)</li>
+</ul>
+<p>Once these are complete, we hope to begin the massive task of collecting all the published articles of each C4SS writer into their own, respective books &#8211; or maybe two or three for Kevin Carson. The first of these will focus on the work of <a href="http://c4ss.org/content/author/darianworden" >Darian Worden</a>.</p>
+<p><strong>C4SS Stuff</strong></p>
+<p>Our Zazzle store, <a href="http://www.zazzle.com/supportc4ss?rf=238946782107278472" ><em>Support C4SS</em></a>, has been doing well. We have been humbled by our supporters and their fan-art. We have recently been granted <em>associate status</em> which offers us more opportunities to earn incremental income through referrals. And our <a href="http://www.zazzle.com/c4ss_lazer_cats_for_shirts-235195459111138793" >C4SS Lazer Cat of Doom</a> shirt has recently been spotted on facebook:</p>
+<div style="text-align: center;"><a href="http://www.zazzle.com/supportc4ss?rf=238946782107278472"><img class="alignnone  wp-image-26697" alt="KittenFound" src="http://c4ss.org/wp-content/uploads/2014/04/KittenFound.jpg" width="410" height="410" /></a></div>
+<p><strong><span style="line-height: 1.5em;">We haven&#8217;t forgotten</span></strong></p>
+<p>We still have our David Graeber Symposium on the horizon, along with our Carson-Ward-Bookchin edition of Kropotkin&#8217;s “Fields, Factories and Workshops Tomorrow”.</p>
+<p><strong>Please Support Today!</strong></p>
+<p>Needless to say, all of this work is only sustainable through your support. If you think the various political and economic debates around the world are enhanced by the addition of <em>left libertarian market anarchist</em>, <em>freed market anti-capitalist</em> or <em>laissez faire socialist</em> solutions, challenges, provocations or participation, <a href="http://c4ss.org/support" >please donate $5, today</a>. Keep C4SS going and growing.</p>
+<p>ALL the best!</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=26689&amp;md5=8ce73339f2a28832fb936870fe302533" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/c4ss/" rel="tag">C4SS</a>, <a href="http://distro.libertarianleft.org/tag/c4ss-studies/" rel="tag">C4SS Studies</a>, <a href="http://distro.libertarianleft.org/tag/feed-44/" rel="tag">Feed 44</a>, <a href="http://distro.libertarianleft.org/tag/markets-not-capitalism/" rel="tag">Markets Not Capitalism</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>, <a href="http://distro.libertarianleft.org/tag/supporter-updates/" rel="tag">Supporter Updates</a>, <a href="http://distro.libertarianleft.org/tag/the-state-of-the-center/" rel="tag">The State of the Center:</a>, <a href="http://distro.libertarianleft.org/tag/youtube/" rel="tag">youtube</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1034 -->
+
+				
+					
+	<article id="post-1026" class="post-1026 post type-post status-publish format-standard hentry tag-all-distro tag-c4ss tag-c4ss-studies tag-feed-44 tag-markets-not-capitalism tag-stigmergy-c4ss-blog tag-supporter-updates tag-the-state-of-the-center tag-youtube">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/25724" title="Permalink to Director’s Report: March 2014" rel="bookmark">Director’s Report</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/25724" title="6:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-03-25T18:00:29+00:00">March 25, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/25724">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>The Center, C4SS, had a <a href="http://c4ss.org/content/21587" >rather interesting 2013</a>, that ended with us having a large sum of <a href="http://c4ss.org/content/22338" >money to play with</a>.</p>
+<p>But our fun will not continue without your help, your <a href="http://c4ss.org/support" >continued support and donations</a>.</p>
+<p>In order to make the case for why you should forgo a cup of coffee every month and donate to C4SS, the current Coordinating Director for C4SS will put together a report on what the donors received for the month and what future donors can expect. C4SS pays all of the writers that contribute and we prefer micro-donation swarms. We will certainly (re)publish free content as well as spend a big donation, but, as market anarchists, we are covetous of the resiliency and information embedded in trade and micro-donations.</p>
+<p>So, what did you get instead of a cup of coffee?</p>
+<p>C4SS published:</p>
+<p style="padding-left: 30px;">18 <a href="http://c4ss.org/content/category/commentary" >Commentaries</a>,<br />
+12 <a href="http://c4ss.org/content/category/feature-articles" >Features</a>,<br />
+4 <a href="http://c4ss.org/content/category/the-weekly-abolitionist" >Weekly Abolitionists</a>,<br />
+8 <a href="http://c4ss.org/content/category/life-love-and-liberty" >Life, Love and Liberty blog posts</a>,<br />
+4 <a href="http://c4ss.org/content/category/weekly-libertarian-leftist-review" >Weekly Libertarian Leftist Reviews</a>,<br />
+3 <a href="http://c4ss.org/content/author/trevor-hultner" >Missing Commas</a> and<br />
+8 <a href="http://c4ss.org/content/category/c4ss-media" >C4SS Media uploads</a> to the <a href="https://www.youtube.com/user/c4ssvideos" >C4SS youtube channel</a>.</p>
+<p>And thanks to our wonderful and devoted Media Coordinators our Commentaries have been submitted to media outlets around the globe as well as regularly translated into a growing number of languages:</p>
+<p style="padding-left: 30px;">7 <a href="http://c4ss.org/content/category/spanish" >Spanish translations</a>,<br />
+1 <a href="http://c4ss.org/content/category/swedish" >Swedish translation</a>,<br />
+17 <a href="http://c4ss.org/content/category/portuguese" >Portuguese translations</a> and<br />
+5 <a href="http://c4ss.org/content/category/dutch" >Dutch translations</a></p>
+<p>Thanks to our talented and aggressive Portuguese translator and Media Coordinator, <a title="Posts by Erick Vasconcelos" href="http://c4ss.org/content/author/erick-vasconcelos" rel="author">Erick Vasconcelos</a>, Brazil has surpassed both Canada and the United Kingdom in the list of countries that most visit the site, making it second to the US. If you ever thought that market anarchism was or needs to be a global conversation, then C4SS is the place to donate. If we are missing a language (and we are missing a lot) and want to help, <a href="http://c4ss.org/help-expand-our-translations" >let us know</a>.</p>
+<p>Speaking of translations and global conversations, C4SS has been able to secure enough funding to pay for high quality translations of <a href="http://c4ss.org/content/25553" >Kevin Carson</a>&#8216;s <a href="http://c4ss.org/content/19702" >The Iron Fist Behind the Invisible Fist</a>. So far we have translators signed on for Arabic, Chinese, Dutch, Portuguese, Russian, Spanish and Swedish. We have already received an Italian version. And we are currently looking for a Greek translator. If you can help us or know some one that might be able and interested in translating roughly 18,000 words of medium density mutualist-speak into Greek, <a href="http://c4ss.org/help-expand-our-translations" >let us know</a> &#8211; we can compensate for their labor!</p>
+<p>C4SS has a number of projects in the works that have already been paid for, we are just waiting for the work to be completed. To pique your interests I will name a few:</p>
+<ul>
+<li><a href="http://c4ss.org/content/author/jonathan-carp" >Jonathan Carp</a> has been working on reviews for two books: Emma Griffin&#8217;s &#8220;<a href="http://www.amazon.com/Libertys-Dawn-Peoples-Industrial-Revolution/dp/0300151802" >Liberty&#8217;s Dawn</a>&#8221; and AK Press&#8217; &#8220;<a href="http://www.akpress.org/ready-for-revolution.html" >Ready for Revolution</a>&#8220;.</li>
+<li><a href="http://c4ss.org/content/author/nathan-goodman" >Nathan Goodman</a> is working on reviews for two of Victoria Law&#8217;s books from PM Press: &#8220;<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=514" >Resistance Behind Bars: The Struggles Of Incarcerated Women</a>&#8221; and &#8220;<a href="http://secure.pmpress.org/index.php?l=product_detail&amp;p=502" >Don&#8217;t Leave Your Friends Behind: Concrete Ways to Support Families in Social Justice Movements and Communities</a>&#8220;.</li>
+<li><a href="http://c4ss.org/content/author/christiaan-elderhorst" >Christiaan Elderhorst</a> is working on a review of Michel Bauwen&#8217;s new book &#8220;<a href="http://www.houtekiet.be/boeken/p/detail/de-wereld-redden" >De Wereld Redden</a>&#8220;.</li>
+<li><a title="Posts by Natasha Petrova" href="http://c4ss.org/content/author/natasha-petrova" rel="author">Natasha Petrova</a> is finishing a review of Chris Matthew Sciabarra&#8217;s second edition of &#8220;<a href="https://www.nyu.edu/projects/sciabarra/randstar.htm" >Ayn Rand: The Russian Radical</a>&#8220;.</li>
+<li><a href="http://c4ss.org/content/author/grant-mincy" >Grant Mincy</a> is reviewing Arun Agrawal&#8217;s &#8220;<a href="http://books.google.com/books/about/Environmentality.html?id=CA51QgAACAAJ" >Environmentality: Technologies Of Government And The Making Of Subjects</a>&#8220;.</li>
+<li>And <a href="http://c4ss.org/content/author/ineffabelle" >Anna Morgenstern</a> is working on three more articles to develop and round out her &#8220;<a href="http://c4ss.org/content/24289" >anarcho-[x] is impossible</a>&#8221; series.</li>
+</ul>
+<p>We have put together a symposium of sorts on David Graeber&#8217;s <a href="https://www.google.com/search?q=debt+the+first+5000+years&amp;client=ubuntu&amp;channel=cs&amp;oq=Debt+&amp;aqs=chrome.3.69i57j69i65j69i59l2.3035j0j1&amp;sourceid=chrome&amp;ie=UTF-8#channel=cs&amp;q=debt+the+first+5000+years&amp;stick=H4sIAAAAAAAAAGOovnz8BQMDgzYHsxCnfq6-gUlhrqmJEheImZFRYmqQriXgWFqSkV8Uku-Un5_tn5dTufvB3FmfglY7HZ-524RXcXfICsN9fQCONLCrSAAAAA" >Debt: The First 5,000 Years</a>. At the moment we have articles ready from <a href="http://c4ss.org/content/author/kevin-carson" >Kevin Carson</a>, <a href="http://theanarchistlibrary.org/authors/wolfi-landstreicher" >Wolfi Landstreicher</a> and <a href="http://humaniterations.net/" >William Gillis</a>. It is only <a href="http://radgeek.com/" >Charles Johnson</a> that is still finishing his review.</p>
+<p>C4SS is preparing two books. Kevin Carson has written an introduction to a Colin Ward annotated edition of Pyotr Kropotkin&#8217;s &#8220;Fields, Factories and Workshops Tomorrow&#8221;. This edition will also include a copy of Murray Bookchin&#8217;s &#8220;Towards a Liberatory Technology&#8221;. The other book is a collection of C4SS articles and studies concerning libertarian notions of and defenses for public property, with an introduction written by Roderick T. Long.</p>
+<p>In the greater C4SS world, the &#8220;<a href="http://distro.libertarianleft.org/for/chartier-and-johnson-markets-not-capitalism/?referredby=c4ss.org" >Markets Not Capitalism</a>&#8221; <a href="http://c4ss.org/into-libraries" >Into the Libraries project</a> can report two successes and one bonus point. The Albany New York Public Library and the Stockholm University Library are both sporting new copies of &#8220;Markets Not Capitalism&#8221;. The Stockholm Library already had one so <a href="http://c4ss.org/content/author/david-grobgeld" >David Grobgeld</a> put in a request to have Kevin Carson’s “<a href="http://distro.libertarianleft.org/for/kevin-carson-studies-in-mutualist-political-economy/?referredby=c4ss.org" >Studies in Mutualist Political Economy</a>” added to their catalog.</p>
+<p>C4SS&#8217;s affiliated student network, <a href="http://s4ss.org/" >The Students for a Stateless Society</a> (S4SS), has added two new chapters, Texas State and Appalachian State University. The <a href="https://www.facebook.com/ous4ss" >University of Oklahoma S4SS</a> is hosting, along with other student groups, two speaking events with C4SS Senior Fellow and Molinari Institute President Roderick T. Long; Thursday the 27th, <em>Eudaimonistic Approaches to Libertarianism</em> and, Friday the 28th, <em><a href="https://www.facebook.com/events/481393238656823/" >Robert Nozick, Class Struggle, and Free-Market Socialism</a></em>. OU S4SS is also gearing up to produce a new periodical they are calling <a href="http://s4ss.org/668/introducing-the-new-leveller/" >The New Leveller</a>. And the Appalachian State University S4SS is currently raising funds to ship C4SS Senior Fellow Charles Johnson out to speak during their university&#8217;s Social Justice week - <a href="http://www.gofundme.com/7r2j2s" >please consider helping them out in their fundraising drive</a>.</p>
+<p>There are many more projects that C4SS is developing that I can&#8217;t go into because the details are still being worked out, but look forward to an update on our <em><a href="http://c4ss.org/content/22338" >Entrepreneurial Anti-Capitalism</a></em> project, details on a beta-test for a paid internship program and getting our political quiz, finally, working again.</p>
+<p>Needless to say, all of this work is only sustainable through your support. If you think the various political and economic debates around the world are enhanced by the addition of <em>left libertarian market anarchist</em>, <em>freed market anti-capitalist</em> or <em>laissez faire socialist</em> solutions, challenges, provocations or participation, <a href="http://c4ss.org/support" >please donate $5, today</a>, to keep C4SS going and growing.</p>
+<p>ALL the best!</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=25724&amp;md5=8d4267313398ef2760d6bb1dc71e14e5" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/c4ss/" rel="tag">C4SS</a>, <a href="http://distro.libertarianleft.org/tag/c4ss-studies/" rel="tag">C4SS Studies</a>, <a href="http://distro.libertarianleft.org/tag/feed-44/" rel="tag">Feed 44</a>, <a href="http://distro.libertarianleft.org/tag/markets-not-capitalism/" rel="tag">Markets Not Capitalism</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>, <a href="http://distro.libertarianleft.org/tag/supporter-updates/" rel="tag">Supporter Updates</a>, <a href="http://distro.libertarianleft.org/tag/the-state-of-the-center/" rel="tag">The State of the Center:</a>, <a href="http://distro.libertarianleft.org/tag/youtube/" rel="tag">youtube</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1026 -->
+
+				
+					
+	<article id="post-1025" class="post-1025 post type-post status-publish format-standard hentry category-market-anarchy-zine-series tag-all-distro tag-authority tag-capitalism tag-class-war tag-corporate tag-corporate-state tag-distro-of-the-libertarian-left tag-exploitation tag-hierarchy tag-labor tag-politics tag-state tag-stigmergy-c4ss-blog">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/24517" title="Permalink to Support C4SS With ALL Distro’s “CAPITALISM”" rel="bookmark">Support C4SS With ALL Distro’s “CAPITALISM”</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/24517" title="1:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-02-11T13:00:13+00:00">February 11, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/24517">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has teamed up with the <a href="http://distro.libertarianleft.org/?referredby=c4ss.org" ><em>Distro of the Libertarian Left</em></a>. The <a href="http://distro.libertarianleft.org/catalog/?referredby=c4ss.org" ><em>Distro</em></a> produces and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics" >counter-economics</a>, and other movements for liberation. For every copy of ALL Distro&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/capitalism/?referredby=c4ss.org" >CAPITALISM</a>&#8221; that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Support C4SS with ALL Distro&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/capitalism/?referredby=c4ss.org" >CAPITALISM</a>&#8220;.</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/market-anarchy-zine-series/capitalism/?referredby=c4ss.org"><img class="alignnone  wp-image-24519" alt="cap" src="http://c4ss.org/wp-content/uploads/2014/02/cap.png" width="379" height="582" /></a></div>
+<p style="text-align: center;">$1.00 for the first copy. $0.60 for every additional copy.</p>
+<p>Three provocative libertarian perspectives on the liberation, corporation, and the Big C.<em>Charles Davis</em> writes that <strong>libertarians are very confused about capitalism,</strong> and that a radical re-appraisal of the debate shows that libertarian principles should go a lot further than mainstream libertarians have been willing to take them. <em>David S. D’Amato</em> argues, against business reformists, that <strong>inclusive capitalism is a contradiction in terms.</strong> And while many more libertarians are beginning to wake up to the structural problems in the corporate economy,<em>Kevin Carson</em> points out <strong>it’s the capitalism, not the cronyism</strong> that’s at the root of the problem.</p>
+<blockquote><p><strong>“Let’s start over. The wealthy elite are too tainted by the current system of state capitalism</strong> for us to rely on a “good” and “bad” distinction when it comes enormous wealth. No one worth more than $10 million is able to get that much money without systemic state violence. There is no reason they should get a head start in Liberty Land. . . . no matter what one replaces it with, dismantling an unjust system requires addressing the injustices that system created. If you don’t, then your idea of “freedom” will be attacked as the freedom to be exploited by the same people running the world today. And with good reason.” — Charles Davis.</p>
+<p><strong>“The political-economic reality in this country,</strong> confirmed by recent studies as well as well-nigh everything we can observe about the political process, is that big capital keeps American policy­makers comfortably and securely in its pockets. And, sad to say, an ‘in­clusive’ kind of capitalism — oxymoron that it is — is not and never has been the order of the day. . . . In conditions of economic freedom — mean­ing circumstances in which land and opportunities are no co­erc­iv­e­ly monopolized — labor would simply enjoy far more bar­gain­ing pow­er, able to maintain self-sufficiency apart from the Big Business economy. In­deed, the way to fabricate a system wherein the vast majority of indiv­id­u­als are inclined to work for a pittance of a wage at huge, face­less org­an­iz­a­t­ion is to use the power of legal and regulatory authority to fore­close other options. . . .” — David S. D’Amato.</p>
+<p><strong>“Conservatives &amp; rightwing libertarians drastically under­est­i­mate the extent to which state intervention has been struct­ur­al­ly central to capit­al­ism</strong> as a historical system since its very beginnings. The en­clos­ure of open fields for sheep pasture in late medieval and early modern times, the Parliamentary Enclosures of common woods, waste and past­ure in the 18th century, the colonial enclosure of land in the Third World and eviction of native cultivators, the engrossment of Third World mines and mineral resources, the enslavement of nonwhite populations – no­thing remotely resembling the contemporary concentration of economic pow­er and wealth, or the model of corporate capitalism most people think of as ‘normal’ . . .” — Kevin Carson.</p></blockquote>
+<p><strong>“Libertarians Are Very Confused About Capitalism”</strong> was written by <strong>Charles Davis</strong> and published in November 2013 by the online magazine Salon.com. Charles Davis is a radical columnist, producer and researcher in Los Angeles, California. His work regularly appears in publications such as VICE, Salon, AlterNet, and Al Jazeera English. He keeps a website at <a href="http://charliedavis.blogspot.com/">charliedavis.blogspot.com</a></p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=24517&amp;md5=0980b38963ac20d535b6056bcab15882" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="http://distro.libertarianleft.org/category/zines/market-anarchy-zine-series/" title="View all posts in Market Anarchy Zine Series" rel="category tag">Market Anarchy Zine Series</a>			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/authority/" rel="tag">authority</a>, <a href="http://distro.libertarianleft.org/tag/capitalism/" rel="tag">capitalism</a>, <a href="http://distro.libertarianleft.org/tag/class-war/" rel="tag">class war</a>, <a href="http://distro.libertarianleft.org/tag/corporate/" rel="tag">corporate</a>, <a href="http://distro.libertarianleft.org/tag/corporate-state/" rel="tag">corporate state</a>, <a href="http://distro.libertarianleft.org/tag/distro-of-the-libertarian-left/" rel="tag">Distro of the Libertarian Left</a>, <a href="http://distro.libertarianleft.org/tag/exploitation/" rel="tag">exploitation</a>, <a href="http://distro.libertarianleft.org/tag/hierarchy/" rel="tag">hierarchy</a>, <a href="http://distro.libertarianleft.org/tag/labor/" rel="tag">Labor</a>, <a href="http://distro.libertarianleft.org/tag/politics/" rel="tag">Politics</a>, <a href="http://distro.libertarianleft.org/tag/state/" rel="tag">state</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1025 -->
+
+				
+					
+	<article id="post-1024" class="post-1024 post type-post status-publish format-standard hentry tag-all-distro tag-anarchism tag-anarchist tag-anarchy tag-anarchy-classics-series tag-authority tag-class-war tag-distro-of-the-libertarian-left tag-hierarchy tag-mikhail-bakunin tag-revolution tag-state tag-stigmergy-c4ss-blog">
+		<header class="entry-header">
+					
+					
+						<h1 class="entry-title" style="clear: none; padding-top: 0px; font-size: 110%"><a href="http://c4ss.org/content/24493" title="Permalink to Support C4SS With Mikhail Bakunin’s “What is Authority?”" rel="bookmark">Support C4SS With Mikhail Bakunin’s “What is Authority?”</a>
+			
+			  </h1>
+			
+						<div class="entry-meta">
+				<span class="sep">Posted on </span><a href="http://c4ss.org/content/24493" title="1:00 pm" rel="bookmark"><time class="entry-date" datetime="2014-02-10T13:00:26+00:00">February 10, 2014</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://distro.libertarianleft.org/author/james-tuttle/" title="View all posts by James Tuttle" rel="author">James Tuttle</a></span></span>			</div><!-- .entry-meta -->
+			
+					</header><!-- .entry-header -->
+
+		<div class="entry-content">
+		<div class="syndication-notice">
+This is a syndicated post, and <a href="http://c4ss.org/content/24493">originally appeared at Center for a Stateless Society » ALL Distro</a>.
+</div>
+
+<p>C4SS has teamed up with the <a href="http://distro.libertarianleft.org/?referredby=c4ss.org" ><em>Distro of the Libertarian Left</em></a>. The <a href="http://distro.libertarianleft.org/catalog/?referredby=c4ss.org" ><em>Distro</em></a> produces and distribute zines and booklets on anarchism, market anarchist theory, <a href="http://agorism.info/counter-economics" >counter-economics</a>, and other movements for liberation. For every copy of Mikhail Bakunin&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/bakunin-what-is-authority/?referredby=c4ss.org" >What is Authority?</a>&#8221; that you purchase through the <a href="http://distro.libertarianleft.org/category/books/?referredby=c4ss.org" ><em>Distro</em></a>, C4SS will receive a percentage. Support C4SS with Mikhail Bakunin&#8217;s &#8220;<a href="http://distro.libertarianleft.org/for/anarchist-classics-series/bakunin-what-is-authority/?referredby=c4ss.org" >What is Authority?</a>&#8221;</p>
+<div style="text-align: center;"><a href="http://distro.libertarianleft.org/for/anarchist-classics-series/bakunin-what-is-authority/?referredby=c4ss.org"><img class="alignnone  wp-image-24495" alt="authority" src="http://c4ss.org/wp-content/uploads/2014/02/authority.png" width="377" height="579" /></a></div>
+<p style="text-align: center;">$1.00 for the first copy. $0.75 for every additional copy.</p>
+<p>The short fragment reprinted in this booklet, one of the most famous passages from Bakunin’s pen, is a widely quoted excerpt from his best-known essay, <cite>God and the State</cite>, which was itself an excerpt, written as Part II of a much longer planned book, to be entitled <cite>The Knouto-Germanic Empire</cite>. The incomplete manuscript was dis­covered in Bakun­in’s papers after his death, by his close friends and fellow anarchists Carlo Cafiero and Élisée Reclus, who translated the text into French and published what they could in 1882. English translations were later circulated by Anarchist publishers in the U.S. and England, including Benjamin Tucker, Henry Seymour and Emma Goldman.</p>
+<blockquote><p><strong>“It is the characteristic of privilege and of every privi­leg­ed position to kill the mind and heart of men.</strong> The privi­leg­ed man, whether practically or economically, is a man de­prav­ed in mind and heart. That is a social law which admits of no exception, and is as applicable to entire nations as to clas­s­es, corporations and individuals. It is the law of equality, the supreme condition of liberty and humanity. . . . Con­sequ­ent­ly, no external legislation and no author­ity — one, for that matter, being inseparable from the other, and both tending to the servitude of society and the de­grad­at­ion of the legislators themselves. . . .”</p>
+<p><strong>“Does it follow that I reject all authority? Far from me such a thought. In the matter of boots, I refer to the author­ity of the bootmakers;</strong> concerning houses, canals, or railroads, I consult that of the architect or the engineer. For such or such special knowledge I apply to such or such a savant. I listen to them freely and with all the respect merited by their intelligence, their character, their know­ledge, re­ser­v­ing always my in­con­test­able right of criticism and censure. But I recognise no infall­ible authority; I have no absolute faith in any per­son. Such a faith would be fatal to my reason, to my liberty, and even to the success of my under­takings; it would im­med­iately transform me into a stupid slave, an instrument of the will and interests of others. . . .”</p></blockquote>
+<p><strong>Mikhail Alexandrovich Bakunin</strong> (1814–1876) was a Russian-born anarchist revolutionary, speaker, traveler and phi­l­o­sopher. Born into a noble family in Prya­mukh­ino, he was later stripped of his titles, imprisoned, condemned at differ­ent times to death, to life imprisonment, to hard labor, and exiled from France, Prussia, Saxony, Austria, Russia, and the First International for his radical speeches and rev­ol­ut­ion­ary activities. One of the founders of collect­iv­ist anarchism, a leading theorist of liber­tarian social­ism, a friend and student of Proudhon, an enemy of Marx and a fierce critic of auth­or­i­tar­ian social­ism, Bakunin was in­volved in revolution­ary up­ris­ings in Paris, Prague, Leipzig, Dresden, and Lyon. An enor­m­ous influence on radicals throughout Russia, Eur­ope, and the Americas, he and his comrades in the anarchist faction of the Inter­nat­ion­al Working Men’s Association (1868–1872) are often credited as the principle founders of the social anarchist move­ment. Although constantly writing fiery pam­ph­lets, letters, short works and radical jour­nals, Bakunin never completed his ambitious plans for longer works on Anarchist philosophy, often re­mark­ing to his friends, “My life is but a fragment.”</p>
+ <p><a href="http://c4ss.org/?flattrss_redirect&amp;id=24493&amp;md5=babda784aa9064beec4a3c61433db4a7" title="Flattr" ><img src="http://c4ss.org/wp-content/themes/center2013/images/flattr.png" alt="flattr this!"/></a></p>		</div><!-- .entry-content -->
+
+		<footer class="entry-meta">
+												<span class="cat-links">
+				<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> Uncategorized			</span>
+									<span class="sep"> | </span>
+							<span class="tag-links">
+				<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="http://distro.libertarianleft.org/tag/all-distro/" rel="tag">ALL Distro</a>, <a href="http://distro.libertarianleft.org/tag/anarchism/" rel="tag">Anarchism</a>, <a href="http://distro.libertarianleft.org/tag/anarchist/" rel="tag">anarchist</a>, <a href="http://distro.libertarianleft.org/tag/anarchy/" rel="tag">anarchy</a>, <a href="http://distro.libertarianleft.org/tag/anarchy-classics-series/" rel="tag">Anarchy Classics Series</a>, <a href="http://distro.libertarianleft.org/tag/authority/" rel="tag">authority</a>, <a href="http://distro.libertarianleft.org/tag/class-war/" rel="tag">class war</a>, <a href="http://distro.libertarianleft.org/tag/distro-of-the-libertarian-left/" rel="tag">Distro of the Libertarian Left</a>, <a href="http://distro.libertarianleft.org/tag/hierarchy/" rel="tag">hierarchy</a>, <a href="http://distro.libertarianleft.org/tag/mikhail-bakunin/" rel="tag">Mikhail Bakunin</a>, <a href="http://distro.libertarianleft.org/tag/revolution/" rel="tag">Revolution</a>, <a href="http://distro.libertarianleft.org/tag/state/" rel="tag">state</a>, <a href="http://distro.libertarianleft.org/tag/stigmergy-c4ss-blog/" rel="tag">Stigmergy - C4SS Blog</a>			</span>
+						
+			
+					</footer><!-- #entry-meta -->
+	</article><!-- #post-1024 -->
+
+				
+						<nav id="nav-below">
+			<h3 class="assistive-text">Post navigation</h3>
+			<div class="nav-previous"><a href="http://distro.libertarianleft.org/page/2/?referredby=c4ss.org" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+			<div class="nav-next"></div>
+		</nav><!-- #nav-above -->
+	
+			
+			</div><!-- #content -->
+		</div><!-- #primary -->
+
+		<div id="secondary" class="widget-area" role="complementary">
+			
+				<aside id="archives" class="widget">
+					<h3 class="widget-title">Archives</h3>
+					<ul>
+							<li><a href='http://distro.libertarianleft.org/2014/06/' title='June 2014'>June 2014</a></li>
+	<li><a href='http://distro.libertarianleft.org/2014/05/' title='May 2014'>May 2014</a></li>
+	<li><a href='http://distro.libertarianleft.org/2014/04/' title='April 2014'>April 2014</a></li>
+	<li><a href='http://distro.libertarianleft.org/2014/03/' title='March 2014'>March 2014</a></li>
+	<li><a href='http://distro.libertarianleft.org/2014/02/' title='February 2014'>February 2014</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/08/' title='August 2013'>August 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/07/' title='July 2013'>July 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/06/' title='June 2013'>June 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/05/' title='May 2013'>May 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/04/' title='April 2013'>April 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/03/' title='March 2013'>March 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2013/01/' title='January 2013'>January 2013</a></li>
+	<li><a href='http://distro.libertarianleft.org/2012/11/' title='November 2012'>November 2012</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/10/' title='October 2011'>October 2011</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/08/' title='August 2011'>August 2011</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/06/' title='June 2011'>June 2011</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/05/' title='May 2011'>May 2011</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/04/' title='April 2011'>April 2011</a></li>
+	<li><a href='http://distro.libertarianleft.org/2011/03/' title='March 2011'>March 2011</a></li>
+					</ul>
+				</aside>
+
+				<aside id="meta" class="widget">
+					<h3 class="widget-title">Meta</h3>
+					<ul>
+												<li><a href="http://distro.libertarianleft.org/wp-login.php">Log in</a></li>
+											</ul>
+				</aside>
+
+					</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<footer id="colophon" role="contentinfo">
+
+			
+
+			<div id="site-generator">
+								<a href="http://wordpress.org/" title="Semantic Personal Publishing Platform">Proudly powered by WordPress</a>
+			</div>
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<input type="hidden" id="referral-name" name="referral" value="c4ss.org" />
+<div id="shopping-cart" >
+<div class="cart-contents">
+</div>
+</div>
+<script type='text/javascript' src='http://distro.libertarianleft.org/wp-content/plugins/contact-form-7/includes/js/jquery.form.js?ver=3.14'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var _wpcf7 = {"loaderUrl":"http:\/\/distro.libertarianleft.org\/wp-content\/plugins\/contact-form-7\/images\/ajax-loader.gif","sending":"Sending ..."};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://distro.libertarianleft.org/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=3.2.1'></script>
+
+</body>
+</html>

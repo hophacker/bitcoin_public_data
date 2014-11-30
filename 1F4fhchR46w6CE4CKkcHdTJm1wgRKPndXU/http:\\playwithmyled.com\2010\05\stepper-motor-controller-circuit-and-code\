@@ -1,0 +1,235 @@
+http://playwithmyled.com/2010/05/stepper-motor-controller-circuit-and-code/
+Stepper motor controller circuit and code | Playwithmyled.com
+Playwithmyled.com
+Menu
+Skip to content
+Blog
+Projects
+Smart Garden
+Marvin
+LILA
+Kid’s Buttons Box
+Internet to Serial Proxy
+Search for:
+Stepper motor controller circuit and code
+May 30, 2010Arduino, Glowing Marquee, ProgrammingKevin Filteau	I build a step motor controller based on the schematics found on the Arduino Web site. First I try the 2 pins one for bipolar stepper motor. I wont be able to make it work, even less with the library available on the site. Maybe I’m dumb and I really dont understand something, but this circuit keeps both coils active at the same time.
+So I tried the second circuit, the 4 pins one. With the same library I wasn’t able to make it work either. So I create a piece of code of my own and I finally managed to make the motor run correctly.
+After that, I realize that I can merge the to circuits to possibly create a PWM abled bipolar motor controller with the L297D. A somewhat bizzare idea, but I think it’s possible if we can program the Arduino to send 4 synced PWM signals. I’ll come back later (maybe never) with this thought. After some research I found that the TI DRV8811 and the Allegro A3977 are much more appropriate chips to do microstepping.
+But for now, there is my circuit. It’s advantage is that it can release the coils. Download the schematics (Fritzing format).
+The two PNP transistors are connected like the circuit proposed on the Arduino Web site. Plus, I use the enable pins. So my circuit needs four pins, and I don’t found a way to use less.
+Parts list
+1 x Arduino
+1 x L293 Quadruple Half H-Bridge
+2 x 1K Ohm Resistors
+2 x 10K Ohm Resistors
+2 x 2N2222 NPN Transistors
+1 x Bipolar Step Motor
+There is the sequence to make the motor turn one direction, invert it to make it turn the other.
+Control sequence
+CTRL A
+EN A
+CTRL B
+EN B
+0
+0
+1
+1
+1
+1
+0
+0
+0
+0
+0
+1
+0
+1
+0
+0
+There is my code to control the stepper motor. Like you see in my code I use direct port command to take less processor time. And I create a function called in the main loop for each steps. This way the code can do something else when the motor is running.
+/*
+	Stepper Motor Controller
+	by Kevin Filteau 2010-05-29
+	Playwithmyled.com
+*/
+
+// Motor controller pins.
+#define pinMotorCtrlA 4
+#define pinMotorCtrlB 7
+#define pinMotorEnA 5
+#define pinMotorEnB 6
+
+// Direction constants.
+#define GOLEFT 0
+#define GORIGHT 1
+
+// Motor states and position.
+boolean motorRunning = false;
+int motorMax = 700;
+int motorPos = 0;
+
+/**********************************************
+	MOTOR
+**********************************************/
+
+// Setup the motor.
+void motorSetup() {
+  pinMode(pinMotorCtrlA, OUTPUT);
+  pinMode(pinMotorCtrlB, OUTPUT);
+  pinMode(pinMotorEnA, OUTPUT);
+  pinMode(pinMotorEnB, OUTPUT);
+  // Everybody to LOW.
+  digitalWrite(pinMotorCtrlA, LOW);
+  digitalWrite(pinMotorCtrlB, LOW);
+  digitalWrite(pinMotorEnA, LOW);
+  digitalWrite(pinMotorEnB, LOW);
+}
+
+// Free the motor.
+void motorFree() {
+  digitalWrite(pinMotorEnA, LOW);
+  digitalWrite(pinMotorEnB, LOW);
+}
+
+// Make the motor spin one step in the direction specified.
+// Pins    7654 ----
+// Binary 0000 0000
+void motorSpin(boolean dir) {
+
+	static int pos = 0; // Starting step pos.
+
+	int stepsSeq[] = {0xC0,0x30,0x40,0x20}; // Registry value.
+	int st;
+
+  // Timing
+  static unsigned long previousMillis;
+  long interval = 3;
+
+	if(millis() - previousMillis &gt; interval) {
+		previousMillis = millis();
+
+		st = stepsSeq[pos];
+		if( dir == GOLEFT ) {
+			pos++; if(pos&gt;3) pos=0;
+			motorPos++;
+		} else {
+			pos--; if(pos&lt;0) pos=3;
+			motorPos--;
+		}
+		PORTD &amp;= 0xF;
+		PORTD |= st;
+	}
+
+}
+
+/**********************************************
+	MAIN FUNCTIONS.
+**********************************************/
+void setup() {
+	motorSetup();
+
+}
+
+void loop() {
+	motorSpin(GOLEFT);
+	// motorSpin(GORIGHT);
+}
+And to close this post. Some pictures of the prototype, the finalized circuit board (useful for the pinout) and a video taken while testing the circuit.
+Post navigation
+← Make things works	A teaser of the Glowing Marquee →
+34 thoughts on “Stepper motor controller circuit and code”	Mark says:	January 8, 2011 at 10:28	Good day Sir, I’m a BS Chemistry student and i don’t know much about electronics but i need to build a peristaltic pump. can i ask for the list of all the parts? including the resistors & etc… thanks
+Kevin says:	January 9, 2011 at 23:44	Hi Mark, I updated the post with the parts list. Let me know if you need more.
+Mark says:	January 11, 2011 at 08:29	thanks a lot sir! it will help me a lot. thank you very much.
+Phil says:	February 19, 2011 at 14:39	Hi, your site is very helpful, but I need help with the motor power supply. How exactly did you power your motor? Did you have to use a regulated power supply or used a wall-wart? Thanks
+Kevin says:	February 19, 2011 at 14:46	@Phil: I used two wall-wart power supply. One 9VDC regulated with a 7805 +5V voltage regulator for the logic control and one NOT regulated 12VDC for the stepper motor.
+Phil says:	February 19, 2011 at 15:45	I am more interested in the unregulated one for the stepper motor, I will draw 5v from the arduino for the logic. What are the exact specifications of your wall-wart supply, and the voltage-current requirements for the motor? If you have a link for where you got the motor that would be awesome. Thank you for the quick response!
+Phil says:	February 19, 2011 at 15:46	What I meant to say to ask additionally was: Did you just plug in your 12v supply to your circuit unregulated and it worked?
+Velon says:	February 21, 2011 at 16:34	Muy interesante su trabajo. Es de agradecer. Pero, tengo una duda, cual es la librería que ha utilizado. Cuando compilo el programa, me da error en la función “motorReset();”. Debo ser muy torpe, disculpe.
+Gracias.
+Very interesting work. It is appreciated. But I have a question, what is the used bookstore. When compiling the program, I get an error in the “motorReset ();”. I must be very awkward, sorry I do not speak your language.
+Thanks.
+Kevin says:	February 28, 2011 at 13:55	@Velon. Simply remove this function call. It was an old function called. But it’s no more in the code.
+Kevin says:	February 28, 2011 at 14:04	@Phil. Yes I connected dirrectly to the circuit. Just be sure you have a nice DC voltage. The motor is supposed to be a MITSUMI M42SP-4. But I could not find any specs that fits. So I check with a multimeter and tried some volages values. You can find some information on the net to find how to know the kind of stepper you have.
+tim castelijn says:	March 14, 2011 at 13:31	hi kevin,
+nice work. It got me inspired for some extra trial-and-error-hours at the two wire stepper setup like the one at tigoe.net. Eventually I got it working, except it didn’t seem to use the 12v motor power supply. When I reconnected some wires I fried the L293d, twice. Do you maybe know what voltages to expect when I measure motor wires 1 and 2 (motor connections B and D in your scheme above) or 3 and 4?
+decora says:	April 5, 2011 at 22:04	great job, very nice write up and photos.
+Kevin says:	April 22, 2011 at 00:20	I never check the voltage there. But the thing I know is that I run the motor with a lower voltage than it needs. On my prototype project, the circuit is driven with a 12 volt regulator. But the power circuit is too small and it heats very much. So I never tested on a long period of time there too.
+Mark says:	April 29, 2011 at 00:53	hi kevin,
+I’m having trouble with my setup, i followed your schematic and copy the code but still my motor doesn’t work properly it moves like as it was stock (1 step back and fort).. i use a different bipolar motor, its from an old epson printer. do you think its the cause of the problem?
+Kevin says:	April 29, 2011 at 08:57	@Mark. When I build the circuit I had the same problem. I had to play with the control sequence to get it right. So I suggest you do so. Try changing the order of the values at the line int stepsSeq[] = {0xC0,0×30,0×40,0×20};.
+Mark says:	May 1, 2011 at 23:30	okay I’ll try it.. thanks again kevin
+Hans says:	June 10, 2011 at 05:15	Hi Kevin..thx for your share about stepper motor..I want to ask about control A and Enable A..what is the meaning of them ?..if i put control A in pin 8 Arduino,EnableA in pin 9 Arduino..then control B in pin 10 Arduino,EnableB in pin 11 Arduino..is it true ??thx for your opinion..
+Kevin says:	August 18, 2011 at 00:41	For the meaning of the Enable and control pins I invite you to check at the L293D datasheet. In short, Enable pins activates the outputs. When they are not enabled, the outputs are in high impedance. When they are enabled, they get to the control signal.
+You can almost plug these L293D pins to what Arduino pins you want. The only thing you have to do is to set the right pins number in the program (#define pinMotorCtrlA 4, #define pinMotorCtrlB 7, #define pinMotorEnA 5, #define pinMotorEnB 6).
+Pyercubed says:	January 5, 2012 at 03:07	Am I mistaken that this chip can drive 2 motors?
+Kevin says:	January 5, 2012 at 12:47	The L297 chip can drive two coils. So it can drive two DC motors or one two coils stepper.
+rashmi says:	April 28, 2012 at 10:51	what will be change in code if we are using kalman filter algorithm for stepper motor control
+Kevin says:	May 2, 2012 at 01:28	First, thank you for giving me the name of this algorithm. I was thinking of this filter for my flower robot project. Actually, I only do an average of the nunchuk position. I was aware of a well tuned way to do this. Now I got a name. I did some research and found a source code of the Kalman filter for the Arduino. I will try to understand it and make it work soon.
+john says:	May 8, 2012 at 07:12	hi , i’m trying to do something similar just that i have to use two bipolar stepper motors but i’m really bad with programming so could you send me via email an adaptation of your code for two bipolar motors , also i must be doing something wrong cause i keep getting this error stk500_getsync(): not in sync: resp=0×00 and i think it’s because i connected the l293d to the arduino uno the wrong way(the motor doesn’t move but gets worm)also i’m using a 5V bipolar stepper motor from a floppy drive
+Pingback: Stepper Motor Sequence | Stepper Motor Datasheet Kevin says:	May 9, 2012 at 06:58	Hi @john. Sorry I do not have too much time to code it for you. You maybe can duplicate the motorSpin function and use different pins for the second stepper. It is also tricky to connect the motor if you do not have the specs. I had to try different configuration with mine before it works correctly. Looks like the sync error is a communication problem behind the Arduino and the computer. I home this will help you to go further.
+Gianni says:	July 1, 2012 at 12:50	Interessante!!!
+E’ possibile collegare due interruttori uno per marcia avanti e uno indietro ?
+Se si come fare i collegamenti sulla breadboard ed il sw ?
+Grazie
+Kevin says:	July 5, 2012 at 22:56	Yes, you can add switch to control the motor. Use some available digital pin on the Arduino. Add a few line of code to look at the switch status. Then from that, make the motor run or stop by calling or not the motorSpin() function in the loop.
+shashank says:	February 20, 2013 at 02:45	hi i have a l293d ic circuit board..can i directly connect the 4 pins from the circuit board to the pc parallel port and control the motors from turbocnc…
+Kevin says:	February 20, 2013 at 20:31	@shashank It has been a while since I mess with parallel ports. I think it is possible. Just be aware the verify if your port send negative violate, the L298 do not like it. My way of doing it was to put optocouplers to isolate with my circuit, this way I protected my computer.
+Pingback: Tutorials and Resources to Control Stepper Motor With Arduino Board Geoff says:	June 11, 2013 at 15:13	The h-bridge has 2 pins for each coil, one triggering forward voltage, the other reverse voltage. If you put an inverter (a NOT logic gate) on one pin, you can use one line to control both pins. Thus a logic 0 will keep the directly connected pin low yet the inverter will hold the other pin high. A logic 1 will then raise the directly connected pin high but the inverter will hold the other low. Good way to guarantee you’ll never turn on both directions together, thus causing a short circuit.
+Geoff says:	June 11, 2013 at 15:26	To Shashank…
+Use opto’s with paraport. Since the industry standard for control is only 2 pins…step and direction, you’ll need a translator. You can use an up/down counter (keeps up with which direction motor turns) flip flop which outputs on two pins this sequence… 00 01 10 11. Since the h-bridge needs the sequence 00 01 11 10 to rotate, you can then add an xor gate (it’s output will take the place of what would have been lsb) to the counters 2 bit output, which will invert the lsb when msb is high, giving the correct sequence to the h-bridge. The clock input on the counter is step, up/down pin is direction.
+This assumes you have done as I mentioned above and put an inverter on one pin out of the two on each coil input to h-bridge. That allows the entire motor to be controled with only two lines instead of 4 and the previous sequence will step correctly.
+Marwen says:	March 24, 2014 at 16:51	2N2222 is a common NPN bipolar junction transistor NOT a PNP Transistor !!
+Please correct it !
+Thanks
+Kevin Filteau says:	March 24, 2014 at 16:56	Fixed. Thanks for noticing.
+Leave a Reply Cancel reply
+Your email address will not be published. Required fields are marked *	Name * Email * Website Comment You may use these HTML tags and attributes: <a href="" title=""> <abbr title=""> <acronym title=""> <b> <blockquote cite=""> <cite> <code> <del datetime=""> <em> <i> <q cite=""> <strike> <strong> Tweets by @playwithmyled
+Projects	Categories	Arduino
+Edgar
+Glowing Marquee
+Internet to Serial Proxy
+Kid's Buttons Box
+LILA
+Marvin
+Mixed
+News
+Programming
+Projects
+Raspberry Pi
+Smart Garden
+Arduino
+Arduino
+Arduino Knowledge
+Inspiring
+Design You Trust
+Makezine Blog
+Archives	December 2013 (1)
+November 2013 (2)
+September 2013 (1)
+April 2013 (2)
+March 2013 (4)
+February 2013 (1)
+October 2012 (3)
+March 2012 (2)
+November 2011 (1)
+September 2011 (1)
+December 2010 (1)
+November 2010 (1)
+October 2010 (2)
+September 2010 (1)
+June 2010 (2)
+May 2010 (3)
+April 2010 (2)
+March 2010 (2)
+February 2010 (1)
+October 2009 (1)
+BITCOINI love bitcoin, please send me some if you wish.
+1F4fhchR46w6CE4CKkcHdTJm1wgRKPndXU
+Or you can send me some stuff in my wish list :
+8ohm shelf speakers
+Raspberry Pi
+Arduino
+Any electronic parts
+Thank you so much
+Proudly powered by WordPress
+

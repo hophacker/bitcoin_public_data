@@ -1,0 +1,1206 @@
+http://kadin.sdf-us.org/weblog/finance
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 01:13:58 GMT
+Server: Apache/2.2.27 (Unix) mod_ssl/2.2.27 OpenSSL/1.0.1g
+Connection: close
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="content-type" 
+			content="text/html;charset=utf-8">
+		<title> Kadin2048's Weblog</title>
+		<link href="http://kadin.sdf-us.org/blog.css" 
+			type="text/css" rel="stylesheet" media="all">
+	</head>
+<body>
+
+<div id="blogtitle">Kadin2048's Weblog</div>
+
+<div id="categories">
+
+<ul class="category-list">
+<li><a href="http://kadin.sdf-us.org/weblog/technology">Technology</a></li>
+<li><a href="http://kadin.sdf-us.org/weblog/politics">Politics</a></li>
+<li><a href="http://kadin.sdf-us.org/weblog/finance">Finance</a></li>
+<li><a href="http://kadin.sdf-us.org/weblog/photography">Photography</a></li>
+<li><a href="http://kadin.sdf-us.org/weblog/meta">Meta</a></li>
+</ul>
+
+<p>
+<a href="http://kadin.sdf-us.org/weblog/?flav=rss" class="RSS">RSS</a>
+</p>
+
+</div> <!-- End categories -->
+
+<div id="contentwrapper">
+<div id="articlecolumn">
+<h3>Mon, 20 Jun 2011</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="mtgox-hacking-sofar" href="http://kadin.sdf-us.org/weblog/finance/mtgox-hacking-sofar.html">Mt. Gox Breach Summary</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>I&#8217;ve been following the Mt. Gox security breach and subsequent
+Bitcoin/USD price collapse for a little while.  This is a rough
+summary of events as they seem to have happened, based on available
+information at the current time (June 20, early morning UTC).</p>
+
+<p>My assumption is that at least some of this timeline will turn out to
+be wrong, which in itself might be interesting in retrospect.</p>
+
+<p><strong>Sometime in early June</strong>:  Unspecified attackers gained access to a
+machine, allegedly being used by an auditor, either containing or
+with read-only access to, the Mt. Gox database or some portion of
+it.  Whether the attackers had access to the entire database or &#8220;just&#8221;
+the user table doesn&#8217;t seem known, but the important thing is that
+they got a table containing, <a href="https://support.mtgox.com/entries/20208066-huge-bitcoin-sell-off-due-to-a-compromised-account-rollback">according to Mt. Gox</a>:</p>
+
+<ul>
+<li>Account number</li>
+<li>Account login</li>
+<li>Email address</li>
+<li>Encrypted password </li>
+</ul>
+
+<p>For accounts not accessed in the last two months (viewed by Mt. Gox as
+&#8220;inactive&#8221;), the password was stored as an MD5 hash.  For accounts
+accessed in the last two months, the password was <a href="http://en.wikipedia.org/wiki/Salt_(cryptography)">salted</a>, then hashed
+with MD5.  Nowhere in the database were there plaintext passwords.</p>
+
+<p>Exactly who had access to the database, whether it was an individual
+or group, isn&#8217;t known.  It seems that access to the database might
+have gone through several stages: presumably from the person or group
+who obtained it initially from the compromised machine, and then to
+less-sophisticated people or groups.  We can say with some confidence
+that it started to be distributed shortly before June 17th, because on
+that date somebody <a href="http://forum.insidepro.com/viewtopic.php?p=65092&amp;sid=d23fbc6d37e592c825f5126e201747e7">posted a message to a forum</a> with some hashed
+passwords that came from the database.  (N.B., this is hearsay from
+the #Bitcoin IRC channel, and thus fairly speculative.  I haven&#8217;t
+looked at a copy of the database to confirm it.)</p>
+
+<p><strong>Monday, June 13</strong>:  The actual theft of Bitcoins from compromised
+accounts began, according to various sources, on Monday morning.
+Approximately 25k BTC were transferred from 478 accounts, <a href="http://www.dailytech.com/Inside+the+MegaHack+of+Bitcoin+the+Full+Story/article21942.htm">according
+to DailyTech</a> (although elsewhere in the same article they claim
+25,000 accounts).  The destination address was
+&#8220;1KPTdMb6p7H3YCwsyFqrEmKGmsHqe1Q3jg&#8221;.</p>
+
+<p>Presumably, the accounts were accessed by brute-forcing the hashed
+passwords in the database.  It&#8217;s not clear to me whether the accounts
+were all &#8220;inactive&#8221; (and thus had unsalted password hashes, vulnerable
+to a pre-computation attack), or if they were active, had salted
+hashes, but were just weak and fell to a dictionary attack.  It
+probably would have been logical for the attackers to pursue both
+routes at once: go after the old, unsalted hashes with Rainbow tables,
+while at the same time performing dictionary attacks against the
+salted hashes associated with accounts with significant BTC balances.
+At any rate, using some combination of both routes, they eventually
+found some vulnerable accounts.</p>
+
+<p>The thefts seem to have gone on during the remainder of the week, with
+Mt. Gox <a href="http://forum.bitcoin.org/index.php?topic=18858.0;all">seemingly misreading the increase in theft reports as
+insecurity on users&#8217; PCs</a>, rather than a security problem on their end.</p>
+
+<p><strong>Sunday, June 19</strong>: The Bitcoin &#8216;Flash Crash&#8217;.</p>
+
+<p>At around 3AM Japan Standard Time, someone &#8212; my guess is not one of
+the original attackers &#8212; began a massive sell-off from a single
+compromised account.  (One open question is whether this account was a
+receiver account for stolen BTC from other hacked accounts, or just
+happened to be a &#8216;whale&#8217; that they managed to access.)  This is where
+things start to get interesting, because it&#8217;s not immediately obvious
+why someone who recently came into possession of a whole lot of
+Bitcoins would want to crash the price.</p>
+
+<p>One theory is that it wasn&#8217;t intentional; they were hurrying, perhaps
+working against other attackers who had access to the same database,
+and wanted to cash out quickly.  But another theory, one that I think
+is more plausible, is that the sell-off was calculated to crash the
+BTC price, in order to get around Mt. Gox&#8217;s $1,000 USD/day withdrawal
+limit.</p>
+
+<p>By dumping a large number of Bitcoins onto the market &#8212; not just once
+but twice (the attacker repurchased and sold the lot of coins a second
+time, supposedly) &#8212; the market price was driven down.  Basically all
+open bids on the order book were filled, down to ridiculously low
+prices.  At no point did any sort of &#8216;<a href="http://www.ft.com/cms/s/0/673b7bae-6e6b-11df-ad16-00144feabdc0.html#axzz1PnHQPgbd">safety switch</a>&#8217; kick in at
+Mt. Gox to halt trading; it was full-bore Black Monday mode.</p>
+
+<p>And here we start to run into my limit of knowledge.  If we assume
+that the crash was engineered in order to get around the Mt. Gox
+withdrawal limit, then when the price was very low, the attackers
+should have made their move, and transferred whatever they could out
+of Mt. Gox, to external Bitcoin accounts.</p>
+
+<p>Mt. Gox seems to be claiming that this did not happen, and the
+withdrawal limits successfully kept the total amount of BTC removed
+from the exchange to some low number.  If true, this would allow them
+to &#8216;reset&#8217; the exchange back to how it was before the flash crash,
+with only limited losses &#8212; perhaps low enough that Mt. Gox could make
+all users whole before resuming trading.</p>
+
+<p>But if this isn&#8217;t the case, then it may not be possible for Mt. Gox to
+shield all of its users from losses.  After all, one of the key
+features of Bitcoins is that they can&#8217;t simply be magic-ed into
+existence on demand by a central authority when convenient.  If the
+Bitcoins have left the building, so to speak, Mt. Gox can&#8217;t just grab
+them back or create new ones to replace them.</p>
+
+<p>In the next few hours or days, I expect these issues to become more
+clear.  Also, it will be interesting to see whether the BTC/USD rate
+stays at the $17 mark that Mt. Gox plans to resume trading at, or
+immediately falls to some lower level, in keeping with lowered
+investor confidence.</p>
+
+<p>Personally, I wouldn&#8217;t mind one bit if this marked the end of
+Bitcoin&#8217;s first speculative bubble; most of my interest in Bitcoin is
+as a currency, not as an instrument for speculative investment (and a
+not-very-liquid one at that).  The question will be whether Bitcoin&#8217;s
+reputation is irretrievably damaged as a result, or if the damage is
+forgotten about or limited to Mt. Gox.</p>
+
+<p>Certainly more interesting and higher stakes than the usual EVE Online
+drama, though.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/mtgox-hacking-sofar.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Wed, 01 Jun 2011</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="bitcoin-reservations" href="http://kadin.sdf-us.org/weblog/finance/bitcoin-reservations.html">Bitcoin: You Too Are Mortal</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>As is perhaps evident from some of my other posts, I&#8217;m kind of a
+sucker for alternative currencies.  A couple of years ago I watched
+the trainwreck that was <a href="http://kadin.sdf-us.org/weblog/technology/strange-saga-1mdc.html">the demise of 1MDC</a>, a &#8216;currency&#8217; that
+was backed by EGold (which was <a href="http://en.wikipedia.org/wiki/EGold">itself shut down in 2009</a>).
+And then there&#8217;s the sad saga of the <a href="http://en.wikipedia.org/wiki/Liberty_Dollar">Liberty Dollar</a>, which
+in retrospect probably would have avoided a lot of legal trouble if it
+had been called the &#8216;Liberty Peso&#8217; or something a bit less <em>official</em>.</p>
+
+<p>Liberty Dollars and EGold (and its spawn, e.g. 1MDC) were, until
+recently, arguably the high-water marks for private currencies in the
+U.S., in modern times anyway.  However, both of them suffered crucial
+flaws: they were built around centralized institutions which created
+single points of failure.  When they eventually aroused the attentions
+of the authorities &#8212; as any private currency is likely to do &#8212; they
+were pretty quickly taken down.</p>
+
+<p>In the case of someone holding physical Liberty Dollars this wasn&#8217;t
+really catastrophic, since they still had the coins.  (Even morons who
+bought them at terribly inflated prices might have come out ahead, due
+to the run-up in commodities prices in the last few years, if they
+held out long enough.)  However, &#8220;holders&#8221; of EGold were right out;
+they had to wait until mid-2010 to be able to get their money out, and
+then only by identifying themselves.</p>
+
+<p>One would not have been faulted for thinking that the idea of private
+currencies, existing in parallel to government-backed ones, was
+finished.</p>
+
+<p>But it&#8217;s instructive to consider why EGold was designed the way it
+was, with a centralized architecture.  If we give its developers any
+benefit of the doubt at all, they must have realized this was a gaping
+vulnerability.  But it was a necessity for two reasons:</p>
+
+<ol>
+<li><p>They wanted to back their currency with a physical commodity,
+namely gold.</p></li>
+<li><p>They wanted to be able to make money on it.</p></li>
+</ol>
+
+<p>The point I&#8217;m (rather laboriously) making my way around to, is that
+neither of these are true for all private currencies, and Bitcoin in
+particular seems to avoid them.</p>
+
+<p>Bitcoins aren&#8217;t backed by anything.  Unlike EGold and Liberty Dollars,
+both backed (either directly or indirectly) by gold, Bitcoins aren&#8217;t
+backed by anything.  They have exactly zero intrinsic value.  While
+that makes them rather volatile, it also means there&#8217;s no warehouse
+full of metal to be inconveniently seized.</p>
+
+<p>Second, there doesn&#8217;t seem to be much in the way of a profit motive
+behind Bitcoin&#8217;s development.  Both Liberty Dollar and EGold seem, on
+their face, to be money-making ventures for those behind them.
+Liberty Dollars were sold, at a premium above their intrinsic value,
+by NORFED; EGold charged management fees, presumably in excess of its
+costs to have some gold bars stored in a vault.  PayPal, which is
+admittedly not a private currency, makes money via transaction fees.
+All of those models require a centralized architecture in order to
+generate revenue.</p>
+
+<p>Bitcoin&#8217;s architecture eliminates the potential for a Bitcoin,
+Inc. IPO, but in doing so it is significantly more difficult to shut down.</p>
+
+<p>One area where Bitcoin seems to remain vulnerable is in its
+convertibility to traditional currencies, especially USD.  Although
+it&#8217;s possible in theory to &#8216;bootstrap&#8217; a currency (particularly one
+with a fixed number of tokens) that&#8217;s not convertible &#8212; someone would
+need to jump in and start pricing goods in it, and in doing so imbue
+the currency with real-world value &#8212; but it&#8217;s certainly a lot easier
+if you can move value back and forth from other currencies.</p>
+
+<p>Currently there are several public Bitcoin markets, including
+<a href="https://mtgox.com/">Mt. Gox</a>, the largest, <a href="https://www.bitcoinexchange.com/">Bitcoin
+Exchange</a>, which is a forum for
+person-to-person transactions, and
+<a href="http://www.bitcoinexchange.cc/transaction.html">BitcoinExchange.cc</a>,
+which just strikes me as shady (maybe it&#8217;s the .cc TLD).</p>
+
+<p>Even at Mt. Gox, buying Bitcoins is not a straightforward process.
+You can&#8217;t just whip out your Visa and buy $100 worth of Bitcoins at
+the going rate; instead, you have to go through one of several
+intermediaries who handle the USD side of the transaction, moving
+money into a Mt. Gox account, and then you can use the money to buy
+Bitcoins.  It&#8217;s not that much worse than setting up an account with a
+brokerage (and the fees and minimums are much lower!), but it&#8217;s not
+like the Foreign Exchange desk at the airport.</p>
+
+<p>This is where I&#8217;m a bit concerned that the whole Bitcoin concept could
+get in trouble.  Right now, the value of Bitcoins &#8212; which are backed
+by nothing, other than a mathematical guarantee that only a certain
+number can be &#8216;minted&#8217; &#8212; has built into it an assumption about the
+ease of converting them into USD and other currencies.  If the ability
+to convert Bitcoins to USD or other currencies was suddenly suspended,
+I suspect you would see a very sharp drop in the value of Bitcoins.
+In doing so, it might erode confidence enough to render it useless or
+insignificant as a currency.</p>
+
+<p>Exactly how this plays out will be very interesting in the months and
+years ahead.  The U.S. government took significant amounts of time to bring
+the axe down on EGold and Liberty Dollars, so the lack of immediate
+action shouldn&#8217;t be taken to indicate any change in attitude towards
+private currencies.  If and when something does happen, my bet is that
+it occurs at the BTC/USD/EUR/etc. exchange points.  We&#8217;ll see.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/bitcoin-reservations.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Tue, 07 Sep 2010</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="optimistic-equity-premium" href="http://kadin.sdf-us.org/weblog/finance/optimistic-equity-premium.html">&#8220;Optimistic&#8221; Thought Experiments and the &#8216;Equity Premium Puzzle&#8217;</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p><a href="http://en.wikipedia.org/wiki/Peter_Thiel">Peter Thiel</a>, formerly of PayPal, more recently of the
+Founders Fund and Clarium Capital, has an interesting article in the
+Hoover Institution <em>Policy Review</em>, called <a href="http://www.hoover.org/publications/policy-review/article/5646">&#8220;The Optimistic Thought
+Experiment.&#8221;</a>  The best one-sentence summary is probably
+his own: <em>&#8220;In the long run, there are no good bets against
+globalization.&#8221;</em></p>
+
+<p>However, the article is more interesting than just that, and even if
+you disagree with that particular conclusion &#8212; perhaps especially if
+you disagree with that particular conclusion &#8212; it&#8217;s worth a read.</p>
+
+<p>The argument that I found most interesting is that, as a result of
+more powerful technologies and a more complex and interconnected
+world, a greater risk exists of &#8220;secular apocalypse,&#8221; a complete,
+system-wide failure of the current capitalist framework, than has ever
+existed in the past.  What might have been local panics or crashes now
+reverberate globally, even as new failure modes have emerged.</p>
+
+<p>This, in particular, struck me:</p>
+
+<blockquote>
+  <p>[T]he extreme valuations of recent times may be an indirect measure
+of the narrowness of the path set before us. Thus, to take but one
+recent example, in 1999 investors would not have risked as much on
+internet stocks if they still believed that there might be a future
+anywhere else. [&#8230;] It is often claimed that the mass delusion reached its
+peak in March 2000; but what if the opposite also were true, and
+this was in certain respects a peak of clarity? Perhaps with
+unprecedented clarity, at the market&#8217;s peak investors and employees
+could see the farthest: They perceived that in the long run the Old
+Economy was surely doomed and believed that the New Economy, no
+matter what the risks, represented the only chance. Eventually,
+their hopes shifted elsewhere, to housing or China or hedge funds —
+but the unarticulated sense of anxiety has remained.</p>
+</blockquote>
+
+<p>I am not sure exactly how convinced I am of this &#8212; it has a sort of
+exceptionalist tinge to it that I am intrinsically skeptical of &#8212; but
+it&#8217;s a very interesting theory.  To some extent, casual observation
+bears it out: the last few years, we have seen speculative bubbles pop
+up in various places as investors have moved from one market to the
+next in search of returns.</p>
+
+<p>Much has been made of the fact that some of these bubbles &#8212; real
+estate in particular &#8212; just <em>never made a whole lot of sense</em>, or at
+least not enough sense to justify the amount of money that was being
+pumped into them, or the fervor with which it was being pumped, not
+just by I-banks and hedge funds, but by individuals &#8216;flipping&#8217; houses,
+taking on second homes, and getting involved in shady high-return
+investment schemes (which are still being advertised on sketchy
+hand-drawn yard signs at major intersections in my area).</p>
+
+<p>Viewed through the lens of Thiel&#8217;s thought experiment&#8217;s premise, it
+starts to look a whole lot less irrational and a whole lot more
+rational &#8212; albeit desperate.</p>
+
+<p>It also made me wonder about the <a href="http://blogs.reuters.com/felix-salmon/2010/05/20/revisiting-the-equity-premium/">long-standing arguments regarding
+the &#8216;equity premium&#8217;</a> (the premium paid by equities versus
+&#8216;risk-free&#8217; investments like Treasuries).  Some people argue,
+generally by analyzing U.S. market returns during the 20th century,
+that the equity premium is around 5-8%.  However, <a href="http://alephblog.com/2009/07/15/the-equity-premium-is-no-longer-a-puzzle/">others</a>
+suggest that in the future, it might be more like 3-4% <em>over cash</em>.
+The jury is definitely still out on this, but it certainly seems like
+there is a developing consensus that the equity premium is in decline.</p>
+
+<p>The equity premium has long been considered <a href="http://en.wikipedia.org/wiki/Equity_premium_puzzle">something of a
+mystery</a>, because it&#8217;s higher than you&#8217;d expect given
+investor behavior.  With an equity premium of 7% over bonds, you&#8217;d
+have to be almost ridiculously risk-averse to <em>not</em> buy equities.  But
+if the premium is as low as some suggest it may be going forward, than
+the mystery might be the other way around: why hold equities when you
+can have less risky bonds instead, at a small discount?</p>
+
+<p>My completely speculative theory is that perhaps this is due, in part,
+to the kind of attitude Thiel discusses.  If investors suspect,
+consciously or unconsciously, that a scenario in which their S&amp;P 500
+fund becomes worthless would also be one where T-Bills or even cash
+are worthless (or, less extreme, that they&#8217;d lose significant value as
+well), then they might not agree that the difference in risk is great
+enough to justify the lower yield of the &#8216;safer&#8217; investment.</p>
+
+<p>Of course, the market could just be irrational.  I&#8217;m not sure that
+anything other than time is going to tell.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/optimistic-equity-premium.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Mon, 08 Jun 2009</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="short-sales" href="http://kadin.sdf-us.org/weblog/finance/short-sales.html">The Unrealized Promise of Short Sales</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>Calculated Risk, one of my favorite finance and economics blogs, has a
+great article written by the late Tanta on <a href="http://www.calculatedriskblog.com/2009/06/psychology-of-short-sales-by-tanta.html">The Psychology of Short
+Sales</a>.  The piece really hit home for me, because during
+my recent search for new quarters, I ended up drooling over a lot of
+short sale listings, only to be warned by my agent that they often
+take a very long time to execute and frequently fall through.  I
+quickly cooled to the concept.</p>
+
+<p>On paper, short sales are the ultimate win/win for an upside-down
+homeowner who wants to &#8220;walk away,&#8221; and a lender who wants to minimize
+their loss.  It lets both parties avoid foreclosure, prevents a house
+from sitting empty and potentially becoming a target for vandalism,
+squatters, and generally a source of neighborhood blight, and lets the
+homeowner remain on the property and leave gracefully when it sells.
+Plus, potential buyers get a house that hasn&#8217;t been trashed by a
+bitter ex-owner, or had its pipes freeze and burst due to over-winter
+neglect.  Triple win, right?</p>
+
+<p>That&#8217;s on paper.  In practice, things often don&#8217;t work out so well.
+Because of the way short sales work, there&#8217;s often a disconnect
+between what the various parties involved in the deal think the
+property is worth.  If they can&#8217;t reconcile their views, there&#8217;s no
+sale and the property goes back on the market, and eventually to
+foreclosure.</p>
+
+<p>The biggest difference between a short sale and a traditional
+bank-owned post-foreclosure property (a &#8220;REO&#8221;, or &#8220;real estate owned&#8221;)
+is that in the latter case, the bank has already taken possession of
+the property, probably had it assessed, and accepted that they&#8217;re
+going to take a non-negligible loss.  It&#8217;s just a non-performing asset
+sitting on their books at this point, one that they&#8217;d presumably like
+to unload at the earliest possible opportunity at an acceptable price.
+Contrast this to a short sale: the bank has just learned that the
+current homeowner can&#8217;t make their payments and wants out, and has
+responded by telling them to get a listing agent and put it on the
+market.  They haven&#8217;t really written anything down yet.  The big loss
+is still to come.</p>
+
+<p>To a buyer, a short sale property ought to be more attractive than a
+REO, because it hasn&#8217;t been sitting vacant or gotten trashed during a
+ugly eviction.  However, buyers quickly learn to beware these six
+words in any listing: &#8220;offers subject to third-party approval.&#8221;</p>
+
+<p>When a buyer makes an offer on a REO, the offer goes to the bank and
+they get a pretty straightforward thumbs-up or thumbs-down.  Either
+the offer is acceptable and it sells, or it isn&#8217;t and the bank is
+content to let it stay on the market a bit longer.  Since the bank
+already owns the house, they just want to get the most for it they
+can.</p>
+
+<p>When an offer is made on a short-sale property, it gets forwarded by
+the listing agent to the bank, who has the choice of whether to accept
+it or not.  If they accept it, they&#8217;re almost certainly taking a loss
+and accepting a writedown on the original mortgage.  There is a big
+psychological difference between this and the REO case, it seems to
+me: in a REO situation, the bank is trying to recoup as much as it can
+of an already-realized loss; in a short-sale, the bank is actually
+taking the loss as part of accepting the offer.</p>
+
+<p>This psychological difference seems to manifest itself in the relative
+speed with which banks process the two different types of offers.  REO
+offers get decisions rendered quickly; short sale offers can take
+months to process, during which both the buyer and seller live in
+uncertainty.  This uncertainty causes buyers to make fewer offers on
+short sales than on REOs, and to offer less for short sales than they
+might otherwise.  In theory there&#8217;s no reason why short sales should
+sell for much below what a regular owner/buyer sale would, but in
+practice they go for something closer to REO prices.  This difference
+is, to my eyes anyway, almost completely due to the perceived
+arduousness of the short sale process.</p>
+
+<p>In addition, there&#8217;s often a failure on the part of buyers and lenders
+to understand how the short sale benefits the other party, and how
+this affects the price they&#8217;re willing to accept.  This is what Tanta
+explores in the Calculated Risk article.  Lenders are only interested
+in a short sale if it results in a price that&#8217;s significantly (more
+than 40%) greater than what the property would fetch as a REO,
+post-foreclosure.  Buyers, on the other hand, often try to bid <em>less</em>
+than what the property would fetch as a REO, on the assumption that
+the lender ought to be willing to take a little less on a short sale
+than they would as a REO, since they&#8217;re avoiding going through
+foreclosure.  Hence, no deal.</p>
+
+<p>In order to make short sales a more viable option for distressed
+homeowners who find themselves upside-down on their mortgages and
+unable to pay for them (or who simply want out and can&#8217;t sell normally
+and cover the mortgage), I can think of several things that need to
+happen:</p>
+
+<ul>
+<li><p>Banks and other lenders need to assign more staff to &#8220;special
+assets&#8221; and other pre-foreclosure divisions, and realize that they
+can avoid needless trouble and expense by going the short-sale route
+versus foreclosure.  They need to gear these divisions to providing
+fast up-or-down decisions on short sale offers, and empower
+employees to write down assets significantly (at least as much as
+the delta between the REO price and the loan face value) in order to
+make deals happen quickly.</p></li>
+<li><p>Prospective buyers need to be better-educated about how short sales
+work, not only from their own perspective, but also from the owner&#8217;s
+and lender&#8217;s.  They need to understand why a lowball, sub-REO offer
+isn&#8217;t going to fly with the lender.  For a short sale to work, three
+parties &#8212; the owner, the buyer, and the lender &#8212; need to feel like
+they&#8217;re making out better than they would have via foreclosure.
+Offering substantially less than a property would fetch as a REO
+doesn&#8217;t allow that to happen.</p></li>
+<li><p>Homeowners considering a short-sale, whether in financial distress
+or not, need to be better about selling their properties.  They need
+to work hard to make it clear to buyers that they&#8217;re not selling a
+REO, and that the property is inhabited and well-maintained.  If a
+house looks like a foreclosure property, it&#8217;s going to get offers
+that reflect that, and it will almost certainly end up as a
+foreclosure property eventually.  I saw several short-sale
+properties during my recent search that were frankly <em>worse</em> than
+the average REO, and that just isn&#8217;t going to work.</p></li>
+</ul>
+
+<p>As it turned out, I didn&#8217;t make any offers on the short sale
+properties that I looked at.  Given the time available before I have
+to be out of my current rental, it just doesn&#8217;t make sense.  And I
+definitely wasn&#8217;t alone: many short sale properties had been on the
+market for hundreds of days, while REOs are being snapped up almost
+daily by hungry buyers armed with low rate pre-approval letters.</p>
+
+<p>Making the reality of short sales better match the concept would
+provide affordable homeownership to many buyers, a dignified &#8216;out&#8217; for
+distressed owners, and smaller losses to lenders and their investors.
+But a lot has to happen before that will be the case.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/short-sales.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Sat, 16 May 2009</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="bbt-letter" href="http://kadin.sdf-us.org/weblog/finance/bbt-letter.html">Getting Out From Under the TARP</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>I got a letter from BB&amp;T last week, an actual paper letter, on account
+of owning a couple of shares of their stock.  I had already heard the
+news that they planned to <a href="http://www.bbt.com/bbt/about/investorrelations/newsreleasedetail.asp?date=5%2F11%2F2009+6%3A25%3A35+AM">cut their dividend and issue between $1.5
+and $1.7 billion in new stock to get out of TARP</a>, but
+struck me as interesting that they bothered to send out notices, in
+the form of a letter from the CEO, to all shareholders of record.</p>
+
+<p>The letter is available online <a href="http://www.bbt.com/bbt/about/shareholderservices/Shareholder%20Letter%205-11-2009.pdf">here</a> (PDF).</p>
+
+<p>Most news coverage of BB&amp;T&#8217;s decision to repay TARP has focused on the
+dividend reduction, and a remark by CEO Kelly King that it &#8220;marks the
+worst day in my 37 year career.&#8221;  However, I thought the second page
+of the letter was really the most interesting:</p>
+
+<blockquote>
+  <p>Many of you have asked why we agreed to participate in the Capital
+Purchase Program last November. Frankly, we did not need or want the
+investment, but our regulators urged us along with other healthy
+banks to participate for the purpose of increasing lending to
+improve economic conditions.</p>
+</blockquote>
+
+<p>Them&#8217;s fighting words right there, or at least they are by the
+admittedly low standards of a corporate shareholder communique.  For a
+few months now, rumors have been circulating that healthy banks &#8212;
+like BB&amp;T &#8212; were essentially forced or otherwise pressured by
+regulators to participate in TARP, in order to make it seem less like
+the plague ward than it really was.  This is the first written
+confirmation that I&#8217;ve seen from senior management at a &#8216;healthy&#8217; bank
+basically confirming the worst of those rumors.</p>
+
+<p>The key word is that executives at BB&amp;T didn&#8217;t &#8220;want&#8221; the TARP money
+from the beginning, indicating they must have been pressured or
+coerced &#8212; given &#8216;an offer they could not refuse,&#8217; perhaps &#8212; to take
+it anyway.  The letter doesn&#8217;t get into exactly what form that
+coercion took, but I suspect in time more details, beyond <a href="http://online.wsj.com/article/SB122402486344034247.html">what are
+already known</a>, will come out.  Doubtless it won&#8217;t look all
+good for the banks when it does; in the end all the majors caved, and
+when they complain Treasury will accuse them of hypocrisy: buying into
+the plan when the going was tough, but getting buyers&#8217; remorse now
+that things are looking somewhat better.  This is a legitimate
+accusation that they&#8217;ll have to work hard to defend against.  The
+ultimate question will be what the consequences of <em>not</em> participating
+&#8212; essentially calling the Don&#8217;s bluff &#8212; would have been, and whether
+they would have been preferable to what actually occurred.</p>
+
+<p>The government, it seems, is going to turn a fair profit on TARP at
+great expense to the investors in <em>healthy</em> banks.  (The sick banks
+won&#8217;t really have lost money to TARP, at least not in the same way
+that banks like BB&amp;T did, because they actually needed the capital
+infusion to stay alive; for them it was money well spent.)  I think
+it&#8217;s too much to expect at this point that anything will happen to
+recoup any of BB&amp;T&#8217;s TARP-related losses, either the direct ones in
+the form of interest payments to the government, or indirect ones like
+the reduced dividend (which arguably they might have to have done
+anyway, but perhaps not &#8212; now we&#8217;ll never know) and share dilution.</p>
+
+<p>There&#8217;s not much of a silver lining, but hopefully it will prove to be
+a &#8216;learning experience,&#8217; albeit an expensive one.  After having been
+so painfully screwed, it&#8217;s doubtful that BB&amp;T or any of the other
+&#8216;healthy&#8217; banks will have <em>anything</em> to do with similar programs to
+TARP in the future; whatever coercion was required to buy their
+participation this time around, next time they will almost certainly
+be tougher sales.</p>
+
+<p>TARP may not have injected needed capital into the healthy banks, but
+it may have given them something far more important in the long run:
+backbone.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/bbt-letter.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Sun, 10 May 2009</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="stock-market-game" href="http://kadin.sdf-us.org/weblog/finance/stock-market-game.html">On &#8220;The Stock Market Game&#8221;</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>When I was in perhaps 5th or 6th grade, I recall my math teacher making a
+halfhearted effort to get us to play <a href="http://www.stockmarketgame.org/">The Stock Market Game</a> as
+part of our curriculum.  It didn&#8217;t go very well and certainly wasn&#8217;t
+effective as a teaching tool; I remember a couple of class periods
+spent pretending to make sense of the NY Times&#8217; stock pages while
+actually reading the comics, and very little else.  </p>
+
+<p>A few years ago when I first decided to play my own little stock
+market game with some Excel spreadsheets, and found myself learning a
+whole lot more about economics and the market than I had ever really
+intended, I wondered why I&#8217;d never done it before.  And then the
+memory of that abortive attempt to do exactly that came back.</p>
+
+<p>It strikes me as a rather sadly missed opportunity.  Until I started
+playing with my little virtual portfolio in Excel, I had only a very
+vague idea of how the equities markets worked &#8212; and this is despite
+having taken the two semesters of required Economics in college.
+Would I have picked a different major or career path as a result of
+getting that little bit of fundamental understanding that you gain
+from playing with a paper portfolio earlier?  (And would that have been
+a good thing?)  I have no idea.  And really, that question doesn&#8217;t
+interest me that much; I have no regrets, certainly, about my actual
+choices with regards to education or employment.</p>
+
+<p>What does interest me is trying to figure out why, despite someone&#8217;s
+intentions that we <em>would</em> use the Stock Market Game in our math
+class, it never ended up amounting to anything.</p>
+
+<p>The first problem, I suspect, is that my poor old math teacher &#8212; who
+had been teaching from the same curriculum for probably 30 years &#8212;
+didn&#8217;t know that much more about the stock market than we the students
+did.  (I also suspect that she wasn&#8217;t the one to decide to include it
+in class; it just doesn&#8217;t, and didn&#8217;t at the time, seem like her
+style.)  That combination was deadly, right off the bat.  Whatever
+educational utility a virtual portfolio game might have &#8212; and people
+are <a href="http://www.dollarsandsense.org/archives/2001/0301maier.html">rightly skeptical</a> of them at times &#8212; it evaporates
+instantly when the teacher isn&#8217;t knowledgeable and interested in it
+themselves.</p>
+
+<p>Perhaps the root of this problem was making it part of a math class in
+the first place.  There really isn&#8217;t that much &#8216;math&#8217; involved in
+maintaining a paper portfolio, and what there is represents pretty
+basic stuff &#8212; if you&#8217;re using a stock market game to teach percents,
+chances are you&#8217;re not really getting into what makes the stock market
+interesting and important; you might as well just stick to lemonade
+stand examples and save students the confusion.</p>
+
+<p>The stock market game would probably have fit better into the history
+or social-studies curriculum than into math.  That might have also
+caused the focus of the overall lesson to be more about the equities
+markets themselves &#8212; how they work, why they exist, what the effects
+are of market fluctuations &#8212; rather than simply on generating a
+short-term return in a virtual portfolio.  (That would also go a long
+way towards addressing most of the criticisms of stock market games as
+propaganda tools expressed in <a href="http://www.dollarsandsense.org/archives/2001/0301maier.html">the article by Maier</a>, which are in
+my opinion mostly quite valid.)</p>
+
+<p>The second major problem had to do with how the game itself was
+executed; this being the pre-Internet era, we did everything on paper
+and got pricing information out of the newspaper.  Hopefully this
+wouldn&#8217;t be a problem today; it would be simple to use Google Finance,
+or even the Excel sheets I played with a few years ago, to do it now,
+and you&#8217;d at least get pretty graphs out of the bargain.</p>
+
+<p>The only benefit I can attest to as a result of having to once try to
+use, or at least look at, the printed financials pages, is a <em>vast</em>
+appreciation for the electronic tools that are available today to the
+individual investor, or even to the merely curious.  From the looks of
+the photos on <a href="http://www.stockmarketgame.org/">TSMG&#8217;s website</a>, they have changed with the
+times.  (Damn kids will just take them for granted.  Get off my lawn.)</p>
+
+<p>Aside from simply replacing graph paper and the Times financial
+section with some pretty electronic system, bringing in computers also
+allows for a lot more research than would have previously been
+possible in a classroom setting.  Research and due diligence are a
+huge component of investing and non-technical speculation, and that&#8217;s
+a lesson that you don&#8217;t need to become a stock broker or day trader
+later on in life in order to appreciate &#8212; anyone with a 401k will do.</p>
+
+<p>I think the concept of a stock market game is a pretty sound one, in
+terms of teaching students about a fundamental and important part of
+our economy &#8212; one which can, as recent events have made plain, affect
+their lives whether they pay attention to it or not.  I can only hope
+that how that concept is being executed today is better than the
+pathetic attempt I experienced many years ago.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/stock-market-game.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Sat, 29 Nov 2008</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="RGE-credit-trade" href="http://kadin.sdf-us.org/weblog/finance/RGE-credit-trade.html">RGE on Credit and Trade</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p><a href="http://www.rgemonitor.com/">Roubini Global Economics</a> (RGE) has an interesting article
+called <a href="http://www.rgemonitor.com/asia-monitor/254562/can_china_adjust_to_the_us_adjustment">&#8220;Can China Adjust to the US Adjustment&#8221;</a> that
+discusses, among other things, the relationship between foreign trade
+and the current credit &#8216;crunch.&#8217;  It&#8217;s a fascinating article both
+because of the interesting history it describes, and some of the
+predictions it makes.</p>
+
+<blockquote>
+  <p>Although we can&#8217;t say for sure, it is probably safe to argue that US
+savings rates will climb back to earlier average levels, or even
+temporarily exceed those levels, as American households rebuild
+their shattered balance sheets.  If they return only to the
+mid-point of earlier savings rates, this implies that US household
+savings must rise by some amount equal to roughly 5% of US GDP, or,
+to put it another way, that all other things being equal US
+household consumption must decline by that amount.</p>
+</blockquote>
+
+<p>Although it may just be that I haven&#8217;t been paying close enough
+attention, this is the first time I&#8217;ve seen anyone toss out a hard
+number estimate of how much they expect consumption to fall by.
+Pretty much everyone expects consumption to fall by <em>some</em> amount, but
+&#8216;how much&#8217; is the real issue.</p>
+
+<p>This decline &#8212; whatever it ends up being &#8212; will inevitably cause a
+decrease in China-to-U.S. imports, and that will have to be
+compensated by either an increase in domestic Chinese consumption, or
+a decrease in production.  The article suggests, and I agree, that the
+former is highly unlikely.  Although Chinese household spending is on
+the rise, there is just no way that it will rise fast enough or high
+enough to maintain the insane level of consumption that was until
+recently being bankrolled by the U.S.  Hence, production there must
+fall.</p>
+
+<p>Of course, falling production means factory closures and job loss, and
+that means domestic consumption will fall yet further, leading to a
+nasty downward spiral.  The parallels drawn in the article between
+1929 in the U.S. and 2008 in China seem pretty well-grounded; except,
+of course, that in 2008 Chinese regulators have volumes of economic
+theory and analysis written about 1929 at their disposal, if they
+choose to make use of it.</p>
+
+<p><small>[Via <a href="http://www.metafilter.com/76952/Its-1929-again">MetaFilter</a>.]</small></p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/RGE-credit-trade.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Tue, 04 Nov 2008</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="successful-speculation" href="http://kadin.sdf-us.org/weblog/finance/successful-speculation.html">It&#8217;s Still Your Grandfather&#8217;s Stock Market</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>One of my favorite uses for <a href="http://www.google.com/reader/">Google Reader</a> is to keep an eye
+on the feed of latest releases from <a href="http://www.gutenberg.org/wiki/Main_Page">Project Gutenberg</a> and
+<a href="http://www.pgdp.net/c/">Distributed Proofreaders</a>.  Although the great majority of what
+they archive is of limited interest (at least to me), every once in a
+while something really cool comes through.</p>
+
+<p><a href="http://www.gutenberg.org/etext/26841">&#8220;Successful Stock Speculation,&#8221;</a> (<a href="http://www.gutenberg.org/files/26841/26841-h/26841-h.htm">HTML version</a>)
+originally published in 1922, is worth a read.  Written as a handbook
+for the novice investor, just about everything in it is still good
+advice.  I suspect that if more amateur (by which I mean, using their
+own, as opposed to someone else&#8217;s, money) speculators stuck to the
+very conventional wisdom in the book, far fewer people would lose
+their shirts in the process.</p>
+
+<blockquote>
+  <p>[The word &#8216;speculator&#8217;] refers to a person who buys stocks for
+profit, with the expectation of selling at a higher price, without
+reference to the earnings of the stock. &#8230; An investor differs from
+a speculator in the fact that he buys stocks or bonds with the
+expectation of holding them for some time for the income to be
+derived from them.</p>
+</blockquote>
+
+<p>This is an important distinction which, sadly, seems to have been lost
+recently.  There&#8217;s a fundamental difference between speculation and
+investment; people who buy and hope for a change in price of the
+underlying asset, so that they can sell and realize a profit, <em>are not
+investing</em>.  They are <em>speculating</em>.  This is true whether the
+underlying asset is stocks, bonds, or real estate.  I&#8217;d argue that
+misunderstanding the difference between the two is the root cause of
+virtually all market &#8216;horror stories&#8217; (Grandma and Grampa wiping out their
+retirement, the kids&#8217; college fund, etc.).</p>
+
+<blockquote>
+  <p>As a usual thing, it is a good time to buy stocks when nearly
+everybody wants to sell them. When general business conditions are
+bad, trading on the stock exchanges very light, and everybody you
+meet appears to be pessimistic, then we advise you to look for
+bargains in stocks. [&#8230;] When business is bad, nearly everybody
+thinks business will be bad for a long time, and when business is
+good, nearly everybody thinks business will be good almost
+indefinitely. As a matter of fact, conditions are always
+changing. It never is possible for either extremely good times nor
+for extremely bad times to continue indefinitely.</p>
+</blockquote>
+
+<p>Sound familiar?  There&#8217;s nothing new here; you could read practically
+the same thing in just about any Warren Buffett book.  But the fact
+that it still works so well, so <em>unusually</em> well in fact, is a
+testament to how many people just don&#8217;t seem to get it.</p>
+
+<p>The same could be said for the book&#8217;s advice on picking which stocks
+to buy:</p>
+
+<blockquote>
+  <p>We maintain that there is only one basis upon which successful
+speculation can be carried on continually; that is, never to buy a
+security unless it is selling at a price below that which is
+warranted by assets, earning power, and prospective future earning
+power.</p>
+</blockquote>
+
+<p>Today we might call this <a href="http://en.wikipedia.org/wiki/Intrinsic_value_(finance)">&#8220;intrinsic value&#8221;</a> or
+&#8220;fundamental value,&#8221; and this school of thought <a href="http://stocks.about.com/od/investingphilisophies/a/valuinv101904.htm">&#8216;Value
+Investing&#8217;</a> (although, for the reasons noted above,
+chances are it&#8217;s not really &#8220;investment&#8221; but rather &#8216;value-driven
+speculation&#8217;).</p>
+
+<p>Although other strategies seem to get all the attention during bull
+markets, it&#8217;s the unsexy science of fundamentals that has seemingly
+withstood the test of time, and is still as useful today &#8212; regardless
+of what the future might hold &#8212; as it was in the early 20s.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/successful-speculation.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="housing-overvalued" href="http://kadin.sdf-us.org/weblog/finance/housing-overvalued.html">Calculated Risk on Housing Prices</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>I was heartened to read <a href="http://calculatedrisk.blogspot.com/2008/11/wsj-foreclosure-prevention-program.html">this</a> over at Calculated Risk
+earlier today.  It&#8217;s mainly a link to a WSJ article, but the punchline
+is blunt:</p>
+
+<blockquote>
+  <p>Any attempt to keep house prices artificially high will just
+postpone the inevitable and delay the eventual recovery.</p>
+</blockquote>
+
+<p>At least somebody seems to get it.  Pity that &#8216;somebody&#8217; doesn&#8217;t seem
+to include, oh, anybody in Washington.  At least not yet, but the gist
+of the article is that the truth is beginning to sink in.</p>
+
+<p>Unfortunately I think it&#8217;s too late for that truth to have prevented a
+costly and probably pointless bailout, but it might be in time to
+prevent too much meddling in the retail real estate market.  Of all
+the markets that need a good cleansing burn, that&#8217;s it.  However, it&#8217;s
+also the one prone to attracting the most interference from Congress,
+as idiots who forgot that a house should be a place to live first &#8212;
+and not an ATM or an IRA &#8212; squeal and moan as they learn that actions
+have consequences.</p>
+
+<p>The most dangerous idea to creep in is that a decline in housing
+prices is, by itself, somehow bad.  Whenever you see someone in a suit
+pointing to the decline in prices and suggesting that it is a problem
+to be solved, be afraid.  It&#8217;s dangerous for two reasons: one, because
+it&#8217;s <em>wrong</em> &#8212; inflated housing prices were a symptom of the credit
+bubble, and their decline is quite natural as that bubble works itself
+out; two, because it&#8217;s an easy target for government intervention.</p>
+
+<p>There&#8217;s nothing politicians like better than treating the symptoms of
+a problem; it&#8217;s so much easier, after all, than actually going after
+the root cause, and most of the time the public never notices the
+difference.</p>
+
+<p>If the government succeeds in convincing the public (and Wall Street,
+who on the whole haven&#8217;t shown themselves to be much more savvy than
+the public at large anyway) that the decline in prices is a symptom
+that ought to be treated, and somehow find a way to prop those prices
+up at their inflated levels, a generation of financially responsible
+Americans will be effectively locked out of home ownership.  I really
+can&#8217;t imagine anything more toxic to the long-term faith of the public
+in the markets than that.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/housing-overvalued.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<h3>Sat, 27 Sep 2008</h3>
+<div class="entry">
+<div class="entry-article">
+
+<div align="left" class="articletitle">
+	<a name="dollar-hedges" href="http://kadin.sdf-us.org/weblog/finance/dollar-hedges.html">Hedging Against Dollar Inflation</a>
+</div> <!-- End articletitle -->
+
+<div class="articlebody">
+
+<!-- Begin body text -->
+<p>Although there are lots of ways to hedge against a fall in the
+U.S. dollar, I was inspired by <a href="http://piggington.com/fxe_merkx_to_hedge_against_a_weaker_us">this post</a> to look at four funds
+in particular that seem like promising, low-cost ways for the small
+investor to flee the dollar, if they desire:</p>
+
+<ul>
+<li>FXE</li>
+<li>MERKX</li>
+<li>PSAFX</li>
+<li>VGPMX</li>
+</ul>
+
+<p>Starting from the last, VGPMX is a precious metals mining fund
+operated by Vanguard.  Currently it&#8217;s closed to new investors, so
+you&#8217;re S.O.L. if you don&#8217;t already own shares.  It&#8217;s sort of the
+thinking man&#8217;s alternative to actually buying gold; instead of buying
+the gold directly, it invests in companies that <em>mine</em> gold and other
+precious metals, and which tend to be worth more when gold is high.
+It would have been a good buy a few years ago, but such is hindsight.</p>
+
+<p>Next up is PSAFX, the &#8220;Prudent Global Income Fund&#8221;.  According to
+<a href="http://www.bloggingstocks.com/2007/12/29/best-stocks-for-2008-a-prudent-pick-with-prudent-global-incom/">Bloggingstocks.com</a>, it &#8220;holds mostly fixed-income
+securities denominated in foreign currencies. Roughly 70% of its
+investments were in foreign debt at the end of the third quarter, with
+the euro, Swiss franc, and Canadian dollar receiving the largest
+allocations. [&#8230;] the fund concentrates on the highest-rated debt,
+such as government securities. And as an extra dollar hedge, 11% of
+its assets were recently in gold and gold shares.&#8221;  Basically, it&#8217;s
+very similar to a &#8220;money market&#8221; fund that you might buy into through
+your bank or credit union, but with a more diverse set of underlying
+assets.  (Most &#8216;money market&#8217; accounts invest only in U.S. government
+or municipal debt.)  The gold is sort of a bonus, if you like that
+sort of thing.  Expense ratio totals to 1.28% according to
+<a href="http://finance.google.com/finance?client=ob&amp;q=MUTF:PSAFX">Google</a>.</p>
+
+<p>The Merk Hard Currency Fund (MERKX) is similar, investing in very
+high-grade government debt in a variety of &#8220;hard&#8221; currencies.
+According to <a href="http://www.merkfund.com/fund/mhcf/index.html">Merk&#8217;s website</a>, it&#8217;s almost 40% Euro, 17% Swiss
+Franc, 17% Canadian Dollar, and 9% gold.  The remainder are other
+currencies in smaller chunks.  Their page provides a good breakdown of
+assets and sectors, so I won&#8217;t duplicate it here, but the biggest
+government debt is German, followed by Canadian and Swiss, followed by
+cash and gold.  It&#8217;s an interesting option to be sure.  The minimum
+investment is $2500 to play, $100 buy-ins once you&#8217;ve got it opened.
+(IRA minimum is $1k.)  The net expense ratio listed in the prospectus
+is 1.3%.</p>
+
+<p>But what if you want to just hold cash, rather than debt instruments?
+In that case, the CurrencyShares Euro Trust (FXE) might be more
+interesting.  It&#8217;s essentially like owning shares in a very big Euro
+savings account.  The funds are actually kept in accounts (one
+interest-bearing and one non-interest-bearing) with JPMorgan Chase&#8217;s
+London branch, and the fund generates some profit this way, although
+it&#8217;s less than the debt-based funds.</p>
+
+<p>Owning FXE is, at least as far as I can tell, the closest that a small
+investor can get to opening a Euro-denominated savings account and
+putting cash in there, without actually going through the hassle of
+setting up a Euro-denominated account.  About the only downside I can
+see is, because your funds are housed in two giant accounts with
+JPMorgan, you&#8217;re probably not protected by European deposit insurance
+in the event of a bank failure.  (European deposit insurance is a bit
+of a <a href="http://www.economist.com/finance/displaystory.cfm?story_id=11294604">patchwork at the moment</a> at the moment, too, so it&#8217;s
+not really clear what would happen if things went south.)</p>
+
+<p>Although you buy FXE just like any other ETF, it&#8217;s technically not a
+mutual fund or a commodity, nor is the operator an Investment Company.
+The &#8216;fund&#8217; is actually a <a href="http://en.wikipedia.org/wiki/Trust_law">Trust</a>, and according to the
+prospectus, &#8220;The Shares represent units of fractional undivided
+beneficial interest in, and ownership of, the Trust.&#8221;  Although you
+buy the shares from a company called &#8216;Rydex Investments&#8217;, they&#8217;re not
+the trustee &#8212; that&#8217;d be the Bank of New York; Rydex just does the
+paperwork and marketing.  There are some fairly ominous-sounding
+paragraphs in the prospectus detailing the circumstances under which
+the whole arrangement could be liquidated &#8212; possibly to the detriment
+of investors &#8212; and bears reading, although it doesn&#8217;t seem like a
+major risk.  (At least not more than anything else these days.)</p>
+
+<p>When all this legal hand-waving &#8212; I counted four legal entities to
+operate it, located in such diverse locales as Delaware, Maryland, New
+York, and London &#8212; is done, the overall effect is that you, the
+buyer, get an interest rate equal to <a href="http://en.wikipedia.org/wiki/Eonia">EONIA</a> less 27 basis points
+(0.27%), and an expense ratio of 0.40%, on top of whatever the EUR/USD
+happen to do.</p>
+
+<p>These funds piqued my interest, so I&#8217;ll probably be doing some
+additional research over the next few days and reporting the results.
+The usual common-sense disclaimers apply to all the information here:
+it&#8217;s not investment advice, get a real advisor if you&#8217;re investing
+real money, don&#8217;t sue me if you lose your shirt.</p>
+
+<!-- End body text -->
+
+</div> <!-- End articlebody -->
+
+<p align="right">
+0 Comments, 0 Trackbacks
+</p>
+
+<p align="right">
+<i>[<a href="http://kadin.sdf-us.org/weblog/finance">/finance</a>] <a href="http://kadin.sdf-us.org/weblog/finance/dollar-hedges.html">permalink</a></i>
+</p>
+
+</div> <!-- End entry-article -->
+
+<div class="comments"> <!-- From the 'feedback' comments -->
+
+</div> <!-- End comments -->
+
+</div> <!-- End entry -->
+<div id="commentbox">
+
+
+	
+</div> <!-- End the commentbox -->
+
+</div> <!-- End articlecolumn -->
+</div> <!-- End contentwrapper -->
+
+<div id="trackbackinfo">
+
+</div> <!-- End trackbackinfo -->
+
+<div id="footer">
+Copyright 2009 Kadin2048 except where otherwise noted.<br>
+Want <a title="RSS Version of this page"
+href="http://kadin.sdf-us.org/weblog/?flav=rss">RSS</a> instead?
+</div> <!-- End footer -->
+
+</body> 
+
+</html>
+

@@ -1,0 +1,242 @@
+http://www.bortzmeyer.org/dnscurve.html
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 11:20:28 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Sat, 14 Jun 2014 14:28:00 GMT
+ETag: "236fd-5389-4fbcc99dadc00"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 6829
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-06-14T16:28 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: DNSCurve, la sécurité pour le DNS ?
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">DNSCurve, la sécurité pour le DNS ?</h2><p>Première rédaction de cet article le 20 juin 2009<br/>Dernière mise à jour le 31 août 2009<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Tout le monde sait que le <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">DNS</a></b> n'est pas sûr. Si quelqu'un n'est pas au
+courant, il suffit de l'envoyer lire le <a href="3833.html" class="rfc" title="Consultez l'analyse du RFC 3833">RFC 3833</a>. En 2008, la <a href="comment-fonctionne-la-faille-kaminsky.html" title="Consultez ce blog à propos de &quot;comment-fonctionne-la-faille-kaminsky&quot;">faille Kaminsky</a>
+avait encore remis le dossier de la sécurité DNS sur le dessus de la
+pile. Les risques étant de natures très variées, il n'y a
+certainement pas de solution miracle à tous les problèmes de sécurité
+du DNS. Mais comme l'analyse sérieuse des problèmes de sécurité est
+difficile, comme la « <b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/Silver%20bullet" title="Consultez l'article &quot;Silver bullet&quot; de l'encyclopédie libre Wikipedia (en anglais)">balle d'argent</a></b> » est une
+histoire plus vendeuse que la longue liste des mesures à prendre, on
+voit souvent <b class="emphasis">une</b> technologie particulière présentée comme la solution
+à tout. Vu l'expérience avec d'autres créations de <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Daniel%20J.%20Bernstein" title="Consultez l'article &quot;Daniel J. Bernstein&quot; de l'encyclopédie libre Wikipedia">Daniel
+Bernstein</a></b>, il est probable que
+<b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/DNSCurve" title="Consultez l'article &quot;DNSCurve&quot; de l'encyclopédie libre Wikipedia (en anglais)">DNSCurve</a></b> sera ainsi promu.</p></div>
+<div class="para"><p>Avant de regarder DNSCurve et ses différences avec le protocole
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System%20Security%20Extensions" title="Consultez l'article &quot;Domain Name System Security Extensions&quot; de l'encyclopédie libre Wikipedia">DNSSEC</a></b>, revenons en arrière sur la sécurité du
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">DNS</a></b>. Lorsqu'un
+serveur DNS <b class="emphasis">faisant autorité</b> pour une
+<b class="emphasis">zone</b> envoie une réponse à un
+<b class="emphasis">résolveur</b>, un serveur DNS
+<b class="emphasis">récursif</b>, un méchant peut répondre avant le bon
+serveur et voir sa réponse acceptée par le résolveur, qui sera alors
+empoisonné (le <a href="5452.html" class="rfc" title="Consultez l'analyse du RFC 5452">RFC 5452</a> contient une explication
+plus détaillée et des calculs de la probabilité de réussite). C'est
+l'une des principales vulnérabilités du DNS.</p></div>
+<div class="para"><p>Pour résoudre ce problème, il y a <a href="securiser-le-dns.html" title="Consultez ce blog à propos de &quot;securiser-le-dns&quot;">deux approches</a>. Pour reprendre le
+vocabulaire du <a href="3552.html" class="rfc" title="Consultez l'analyse du RFC 3552">RFC 3552</a>, on peut choisir de
+sécuriser le <b class="emphasis">canal</b> (vérifier qu'on parle bien à
+la machine à qui on voulait parler) ou de sécuriser le
+<b class="emphasis">message</b> (vérifier que le message vient bien de
+l'autorité et qu'il n'a pas été modifié en route). Les deux méthodes
+ne sont d'ailleurs pas contradictoires, on peut aussi choisir une
+<b class="emphasis">défense en profondeur</b> en adoptant les deux
+approches. En général, la sécurisation du message offre le maximum de
+sécurité (même si des intermédiaires ne sont pas dignes de confiance,
+on peut s'assurer de l'authenticité du message, ce qui est une
+propriété essentielle pour le DNS, qui dépend de tels intermédiaires,
+les serveurs cache) mais la sécurisation du canal est souvent plus
+facile à déployer.</p></div>
+<div class="para"><p>Le débat existe pour tous les protocoles Internet. Par exemple,
+pour le <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/courrier%20%C3%A9lectronique" title="Consultez l'article &quot;courrier électronique&quot; de l'encyclopédie libre Wikipedia">courrier électronique</a></b>,
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Pretty%20Good%20Privacy" title="Consultez l'article &quot;Pretty Good Privacy&quot; de l'encyclopédie libre Wikipedia">PGP</a></b> sécurise le message,
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Simple%20Mail%20Transfer%20Protocol" title="Consultez l'article &quot;Simple Mail Transfer Protocol&quot; de l'encyclopédie libre Wikipedia">SMTP</a></b> sur <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Transport%20Layer%20Security" title="Consultez l'article &quot;Transport Layer Security&quot; de l'encyclopédie libre Wikipedia">TLS</a></b> (<a href="3207.html" class="rfc" title="Consultez l'analyse du RFC 3207">RFC 3207</a>) sécurise le canal.</p></div>
+<div class="para"><p>Dans le monde du DNS, la première solution, sécuriser le canal, est
+possible grâce à de nombreuses technologies :
+</p><ul>
+<li><b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/TSIG" title="Consultez l'article &quot;TSIG&quot; de l'encyclopédie libre Wikipedia (en anglais)">TSIG</a></b> (<a href="2845.html" class="rfc" title="Consultez l'analyse du RFC 2845">RFC 2845</a>), une signature
+de la transaction grâce à une clé secrète partagée entre les deux
+serveurs,</li>
+<li>SIG(0) (<a href="http://www.rfc-editor.org/rfc/rfc2931.txt" class="rfc" title="Consultez le texte intégral du RFC 2931">RFC 2931</a>), une signature
+de la transaction utilisant des clés publiques,</li>
+<li>Diverses techniques de résistance à la fraude, comme le choix au
+hasard du <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Port%20(logiciel)" title="Consultez l'article &quot;Port (logiciel)&quot; de l'encyclopédie libre Wikipedia">port</a></b> source (<a href="5452.html" class="rfc" title="Consultez l'analyse du RFC 5452">RFC 5452</a>),</li>
+<li>Puisqu'une grande partie de la vulnérabilité du DNS vient de la
+taille trop petite du <i class="foreign" xml:lang="en">Query ID</i>, il y a des
+propositions de l'étendre comme les <i class="foreign" xml:lang="en">DNS cookies</i>
+(<i class="foreign" xml:lang="en">Internet-Draft</i> <code>draft-eastlake-dnsext-cookies</code>) ou
+<i class="foreign" xml:lang="en">EDNS ping</i> (<i class="foreign" xml:lang="en">Internet-Draft</i>
+<code>draft-hubert-ulevitch-edns-ping</code>),</li>
+<li><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Internet%20Protocol%20Security" title="Consultez l'article &quot;Internet Protocol Security&quot; de l'encyclopédie libre Wikipedia">IPsec</a></b> (<a href="3401.html" class="rfc" title="Consultez l'analyse du RFC 3401">RFC 3401</a>),
+si seulement il était déployé,</li>
+<li>Un protocole de <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Couche%20de%20transport" title="Consultez l'article &quot;Couche de transport&quot; de l'encyclopédie libre Wikipedia">transport</a></b> résistant naturellement aux
+tricheries, comme <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Transmission%20Control%20Protocol" title="Consultez l'article &quot;Transmission Control Protocol&quot; de l'encyclopédie libre Wikipedia">TCP</a></b> ou <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Stream%20Control%20Transmission%20Protocol" title="Consultez l'article &quot;Stream Control Transmission Protocol&quot; de l'encyclopédie libre Wikipedia">SCTP</a></b>,</li>
+<li>Et pourquoi pas des datagrammes protégés par
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Transport%20Layer%20Security" title="Consultez l'article &quot;Transport Layer Security&quot; de l'encyclopédie libre Wikipedia">TLS</a></b> comme avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Datagram%20Transport%20Layer%20Security" title="Consultez l'article &quot;Datagram Transport Layer Security&quot; de l'encyclopédie libre Wikipedia">DTLS</a></b>
+(<a href="6347.html" class="rfc" title="Consultez l'analyse du RFC 6347">RFC 6347</a>),</li>
+<li>Et enfin <b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/DNSCurve" title="Consultez l'article &quot;DNSCurve&quot; de l'encyclopédie libre Wikipedia (en anglais)">DNSCurve</a></b>.</li>
+</ul><p>
+Toutes ces techniques ont leurs avantages et leurs inconvénients,
+certaines (comme celles du <a href="5452.html" class="rfc" title="Consultez l'analyse du RFC 5452">RFC 5452</a>) ont eu de
+grands succès (comme de rendre peu exploitable la faille Kaminsky) mais
+toutes ont en commun de ne sécuriser que le canal entre deux
+serveurs. Si un serveur esclave d'une zone est contrôlé par un méchant
+et modifie les données, s'assurer qu'on parle bien à ce serveur ne
+servira à rien. Idem dans le cas, beaucoup plus fréquent, où un
+résolveur/cache d'un <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Fournisseur%20d'acc%C3%A8s%20%C3%A0%20Internet" title="Consultez l'article &quot;Fournisseur d'accès à Internet&quot; de l'encyclopédie libre Wikipedia">FAI</a></b> ment à ses propres
+clients (cf. <a href="4924.html" class="rfc" title="Consultez l'analyse du RFC 4924">RFC 4924</a>, section 2.5.2).
+</p></div>
+<div class="para"><p>Pour la sécurisation du message, il n'existe à l'heure actuelle
+qu'une seule méthode, <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System%20Security%20Extensions" title="Consultez l'article &quot;Domain Name System Security Extensions&quot; de l'encyclopédie libre Wikipedia">DNSSEC</a></b> (<a href="4033.html" class="rfc" title="Consultez l'analyse du RFC 4033">RFC 4033</a> et suivants).</p></div>
+<div class="para"><p>Revenons donc à DNSCurve. Cette technique n'est pas normalisée à
+l'heure actuelle. Il existe une présentation sommaire sur le <a href="http://www.dnscurve.org">site officiel</a> et un
+<i class="foreign" xml:lang="en"><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Request%20for%20comments" title="Consultez l'article &quot;Request for comments&quot; de l'encyclopédie libre Wikipedia">Internet-Draft</a></b></i>,
+<code>draft-dempsky-dnscurve</code>. Pour la cryptographie
+sous-jacente, le mieux est de regarder le <a href="http://nacl.cace-project.eu/">site Web de NaCl</a>. Le
+principe de DNSCurve est que le dialogue entre deux serveurs est
+chiffré (par un algorithme de la famille des <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Cryptographie%20sur%20les%20courbes%20elliptiques" title="Consultez l'article &quot;Cryptographie sur les courbes elliptiques&quot; de l'encyclopédie libre Wikipedia">courbes
+elliptiques</a></b>, Curve25519) et authentifié. La clé publique
+du serveur auquel on parle est obtenue dans le DNS, c'est le nom du
+serveur. Si le <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domaine%20de%20premier%20niveau" title="Consultez l'article &quot;Domaine de premier niveau&quot; de l'encyclopédie libre Wikipedia">TLD</a></b> <code>.example</code> est délégué à
+<code>uz5xgm1kx1zj8xsh51zp315k0rw7dcsgyxqh2sl7g8tjg25ltcvhyw.nic.example</code>,
+le résolveur peut, en examinant ce nom, voir que la délégation est
+sécurisée par DNSCurve, trouver la clé publique, et interroger le
+serveur de manière sûre, grâce au <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/chiffrement%0Aasym%C3%A9trique" title="Consultez l'article &quot;chiffrement&#10;asymétrique&quot; de l'encyclopédie libre Wikipedia">chiffrement
+asymétrique</a></b>. Seule la communication entre deux serveurs
+est protégée. Si un des serveurs est une machine pirate, DNSCurve ne
+sert à rien.</p></div>
+<div class="para"><p>Donc, DNSCurve n'est pas réellement un concurrent de DNSSEC, il
+traite un problème assez différent. Un <a href="http://cr.yp.to/talks/2009.08.10/slides.pdf">exposé de
+l'auteur de DNSCurve</a> compare 
+DNSCurve avec DNSSEC et est intellectuellement très malhonnête,
+comme presque toujours avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Daniel%20J.%20Bernstein" title="Consultez l'article &quot;Daniel J. Bernstein&quot; de l'encyclopédie libre Wikipedia">Daniel
+Bernstein</a></b>, avec notamment une utilisation intensive du 
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Fear%2C%20uncertainty%20and%20doubt" title="Consultez l'article &quot;Fear, uncertainty and doubt&quot; de l'encyclopédie libre Wikipedia">FUD</a></b>.</p></div>
+<div class="para"><p>Que peut-on dire encore en comparant ces deux protocoles ? D'abord
+que DNSSEC a été soigneusement conçu pour que le serveur n'aie aucune
+opération de cryptographie à faire « par requête » (à l'exception de
+NSEC3 et encore il ne s'agit que de hachage, pas de chiffrement asymétrique). Toutes les opérations de signature peuvent être faites
+hors-ligne, une fois pour toute, sur la zone. Au contraire, DNSCurve
+exige des opérations de signature à chaque requête. Il ne convient
+donc pas à de gros serveurs.</p></div>
+<div class="para"><p>Il est amusant de noter que la page officielle de DNSCurve reproche
+à DNSSEC que « <i class="foreign" xml:lang="en">DNSSEC reduces existing confidentiality by publishing the complete list
+of "secured" DNS records. This publication is integrated into the DNSSEC
+protocol;</i> » alors que cette publication est inhérente au
+fait de signer la zone et pas chaque requête. Si on est prêt à faire
+des opérations de cryptographie à chaque requête, les solutions des
+<a href="http://www.rfc-editor.org/rfc/rfc4470.txt" class="rfc" title="Consultez le texte intégral du RFC 4470">RFC 4470</a> et <a href="5155.html" class="rfc" title="Consultez l'analyse du RFC 5155">RFC 5155</a> résolvent le problème de la
+confidentialité des données.</p></div>
+<div class="para"><p>On peut terminer par un point amusant : avec DNSCurve, la clé
+publique est encodée dans le nom de la machine. C'est astucieux. Mais
+les clés de la cryptographie asymétrique sont très longues et les
+composants d'un <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/nom%20de%20domaine" title="Consultez l'article &quot;nom de domaine&quot; de l'encyclopédie libre Wikipedia">nom de domaine</a></b> sont limités à
+63 octets. Cela a deux conséquences :
+</p><ul>
+<li>Pour les zones qui limitent la taille d'une délégation à 512
+octets, comme la racine du DNS, on ne peut utiliser qu'un maximum de
+trois serveurs avec DNSCurve (car il faut aussi laisser de la place
+pour la question, et pour la colle).</li>
+<li>DNSCurve n'utilise donc pas les courbes elliptiques parce
+qu'elles sont meilleures que les algorithmes basés sur la
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/D%C3%A9composition%20en%20produit%20de%20facteurs%20premiers" title="Consultez l'article &quot;Décomposition en produit de facteurs premiers&quot; de l'encyclopédie libre Wikipedia">factorisation des nombres premiers</a></b> (comme
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Rivest%20Shamir%20Adleman" title="Consultez l'article &quot;Rivest Shamir Adleman&quot; de l'encyclopédie libre Wikipedia">RSA</a></b>) mais simplement parce qu'elles
+permettent des clés plus courtes. Le fait de les mettre dans les noms
+de domaine va sérieusement contraindre l'évolution ultérieure de
+DNSCurve. Il sera par exemple impossible d'augmenter la taille des clés.</li>
+</ul></div>
+<div class="para"><p>Il n'existe guère de textes d'analyse de DNScurve, ce système est
+très marginal. Notons toutefois un article d'Eric Rescorla, qui se
+concentre sur les questions de performance, « <i class="foreign" xml:lang="en"><a href="http://www.educatedguesswork.org/2010/02/some_notes_on_dnscurve.html" hreflang="en">Some
+notes on DNSCurve</a></i> » et une très bonne synthèse de
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Paul%20Vixie" title="Consultez l'article &quot;Paul Vixie&quot; de l'encyclopédie libre Wikipedia">Paul Vixie</a></b>, « <i class="foreign" xml:lang="en"><a href="http://www.isc.org/community/blog/201002/whither-dnscurve" hreflang="en">Whither
+DNSCurve?</a></i> », qui se focalise sur le fait que DNScurve
+résoud le problème facile que personne n'a, DNSSEC préférant attaquer
+le problème important.</p></div>
+<div class="para"><p>Merci à Kim Minh Kaplan pour ses nombreuses et pertinentes
+remarques sur DNSCurve. Un autre bon article sur DNScurve est <a href="http://maradns.blogspot.com/2010/09/eulogy-for-dnscurve.html">
+celui de Sam</a>.</p></div>
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="dnscurve.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="dnscurve.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Fdnscurve.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

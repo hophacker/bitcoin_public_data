@@ -1,0 +1,113 @@
+http://www.corebotllc.com/
+HTTP/1.1 200 OK
+Server: nginx/1.4.7
+Date: Wed, 23 Jul 2014 13:57:33 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Content-Encoding: gzip
+Set-Cookie: _SESSION=AtOeYPWKiumB1OjGW4VeA5+eYJOF+Z/+dgqpe0UIeFdzS9RFbtzYC22o9QC3ZEHdOKuWdtP9Y4YICknNYJ0lGYeCYKADOWB2Civ7gSonUSz2iESBQedXhUslOdPZR2s5fi0s+usei68=; Path=/; Expires=Wed, 23-Jul-2014 15:57:28 GMT; HttpOnly
+Vary: Accept, Accept-Language
+
+<!DOCTYPE html>
+<html><head><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<title>corebotllc.com - Latest</title>
+<script>var worker = new Worker('static/process_HTML_for_wiki.js');
+
+function insertSubstr(str, index, sub_str)
+{
+    var str_pre = str.slice( 0, index );
+    var str_post = str.slice( index );
+    return str_pre + sub_str + str_post;
+}
+
+function process_wiki_links(data, target, wiki_node_URL)
+{
+    var edits = new Array;
+
+    var apply_edits = function()
+    {
+        edits.reverse();
+
+        for(var i = 0; i < edits.length ; ++i)
+        {
+            var edit = edits[i];
+            var edit_region = edit.edit_region;
+            // +- 2 accounts for the ]] and [[ respectively. 
+            // XXX: hackish
+            data = insertSubstr( data, edit_region.end_index + 2, '</a>' );
+            data = insertSubstr( data, edit_region.start_index - 2, '<a href="' + edit.node_URL + '">' );
+        }
+
+        target.html( data );
+    }
+
+    worker.postMessage( data );
+    worker.onmessage = function(event)
+        {
+            edit_region = event.data;
+
+            var node_URL = wiki_node_URL + '/' + edit_region.node_path;
+
+            var http = new XMLHttpRequest();
+            http.open('HEAD', node_URL, true);
+            http.onload = function( pe )
+                {
+                    console.log( http.status );
+
+                    // Thanks the gods of HTTP for making this next line so.
+                    if( http.status < 400 )
+                    {
+                        edits.push( { edit_region: edit_region
+                                    , node_URL: node_URL
+                                    }
+                                  );
+                        
+                        if( edit_region.is_final )
+                            apply_edits();
+                    }
+                };
+            http.send();
+        };
+}
+
+</script><script>
+$(document).ready( function()
+{
+    $.get ("/data/bliki/latest", function(data)
+    {
+        $(".blog_content").html(data);
+        process_wiki_links(data, $(".blog_content"), "/data/bliki/entry");
+    }, 'html');
+} );
+</script><style>body{background-color:#D6E7D7}img{border:none}ul.nav_sidebar{background-color:#CCCCCC}.nav_sidebar ul{background-color:#CCCCCC}.nav_sidebar li{list-style:none}.nav_sidebar ul li{border-left:0.2em solid #888888}.nav_sidebar{position:absolute;left:1em;width:10em;margin:0em;padding:0.2em 0.1em;border-right:0.3em solid #0E003E}body div{background-color:#FFFFFF;margin:0em 12em;padding:0em 0.2em;border-bottom:0.1em solid #000000}a{text-decoration:none}.wiki_index li{list-style:none}.footer{padding-top:1em}</style></head>
+<body><ul class="nav_sidebar"><li><a href="/">Latest</a>
+</li>
+<li><a href="data/Corey_OConnor_CV.pdf">Resume/CV</a>
+</li>
+<li><a href=http://www.corebotllc.com/blog>Blog</li>
+<li><a href=http://www.corebotllc.com/wiki>Wiki</li>
+<li><a href=http://www.corebotllc.com/data>Data<ul><li><a href="http://github.com/coreyoconnor">GitHub</a>
+</li>
+<li><a href="http://www.corebotllc.com/data/repos">Repos</a>
+</li>
+</ul>
+</li>
+<img class="bitcoin_qrcode" src="/static/bitcoin-qr-code-100px.png" alt="17n5XxYfR8ucy9dc2ycVVSymrcwB9tCVo4">
+</ul>
+<div class="intro"><p>This site is an experiment in presenting my personal wiki as a blog.</p>
+</div>
+<div class="blog_content"><div class="not_loaded_yet">Loading
+<a href="/data/bliki/latest">latest blog entry</a>
+ HTML content.</div>
+</div>
+<div class="footer"><p class="contact">Contact Corey O'Connor at coreyoconnor@gmail.com</p>
+<p class="bitcoin_address">BitCoin: 17n5XxYfR8ucy9dc2ycVVSymrcwB9tCVo4</p>
+<p class="copyright"><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/88x31.png">
+</a>
+<br>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"></a>
+ Creative Commons Attribution 4.0 International License</br>
+</p>
+</div>
+</body>
+</html>
+

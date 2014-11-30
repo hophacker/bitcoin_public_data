@@ -1,0 +1,743 @@
+http://sqlservercode.blogspot.com/2007/02/sysinternals-troubleshooting-utilities.html
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Expires: Tue, 22 Jul 2014 23:36:46 GMT
+Date: Tue, 22 Jul 2014 23:36:46 GMT
+Cache-Control: private, max-age=0
+Last-Modified: Wed, 09 Jul 2014 10:22:11 GMT
+ETag: "5ed411ce-3d30-4fb9-8f3a-01f0504d8ab6"
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Server: GSE
+Alternate-Protocol: 80:quic
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>SQL Server Code,Tips and Tricks, Performance Tuning: The Sysinternals Troubleshooting Utilities have been rolled up into a single Suite of tools</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://blockchain.info//Resources/wallet/pay-now-button.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="generator" content="Blogger" />
+<link rel="alternate" type="application/atom+xml" title="SQL Server Code,Tips and Tricks, Performance Tuning - Atom" href="http://sqlservercode.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="SQL Server Code,Tips and Tricks, Performance Tuning - RSS" href="http://sqlservercode.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="SQL Server Code,Tips and Tricks, Performance Tuning - Atom" href="http://www.blogger.com/feeds/16771259/posts/default" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www2.blogger.com/rsd.g?blogID=16771259" />
+
+<style type="text/css">
+@import url("http://www2.blogger.com/css/blog_controls.css");
+@import url("http://www2.blogger.com/dyn-css/authorization.css?blogID=16771259");
+</style>
+<META name="verify-v1" content="P566gyWFLlDs4o10NU+3TquKCwuKhzGn0zEe4FxTLMU=" /> 
+   <META name="description" content" A site about SQL server with code, tips and tricks, performance tuning, DTS and everything else.">
+<META name="keywords" content="sql,sql server, performance tuning, dts, database, indexes, partitioning, views, tables, stored procedures, microsoft, indexed views">
+  <style type="text/css">
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Minima Black
+Designer: Douglas Bowman
+URL:      www.stopdesign.com
+Date:     26 Feb 2004
+----------------------------------------------- */
+
+
+body {
+  background:#ffffff;
+  margin:0;
+  padding:40px 20px;
+  font:x-small "Trebuchet MS",Trebuchet,Verdana,Sans-Serif;
+  text-align:center;
+  color:#000;
+  font-size/* */:/**/small;
+  font-size: /**/small;
+  }
+a:link {
+  color:#9ad;
+  text-decoration:none;
+  }
+a:visited {
+  color:#a7a;
+  text-decoration:none;
+  }
+a:hover {
+  color:#ad9;
+  text-decoration:underline;
+  }
+a img {
+  border-width:0;
+  }
+
+
+/* Header
+----------------------------------------------- */
+#header {
+  width:660px;
+  margin:0 auto 10px;
+  border:1px solid #333;
+  }
+#blog-title {
+  margin:5px 5px 0;
+  padding:20px 20px .25em;
+  border:1px solid #222;
+  border-width:1px 1px 0;
+  font-size:200%;
+  line-height:1.2em;
+  color:red;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  }
+#blog-title a {
+  color:#ccc;
+  text-decoration:none;
+  }
+#blog-title a:hover {
+  color:#ad9;
+  }
+#description {
+  margin:0 5px 5px;
+  padding:0 20px 20px;
+  border:1px solid #222;
+  border-width:0 1px 1px;
+  font:78%/1.4em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:#000000;
+  }
+
+
+/* Content
+----------------------------------------------- */
+#content {
+  width:960px;
+  margin:0 auto;
+  padding:0 5px;
+  text-align:left;
+  }
+#main {
+  width:690px;
+  float:left;
+  }
+#sidebar {
+  width:220px;
+  float:right;
+   }
+
+
+/* Headings
+----------------------------------------------- */
+h2 {
+  margin:1.5em 0 .75em;
+  font:bold 78%/1.4em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:#777;
+  }
+
+
+/* Posts
+----------------------------------------------- */
+.date-header {
+  margin:1.5em 0 .5em;
+  }
+.post {
+  margin:.5em 0 1.5em;
+  border-bottom:1px dotted #444;
+  padding-bottom:1.5em;
+  }
+.post-title {
+  margin:.25em 0 0;
+  padding:0 0 4px;
+  font-size:140%;
+  line-height:1.4em;
+  color:red;
+  }
+.post-title a {
+  text-decoration:none;
+  color:#ad9;
+  }
+.post-title a:hover {
+  color:#000;
+  }
+.post div {
+  margin:0 0 .75em;
+  line-height:1.6em;
+  }
+p.post-footer {
+  margin:-.25em 0 0;
+  color:#333;
+  }
+.post-footer em, .comment-link {
+  font:78%/1.4em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  }
+.post-footer em {
+  font-style:normal;
+  color:#777;
+  margin-right:.6em;
+  }
+.comment-link {
+  margin-left:.6em;
+  }
+.post img {
+  padding:1px;
+  border:0px solid #222;
+  }
+.post blockquote {
+  margin:1em 20px;
+  }
+.post blockquote p {
+  margin:.75em 0;
+  }
+
+
+/* Comments
+----------------------------------------------- */
+#comments h4 {
+  margin:1em 0;
+  font:bold 78%/1.6em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:#999;
+  }
+#comments h4 strong {
+  font-size:130%;
+  }
+#comments-block {
+  margin:1em 0 1.5em;
+  line-height:1.6em;
+  }
+#comments-block dt {
+  margin:.5em 0;
+  }
+#comments-block dd {
+  margin:.25em 0 0;
+  }
+#comments-block dd.comment-timestamp {
+  margin:-.25em 0 2em;
+  font:78%/1.4em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  }
+#comments-block dd p {
+  margin:0 0 .75em;
+  }
+.deleted-comment {
+  font-style:italic;
+  color:gray;
+  }
+
+
+/* Sidebar Content
+----------------------------------------------- */
+#sidebar ul {
+  margin:0 0 1.5em;
+  padding:0 0 1.5em;
+  border-bottom:1px dotted #444;
+  list-style:none;
+  }
+#sidebar li {
+  margin:0;
+  padding:0 0 .25em 15px;
+  text-indent:-15px;
+  line-height:1.5em;
+  }
+#sidebar p {
+  color:#999;
+  line-height:1.5em;
+  }
+
+
+/* Profile
+----------------------------------------------- */
+#profile-container {
+  margin:0 0 1.5em;
+  border-bottom:1px dotted #444;
+  padding-bottom:1.5em;
+  }
+.profile-datablock {
+  margin:.5em 0 .5em;
+  }
+.profile-img {
+  display:inline;
+  }
+.profile-img img {
+  float:left;
+  padding:4px;
+  border:1px solid #222;
+  margin:0 8px 3px 0;
+  }
+.profile-data {
+  margin:0;
+  font:bold 78%/1.6em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  }
+.profile-data strong {
+  display:none;
+  }
+.profile-textblock {
+  margin:0 0 .5em;
+  }
+.profile-link {
+  margin:0;
+  font:78%/1.4em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  }
+
+
+/* Footer
+----------------------------------------------- */
+#footer {
+  width:660px;
+  clear:both;
+  margin:0 auto;
+  }
+#footer hr {
+  display:none;
+  }
+#footer p {
+  margin:0;
+  padding-top:15px;
+  font:78%/1.6em "Trebuchet MS",Trebuchet,Verdana,Sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  }
+
+.H1Inline {
+  font:bold 110%/2.6em "Trebuchet MS",Trebuchet,Arial,Verdana,Sans-serif;
+   margin:0;padding0;color:#000000;}
+  </style>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-77931-1";
+urchinTracker();
+</script>
+<!-- --><style type="text/css">@import url(https://www.blogger.com/static/v1/v-css/navbar/3334278262-classic.css);
+div.b-mobile {display:none;}
+</style>
+
+</head>
+
+<body><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener('load',
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<div id="navbar-iframe-container"></div>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+        gapi.load("gapi.iframes:gapi.iframes.style.bubble", function() {
+          if (gapi.iframes && gapi.iframes.getContext) {
+            gapi.iframes.getContext().openChild({
+                url: 'https://www.blogger.com/navbar.g?targetBlogID\07516771259\46blogName\75SQL+Server+Code,Tips+and+Tricks,+Perf...\46publishMode\75PUBLISH_MODE_BLOGSPOT\46navbarType\75BLUE\46layoutType\75CLASSIC\46searchRoot\75http://sqlservercode.blogspot.com/search\46blogLocale\75en_US\46v\0752\46homepageUrl\75http://sqlservercode.blogspot.com/\46vt\75-4492446722396705600',
+                where: document.getElementById("navbar-iframe-container"),
+                id: "navbar-iframe"
+            });
+          }
+        });
+      </script>
+
+<div id="header">
+
+  <h1 id="blog-title">
+    <a href="http://sqlservercode.blogspot.com/">
+	SQL Server Code,Tips and Tricks, Performance Tuning
+	</a>
+  </h1>
+  <p id="description">A blog about SQL Server, Books, Movies and life in general</p>
+
+</div>
+<script type="text/javascript"><!--
+google_ad_client="pub-8430323365361102";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width=728;
+google_ad_height=90;
+google_ad_format="728x90_as";
+google_ad_type="text";
+google_color_border="333333";
+google_color_bg="000000";
+google_color_link="FFFFFF";
+google_color_url="999999";
+google_color_text="CCCCCC";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<br>
+<!-- Search Google -->
+<center>
+<form method="get" action="http://www.google.com/custom" target="google_window">
+<table bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25blk.gif" border="0" alt="Google" align="middle"></img></a>
+<input type="text" name="q" size="31" maxlength="255" value=""></input>
+<input type="submit" name="sa" value="Search"></input>
+<input type="hidden" name="client" value="pub-8430323365361102"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="ie" value="ISO-8859-1"></input>
+<input type="hidden" name="oe" value="ISO-8859-1"></input>
+<input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:336699;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1;"></input>
+<input type="hidden" name="hl" value="en"></input>
+</td></tr></table>
+</form>
+</center>
+<!-- Search Google -->
+<center>
+<a href="http://otherthingsnow.blogspot.com/2005/10/google-interview-questions-they-are.html">Google Interview Questions</a> | <a href="http://astore.amazon.com/sql08-20?%5Fencoding=UTF8&node=2">SQL Server Software</a> | 
+<a href="http://astore.amazon.com/sql08-20/102-1687136-8876917">Microsoft SQL Server Books</a> | 
+ <a href="http://denis-gobo.squarespace.com/">Denis Gobo's personal blog</a> | 
+<a href="http://www.amazon.com/gp/product/1590594770?ie=UTF8&tag=sql08-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1590594770">Pro SQL server 2005 (Apress)</a><img src="http://www.assoc-amazon.com/e/ir?t=sql08-20&l=as2&o=1&a=1590594770" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /><br><a href="http://sqlservercode.blogspot.com/2008/01/top-ten-posts-of-all-time.html">Top 10 Articles</a> | 
+<a href="http://www.frappr.com/sql1">Add Yourself To My Frappr Map</a> | <a href="http://sqlservercode.blogspot.com/2006/10/interview-with-ken-henderson-about.html">Ken Henderson Interview</a> | <a href="http://sqlservercode.blogspot.com/2006/11/interview-with-sql-server-mvp-louis.html">Louis Davidson Interview</a>
+
+</center>
+<!-- Begin #content -->
+<div id="content">
+
+
+<!-- Begin #main -->
+<div id="main"><div id="main2">
+
+
+
+    
+  <h2 class="date-header">Wednesday, February 14, 2007</h2>
+  
+
+  
+     
+  <!-- Begin .post -->
+  <div class="post"><a name="3785598107669292250"></a>
+         
+    <h3 class="post-title">
+	 
+	 The Sysinternals Troubleshooting Utilities have been rolled up into a single Suite of tools
+	 
+    </h3>
+    
+
+	         <div class="post-body">
+	<div>
+      <div style="clear:both;"></div>Mark Russinovich the guy who revealed to the world that Sony CDs had that nasty rootkit installed has made available a single suite of tools for download. These tools are a must have for every single windows developer.<br /><br />The Sysinternals Troubleshooting Utilities have been rolled up into a single Suite of tools. This file contains the individual troubleshooting tools and help files. It does not contain non-troubleshooting tools like the BSOD Screen Saver or NotMyFault.<br /><br />Download it <a href="http://www.microsoft.com/technet/sysinternals/Utilities/SysinternalsSuite.mspx">here</a><br /><br />Here is what is included:<br /><br /><strong>• AccessChk</strong><br /><br />v2.0 (11/1/2006)<br />This tool shows you the accesses the user or group you specify has to files, Registry keys or Windows services.<br /><br /><strong>• AccessEnum</strong><br /><br />v1.32 (11/1/2006)<br />This simple yet powerful security tool shows you who has what access to directories, files and Registry keys on your systems. Use it to find holes in your permissions.<br /><br /><strong>• AdRestore</strong><br /><br />v1.1 (11/1/2006)<br />Undelete Server 2003 Active Directory objects<br /><br /><strong>• Autologon</strong><br /><br />v2.10 (11/1/2006)<br />Bypass password screen during logon.<br /><br /><strong>• Autoruns</strong><br /><br />v8.61 (1/22/2007)<br />See what programs are configured to startup automatically when your system boots and you login. Autoruns also shows you the full list of Registry and file locations where applications can configure auto-start settings.<br /><br /><strong>• BgInfo<br /></strong><br />v4.0 (11/1/2006)<br />This fully-configurable program automatically generates desktop backgrounds that include important information about the system including IP addresses, computer name, network adapters, and more.<br /><br /><strong>• BlueScreen</strong><br /><br />v3.2 (11/1/2006)<br />This screen saver not only accurately simulates Blue Screens, but simulated reboots as well (complete with CHKDSK), and works on Windows NT 4, Windows 2000, Windows XP, Server 2003 and Windows 9x.<br /><br />[EDIT]<br />BlueScreen is NOT part of the suite, you can download it <a href="http://www.microsoft.com/technet/sysinternals/Utilities/BlueScreen.mspx"><strong>here</strong></a><br />[/EDIT]<br /><br /><strong>• CacheSet</strong><br /><br />v1.0 (11/1/2006)<br />CacheSet is a program that allows you to control the Cache Manager's working set size using functions provided by NT. It's compatible with all versions of NT and full source code is provided.<br /><br /><strong>• ClockRes<br /></strong><br />v1.0 (11/1/2006)<br />View the resolution of the system clock, which is also the maximum timer resolution<br /><br /><strong>• Contig</strong><br /><br />v1.53 (11/1/2006)<br />Wish you could quickly defragment your frequently used files? Use Contig to optimize individual files, or to create new files that are contiguous.<br /><br /><strong>• Ctrl2cap</strong><br /><br />v2.0 (11/1/2006)<br />This is a kernel-mode driver that demonstrates keyboard input filtering just above the keyboard class driver in order to turn caps-locks into control keys. Filtering at this level allows conversion and hiding of keys before NT even "sees" them. Full source is included. Ctrl2cap also shows how to use NtDisplayString() to print messages to the initialization blue-screen.<br /><br /><strong>• DebugView</strong><br /><br />v4.64 (1/8/2007)<br />Another first from Sysinternals: This program intercepts calls made to DbgPrint by device drivers and OutputDebugString made by Win32 programs. It allows for viewing and recording of debug session output on your local machine or across the Internet without an active debugger.<br /><br /><strong>• DiskExt</strong><br /><br />v1.0 (11/1/2006)<br />Display volume disk-mappings<br /><br /><strong>• DiskView<br /></strong><br />v2.21 (11/1/2006)<br />Graphical disk sector utility<br /><br /><strong>• Diskmon</strong><br /><br />v2.01 (11/1/2006)<br />This utility captures all hard disk activity or acts like a software disk activity light in your system tray.<br /><br /><strong>• Du</strong><br /><br />v1.31 (11/1/2006)<br />View disk usage by directory<br /><br /><strong>• EFSDump</strong><br /><br />v1.02 (11/1/2006)<br />View information for encrypted files<br /><br /><strong>• Filemon</strong><br /><br />v7.04 (11/1/2006)<br />This monitoring tool lets you see all file system activity in real-time.<br /><br /><strong>• Handle</strong><br /><br />v3.20 (11/1/2006)<br />This handy command-line utility will show you what files are open by which processes, and much more.<br /><br /><strong>• Hex2dec</strong><br /><br />v1.0 (11/1/2006)<br />Convert hex numbers to decimal and vice versa.<br /><br /><strong>• Junction<br /></strong><br />v1.04 (11/1/2006)<br />Create Win2K NTFS symbolic links<br /><br /><strong>• LDMDump</strong><br /><br />v1.02 (11/1/2006)<br />Dump the contents of the Logical Disk Manager's on-disk database, which describes the partitioning of Windows 2000 Dynamic disks.<br /><br /><strong>• ListDLLs<br /></strong><br />v2.25 (11/1/2006)<br />List all the DLLs that are currently loaded, including where they are loaded and their version numbers. Version 2.0 prints the full path names of loaded modules.<br /><br /><strong>• LiveKd</strong><br /><br />v3.0 (11/1/2006)<br />Use Microsoft kernel debuggers to examine a live system.<br /><br /><strong>• LoadOrder<br /></strong><br />v1.0 (11/1/2006)<br />See the order in which devices are loaded on your WinNT/2K system<br /><br /><strong>• MoveFile<br /></strong><br />v1.0 (11/1/2006)<br />Allows you to schedule move and delete commands for the next reboot.<br /><br /><strong>• LogonSessions<br /></strong><br />v1.1 (11/1/2006)<br />List the active logon sessions on a system.<br /><br /><strong>• NewSID</strong><br /><br />v4.10 (11/1/2006)<br />Learn about the computer SID problem everybody has been talking about and get a free computer SID changer, NewSID, complete with full source code.<br /><br /><strong>• NTFSInfo</strong><br /><br />v1.0 (11/1/2006)<br />Use NTFSInfo to see detailed information about NTFS volumes, including the size and location of the Master File Table (MFT) and MFT-zone, as well as the sizes of the NTFS meta-data files.<br /><br /><strong>• PageDefrag<br /></strong><br />v2.32 (11/1/2006)<br />Defragment your paging files and Registry hives!<br /><br /><strong>• PendMoves</strong><br /><br />v1.1 (11/1/2006)<br />Enumerate the list of file rename and delete commands that will be executed the next boot<br /><br /><strong>• Portmon</strong><br /><br />v3.02 (11/1/2006)<br />Monitor serial and parallel port activity with this advanced monitoring tool. It knows about all standard serial and parallel IOCTLs and even shows you a portion of the data being sent and received. Version 3.x has powerful new UI enhancements and advanced filtering capabilities.<br /><br /><strong>• Process Explorer</strong><br /><br />v10.21 (11/1/2006)<br />Find out what files, registry keys and other objects processes have open, which DLLs they have loaded, and more. This uniquely powerful utility will even show you who owns each process.<br /><br /><strong>• Process Monitor</strong><br /><br />v1.01 (11/9/2006)<br />Monitor file system, Registry, process, thread and DLL activity in real-time.<br /><br /><strong>• ProcFeatures<br /></strong><br />v1.10 (11/1/2006)<br />This applet reports processor and Windows support for Physical Address Extensions and No Execute buffer overflow protection.<br /><br /><strong>• PsExec<br /></strong><br />v1.80 (2/12/2007)<br />Execute processes with limited-user rights.<br /><br /><strong>• PsFile</strong><br /><br />v1.02 (12/4/2006)<br />See what files are opened remotely.<br /><br /><strong>• PsGetSid</strong><br /><br />v1.43 (12/4/2006)<br />Displays the SID of a computer or a user.<br /><br /><strong>• PsInfo</strong><br /><br />v1.74 (12/4/2006)<br />Obtain information about a system.<br /><br /><strong>• PsKill</strong><br /><br />v1.12 (12/4/2006)<br />Terminate local or remote processes.<br /><br /><strong>• PsList</strong><br /><br />v1.28 (12/4/2006)<br />Show information about processes and threads.<br /><br /><strong>• PsLoggedOn</strong><br /><br />v1.33 (12/4/2006)<br />Show users logged on to a system<br /><br /><strong>• PsLogList</strong><br /><br />v2.64 (12/4/2006)<br />Dump event log records.<br /><br /><strong>• PsPasswd</strong><br /><br />v1.22 (12/4/2006)<br />Changes account passwords.<br /><br /><strong>• PsService<br /></strong><br />v2.21 (12/4/2006)<br />View and control services.<br /><br /><strong>• PsShutdown</strong><br /><br />v2.52 (12/4/2006)<br />Shuts down and optionally reboots a computer.<br /><br /><strong>• PsSuspend</strong><br /><br />v1.06 (12/4/2006)<br />Suspend and resume processes.<br /><br /><strong>• PsTools</strong><br /><br />v2.43 (2/12/2007)<br />The PsTools suite includes command-line utilities for listing the processes running on local or remote computers, running processes remotely, rebooting computers, dumping event logs, and more.<br /><br /><strong>• RegDelNull</strong><br /><br />v1.10 (11/1/2006)<br />Scan for and delete Registry keys that contain embedded null-characters that are otherwise undeleteable by standard Registry-editing tools.<br /><br /><strong>• RegHide</strong><br /><br />v1.0 (11/1/2006)<br />Creates a key called "HKEY_LOCAL_MACHINE\Software\Sysinternals\Can't touch me!\0" using the Native API, and inside this key it creates a value.<br /><br /><strong>• Regjump</strong><br /><br />v1.01 (11/1/2006)<br />Jump to the registry path you specify in Regedit.<br /><br /><strong>• Regmon</strong><br /><br />v7.04 (11/1/2006)<br />This monitoring tool lets you see all Registry activity in real-time.<br /><br /><strong>• RootkitRevealer<br /></strong><br />v1.71 (11/1/2006)<br />Scan your system for rootkit-based malware<br /><br /><strong>• SDelete</strong><br /><br />v1.51 (11/1/2006)<br />Securely overwrite your sensitive files and cleanse your free space of previously deleted files using this DoD-compliant secure delete program. Complete source code is included.<br /><br /><strong>• ShareEnum</strong><br /><br />v1.6 (11/1/2006)<br />Scan file shares on your network and view their security settings to close security holes.<br /><br /><strong>• Sigcheck</strong><br /><br />v1.30 (11/1/2006)<br />Dump file version information and verify that images on your system are digitally signed.<br /><br /><strong>• Streams</strong><br /><br />v1.53 (11/1/2006)<br />Reveal NTFS alternate streams<br /><br /><strong>• Strings</strong><br /><br />v2.30 (11/1/2006)<br />Search for ANSI and UNICODE strings in binaryimages.<br /><br /><strong>• Sync<br /></strong><br />v2.0 (11/1/2006)<br />Flush cached data to disk<br /><br /><strong>• TCPView</strong><br /><br />v2.40 (11/1/2006)<br />Active socket command-line viewer.<br /><br /><strong>• VolumeId</strong><br /><br />v2.0 (11/1/2006)<br />Set Volume ID of FAT or NTFS drives<br /><br /><strong>• Whois</strong><br /><br />v1.01 (11/1/2006)<br />See who owns an Internet address.<br /><br /><strong>• Winobj<br /></strong><br />v2.15 (11/1/2006)<br />The ultimate Object Manager namespace viewer is here.<br /><br /><strong>• ZoomIt<br /></strong><br />v1.21 (1/19/2007)<br />Presentation utility for zooming and drawing on the screen.<div style="clear:both; padding-bottom:0.25em"></div><p class="blogger-labels">Labels: <a rel='tag' href="http://sqlservercode.blogspot.com/search/label/utilities">utilities</a></p>
+    </div>
+    </div>
+    <script src="http://feeds.feedburner.com/~s/SqlServerCodetipsAndTricksPerformanceTuning?i=http://sqlservercode.blogspot.com/2007/02/sysinternals-troubleshooting-utilities.html" type="text/javascript" charset="utf-8"></script>
+    <p class="post-footer">
+
+
+      <em>posted by Denis Gobo at <a href="http://sqlservercode.blogspot.com/2007/02/sysinternals-troubleshooting-utilities.html" title="permanent link">3:36 AM</a></em>
+        <span class="item-action"><a href="http://www.blogger.com/email-post.g?blogID=16771259&postID=3785598107669292250" title="Email Post"><img class="icon-action" alt="" src="http://img2.blogblog.com/img/icon18_email.gif" height="13" width="18"/></a></span><span class="item-control blog-admin pid-1337559365"><a style="border:none;" href="http://www.blogger.com/post-edit.g?blogID=16771259&postID=3785598107669292250&from=pencil" title="Edit Post"><img class="icon-action" alt="" src="http://img2.blogblog.com/img/icon18_edit_allbkg.gif" height="18" width="18"></a></span><a href="http://ekstreme.com/socializer/?url=http://sqlservercode.blogspot.com/2007/02/sysinternals-troubleshooting-utilities.html&title=The Sysinternals Troubleshooting Utilities have been rolled up into a single Suite of tools">
+<img src="http://photos1.blogger.com/blogger/2193/1601/1600/Socializer32.png" /> Social bookmark this</a>
+    </p>
+  
+  </div>
+  <!-- End .post -->
+  
+  
+  
+  <!-- Begin #comments -->
+ 
+  <div id="comments">
+
+	<a name="comments"></a>
+        <h4>5 Comments:</h4>
+        <dl id="comments-block">
+      
+      <dt class="comment-poster" id="c6280711249767744476"><a name="c6280711249767744476"></a>
+        <span style="line-height:16px" class="comment-icon anon-comment-icon"><img src="http://img2.blogblog.com/img/anon16-rounded.gif" alt="Anonymous" style="display:inline;" /></span>&nbsp;<span class="anon-comment-author">Anonymous</span> said...
+      </dt>
+      <dd class="comment-body">
+
+        <p>BlueScreen screen saver is NOT included in the Suite archive you reference.</p>
+      </dd>
+      <dd class="comment-timestamp"><a href="#6280711249767744476" title="comment permalink">5:47 AM</a>
+	  <span class="item-control blog-admin pid-920487540"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=16771259&postID=6280711249767744476" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+	  </dd>
+      
+      <dt class="comment-poster" id="c7790310584241060701"><a name="c7790310584241060701"></a>
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/05239932827196503083" rel="nofollow">Jeremy</a> said...
+      </dt>
+      <dd class="comment-body">
+
+        <p>You have to click the agree button to run some of the utilities.</p>
+      </dd>
+      <dd class="comment-timestamp"><a href="#7790310584241060701" title="comment permalink">11:44 AM</a>
+	  <span class="item-control blog-admin pid-1647749680"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=16771259&postID=7790310584241060701" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+	  </dd>
+      
+      <dt class="comment-poster" id="c3872676106199196068"><a name="c3872676106199196068"></a>
+        <span style="line-height:16px" class="comment-icon anon-comment-icon"><img src="http://img2.blogblog.com/img/anon16-rounded.gif" alt="Anonymous" style="display:inline;" /></span>&nbsp;<span class="anon-comment-author">Anonymous</span> said...
+      </dt>
+      <dd class="comment-body">
+
+        <p>thanks a lot for these, they are very useful. Is there any way to make it so you don't have to OK through the agreement ever time?</p>
+      </dd>
+      <dd class="comment-timestamp"><a href="#3872676106199196068" title="comment permalink">10:57 PM</a>
+	  <span class="item-control blog-admin pid-2032918401"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=16771259&postID=3872676106199196068" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+	  </dd>
+      
+      <dt class="comment-poster" id="c40384493820061484"><a name="c40384493820061484"></a>
+        <span style="line-height:16px" class="comment-icon anon-comment-icon"><img src="http://img2.blogblog.com/img/anon16-rounded.gif" alt="Anonymous" style="display:inline;" /></span>&nbsp;<span class="anon-comment-author">Anonymous</span> said...
+      </dt>
+      <dd class="comment-body">
+
+        <p>All the pstools accept "-accepteula" as an argument....</p>
+      </dd>
+      <dd class="comment-timestamp"><a href="#40384493820061484" title="comment permalink">7:11 AM</a>
+	  <span class="item-control blog-admin pid-1632733920"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=16771259&postID=40384493820061484" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+	  </dd>
+      
+      <dt class="comment-poster" id="c3651928593691105647"><a name="c3651928593691105647"></a>
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/07713426895026817746" rel="nofollow">Dave</a> said...
+      </dt>
+      <dd class="comment-body">
+
+        <p>PSKill was just flagged by AVAST as a Trojan Horse.<BR/><BR/>Is AVAST mistaken or is PSKill unsafe ??</p>
+      </dd>
+      <dd class="comment-timestamp"><a href="#3651928593691105647" title="comment permalink">3:19 AM</a>
+	  <span class="item-control blog-admin pid-1599182981"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=16771259&postID=3651928593691105647" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+	  </dd>
+      
+    </dl>
+		<p class="comment-timestamp">
+
+    <a class="comment-link" href="http://www.blogger.com/comment.g?blogID=16771259&postID=3785598107669292250">Post a Comment</a>
+    </p>
+    
+		<p class="comment-timestamp">
+	<a href="http://sqlservercode.blogspot.com/">&lt;&lt; Home</a>
+    </p>
+    </div>
+
+
+
+  <!-- End #comments -->
+
+
+</div></div>
+<!-- End #main -->
+
+
+
+
+
+
+
+<!-- Begin #sidebar -->
+<div id="sidebar"><div id="sidebar2">
+<p><div style="font-size:16px;margin:0 auto;width:300px" class="blockchain-btn"
+     data-address="1GZ6CHzENrL1ktQzAgTnmYYMqWdGNz7gaS"
+     data-shared="false">
+    <div class="blockchain stage-begin">
+        <img src="https://blockchain.info//Resources/buttons/donate_64.png"/>
+    </div>
+    <div class="blockchain stage-loading" style="text-align:center">
+        <img src="https://blockchain.info//Resources/loading-large.gif"/>
+    </div>
+    <div class="blockchain stage-ready">
+         <p align="center">Please Donate To Bitcoin Address: <b>[[address]]</b></p>
+         <p align="center" class="qr-code"></p>
+    </div>
+    <div class="blockchain stage-paid">
+         Donation of <b>[[value]] BTC</b> Received. Thank You.
+    </div>
+    <div class="blockchain stage-error">
+        <font color="red">[[error]]</font>
+    </div>
+</div>
+<a href="http://feeds.feedburner.com/SqlServerCodetipsAndTricksPerformanceTuning"><img src="http://feeds.feedburner.com/~fc/SqlServerCodetipsAndTricksPerformanceTuning?bg=99CCFF&amp;fg=444444&amp;anim=0" height="26" width="88" style="border:0" alt="" /></a></p>
+  <a href="http://sqlservercode.blogspot.com/atom.xml "><img style="cursor:pointer; cursor:hand;" src="http://photos1.blogger.com/blogger/2193/1601/320/xml_rss.gif" border="0" alt="" /></a>
+<br>
+
+
+<a href="http://feeds.feedburner.com/SqlServerCodetipsAndTricksPerformanceTuning" title="Subscribe to my feed, SQL Server Code,Tips and Tricks, Performance Tuning" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/fbapix.gif" alt="" style="border:0"/></a>
+<br>
+<a href="http://add.my.yahoo.com/rss?url=http://feeds.feedburner.com/SqlServerCodetipsAndTricksPerformanceTuning" title="SQL Server Code,Tips and Tricks, Performance Tuning"><img src="http://us.i1.yimg.com/us.yimg.com/i/us/my/addtomyyahoo4.gif" alt="" style="border:0"/></a>
+ <br>
+<a href="http://www.bloglines.com/sub/http://feeds.feedburner.com/SqlServerCodetipsAndTricksPerformanceTuning" title="SQL Server Code,Tips and Tricks, Performance Tuning" type="application/rss+xml"><img src="http://www.bloglines.com/images/sub_modern1.gif" alt="Subscribe in Bloglines" style="border:0"/></a>
+<br><br>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-8430323365361102";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width = 110;
+google_ad_height = 32;
+google_ad_format = "110x32_as_rimg";
+google_cpa_choice = "CAAQ7dSXhAIaCJqvuMO26aj7KOP143Q";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-8430323365361102";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width = 110;
+google_ad_height = 32;
+google_ad_format = "110x32_as_rimg";
+google_cpa_choice = "CAAQ5c6WhAIaCHHeIkKsJ7NcKPmNxXQ";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-8430323365361102";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width = 110;
+google_ad_height = 32;
+google_ad_format = "110x32_as_rimg";
+google_cpa_choice = "CAAQiNikgwIaCEIFj0dSUPqvKJC76n4";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-8430323365361102";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width = 110;
+google_ad_height = 32;
+google_ad_format = "110x32_as_rimg";
+google_cpa_choice = "CAAQ0LGkgwIaCHug5WeA9TfeKIy84IEB";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><br><form style="border:1px solid #ccc;padding:3px;text-align:center;" action="http://www.feedburner.com/fb/a/emailverify" method="post" target="popupwindow" onsubmit="window.open('http://www.feedburner.com', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true"><p>Enter your email address:</p><p><input type="text" style="width:140px" name="email"/></p><input type="hidden" value="http://feeds.feedburner.com/~e?ffid=153045" name="url"/><input type="hidden" value="SQL Server Code,Tips and Tricks, Performance Tuning" name="title"/><input type="submit" value="Subscribe" /><p>Delivered by <a href="http://www.feedburner.com/" target="_blank">FeedBurner</a></p></form>
+
+        
+
+  
+  <h2 class="sidebar-title">Previous Posts</h2>
+    <ul id="recently">
+    
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/microsoft-net-micro-framework-is-now.html">Microsoft .NET Micro Framework Is Now Available</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/ten-sql-server-functions-that-you.html">Ten SQL Server Functions That You Hardly Use But S...</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/clippy-is-not-dead-clippy-is-aliveon.html">Clippy Is Not Dead, Clippy Is Alive.....On Linux</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/wal-mart-wine.html">Wal-Mart Wine</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/aspnetdataformatstring-doesnt-work-in.html">ASP.NET:DataFormatString Doesn&#39;t Work In A GridVie...</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/how-to-backup-your-blogger-blog.html">How to Backup Your Blogger Blog</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/use-combination-of-nullif-and-coalesce.html">Use A Combination OF NULLIF and COALESCE TO Displa...</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/ssis-connectivity-white-papers.html">SSIS Connectivity White Papers Available On Micros...</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/what-happens-when-you-let-three-year.html">What Happens When You Let a Three Year Old Use You...</a></li>
+     
+        <li><a href="http://sqlservercode.blogspot.com/2007/02/more-than-10-tips-to-help-your-virtual.html">More Than 10 Tips To Help Your Virtual PC Performa...</a></li>
+     
+  </ul>
+    
+<br><br>
+    <script type="text/javascript"><!--
+google_ad_client="pub-8430323365361102";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width=120;
+google_ad_height=600;
+google_ad_format="120x600_as";
+google_ad_type="text";
+google_color_border="333333";
+google_color_bg="FFFFFF";
+google_color_link="000000";
+google_color_url="999999";
+google_color_text="CCCCCC";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<br>
+ 
+<br><br>
+
+<h2 class="sidebar-title"><b>Blog Roll<b></h2>
+  <ul class="archive-list">
+          <li><a href="http://forum.lessthandot.com/viewforum.php?f=17">SQL Server Programming Forum</a></li>
+          <li><a href="http://wiki.lessthandot.com/index.php/SQL_Server_Programming_Hacks_-_100%2B_List">SQL Server Programming Hacks</a></li>
+          <li><a href="http://blogs.lessthandot.com/index.php/DataMgmt/c/DBProgramming/">Database Blogs On Less Than Dot</a></li>
+           
+          <li><a href="http://strefa.guzowski.info/ ">.::strefa::.</a></li>
+    	<li><a href="http://dis4ea.blogspot.com/">Dis4ea's Blog</a></li>
+          <li><a href="http://www.livejournal.com/users/steve/">Drunken Debauchery and Geekdom</a></li>
+        	<li><a href="http://kidsreview.blogspot.com/">Kids Review</a></li>
+         <li><a href="http://work-out.blogspot.com/">Fitness Guru</a></li>
+         <li><a href="http://otherthingsnow.blogspot.com/">Other Things</a></li>
+         <li><a href="http://technology-news-earnings-mergers.blogspot.com/">Technology News, Earnings, Mergers And Acquisitions</a></li>
+         <li><a href="http://dotnetsamplechapters.blogspot.com/">Dot Net Sample Chapters And Resources</a></li>
+         <li><a href="http://otherthingsnow.blogspot.com/2005/10/google-interview-questions-they-are.html">Google Interview Questions</a></li>
+         <li><a href="http://nanotech-biotech-biomed-pharmaceutica.blogspot.com/">Nanotech,Biotech, Biomed and Pharmaceutical News</a></li>
+         <li><a href="http://www.lessthandot.com/">Less Than Dot</a></li>
+
+    </ul>
+<br><br>
+
+
+</div></div>
+<!-- End #sidebar -->
+
+
+</div>
+<!-- End #content -->
+
+
+
+<!-- Begin #footer -->
+<div id="footer"><hr />
+  <!-- Search Google -->
+<center>
+<form method="get" action="http://www.google.com/custom" target="google_window">
+<table bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25blk.gif" border="0" alt="Google" align="middle"></img></a>
+<input type="text" name="q" size="31" maxlength="255" value=""></input>
+<input type="submit" name="sa" value="Search"></input>
+<input type="hidden" name="client" value="pub-8430323365361102"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="ie" value="ISO-8859-1"></input>
+<input type="hidden" name="oe" value="ISO-8859-1"></input>
+<input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:336699;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1;"></input>
+<input type="hidden" name="hl" value="en"></input>
+</td></tr></table>
+</form>
+</center>
+<!-- Search Google -->
+<br>
+<!-- 	In accordance to the Blogger terms of service, please leave this button somewhere on your blogger-powered page. Thanks! -->
+<p><a href="http://www.blogger.com"><img width="88" height="31" src="http://buttons.blogger.com/bloggerbutton1.gif" border="0" alt="This page is powered by Blogger. Isn't yours?" /></a></p>
+<p>
+<h2><font  color="#FF0000" size="2">I sense many useless updates in you... Useless updates lead to fragmentation...  Fragmentation leads to downtime...Downtime leads to suffering..Fragmentation is the path to the darkside.. <br>DBCC INDEXDEFRAG and DBCC DBREINDEX are the force...May the force be with you" </font></h2><br><br>
+</div>
+<!-- End #footer -->
+
+<script type="text/javascript" src="http://www.assoc-amazon.com/s/link-enhancer?tag=sql08-20">
+</script>
+<noscript>
+    <img src="http://www.assoc-amazon.com/s/noscript?tag=sql08-20" alt="" />
+</noscript>
+
+
+<script type="text/javascript" src="https://www.blogger.com/static/v1/common/js/2858158682-csitail.js"></script>
+<script type="text/javascript">BLOG_initCsi('classic_blogspot');</script></body>
+</html>

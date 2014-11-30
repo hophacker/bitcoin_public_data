@@ -1,0 +1,370 @@
+http://www.gwern.net/haskell/Run%20Length%20Encoding
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 22:01:01 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Set-Cookie: __cfduid=d834e1d1f1b0a463be3e46403d2c451501406152861035; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.gwern.net; HttpOnly
+x-amz-id-2: rPQ4nKHeiaTzAXBXxjZE+6TG68QZCKXeQTM50Rr2yih3COoEcPeuY7leTKbwWyEj
+x-amz-request-id: 5C85E3F35D10955D
+x-amz-meta-s3cmd-attrs: uid:1000/gname:gwern/uname:gwern/gid:1000/mode:33152/mtime:1405189114/atime:1405189113/ctime:1405189114
+Cache-Control: max-age=604800, public
+Last-Modified: Sat, 12 Jul 2014 18:50:21 GMT
+CF-RAY: 14eb27757a0502b8-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="generator" content="hakyll"/>
+<meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk"/>
+<meta name="author" content="gwern"/>
+<meta name="description" content="Haskell: step by step refactoring to concision"/>
+<meta name="dc.date.issued" content="26 Sep 2008"/>
+<meta name="dcterms.modified" content="16 Jan 2013"/>
+<title>Run Length Encoding</title>
+<link rel="stylesheet" type="text/css" href="../static/css/default.css"/>
+<link href="../atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM/RSS Feed"/>
+<link rel="shortcut icon" type="image/x-icon" href="../static/img/favicon.ico"/>
+</head>
+<body>
+ 
+<div class="indent_class1"></div>
+<div id="main">
+<div id="sidebar">
+<div id="logo"><img alt="Logo: a Gothic/Fraktur blackletter capital G/𝕲" height="36" src="../images/logo.png" width="32"/></div>
+<div id="sidebar-links">
+<p>
+<a href="../index" title="index: categorized list of articles">Home</a>
+<a href="../About" title="Site ideals, source, content, traffic, examples, license">Site</a>
+<a href="../Links" title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on">Me</a>
+</p>
+<hr/>
+<div id="sidebar-news">
+<p>
+<a href="../Changelog" title="What's new or updated">New:</a>
+<a href="../atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM/RSS Feed">RSS</a>
+<a href="http://eepurl.com/Kc155" title="Monthly mailing list: signup form">MAIL</a>
+</p>
+<hr/>
+</div>
+<div id="cse-sitesearch">
+<script>
+            (function() {
+            var cx = '009114923999563836576:dv0a4ndtmly';
+            var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+<div style="width:0px;overflow:hidden;height:0px;">
+<gcse:search></gcse:search>
+</div>
+<form id="searchbox_009114923999563836576:dv0a4ndtmly">
+<input value="009114923999563836576:dv0a4ndtmly" name="cx" type="hidden"/>
+<input value="FORID:11" name="cof" type="hidden"/>
+<input id="q" style name="q" size="5" type="text" placeholder="search"/>
+</form>
+</div>
+</div>
+<hr/>
+<div id="metadata">
+<div id="abstract"><em>Haskell: step by step refactoring to concision</em></div>
+<br/>
+<div id="tags"><i><a href="../tags/Haskell">Haskell</a></i></div>
+<br/>
+<div id="page-created">created:
+<br/>
+<i>26 Sep 2008</i></div>
+<div id="last-modified">modified:
+<br/>
+<i>16 Jan 2013</i></div>
+<br/>
+<div id="version">status:
+<br/>
+<i>finished</i></div>
+<br/>
+<div id="epistemological-status"><a href="../About#belief-tags" title="Explanation of 'belief' metadata">belief:</a>
+<br/>
+<i>highly likely</i>
+</div>
+<hr/>
+</div>
+<div id="donations">
+<div id="bitcoin-donation-address">
+<a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a>: 18qCaJR3DRWFgdbNcr6TXkGfa2fQ5LLsvn
+</div>
+<div id="paypal">
+<form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post" onClick="_gaq.push(['_trackEvent', 'Click', 'PayPalClicked', '']);">
+<div class="form-type">
+<input type="hidden" name="cmd" value="_s-xclick"/>
+<input type="hidden" name="hosted_button_id" value="8GSLCWGCC6AF8"/>
+<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="Help support my writings!"/>
+</div>
+</form>
+</div>
+<div id="Gittip">
+<script data-gittip-username="gwern" data-gittip-widget="button" src="//gttp.co/v1.js"></script>
+</div>
+</div>
+</div>
+ 
+<div id="adsense">
+<a href="http://41j.com/ads/ad.html"><img alt="Advertisement for 'HTerm, The Graphical Terminal'" src="http://41j.com/ads/ad.png" height="90" width="728"></a>
+</div>
+<div id="header">
+<h1>Run Length Encoding</h1>
+</div>
+<div id="content">
+<div id="TOC"><ul>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#level-data-in-monadius">Level data in <em>Monadius</em></a></li>
+<li><a href="#the-solution">The solution</a><ul>
+<li><a href="#writing-it">Writing it</a></li>
+</ul></li>
+</ul></div>
+<p>Once I was playing with and working on a Haskell clone of the old <a href="http://en.wikipedia.org/wiki/Gradius%20%28series%29" title="Wikipedia: Gradius (series)"><em>Gradius</em></a> arcade games, <em><a href="http://hackage.haskell.org/package/Monadius" title="Hackage: Monadius">Monadius</a></em>. Most of my changes were not particularly interesting (cleaning up, Cabalizing, fixing warnings, switching all <code>Integer</code> to <code>Int</code> and so on), but in its <a href="http://code.haskell.org/monadius/Monadius/Demo.hs">Demo.hs</a>, I found an interesting solution to a problem, and it seems like a good small example of Haskell abstraction.</p>
+<section id="examples" class="level1">
+<h1>Examples</h1>
+<p>One of the problems with language advocacy is that it’s hard to have good examples, since someone who is writing an essay probably will only come up with trivial ones, and someone dealing with meaty problems isn’t thinking about advocacy but how to solve their problem. I hope this example will be a little more substantial than the one-liners examples of <a href="http://en.wikipedia.org/wiki/Closure%20%28computer%20science%29" title="Wikipedia: Closure (computer science)">closures</a> or <a href="http://en.wikipedia.org/wiki/partial%20application" title="Wikipedia: partial application">partial application</a>.</p>
+</section>
+<section id="level-data-in-monadius" class="level1">
+<h1>Level data in <em>Monadius</em></h1>
+<p>Suppose we have levels which are specified by a pair of numbers and then a long list of numbers, often very repetitious. Perhaps a particular level might be represented this way:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">level1 ::</span> ((<span class="dt">Int</span>, <span class="dt">Int</span>), [<span class="dt">Int</span>])
+level1 <span class="fu">=</span> ((<span class="dv">2</span>,<span class="dv">1</span>),[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,
+<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">73</span>,<span class="dv">73</span>,<span class="dv">73</span>,
+<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,
+<span class="dv">69</span>,<span class="dv">69</span>,<span class="dv">65</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">25</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">9</span>,
+<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">33</span>,<span class="dv">33</span>,
+<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">49</span>,<span class="dv">49</span>,<span class="dv">49</span>,<span class="dv">49</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">9</span>,<span class="dv">9</span>,
+<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">9</span>,<span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,
+<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">1</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,
+<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">81</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,
+<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,
+<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,
+<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">97</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">37</span>,<span class="dv">5</span>,<span class="dv">69</span>,<span class="dv">69</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">65</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">75</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,
+<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,
+<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,
+<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">11</span>,<span class="dv">11</span>,
+,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,
+<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">51</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,
+<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,
+<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,
+<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,
+,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,
+<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,
+,<span class="dv">19</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">83</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,
+,<span class="dv">11</span>,<span class="dv">43</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">51</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,
+<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">43</span>,
+<span class="dv">43</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,
+<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">35</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">43</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">11</span>,
+,<span class="dv">83</span>,<span class="dv">19</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">67</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,
+<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,
+<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,
+ <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>])</code></pre>
+<p>This is an ugly way to define a level. We could just scrap this representation as <code>Int</code> completely and perhaps define it using a hypothetical <a href="http://en.wikipedia.org/wiki/enumerated%20type" title="Wikipedia: enumerated type">enumerated type</a> as</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">level1 ::</span> ((<span class="dt">Geometry</span>,<span class="dt">Geometry</span>),[<span class="dt">Enemy</span>])
+level1 <span class="fu">=</span> ((<span class="dt">Tall</span>,<span class="dt">Narrow</span>), [<span class="dt">Flyer</span>,<span class="dt">Flyer</span>,<span class="dt">Flyer</span>,<span class="dt">Flyer</span>,<span class="dt">Flyer</span>,<span class="dt">Flyer</span>,<span class="dt">Shooter</span>,<span class="dt">PowerUp</span>,<span class="fu">Boss..</span>])</code></pre>
+<p>But this representation, while certainly more understandable, is still very repetitious. It will take even more space to write down.</p>
+<p>We <em>could</em> auto-derive the <a href="http://www.haskell.org/hoogle/?hoogle=Read" title="Hoogle: Read">Read</a> and <a href="http://www.haskell.org/hoogle/?hoogle=Show" title="Hoogle: Show">Show</a> typeclasses for <code>Geometry</code> and <code>Enemy</code> datatypes, and then we could store <code>level1</code>, <code>level2</code> etc. as some sort of “levelinformation.dat” file, and read the level information in at runtime.</p>
+<p>But that makes installation and running more difficult<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> still quite possible, , and it doesn’t address the core issue: the information is written in a way that is so ungainly that it’s next to impossible to write or even <em>modify</em>!</p>
+</section>
+<section id="the-solution" class="level1">
+<h1>The solution</h1>
+<p>We need some way of expressing this more concisely, of, in short, <em>compressing</em> it. In this vein of thought, our first observation should be that we do not need to resort to fancy <a href="http://hackage.haskell.org/packages/archive/pkg-list.html#cat:codec">compression libraries</a> or anything; there is an obvious way to compress it - the entire thing is a series of repeated numbers.</p>
+<p>We should be able to replace the lengthy enumeration of fragments like <code>[0,0,0,0,0,0,0,0,0,0,0,0]</code> with something simpler. For example, the number of repetitions, and what is to be repeated: <code>(12,0)</code>.</p>
+<p>This <a href="http://en.wikipedia.org/wiki/run-length%20encoding" title="Wikipedia: run-length encoding">run-length encoding</a> is shorter and easier to modify. It is possible that there may be a performance benefit here, as we’ve gotten rid of a large constant that would have to be defined in the program itself and instead replaced it with a shorter function which evaluates to the same thing. (If we’re only on level 1, we don’t need to carry around the expanded version of the other levels, and when we go to level 2, level 1 will be garbage-collected.)</p>
+<section id="writing-it" class="level2">
+<h2>Writing it</h2>
+<p>So, what is the type of our decompressing function? Well, we need to turn a <code>(Int,Int)</code> into a <code>[Int]</code>; even better, we want to turn a whole list of <code>(Int,Int)</code>s into a single list of <code>Int</code>s. Thus, our end goal is going to be a function of this type:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">rleDecode ::</span> [(<span class="dt">Int</span>,<span class="dt">Int</span>)] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</code></pre>
+<p>Let us tackle the single tuple example first. The second entry defines what we need, and the first entry defines how many we need, and that’s our type right there:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">rleRecursiveDecode ::</span> (<span class="dt">Int</span>, a) <span class="ot">-&gt;</span> [a]</code></pre>
+<p>We could write a <a href="http://en.wikipedia.org/wiki/primitive%20recursive" title="Wikipedia: primitive recursive">primitive recursive</a> function that takes the parameter, decreases the counter by 1, and cons on a copy of the second entry. It could look like this:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleRecursiveDecode (<span class="dv">0</span>,_) <span class="fu">=</span> []
+rleRecursiveDecode (n,b) <span class="fu">=</span> b <span class="fu">:</span> (rleRecursiveDecode (n<span class="fu">-</span><span class="dv">1</span>,b))</code></pre>
+<p>But this really is not the best way to go. It is not necessarily easy to follow, and if there is one thing I have learned about Haskell programming, it is that the most obvious approach (in this case, primitive recursion) may not be the best way to go.</p>
+<p>This is code that could have as well been written in Scheme or something. It is complicated because we are trying to ensure that we generate an item for the list only at the exact moment we need to add it into the list; we are programming as if our language is strict, in other words. So, what is the lazy way of doing things? Why do we like laziness to begin with?</p>
+<p>One of the key rationale for <a href="http://en.wikipedia.org/wiki/lazy%20evaluation" title="Wikipedia: lazy evaluation">lazy evaluation</a> is that it promotes <a href="http://en.wikipedia.org/wiki/separation%20of%20concerns" title="Wikipedia: separation of concerns">separation of concerns</a> - one function doesn’t need to know when or how much has been done by another function. In this case, what concerns ought to be separated? Well, our desired list has 2 properties: its length, and the single repeated item.</p>
+<p>Since we can create infinite lists, there is no need for the length to be set at the same time as the repeated-item is being generated. We can create an infinite list containing the item, and we demand as many as we need. Lazy evaluation means our infinite list doesn’t blow up. Simple enough!</p>
+<p>The generation is too easy for words:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Define an infinite list of our item.</span>
+<span class="ot">duplicate ::</span> a <span class="ot">-&gt;</span> [a]
+duplicate a <span class="fu">=</span> a <span class="fu">:</span> duplicate a</code></pre>
+<p>But what’s our demand function? A little thinking and we know that we have a list, a number, and we get back a list. <a href="http://www.haskell.org/hoogle/?hoogle=Int%20-%3E%20%5Ba%5D%20-%3E%20%5Ba%5D" title="Hoogle: Int -&gt; [a] -&gt; [a]">Int -&gt; [a] -&gt; [a]</a> describes a few functions, the second of which turns out to be what we want: <a href="http://www.haskell.org/hoogle/?hoogle=take" title="Hoogle: take">take</a>.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">rleLazyDecode ::</span> (<span class="dt">Int</span>,<span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+rleLazyDecode (n,b) <span class="fu">=</span> take n (duplicate b)</code></pre>
+<p>Now, <code>duplicate</code> is a simple enough function to define, but another type-search will show that <a href="http://www.haskell.org/hoogle/?hoogle=a%20-%3E%20%5Ba%5D" title="Hoogle: a -&gt; [a]">a -&gt; [a]</a> is already defined in the standard libraries - <a href="http://www.haskell.org/hoogle/?hoogle=repeat" title="Hoogle: repeat">repeat</a>.</p>
+<p>So we scrap <code>duplicate</code>:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleLazyDecode (n,b) <span class="fu">=</span> take n (repeat b)</code></pre>
+<p>Might as well remove the parentheses:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleLazyDecode (n,b) <span class="fu">=</span> take n <span class="fu">$</span> repeat b</code></pre>
+<p>We can do better. What is the type of <code>\n b -&gt; take n $ repeat b</code>? It is <code>Int -&gt; a -&gt; [a]</code>, and a <a href="http://www.haskell.org/hoogle/?hoogle=Int%20-%3E%20a%20-%3E%20%5Ba%5D" title="Hoogle: Int -&gt; a -&gt; [a]">Hoogle type-search</a> turns up an exact match: <a href="http://www.haskell.org/hoogle/?hoogle=replicate" title="Hoogle: replicate">replicate</a>. So we can improve it further:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleLazyDecode (n,b) <span class="fu">=</span> replicate n b</code></pre>
+<p>Are we quite done? Well, one could ask: <code>rleLazyDecade</code> is now basically nothing but an alias or new name for <code>replicate</code>, except for how it converts from a tuple <code>(n,b)</code> to normal uncurried arguments <code>n b</code>. Is there any function which will do this conversion for us? Well, we have a function <code>replicate :: a -&gt; b -&gt; c</code>, and data <code>(a,b)</code> passed into said function to produce a <code>c</code>, so we want a function with the type signature <a href="http://www.haskell.org/hoogle/?hoogle=%28a%20-%3E%20b%20-%3E%20c%29%20-%3E%20%28a%2Cb%29%20-%3E%20c" title="Hoogle: (a -&gt; b -&gt; c) -&gt; (a,b) -&gt; c">(a -&gt; b -&gt; c) -&gt; (a,b) -&gt; c</a>, which turns out to be something called <a href="http://www.haskell.org/hoogle/?hoogle=uncurry" title="Hoogle: uncurry">uncurry</a>. Having reasoned our way this far, the implementation is much clearer than the type:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">uncurry<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a, b) <span class="ot">-&gt;</span> c
+uncurry f (a,b) <span class="fu">=</span> f a b</code></pre>
+<p>That’s what we were just doing manually. So now the next version is clear:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleLazyDecode <span class="fu">=</span> uncurry replicate</code></pre>
+<p>A satisfying, short, functional, and lazy one-liner. From here the definition of <code>rleDecode</code> is almost trivial: we extend it to a list of tuples by throwing in a <a href="http://www.haskell.org/hoogle/?hoogle=map" title="Hoogle: map">map</a>, and we turn the resulting list of lists into a single list by way of <a href="http://www.haskell.org/hoogle/?hoogle=concat" title="Hoogle: concat">concat</a>:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleDecode ns <span class="fu">=</span> concat <span class="fu">$</span> map rleLazyDecode ns</code></pre>
+<p>We can tweak this further, as <code>concat . map</code> is a common enough idiom that there is a shortcut:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleDecode ns <span class="fu">=</span> concatMap rleLazyDecode ns</code></pre>
+<p>As before, we could have found <code>concatMap</code> by searching for the type signature of <code>concat . map</code>: <a href="http://www.haskell.org/hoogle/?hoogle=%28a1%20-%3E%20%5Ba%5D%29%20-%3E%20%5Ba1%5D%20-%3E%20%5Ba%5D" title="Hoogle: (a1 -&gt; [a]) -&gt; [a1] -&gt; [a]">(a1 -&gt; [a]) -&gt; [a1] -&gt; [a]</a>. Aw heck - let’s make it <a href="http://en.wikipedia.org/wiki/Tacit%20programming" title="Wikipedia: Tacit programming">points-free</a> like <code>rleLazyDecode</code>:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleDecode <span class="fu">=</span> concatMap rleLazyDecode</code></pre>
+<p>And then we substitute in the <code>rleLazyDecode</code> definition:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleDecode <span class="fu">=</span> concatMap (uncurry replicate)</code></pre>
+<p>We can actually go even further into the realms of incomprehensibility. It turns out that lists are a monad. This means we can use <code>bind</code> and all the rest of the operations defined by the <a href="http://www.haskell.org/hoogle/?hoogle=Monad" title="Hoogle: Monad">Monad</a> typeclass to operate on lists and other things. So we can write this bizarre (but short and effective) version of <code>rleDecode</code>:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">rleDecode <span class="fu">=</span> (uncurry replicate <span class="fu">=&lt;&lt;</span>)</code></pre>
+<p>And we are done! We can now represent the first level like this:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">d1 <span class="fu">=</span> ((<span class="dv">2</span>,<span class="dv">1</span>),d)
+  <span class="kw">where</span> d <span class="fu">=</span> rleDecode [(<span class="dv">5</span>, <span class="dv">3</span>), (<span class="dv">10</span>, <span class="dv">67</span>), (<span class="dv">6</span>, <span class="dv">3</span>), (<span class="dv">5</span>, <span class="dv">67</span>), (<span class="dv">29</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">11</span>),
+     (<span class="dv">29</span>, <span class="dv">3</span>), (<span class="dv">5</span>, <span class="dv">35</span>), (<span class="dv">3</span>, <span class="dv">3</span>), (<span class="dv">3</span>, <span class="dv">35</span>), (<span class="dv">24</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">35</span>), (<span class="dv">19</span>, <span class="dv">3</span>), (<span class="dv">7</span>, <span class="dv">19</span>), (<span class="dv">21</span>, <span class="dv">51</span>),
+     (<span class="dv">63</span>, <span class="dv">35</span>), (<span class="dv">15</span>, <span class="dv">43</span>), (<span class="dv">5</span>, <span class="dv">11</span>), (<span class="dv">8</span>, <span class="dv">43</span>), (<span class="dv">8</span>, <span class="dv">35</span>), (<span class="dv">3</span>, <span class="dv">3</span>), (<span class="dv">9</span>, <span class="dv">35</span>), (<span class="dv">20</span>, <span class="dv">3</span>), (<span class="dv">52</span>,
+     <span class="dv">67</span>), (<span class="dv">32</span>, <span class="dv">3</span>), (<span class="dv">13</span>, <span class="dv">35</span>), (<span class="dv">3</span>, <span class="dv">3</span>), (<span class="dv">11</span>, <span class="dv">35</span>), (<span class="dv">5</span>, <span class="dv">3</span>), (<span class="dv">9</span>, <span class="dv">35</span>), (<span class="dv">4</span>, <span class="dv">3</span>), (<span class="dv">6</span>, <span class="dv">35</span>), (<span class="dv">4</span>,
+     <span class="dv">3</span>), (<span class="dv">5</span>, <span class="dv">35</span>), (<span class="dv">13</span>, <span class="dv">3</span>), (<span class="dv">14</span>, <span class="dv">19</span>), (<span class="dv">4</span>, <span class="dv">3</span>), (<span class="dv">4</span>, <span class="dv">19</span>), (<span class="dv">6</span>, <span class="dv">3</span>), (<span class="dv">4</span>, <span class="dv">19</span>), (<span class="dv">7</span>, <span class="dv">3</span>), (<span class="dv">5</span>,
+     <span class="dv">19</span>), (<span class="dv">8</span>, <span class="dv">3</span>), (<span class="dv">8</span>, <span class="dv">19</span>), (<span class="dv">5</span>, <span class="dv">83</span>), (<span class="dv">3</span>, <span class="dv">67</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">12</span>, <span class="dv">19</span>), (<span class="dv">5</span>, <span class="dv">83</span>), (<span class="dv">17</span>, <span class="dv">19</span>), (<span class="dv">9</span>,
+     <span class="dv">83</span>), (<span class="dv">2</span>, <span class="dv">19</span>), (<span class="dv">5</span>, <span class="dv">3</span>), (<span class="dv">20</span>, <span class="dv">67</span>), (<span class="dv">1</span>, <span class="dv">75</span>), (<span class="dv">38</span>, <span class="dv">11</span>), (<span class="dv">1</span>, <span class="dv">43</span>), (<span class="dv">4</span>, <span class="dv">35</span>), (<span class="dv">7</span>, <span class="dv">3</span>),
+     (<span class="dv">57</span>, <span class="dv">67</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">5</span>, <span class="dv">19</span>), (<span class="dv">17</span>, <span class="dv">3</span>), (<span class="dv">6</span>, <span class="dv">19</span>), (<span class="dv">8</span>, <span class="dv">3</span>), (<span class="dv">6</span>, <span class="dv">67</span>), (<span class="dv">7</span>, <span class="dv">83</span>), (<span class="dv">59</span>, <span class="dv">3</span>),
+     (<span class="dv">9</span>, <span class="dv">19</span>), (<span class="dv">1</span>, <span class="dv">51</span>), (<span class="dv">17</span>, <span class="dv">35</span>), (<span class="dv">20</span>, <span class="dv">3</span>), (<span class="dv">14</span>, <span class="dv">35</span>), (<span class="dv">7</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">35</span>), (<span class="dv">11</span>, <span class="dv">43</span>), (<span class="dv">6</span>,
+     <span class="dv">11</span>), (<span class="dv">7</span>, <span class="dv">3</span>), (<span class="dv">26</span>, <span class="dv">67</span>), (<span class="dv">7</span>, <span class="dv">3</span>), (<span class="dv">13</span>, <span class="dv">35</span>), (<span class="dv">5</span>, <span class="dv">43</span>), (<span class="dv">7</span>, <span class="dv">11</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">5</span>, <span class="dv">67</span>), (<span class="dv">1</span>,
+     <span class="dv">83</span>), (<span class="dv">2</span>, <span class="dv">19</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">10</span>, <span class="dv">67</span>), (<span class="dv">21</span>, <span class="dv">3</span>), (<span class="dv">147</span>, <span class="dv">0</span>)]</code></pre>
+<p>Much nicer! And since our list-processing code is <a href="http://en.wikipedia.org/wiki/Type%20polymorphism" title="Wikipedia: Type polymorphism">polymorphic</a>, so even if we replace the arbitrary numbers by constructors, we change nothing.</p>
+<p>(Thanks to the denizens of #haskell for refactoring tips, and <a href="https://donsbot.wordpress.com/2007/07/31/run-length-encoding-in-haskell/">Don Stewart’s blog entry</a> on run-length encoding/decoding using <a href="http://haskell.org/haskellwiki/Arrow" title="Hawiki: Arrow">Arrows</a>.)</p>
+</section>
+</section>
+<section class="footnotes">
+<hr/>
+<ol>
+<li id="fn1"><p>Although Cabal makes this quite easy with its <a href="http://www.haskell.org/cabal/users-guide/#accessing-data-files-from-package-code">Paths_*</a> mechanism.<a href="#fnref1">↩</a></p></li>
+</ol>
+</section>
+</div>
+</div>
+<div id="footer">
+<p>Still bored? Then try my <a href="https://plus.google.com/103530621949492999968/posts" title="Google+ posts">Google+ news feed</a>.</p>
+<a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
+<br/>
+<div id="license">
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+<a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">
+<img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" height="31" width="88"/>
+</a>
+</p>
+</div>
+</div>
+ 
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+ 
+<script type="text/javascript" src="../static/js/footnotes.js"></script>
+ 
+<script type="text/javascript" src="../static/js/abalytics.js"></script>
+<script type="text/javascript">
+      window.onload = function() {
+      ABalytics.applyHtml();
+      };
+    </script>
+ 
+<script id="googleAnalytics" type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-18912926-1']);
+
+      ABalytics.init({
+      indent: [
+      {
+      name: "none",
+      "indent_class1": "<style>p + p { text-indent: 0.0em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent0.1",
+      "indent_class1": "<style>p + p { text-indent: 0.1em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent0.5",
+      "indent_class1": "<style>p + p { text-indent: 0.5em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent1.0",
+      "indent_class1": "<style>p + p { text-indent: 1.0em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent1.5",
+      "indent_class1": "<style>p + p { text-indent: 1.5em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent2.0",
+      "indent_class1": "<style>p + p { text-indent: 2.0em; margin-top: 0 }</style>"
+      }
+      ],
+      }, _gaq);
+
+      _gaq.push(['_trackPageview']);
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+ 
+<script id="outboundLinkTracking" type="text/javascript">
+      $(function() {
+      $("a").on('click',function(e){
+      var url = $(this).attr("href");
+      if (e.currentTarget.host != window.location.host) {
+      _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
+      if (e.metaKey || e.ctrlKey || (e.button == 1)) {
+      var newtab = true;
+      }
+      if (!newtab) {
+      e.preventDefault();
+      setTimeout('document.location = "' + url + '"', 100);
+      }
+      }
+      });
+      });
+    </script>
+ 
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ 
+<script type="text/javascript" src="../static/js/footnotes.js"></script>
+ 
+<script type="text/javascript" src="../static/js/tablesorter.js"></script>
+<script type="text/javascript" id="tablesorter">
+      $(document).ready(function() {
+      $("table").tablesorter();
+      }); </script>
+ 
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+      if (document.title != 'Essays') { <!-- avoid Disqus comments on front page -->
+      (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://disqus.com/forums/gwern/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+      var disqus_shortname = 'gwern';
+      (function () {
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'http://disqus.com/forums/gwern/count.js';
+      (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+      }</script>
+<noscript><p>Enable JavaScript for Disqus comments</p></noscript>
+</body>
+</html>
+

@@ -1,0 +1,513 @@
+http://www.bitcoinmaps.org/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 14:44:21 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 5007
+Connection: close
+Content-Type: text/html
+
+<!--
+	Miniport 2.5 by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>BitcoinMaps &middot; World Map of Bitcoin Economy</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,600,700" rel="stylesheet" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/config.js"></script>
+		<script src="js/skel.min.js"></script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-desktop.css" />
+		</noscript>
+		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><link rel="stylesheet" href="css/ie8.css" /><![endif]-->
+		<!--[if lte IE 7]><link rel="stylesheet" href="css/ie7.css" /><![endif]-->
+
+
+		<!-- Google Maps -->
+		<script src="http://maps.google.com/maps/api/js?sensor=true"
+            type="text/javascript"></script>
+	    <script type="text/javascript">
+	    //<![CDATA[
+
+	    // locationTypeFilter = "";
+
+	    var customIcons = {
+	      'Restaurant': {
+	        icon: 'img/restaurant_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      },
+	      'Café/Bar': {
+	        icon: 'img/bar_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      },
+	      'Exchange': {
+	        icon: 'img/exchange_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      },
+	      'Retail': {
+	        icon: 'img/retail_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      },
+	      'Hotel/Guest House': {
+	        icon: 'img/hotel_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      },
+	      'Other': {
+	        icon: 'img/other_marker.png',
+	        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+	      }
+	    };
+
+	    function load() {
+	      var map = new google.maps.Map(document.getElementById("map"), {
+	        center: new google.maps.LatLng(39.0437, -77.4875),
+	        zoom: 13,
+	        mapTypeId: 'roadmap',
+	        minZoom: 2
+	      });
+	      var infoWindow = new google.maps.InfoWindow({
+		      width: 450
+		  });
+
+		  var styles = [
+		  {
+		    stylers: [
+		      { saturation: -40 }
+		    ]
+		  },{
+		    featureType: "road",
+		    elementType: "geometry",
+		    stylers: [
+		      { lightness: 100 },
+		      { visibility: "simplified" }
+		    ]
+		  },{
+		    featureType: "road",
+		    elementType: "labels",
+		    stylers: [
+		      { visibility: "off" }
+		    ]
+		  }
+		];
+
+		map.setOptions({styles: styles});
+
+
+	      // Change this depending on the name of your PHP file
+	      downloadUrl("xml.php", function(data) {
+	        var xml = data.responseXML;
+	        var markers = xml.documentElement.getElementsByTagName("marker");
+	        for (var i = 0; i < markers.length; i++) {
+
+	          if (markers[i].getAttribute("status") != "deleted" && (typeof locationTypeFilter == 'undefined' || locationTypeFilter == "" || locationTypeFilter == markers[i].getAttribute("type"))) {
+	            
+	            var id = markers[i].getAttribute("id");
+	            var name = markers[i].getAttribute("name");
+	            var description = markers[i].getAttribute("description");
+	            var address = markers[i].getAttribute("address");
+	            var phone = markers[i].getAttribute("phone");
+	            var email = markers[i].getAttribute("email");
+	            var url = markers[i].getAttribute("url");
+
+
+
+	            var type = markers[i].getAttribute("type");
+	            var point = new google.maps.LatLng(
+	                parseFloat(markers[i].getAttribute("lat")),
+	                parseFloat(markers[i].getAttribute("lng")));
+	            if (type == "Other") {var type_display = "";} else {var type_display = "<em>" + type + "</em><br />";}
+	            var html = "<strong>" + name + "</strong><br />" + type_display + phone + "<br /><a href='#view'>More details &raquo;</a>";
+	            var icon = customIcons[type] || {};
+
+	            var details =new Array();
+	            details["id"]=id;
+	            details["name"]=name;
+	            details["description"]=description;
+	            details["address"]=address;
+	            details["phone"]=phone;
+	            details["email"]=email;
+	            details["url"]=url;
+
+	            var marker = new google.maps.Marker({
+	              map: map,
+	              position: point,
+	              icon: icon.icon,
+	              shadow: icon.shadow
+	            });
+
+
+	            bindInfoWindow(marker, map, infoWindow, html, details);
+	          }
+	        }
+	      });
+	    }
+
+	    function bindInfoWindow(marker, map, infoWindow, html, details) {
+	      google.maps.event.addListener(marker, 'click', function() {
+	        infoWindow.setContent(html);
+	        infoWindow.open(map, marker);
+	        showMarkerDetails(details);
+	      });
+	    }
+
+	    function downloadUrl(url, callback) {
+	      var request = window.ActiveXObject ?
+	          new ActiveXObject('Microsoft.XMLHTTP') :
+	          new XMLHttpRequest;
+
+	      request.onreadystatechange = function() {
+	        if (request.readyState == 4) {
+	          request.onreadystatechange = doNothing;
+	          callback(request, request.status);
+	        }
+	      };
+
+	      request.open('GET', url, true);
+	      request.send(null);
+	    }
+
+	    function doNothing() {}
+
+	    function showMarkerDetails(details){
+	      htmlContent = "<table><tr><td><strong>" + details['name'] + "</strong></td><td>" + details['description'] + "</td></tr><tr><td>&nbsp;</td><td>" + details['address'] + "</td></tr></table>"
+	      $("#view").show();
+	      $("#view_link").show();
+	      if (details['name'] == "") {details['name'] = "Unknown";}
+	      if (details['description'] == "") {}
+	      if (details['address'] == "") {details['address'] = "No address provided.";}
+		  if (details['phone'] == "") {}
+		  if (details['email'] == "") {}
+	      if (details['url'] == "") {$("#location_website").html("No website.");} else {
+	      	$("#location_website").html("<a href='"+details['url']+"'>Visit website &raquo;</a>");
+	      }
+	      $("#location_name").html(details['name']);
+	      $("#location_description").html(details['description']);
+	      $("#location_address").html(details['address']);
+	      $("#location_phone").html(details['phone']);
+	      $("#location_email").html(details['email']);
+
+	    };
+	    //]]>
+	  	</script>
+
+
+
+		<!-- Dependencies: JQuery and GMaps API should be loaded first -->
+		<script src="js/jquery-1.7.2.min.js"></script>
+
+		<!-- CSS and JS for our code -->
+		<link rel="stylesheet" type="text/css" href="css/jquery-gmaps-latlon-picker.css"/>
+		<script src="js/jquery-gmaps-latlon-picker.js"></script>
+
+		<style type="text/css">
+		#map {
+		    line-height:normal;
+		}
+		</style>
+
+
+	</head>
+	<body onload="load()">
+
+		<!-- Nav -->
+			<nav id="nav">
+				<ul class="container">
+					<li><a href="#top">BitCoin World Map</a></li>
+					<li><a href="#add_location">Add a Location</a></li>
+					<li id="view_link" style="display:none;"><a href="#location_details">View Last Location</a></li>
+					<li><a href="#donate">Donate</a></li>
+					<li><a href="#contact">Contact</a></li>
+				</ul>
+			</nav>
+
+		<!-- Home -->
+			<div style="padding-top:52px;">
+				<article class="" id="top">
+					<div style="width=100%; height:100%;">
+						<div id="map" style="width: 100%; height: 100%; background:#333333;"></div>
+      				</div>
+				</article>
+			</div>
+
+		<!-- View Location Details -->
+			<div class="wrapper wrapper-style2" id="view" style="display:none;">
+				<article id="location_details">
+					<header>
+						<h2>Selected Location: <span id="location_name"></span></h2>
+						<span id="location_description"></span>
+					</header>
+					<div class="container">
+						<div class="row">
+							<div class="4u">
+								<section class="box box-style1">
+									<span class="fa featured fa-file-o"></span>
+									<h3>Address</h3>
+									<p><span id="location_address"></span></p>
+								</section>
+							</div>
+							<div class="4u">
+								<section class="box box-style1">
+									<span class="fa featured fa-comments-o"></span>
+									<h3>Contact</h3>
+									<p><span id="location_phone"></span><br /><span id="location_email"></span></p>
+								</section>
+							</div>
+							<div class="4u">
+								<section class="box box-style1">
+									<span class="fa featured fa-thumbs-o-up"></span>
+									<h3>Website</h3>
+									<p><span id="location_website"></span></p>
+								</section>
+							</div>
+						</div>
+					</div>
+					<footer>
+						<p>Happy with what you've found?</p>
+						<a href="#donate" class="button button-big">Please donate!</a>
+					</footer>
+				</article>
+			</div>
+
+
+			<!-- Add New Bitcoin Location -->
+			<div class="wrapper wrapper-style4">
+				<article id="add_location" class="container small">
+					<header>
+						<h2>Add a New Bitcoin Location to the Map!</h2>
+						<span>Use our tool to create a new place that accepts Bitcoin paymets</span>
+					</header>
+					<div>
+						<div class="row">
+							<div class="12u">
+								<form method="post" action="create_location.php">
+									<fieldset class="gllpLatlonPicker">
+										<div>
+											<div class="row half">
+												<div class="10u">
+													<input type="text" class="gllpSearchField" size=42 placeholder="Search for a location and use the marker for precision...">
+												</div>
+												<div class="2u">
+													<input type="button" class="gllpSearchButton button button-alt button-inline" value="Go" />
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<div class="gllpMap">Google Maps</div>
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<input type="text" name="name" placeholder="Location Name" />
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<textarea name="description" placeholder="Type a nice, objective description of the new place."></textarea>
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<input type="text" class="gllpLocationName" name="address" placeholder="Full address" />
+													<input name="lat" type="hidden" class="gllpLatitude" value="20"/>
+													<input name="lng" type="hidden" class="gllpLongitude" value="20"/>
+													<input type="hidden" class="gllpZoom" value="3"/>
+												</div>
+											</div>
+											<div class="row half">
+												<div class="6u">
+													<input type="text" name="phone" placeholder="Phone number (e.g.: 1.800.000.1111)" />
+												</div>
+												<div class="6u">
+													<input type="text" name="email" placeholder="Email (e.g.: location@website.com)" />
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<input type="text" name="url" placeholder="Website URL (e.g.: http://www.website.com)" />
+												</div>
+											</div>
+											<div class="row half">
+												<div class="12u">
+													<select name="type">
+														<option>Pick a location type...</option>
+														<option value="Café/Bar">Café/Bar</option>
+														<option value="Restaurant">Restaurant</option>
+														<option value="Hotel/Guest House">Hotel/Guest House</option>
+														<option value="Exchange">Exchange</option>
+														<option value="Retail">Retail</option>
+														<option value="Other">Other</option>
+													</select>
+												</div>
+											</div>
+											<div class="row">
+												<div class="12u">
+													<a href="#" class="button form-button-submit">Add New Bitcoin Location</a>
+													<a href="#" class="button button-alt form-button-reset">Clear Form</a>
+												</div>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+							</div>
+						</div>
+					</div>
+				</article>
+			</div>
+
+
+
+		<!-- Donate -->
+			<div class="wrapper wrapper-style3">
+				<article id="donate">
+					<header>
+						<h2>Please support our project. Donate now!</h2>
+						<span>We believe in Bitcoin. And Bitcoin is only valuable as long as people know about it and accept it as a currency.<br /><br />If you believe in Bitcoin too, help us build the necessary infrastructure! Even a small donation will help us keep going!<br />Also, if you have a Bitcoin related website, for a small donation, we'll list it here for an entire year!<br /><br /><strong>We need your help now! Make a donation!<br />1Fd1RBLiYNGpo1E1jsEPnf6Thm8DFBdrSc</strong></span>
+					</header>
+					<div class="container">
+						<div class="row">
+							<div class="12u">
+							</div>
+						</div>
+						<div class="row">
+							<div class="4u">
+								<article class="box box-style2">
+									<a href="http://www.bitawards.org/" class="image image-full"><img src="images/bitawards.png" alt="" /></a>
+									<h3><a href="http://www.bitawards.org/">BitAwards</a></h3>
+									<p>Bitcoin Economy Awards 2013.</p>
+								</article>
+							</div>
+							<div class="4u">
+								<article class="box box-style2">
+									<a href="http://www.bitcoinmaps.org/" class="image image-full"><img src="images/bitcoinmaps.png" alt="" /></a>
+									<h3><a href="http://www.bitcoinmaps.org/">BitcoinMaps</a></h3>
+									<p>World Map of Bitcoin economy.</p>
+								</article>
+							</div>
+							<div class="4u">
+								<article class="box box-style2">
+									<a href="http://www.bitcoinmaps.org/#contact" class="image image-full"><img src="images/unknown.png" alt="" /></a>
+									<h3><a href="http://www.bitcoinmaps.org/#contact">Your Project Here!</a></h3>
+									<p>For 1 year! With just a small donation.</p>
+								</article>
+							</div>
+						</div>
+					</div>
+					<footer>
+						<p>If you made a donation and want your site listed here, please contact us.</p>
+						<a href="#contact" class="button button-big">Get in touch with us!</a>
+					</footer>
+				</article>
+			</div>
+
+		<!-- Contact -->
+			<div class="wrapper wrapper-style4">
+				<article id="contact" class="container small">
+					<header>
+						<h2>Want contact us? Get in touch!</h2>
+						<span>Please fill out the following form:</span>
+					</header>
+					<div>
+						<div class="row">
+							<div class="12u">
+								<form method="post" action="send_mail.php">
+									<div>
+										<div class="row half">
+											<div class="6u">
+												<input type="text" name="name" id="name" placeholder="Name" />
+											</div>
+											<div class="6u">
+												<input type="text" name="email" id="email" placeholder="Email" />
+											</div>
+										</div>
+										<div class="row half">
+											<div class="12u">
+												<input type="text" name="subject" id="subject" placeholder="Subject" />
+											</div>
+										</div>
+										<div class="row half">
+											<div class="12u">
+												<textarea name="message" id="message" placeholder="Message"></textarea>
+											</div>
+										</div>
+										<div class="row">
+											<div class="12u">
+												<a href="#" class="button form-button-submit">Send Message</a>
+												<a href="#" class="button button-alt form-button-reset">Clear Form</a>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="row">
+							<div class="12u">
+								<hr />
+								<h3>Find us on ...</h3>
+								<ul class="social">
+									<li class="twitter"><a href="#" class="fa fa-twitter"><span>Twitter</span></a></li>
+									<li class="facebook"><a href="#" class="fa fa-facebook"><span>Facebook</span></a></li>
+									<!--
+									<li class="dribbble"><a href="http://dribbble.com/n33" class="fa fa-dribbble"><span>Dribbble</span></a></li>
+									<li class="rss"><a href="#" class="fa fa-rss"><span>RSS</span></a></li>
+									<li class="instagram"><a href="#" class="fa fa-instagram"><span>Instagram</span></a></li>
+									<li class="foursquare"><a href="#" class="fa fa-foursquare"><span>Foursquare</span></a></li>
+									<li class="skype"><a href="#" class="fa fa-skype"><span>Skype</span></a></li>
+									<li class="soundcloud"><a href="#" class="fa fa-soundcloud"><span>Soundcloud</span></a></li>
+									<li class="youtube"><a href="#" class="fa fa-youtube"><span>YouTube</span></a></li>
+									<li class="blogger"><a href="#" class="fa fa-blogger"><span>Blogger</span></a></li>
+									<li class="flickr"><a href="#" class="fa fa-flickr"><span>Flickr</span></a></li>
+									<li class="vimeo"><a href="#" class="fa fa-vimeo"><span>Vimeo</span></a></li>
+									<li class="linkedin"><a href="#" class="fa fa-linkedin"><span>LinkedIn</span></a></li>
+									<li class="tumblr"><a href="#" class="fa fa-tumblr"><span>Tumblr</span></a></li>
+									<li class="googleplus"><a href="#" class="fa fa-google-plus"><span>Google+</span></a></li>
+									<li class="github"><a href="http://github.com/n33" class="fa fa-github"><span>Github</span></a></li>
+									-->
+								</ul>
+								<hr />
+							</div>
+						</div>
+					</div>
+					<footer>
+						<ul id="copyright">
+							<li>&copy; 2013 BitcoinMaps.org</li>
+							<li>Donate to: 1Fd1RBLiYNGpo1E1jsEPnf6Thm8DFBdrSc</a></li>
+						</ul>
+					</footer>
+				</article>
+			</div>
+
+
+							
+<!-- Start Open Web Analytics Tracker -->
+<script type="text/javascript">
+//<![CDATA[
+var owa_baseUrl = 'http://www.flirtytexts.org/analytics/';
+var owa_cmds = owa_cmds || [];
+owa_cmds.push(['setSiteId', 'b9b6d16b71cbc3b1ef66226aefd64843']);
+owa_cmds.push(['trackPageView']);
+owa_cmds.push(['trackClicks']);
+
+(function() {
+	var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+	owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
+	_owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
+	var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
+}());
+//]]>
+</script>
+<!-- End Open Web Analytics Code -->
+				
+		
+
+	</body>
+</html>

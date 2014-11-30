@@ -1,0 +1,429 @@
+http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 00:28:14 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 24-Jul-2015 00:28:14 GMT; path=/
+Set-Cookie: lw_user_sid=e76ec60870fe1e035a58b927606c0cfd; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 8086
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-24T02:28:14Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>How to correctly create ODF documents using zip - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/" class="entry-title">How to correctly create ODF documents using zip</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>One of the great advantages of the OpenDocument format is that it is simply a zip file. You can unzip it with any archiver and take a look at the contents, which is a set of XML documents and associated data. Many people are using this feature do create some nifty toolchains. Unzip, make some changes, zip it again and you have a new ODF document. Well&hellip; almost.</p>
+
+<p>The <a href="http://docs.oasis-open.org/office/v1.1/OS/OpenDocument-v1.1-html/OpenDocument-v1.1.html#17.4.MIME%20Type%20Stream|outline">OpenDocument Format specification</a>, section 17.4 has one little extra restriction when it comes to zip containers: The file called &ldquo;mimetype&rdquo; must be at the beginning of the zip file, it must be uncompressed and it must be stored without any additional file attributes. Unfortunately many developers seem to forget this. It is the number one cause of failed documents at <a href="http://www.officeshots.org">Officeshots.org</a>. If the mimetype file is not correctly zipped then it is not possible to programmatically detect the mimetype of the ODF file. And if the mimetype check fails, Officeshots (and possibly other applications) will refuse the document. This problem is compounded because virtually no ODF validator checks the zip container. They only check the contents.</p>
+
+<p>In this article I will show you how you can properly zip your ODF files, but before I do that I will show you the problem in detail.</p>
+
+<h4>Detecting mimetypes</h4>
+
+<p>Linux and other Unix-like opratingsystems do not rely on file extensions to determine the type of a file. Relying on file extensions can be a serious sercurity problem, as you can see in the Windows world. It's simply too easy to change the extension and pretend that a file is of a different type than it really is. Instead, the Unix world looks at the contents of the file itself. This happens with a library called &ldquo;magic&rdquo;.</p>
+
+<p>The magic library consists of a large set of rules, which it uses to figure out what type of file it is looking at. For example, it can look at a certain byte offset and see what value it contains. This is precisely the reason why the ODF specification says that you need to zip the mimetype first, without any file attributes. If you do that and open the ODF file in a hex editor, you will see something like this:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">Offset: &nbsp; &nbsp;Hexadecimal: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ASCII:</div></li>
+<li class="li1"><div class="de1">00000000 - 50 4b 03 04 &nbsp;14 00 00 08 &nbsp;00 00 c1 b6 &nbsp;66 3b 5e c6 &nbsp;PK..............</div></li>
+<li class="li1"><div class="de1">00000010 - 32 0c 27 00 &nbsp;00 00 27 00 &nbsp;00 00 08 00 &nbsp;00 00 6d 69 &nbsp;2.'...'.......mi</div></li>
+<li class="li1"><div class="de1">00000020 - 6d 65 74 79 &nbsp;70 65 61 70 &nbsp;70 6c 69 63 &nbsp;61 74 69 6f &nbsp;metypeapplicatio</div></li>
+<li class="li1"><div class="de1">00000030 - 6e 2f 76 6e &nbsp;64 2e 6f 61 &nbsp;73 69 73 2e &nbsp;6f 70 65 6e &nbsp;n/vnd.oasis.open</div></li>
+<li class="li1"><div class="de1">00000040 - 64 6f 63 75 &nbsp;6d 65 6e 74 &nbsp;2e 74 65 78 &nbsp;74 50 4b 03 &nbsp;document.textPK.</div></li>
+<li class="li1"><div class="de1">...</div></li>
+</ol></div></div>
+
+<p>This is very easy to match for the magic library. Here is an explanation of the rules that magic uses to test if the file is an ODF file:</p>
+
+<ol>
+<li>Look at the beginning of the file. It should start with the letters PK and then bytes 03 and 04. This means it is a zip file.</li>
+<li>Look at offset 30 ("1e" in hex). It should be the string "mimetype".</li>
+<li>Look at offset 38 ("26" in hex), directly after the word "mimetype". It should be one of the ODF mimetypes.</li>
+</ol>
+
+<p>You can guess what happens when you don't zip the mimetype file first: The string "mimetype" won't be at the right offset. And if you accidentally zip it with extra file attributes, then the contents of the mimetype file will not start directly after it. There will be several bytes in between. This causes the magic library to detect it as a standard zip file, not as an ODF file. Here is how such a badly zipped ODF could look like. This file was zipped normally, without paying special attention to the mimetype file:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">Offset: &nbsp; &nbsp;Hexadecimal: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ASCII:</div></li>
+<li class="li1"><div class="de1">00000000 - 50 4b 03 04 &nbsp;0a 00 00 00 &nbsp;00 00 25 01 &nbsp;6e 3c 00 00 &nbsp;PK..............</div></li>
+<li class="li1"><div class="de1">00000010 - 00 00 00 00 &nbsp;00 00 00 00 &nbsp;00 00 10 00 &nbsp;15 00 43 6f &nbsp;..............Co</div></li>
+<li class="li1"><div class="de1">00000020 - 6e 66 69 67 &nbsp;75 72 61 74 &nbsp;69 6f 6e 73 &nbsp;32 2f 55 54 &nbsp;nfigurations2/UT</div></li>
+<li class="li1"><div class="de1">00000030 - 09 00 03 16 &nbsp;1b 9c 4b 47 &nbsp;1e 9c 4b 55 &nbsp;78 04 00 e8 &nbsp;......KG..KUx...</div></li>
+<li class="li1"><div class="de1">00000040 - 03 e8 03 50 &nbsp;4b 03 04 0a &nbsp;00 00 00 00 &nbsp;00 25 01 6e &nbsp;...PK........%.n</div></li>
+<li class="li1"><div class="de1">...</div></li>
+</ol></div></div>
+
+<p>As you can see, it does not match the rules that the magic library has. Instead of checking your ODF file with a hex editor, you can also simply use the "file" command. For example:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ file --mime my-document.odt</div></li>
+<li class="li1"><div class="de1">my-document.odt: application/vnd.oasis.opendocument.text</div></li>
+</ol></div></div>
+
+<p>If that command results in "application/zip" or "application/octet-stream" then it means that your ODF file is probably incorrectly zipped. Note that the magic library shipped with "file" up to version 5.0.3 does not contain all mimetypes for ODF files but only for OpenDocument Text (odt) files. File 5.0.3 is the version most commenly shipped with Linux distributions today. I have since submitted a patch that includes all known ODF mimetypes. It was accepted and it should be included in file version 5.0.4 and later.</p>
+
+<h4>How to zip an ODF file</h4>
+
+<p>So, here is how you can zip an ODF file the right way. Suppose that I have an unzipped ODF file that looks like this:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">+ my-document/</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; + Configurations2/</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; + META-INF/</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; - manifest.xml</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; + Thumbnails/</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; - thumbnail.png</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - content.xml</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - meta.xml</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - mimetype</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - settings.xml</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - styles.xml</div></li>
+</ol></div></div>
+
+<p>Start by creating a new zip file that just contains the mimetype file:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ zip -0 -X ../my-document.odt mimetype</div></li>
+</ol></div></div>
+
+<p>The -0 parameter means that the file will not be compressed. The -X parameter means that no extra file attributes will be stored. Next you can add the rest of the files:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ zip -r ../my-document.odt * -x mimetype</div></li>
+</ol></div></div>
+
+<p>Be sure to exclude the mimetype file. Now if you look at it with a hex editor, you will see it has been zipped correctly:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">Offset: &nbsp; &nbsp;Hexadecimal: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ASCII:</div></li>
+<li class="li1"><div class="de1">00000000 - 50 4b 03 04 &nbsp;14 00 00 08 &nbsp;00 00 c1 b6 &nbsp;66 3b 5e c6 &nbsp;PK..............</div></li>
+<li class="li1"><div class="de1">00000010 - 32 0c 27 00 &nbsp;00 00 27 00 &nbsp;00 00 08 00 &nbsp;00 00 6d 69 &nbsp;2.'...'.......mi</div></li>
+<li class="li1"><div class="de1">00000020 - 6d 65 74 79 &nbsp;70 65 61 70 &nbsp;70 6c 69 63 &nbsp;61 74 69 6f &nbsp;metypeapplicatio</div></li>
+<li class="li1"><div class="de1">00000030 - 6e 2f 76 6e &nbsp;64 2e 6f 61 &nbsp;73 69 73 2e &nbsp;6f 70 65 6e &nbsp;n/vnd.oasis.open</div></li>
+<li class="li1"><div class="de1">00000040 - 64 6f 63 75 &nbsp;6d 65 6e 74 &nbsp;2e 74 65 78 &nbsp;74 50 4b 03 &nbsp;document.textPK.</div></li>
+<li class="li1"><div class="de1">...</div></li>
+</ol></div></div>
+
+<p>Happy zipping everyone!</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2010-03-14T00:51:00Z">2010-03-14@00:51</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/odf" rel="tag">odf</a>
+															&nbsp;<a href="http://www.jejik.com/tag/officeshots" rel="tag">officeshots</a>
+															&nbsp;<a href="http://www.jejik.com/tag/zip" rel="tag">zip</a>
+															&nbsp;<a href="http://www.jejik.com/tag/magic" rel="tag">magic</a>
+															&nbsp;<a href="http://www.jejik.com/tag/mime" rel="tag">mime</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-03-15@11:55
+																																			</div>
+																I believe you meant my-document.odt in the mimetype step.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c2" class="number" id="c2">#2</a>
+																			Mira
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-03-15@12:23
+																																			</div>
+																Note: There should be "my-document.odt" instead of "my-document.zip" in your command:<br />
+zip -0 -X ../my-document.zip mimetype<br />
+<br />
+I tested your procedure in Ubuntu 10.04, but I got this:<br />
+----------------<br />
+00000000  50 4b 03 04 0a 00 00 00  00 00 9d 55 6f 3c 5e c6  |PK.........Uo&lt;^.|<br />
+00000010  32 0c 27 00 00 00 27 00  00 00 08 00 00 00 6d 69  |2.'...'.......mi|<br />
+00000020  6d 65 74 79 70 65 61 70  70 6c 69 63 61 74 69 6f  |metypeapplicatio|<br />
+00000030  6e 2f 76 6e 64 2e 6f 61  73 69 73 2e 6f 70 65 6e  |n/vnd.oasis.open|<br />
+00000040  64 6f 63 75 6d 65 6e 74  2e 74 65 78 74 50 4b 03  |document.textPK.|<br />
+--------------------<br />
+$ file --mime my-document.odt<br />
+my-document.odt: application/zip; charset=binary<br />
+<br />
+It seems that problem is in the bytes 01 and 07
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c3" class="number" id="c3">#3</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-03-15@17:21
+																																			</div>
+																@Anonymous: Thanks, I fixed it.<br />
+<br />
+@Mira: The output you posted looks fine. What version of `file` are you using? Older versions of `file` assume that the Zip version used is 2.0 or better because that is what OpenOffice.org uses. But the ODF specification does not say anything about it. On most Linux installations, zip creates version 1.0 files unless otherwise specified (that's what the "0a 00" bytes mean at offset 04).<br />
+<br />
+It looks like your magic library is thinking that because it's zip 1.0, it cannot be an ODF file. There doesn't seem to be any way way to force zip to use version 2.0.<br />
+<br />
+You can always try to upload your document to Officeshots.org. It is always running the latest, patched magic library. If it uploads, it is recognised.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.fedict.be" class="name">Bart Hanssens<small> (http://www.fedict.be)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-03-16@00:21
+																																			</div>
+																Actually, the -0 is not necessary. Zip will just store the mimetype, with or without -0, since the file is too small to deflate
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c5" class="number" id="c5">#5</a>
+																			jcp
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-11-02@14:44
+																																			</div>
+																Open Office asks me if I want to repair the file - then it opens. If I only extract content.xml modify it and put it back with: zip -f ../my-document.odt ./content.xml it works. Any suggestion?<br />
+(using debian testing, Kernel 3.0.0-1-686-pae, LibreOffice 3.4.3 OOO340m1 (Build:302))
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c6" class="number" id="c6">#6</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-11-06@22:25
+																																			</div>
+																Not really. I haven't tried this with LibreOffice yet. Do other ODF applications complain about the documents you create?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c7" class="number" id="c7">#7</a>
+																			Yves
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-03-16@20:38
+																																			</div>
+																Works fine for me at the command line but can't find a way to do the same thing with the Java API. Any ideas how to do that?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c8" class="number" id="c8">#8</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-03-17@01:21
+																																			</div>
+																No, sorry. I'm a PHP developer, not a Java developer.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c9" class="number" id="c9">#9</a>
+																			RPW
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-12-10@11:37
+																																			</div>
+																Maximum respect!<br />
+This repacked odf "I/O Error" was driving me crazy!<br />
+You saved my day, all praise go to you! And thanks for sharing.<br />
+BTW, to help other users: according to a quick test, you can apparently still build a valid file...<br />
+    * Omitting 'Configurations2' and 'Thumbnails' altogether<br />
+    * Omitting statistics declarations in the manifest <br />
+Cheers,<br />
+RPW
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="1c663631c20568f640ab3692e904a5fb" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2010%2F03%2Fhow_to_correctly_create_odf_documents_using_zip%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://boycottnovell.com/2010/03/15/tim-bray-at-google/">boycottnovell.com/2010/03/1...</a></li>
+															<li><a href="http://freesoftware.zona-m.net/comments-to-how-to-automatically-create-odf-invoices-without-openoffice/">freesoftware.zona-m.net/com...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,540 @@
+http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 22:01:09 GMT
+Server: Apache/2.2.3 (CentOS)
+X-Powered-By: PHP/5.3.13
+X-Pingback: http://www.bimonkey.com/xmlrpc.php
+Link: <http://www.bimonkey.com/?p=572>; rel=shortlink
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="language" content="en" />
+
+<title>SQL Server SSIS Prevent SQL Agent Jobs reporting failure | BI Monkey</title>
+<link rel="Shortcut Icon" href="http://www.bimonkey.com/wp-content/themes/shades-of-blue/images/favicon.ico" type="image/x-icon" />
+
+<link rel="stylesheet" href="http://www.bimonkey.com/wp-content/themes/shades-of-blue/style.css" type="text/css" media="screen" />
+<link rel="alternate" type="application/rss+xml" title="BI Monkey RSS Feed" href="http://www.bimonkey.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="BI Monkey Atom Feed" href="http://www.bimonkey.com/feed/atom/" />
+<link rel="pingback" href="http://www.bimonkey.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="BI Monkey &raquo; Preventing SQL Agent Jobs calling SSIS reporting failure Comments Feed" href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.bimonkey.com/xmlrpc.php?rsd" />
+<link rel='prev' title='A bigger and better known BI Monkey' href='http://www.bimonkey.com/2009/08/a-bigger-and-better-known-bi-monkey/' />
+<link rel='next' title='The Script Transformation part 1 &#8211; a simple Transformation' href='http://www.bimonkey.com/2009/09/the-script-transformation-part-1-a-simple-transformation/' />
+<link rel='shortlink' href='http://www.bimonkey.com/?p=572' />
+
+<!-- All in One SEO Pack 2.1.5 by Michael Torbert of Semper Fi Web Design[353,430] -->
+<meta name="description" content="How to prevent SQL Agent jobs reporting failure when SSIS Packages called by it fail, though it doesn't work for Parent - CHild packages" />
+
+<meta name="keywords" content="sql server, ssis, integration services, sql agent, job, fail, failure,event handlers,sql agent" />
+
+<link rel="canonical" href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/" />
+<!-- /all in one seo pack -->
+
+</head>
+
+<body>
+
+<div id="header">
+
+    <div class="headerleft">
+		        	<h4><a href="http://www.bimonkey.com/">BI Monkey</a></h4>
+            
+       		<p>James Beresford on Microsoft BI and Consulting in Sydney, Australia</p>
+    </div>
+		
+	<div class="headerright">
+    
+	<ul id="nav">
+		            <li><a href="http://www.bimonkey.com">Home</a></li>
+            
+        <li class="page_item page-item-2051"><a href="http://www.bimonkey.com/training/">Training</a></li>
+<li class="page_item page-item-741"><a href="http://www.bimonkey.com/framework/">ETL Control Framework</a></li>
+<li class="page_item page-item-64 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/">About</a>
+<ul class='children'>
+	<li class="page_item page-item-146 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/">Help</a>
+	<ul class='children'>
+		<li class="page_item page-item-79"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/using-ssis-samples-from-this-site/">Using SSIS samples from this site</a></li>
+		<li class="page_item page-item-243"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/ssis-component-samples-list/">SSIS Component Samples List</a></li>
+	</ul>
+</li>
+	<li class="page_item page-item-546"><a href="http://www.bimonkey.com/about-the-bi-monkey/consulting-and-technical-services/">Consulting and Technical Services</a></li>
+</ul>
+</li>
+	</ul>
+    
+	</div>
+
+</div>
+
+<div class="clear"></div>
+
+<div id="wrap">
+<div id="content">
+
+	<div id="contentleft">
+	
+		<div class="postarea">
+
+			            
+			<div class="post">
+			
+                <h1>Preventing SQL Agent Jobs calling SSIS reporting failure</h1>
+                    
+                    <div class="postauthor">
+                        <p>Posted by <a href="http://www.bimonkey.com/author/bi-monkey/" title="Posts by BI Monkey" rel="author">BI Monkey</a> on Monday, August 31, 2009 &middot; <a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/#comments">5 Comments</a>&nbsp;</p>
+                    </div>
+                
+                <p>The ETL Control system I have in place has a series of parent and child packages, the lowest child of which can possibly and legitimately fail, and the Control flows I have in place gracefully handle that possibility, logging the failures back to Audit / Control database.</p>
+<p>However, whenever a task fails, the error gets reported up the Parent / Child package chain all the way to the SQL Agent Job running the control framework and the SQL Agent job itself reports failure. This gives the wrong impression to anyone viewing the job history &#8211; it looks like the job has failed when in fact it has run just fine, handling the problems it encountered.</p>
+<p><a id="ctl00___ctl00___ctl00_ctl00_bcr_bth___BlogTitle" title="Rushabh Mehta" href="http://sqlblog.com/blogs/rushabh_mehta/default.aspx">Rushabh Mehta</a> presents an elegant solution in this post: <a title="Gracefully Handing Task Error in SSIS Package" href="http://sqlblog.com/blogs/rushabh_mehta/archive/2008/04/24/gracefully-handing-task-error-in-ssis-package.aspx">Gracefully Handing Task Error in SSIS Package</a>. His solution is to create an OnError Event Handler for the task that can possibly fail, and in that Event Handler find the System Variable <strong>Propagate</strong> and set its value to False. What the Propagate property does is decide whether Error messages are propagated up through the package. By setting it to false, you tell the package not to send Error messages up the execution chain. The Event Handler itself doesn&#8217;t have to <em>do </em>anything, it just has to exist and have the Propagate property set to False. This way the task can fail, not cause the SQL Agent Job to fail, but still allow handling of Errors in the Control flow through the normal use of Precendence constraints.</p>
+<p>Unfortunately if you have a chain of Parent &#8211; Child packages this doesn&#8217;t quite work. If you try to apply this technique to an Execute Package task, it doesn&#8217;t work because if the Child package fails at any point &#8211; even if you prevent errors propagating up from inside the Child package, the Parent package will still raise errors and report failure. What I have found is that you have to have an Event Handler that prevents the propagation of errors at each step in the chain of packages that call that child package &#8211; so if you have Parent &gt; Parent &gt; Parent &gt; Child, stopping propagation of errors in the Child isn&#8217;t enough to get the SQL Agent Job to believe it succeeded, you need to stop error propagation at each Execute Package task. I have a set of <a title="Parent Child Package Error Propagation Samples (Right Click, Save As)" href="http://www.bimonkey.com/uploads/ssis/Parent Child Package Error Propagation.zip">sample packages demonstrating this process here.</a> It appears the only way to ignore errors at the bottom level is to ignore errors at every level, which is not a good approach.</p>
+<p>As far as I can tell this is a bug, so I have <a title="SSIS - Propagate property has no effect on Parent Packages" href="https://connect.microsoft.com/SQLServer/feedback/ViewFeedback.aspx?FeedbackID=486780">reported it on connect</a>.</p>
+<p>If anyone has a solution to this problem I would be grateful to hear it &#8211; I don&#8217;t want to disable errors in every called package, just stop them propagating from the Execute Package Task at the bottom of the chain.</p>
+<p><strong><span style="color: #ff0000;"><em>Connect Update 18 Aug 2010: </em></span></strong></p>
+<p><em>Looks like this won&#8217;t get fixed as it currently stands, the response from Microsoft was to Close it as &#8220;By Design&#8221;:</em></p>
+<blockquote><p><em>The &#8220;propagate&#8221; value only controls if an event should be propagated up<br />
+repeatedly. It doesn&#8217;t affect if the event is propagated to the client.<br />
+For child task, client is the parent package.</p>
+<p>We looked the issue and decided that we cannot change the current<br />
+behavior. To address the issue properly, we will consider introducing<br />
+option like &#8220;Propagate to client&#8221; in the future.<br />
+</em></p></blockquote>
+<p><strong></strong><em> This does actually make sense architecturally &#8211; so we will just have to hope that the &#8220;Propagate to client&#8221; property becomes a reality.</em></p>
+<p><a href="http://bittip.it/" class="bittip-button" default-amount="0.005" request="count" url="" donation-message="" donation-address="1FKrdG88RWBLDn3QcM3swyrrYMLcu9uDC"></a></p><script>(function() {var s = document.createElement('script');var t = document.getElementsByTagName('script')[0];s.type = 'text/javascript';s.async = true;var url; if (window.location.protocol == 'https:'){url = 'https://bitcoinsberlin.com/wp-content/uploads/2013/01/button-loader.js'} else { url = 'http://bittip.it/cdn/button-loader.js';};s.src = url;t.parentNode.insertBefore(s, t);})();</script><div class="clear"></div>
+                        
+                <!--
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+			xmlns:dc="http://purl.org/dc/elements/1.1/"
+			xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+		<rdf:Description rdf:about="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/"
+    dc:identifier="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/"
+    dc:title="Preventing SQL Agent Jobs calling SSIS reporting failure"
+    trackback:ping="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/trackback/" />
+</rdf:RDF>                -->
+                
+                <div class="postmeta">
+                    <p>Filed under <a href="http://www.bimonkey.com/category/microsoft-bi/" title="View all posts in Microsoft BI" rel="category tag">Microsoft BI</a> &middot; Tagged with <a href="http://www.bimonkey.com/tag/event-handlers/" rel="tag">Event Handlers</a>, <a href="http://www.bimonkey.com/tag/sql-agent/" rel="tag">SQL Agent</a></p>
+                </div>
+                
+                <div class="clear"></div>
+                
+                <div class="authorbox">
+                    <p><img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=64&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D64&amp;r=G' class='avatar avatar-64 photo' height='64' width='64' /><strong>About BI Monkey</strong><br /></p>
+                    <div class="clear"></div>
+                </div>
+                    
+            </div>
+			
+		</div>
+			
+        <div class="postcomments">
+            
+			
+
+		<h3 id="comments">Comments</h3>
+	<strong>5 Responses to &#8220;Preventing SQL Agent Jobs calling SSIS reporting failure&#8221;</strong>
+	<ol class="commentlist">
+			<li class="comment even thread-even depth-1" id="comment-2167">
+				<div id="div-comment-2167" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/24fa8c832f809a7664bb6c7fa83498a6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Onedreamer</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/comment-page-1/#comment-2167">
+			August 4, 2010 at 5:00 am</a>		</div>
+
+		<p>Thanks a lot BI Monkey,</p>
+<p>You summrized very well this &#8220;missfunctionality&#8221; in SSIS<br />
+I wasted nearly all the day trying to stop propagating erros from child package to the parent but it doesn&#8217;t work.<br />
+Thanks&#8230;</p>
+<p>******** It was said :  Microsoft stop making money and fix your software **************</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-12259">
+				<div id="div-comment-12259" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/4c299e0adfe99e863d478a484edeeaa6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">abagag</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/comment-page-1/#comment-12259">
+			September 20, 2011 at 1:38 am</a>		</div>
+
+		<p>Thanks for an interesting post.</p>
+<p>I have a design in which there is a master package fired by an agent. The master package, in turn, fires subpackages (which fire packages and so on).</p>
+<p>I do not recognise the problem of the failing agent (running R2). As long as you make sure not to set FailPackageOnError and FailParentOnError to true and MaximumErrorCount to desired value packages will continue to execute and the things you do not want to execute can be handled by control flow design. To the agent running the dtexec the return code will be (0) successful regardless of how many sub-packages or tasks failed in the package.</p>
+<p>The problem of error propagation to my master I solved by setting propagation to false for any packages and containers that I do not want to be presented at the master package level.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor even thread-even depth-1" id="comment-12268">
+				<div id="div-comment-12268" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/comment-page-1/#comment-12268">
+			September 20, 2011 at 9:04 am</a>		</div>
+
+		<p>Abagag, sounds like you have a theoretically similar approach &#8211; i.e. to get SQL Agent to not report failure, you have to ignore a lot of failures at the package level.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-191701">
+				<div id="div-comment-191701" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/1e5bf1a93777b1018f27abbb215da32f?s=48&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn">Shovan Mukherjee</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/comment-page-1/#comment-191701">
+			December 4, 2013 at 7:54 pm</a>		</div>
+
+		<p>Hi,<br />
+Changing the Propagate property value works fine while working with OnError event handler.But while working with OnTaskFailed event handler doesn’t matter whether Event handler level, you set the Propagate property&gt;&gt;False or not,you must have to make the MaxErrorCount property of both the Task and ForLoop set to 0,otherwise the Package execution completely stops on the first iteration itself,causing Task &amp; ForLoop failure.</p>
+<p>I didn’t’t get any explanation for such behaviour.Pls share your idea why it’s not happening in case of OnTaskFailed event handler.</p>
+<p>One more doubt here.I’ve taken a ExecuteSQL task inside a ForLoop container and tested your way making Propagate property–&gt;False,that absolutely works fine.<br />
+1) But if I take ExecuteSQL task inside the ForLoop container, the OnError event handler fires twice,inspite of once.<br />
+2) Again if I take Script task inside the ForLoop container,the OnError event handler fires only once as per the expected behaviour.</p>
+<p>I didn’t get, Why the Event Handler is firing twice in case of failure of ExecuteSQL task,inside the ForLoop.</p>
+<p>Many Thanks,<br />
+Shovan</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bi-monkey bypostauthor even thread-even depth-1" id="comment-191732">
+				<div id="div-comment-191732" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/22ea2eabbe63e4fce4ba04701e33c0e6?s=48&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D48&amp;r=G' class='avatar avatar-48 photo' height='48' width='48' />			<cite class="fn"><a href='http://www.bimonkey.com' rel='external nofollow' class='url'>BI Monkey</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.bimonkey.com/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/comment-page-1/#comment-191732">
+			December 4, 2013 at 9:01 pm</a>		</div>
+
+		<p>It&#8217;s been a while since I&#8217;ve dealt with this so forgive my vague responses:</p>
+<p>OnTaskFailed and OnError are different events so probably behave differently. I&#8217;m not sure of the details though.</p>
+<p>Why you are seeing multiple events for a single failure is by design though; you get one event for the ExecuteSQL, then one for the Container it&#8217;s in. I&#8217;m not very sure why the Script task doesn&#8217;t have the same effect though.</p>
+<p>Cheers</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+	</ol>
+	<div class="navigation">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+	
+		
+ 
+
+
+<div id="respond">
+
+<h3>Speak Your Mind</h3>
+<strong>Tell us what you're thinking... <br />and oh, if you want a pic to show with your comment, go get a <a href="http://en.gravatar.com" >gravatar</a>!</strong>
+
+<div class="cancel-comment-reply">
+	<small><a rel="nofollow" id="cancel-comment-reply-link" href="/2009/08/preventing-sql-agent-jobs-calling-ssis-reporting-failure/#respond" style="display:none;">Click here to cancel reply.</a></small>
+</div>
+
+
+<form action="http://www.bimonkey.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>Website</small></label></p>
+
+
+</code></small></p>
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type='hidden' name='comment_post_ID' value='572' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="2cf0bc04e4" /></p><script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/jquery/jquery.js'></script>
+<script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/jquery/jquery-migrate.min.js'></script>
+<script type='text/javascript' src='http://www.bimonkey.com/wp-content/plugins/akismet/_inc/form.js'></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="26"/></p>
+</form>
+</div>
+
+
+        
+        </div>
+
+				
+	</div>
+	
+<div id="sidebar">
+
+	<ul id="sidebarwidgeted">
+	<li id="text-489037891" class="widget widget_text"><h4>BI Monkey advertising</h4>			<div class="textwidget"><script type="text/javascript"><!--
+google_ad_client = "pub-2746505496048779";
+/* Small Square */
+google_ad_slot = "6548399759";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+		</li>
+<li id="text-489037893" class="widget widget_text"><h4>BI Monkey Training</h4>			<div class="textwidget"><div style="width:195px; text-align:center;" ><iframe  src="https://www.eventbrite.com.au/countdown-widget?eid=11410774935" frameborder="0" height="603" width="195" marginheight="0" marginwidth="0" scrolling="no" allowtransparency="true"></iframe><div style="font-family:Helvetica, Arial; font-size:10px; padding:5px 0 5px; margin:2px; width:195px; text-align:center;" ><a style="color:#ddd; text-decoration:none;" target="_blank" href="http://www.eventbrite.com.au/r/ecount">Online event registration</a><span style="color:#ddd;"> for </span><a style="color:#ddd; text-decoration:none;" target="_blank" href="https://bimonkeydwtraining.eventbrite.com.au/?ref=ecount">Build your Data Warehouse in SQL Server & SSIS with the BI Monkey</a> <span style="color:#ddd;">powered by</span> <a style="color:#ddd; text-decoration:none;" target="_blank" href="http://www.eventbrite.com.au?ref=ecount">Eventbrite</a></div></div></div>
+		</li>
+<li id="text-489037892" class="widget widget_text"><h4>BI Monkey&#8217;s Amazon referral</h4>			<div class="textwidget"><a target="_blank" href="http://www.amazon.co.uk/?_encoding=UTF8&camp=1634&creative=19450&linkCode=ur2&tag=bimo0c-21">Help the BI Monkey buy stuff by shopping at Amazon</a><img src="https://ir-uk.amazon-adsystem.com/e/ir?t=bimo0c-21&l=ur2&o=2" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></div>
+		</li>
+<li id="pages-2" class="widget widget_pages"><h4>Pages</h4>		<ul>
+			<li class="page_item page-item-64 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/">About</a>
+<ul class='children'>
+	<li class="page_item page-item-546"><a href="http://www.bimonkey.com/about-the-bi-monkey/consulting-and-technical-services/">Consulting and Technical Services</a></li>
+	<li class="page_item page-item-146 page_item_has_children"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/">Help</a>
+	<ul class='children'>
+		<li class="page_item page-item-243"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/ssis-component-samples-list/">SSIS Component Samples List</a></li>
+		<li class="page_item page-item-79"><a href="http://www.bimonkey.com/about-the-bi-monkey/support/using-ssis-samples-from-this-site/">Using SSIS samples from this site</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class="page_item page-item-741"><a href="http://www.bimonkey.com/framework/">ETL Control Framework</a></li>
+<li class="page_item page-item-2051"><a href="http://www.bimonkey.com/training/">Training</a></li>
+		</ul>
+		</li>
+<li id="tag_cloud-2" class="widget widget_tag_cloud"><h4>Tags</h4><div class="tagcloud"><a href='http://www.bimonkey.com/tag/analysis-services/' class='tag-link-21' title='9 topics' style='font-size: 12.952380952381pt;'>Analysis Services</a>
+<a href='http://www.bimonkey.com/tag/analytics/' class='tag-link-149' title='3 topics' style='font-size: 9.1428571428571pt;'>Analytics</a>
+<a href='http://www.bimonkey.com/tag/audit/' class='tag-link-45' title='2 topics' style='font-size: 8pt;'>Audit</a>
+<a href='http://www.bimonkey.com/tag/automation/' class='tag-link-162' title='3 topics' style='font-size: 9.1428571428571pt;'>Automation</a>
+<a href='http://www.bimonkey.com/tag/azure/' class='tag-link-133' title='7 topics' style='font-size: 12pt;'>Azure</a>
+<a href='http://www.bimonkey.com/tag/c/' class='tag-link-109' title='5 topics' style='font-size: 10.857142857143pt;'>C#</a>
+<a href='http://www.bimonkey.com/tag/cloud/' class='tag-link-111' title='5 topics' style='font-size: 10.857142857143pt;'>cloud</a>
+<a href='http://www.bimonkey.com/tag/columnstore/' class='tag-link-118' title='3 topics' style='font-size: 9.1428571428571pt;'>Columnstore</a>
+<a href='http://www.bimonkey.com/tag/compression/' class='tag-link-151' title='3 topics' style='font-size: 9.1428571428571pt;'>Compression</a>
+<a href='http://www.bimonkey.com/tag/data-mining/' class='tag-link-22' title='7 topics' style='font-size: 12pt;'>Data Mining</a>
+<a href='http://www.bimonkey.com/tag/data-quality-services/' class='tag-link-117' title='19 topics' style='font-size: 15.809523809524pt;'>Data Quality Services</a>
+<a href='http://www.bimonkey.com/tag/data-types/' class='tag-link-63' title='3 topics' style='font-size: 9.1428571428571pt;'>Data Types</a>
+<a href='http://www.bimonkey.com/tag/data-warehouse/' class='tag-link-131' title='3 topics' style='font-size: 9.1428571428571pt;'>Data Warehouse</a>
+<a href='http://www.bimonkey.com/tag/dax/' class='tag-link-170' title='3 topics' style='font-size: 9.1428571428571pt;'>DAX</a>
+<a href='http://www.bimonkey.com/tag/demo-machine/' class='tag-link-130' title='7 topics' style='font-size: 12pt;'>Demo Machine</a>
+<a href='http://www.bimonkey.com/tag/denali/' class='tag-link-115' title='13 topics' style='font-size: 14.380952380952pt;'>Denali</a>
+<a href='http://www.bimonkey.com/tag/derived-column/' class='tag-link-70' title='3 topics' style='font-size: 9.1428571428571pt;'>Derived Column</a>
+<a href='http://www.bimonkey.com/tag/excel/' class='tag-link-19' title='4 topics' style='font-size: 10.095238095238pt;'>Excel</a>
+<a href='http://www.bimonkey.com/tag/flat-file/' class='tag-link-38' title='7 topics' style='font-size: 12pt;'>Flat File</a>
+<a href='http://www.bimonkey.com/tag/framework/' class='tag-link-105' title='3 topics' style='font-size: 9.1428571428571pt;'>Framework</a>
+<a href='http://www.bimonkey.com/tag/ftp/' class='tag-link-137' title='3 topics' style='font-size: 9.1428571428571pt;'>FTP</a>
+<a href='http://www.bimonkey.com/tag/fuzzy/' class='tag-link-65' title='3 topics' style='font-size: 9.1428571428571pt;'>Fuzzy</a>
+<a href='http://www.bimonkey.com/tag/hadoop/' class='tag-link-123' title='18 topics' style='font-size: 15.619047619048pt;'>Hadoop</a>
+<a href='http://www.bimonkey.com/tag/hdinsight/' class='tag-link-145' title='6 topics' style='font-size: 11.52380952381pt;'>HDInsight</a>
+<a href='http://www.bimonkey.com/tag/hive/' class='tag-link-134' title='3 topics' style='font-size: 9.1428571428571pt;'>Hive</a>
+<a href='http://www.bimonkey.com/tag/indexes/' class='tag-link-29' title='3 topics' style='font-size: 9.1428571428571pt;'>Indexes</a>
+<a href='http://www.bimonkey.com/tag/ssis/' class='tag-link-5' title='88 topics' style='font-size: 22pt;'>Integration Services</a>
+<a href='http://www.bimonkey.com/tag/kilimanjaro/' class='tag-link-26' title='2 topics' style='font-size: 8pt;'>Kilimanjaro</a>
+<a href='http://www.bimonkey.com/tag/mdx/' class='tag-link-171' title='3 topics' style='font-size: 9.1428571428571pt;'>MDX</a>
+<a href='http://www.bimonkey.com/tag/ole-db/' class='tag-link-35' title='4 topics' style='font-size: 10.095238095238pt;'>OLE DB</a>
+<a href='http://www.bimonkey.com/tag/performancepoint/' class='tag-link-36' title='4 topics' style='font-size: 10.095238095238pt;'>PerformancePoint</a>
+<a href='http://www.bimonkey.com/tag/pivot/' class='tag-link-57' title='4 topics' style='font-size: 10.095238095238pt;'>Pivot</a>
+<a href='http://www.bimonkey.com/tag/project-gemini/' class='tag-link-23' title='3 topics' style='font-size: 9.1428571428571pt;'>Project Gemini</a>
+<a href='http://www.bimonkey.com/tag/ssrs/' class='tag-link-6' title='5 topics' style='font-size: 10.857142857143pt;'>Reporting Services</a>
+<a href='http://www.bimonkey.com/tag/row-count/' class='tag-link-56' title='3 topics' style='font-size: 9.1428571428571pt;'>Row Count</a>
+<a href='http://www.bimonkey.com/tag/script-task/' class='tag-link-43' title='7 topics' style='font-size: 12pt;'>Script Task</a>
+<a href='http://www.bimonkey.com/tag/service-packs/' class='tag-link-37' title='2 topics' style='font-size: 8pt;'>Service Packs</a>
+<a href='http://www.bimonkey.com/tag/slowly-changing-dimension/' class='tag-link-79' title='5 topics' style='font-size: 10.857142857143pt;'>Slowly Changing Dimension</a>
+<a href='http://www.bimonkey.com/tag/sql-agent/' class='tag-link-40' title='2 topics' style='font-size: 8pt;'>SQL Agent</a>
+<a href='http://www.bimonkey.com/tag/sql-server/' class='tag-link-25' title='31 topics' style='font-size: 17.809523809524pt;'>SQL Server</a>
+<a href='http://www.bimonkey.com/tag/sybis/' class='tag-link-148' title='6 topics' style='font-size: 11.52380952381pt;'>SYBIS</a>
+<a href='http://www.bimonkey.com/tag/t-sql/' class='tag-link-28' title='14 topics' style='font-size: 14.666666666667pt;'>T-SQL</a>
+<a href='http://www.bimonkey.com/tag/testing/' class='tag-link-41' title='2 topics' style='font-size: 8pt;'>Testing</a>
+<a href='http://www.bimonkey.com/tag/training/' class='tag-link-16' title='5 topics' style='font-size: 10.857142857143pt;'>Training Sites</a>
+<a href='http://www.bimonkey.com/tag/xml/' class='tag-link-34' title='2 topics' style='font-size: 8pt;'>XML</a></div>
+</li>
+<li id="search-2" class="widget widget_search"><form role="search" method="get" id="searchform" class="searchform" action="http://www.bimonkey.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>
+<li id="linkcat-128" class="widget widget_links"><h4>Data Quality Services</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blogs.msdn.com/b/dqs/" title="DQS Team Blog">DQS Team Blog</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-8" class="widget widget_links"><h4>Microsoft Developer Network</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://social.msdn.microsoft.com/Forums/windowsazure/en-US/home?forum=hdinsight" title="MSDN HDInsight Forum" target="_blank">MSDN HDInsight Forum</a></li>
+<li><a href="http://social.msdn.microsoft.com/Forums/en-US/sqlintegrationservices/threads" title="MSDN SQL Server Integration Services Forum &#8211; great place to get help on SSIS">MSDN SSIS Forum</a></li>
+<li><a href="http://msdn.microsoft.com/en-us/sqlserver/cc511477.aspx" title="Integration Services page of the SQL Server Developer Center">SQL Server Developer Center &#8211; SSIS</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-24" class="widget widget_links"><h4>Relevant Blogs</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.bp-msbi.com/" title="Boyan Penev on Microsoft BI, especially SSAS &amp; MDX">Boyan Penev on MS BI</a></li>
+<li><a href="http://www.jamesserra.com/" title="James Serra on things Microsoft and SQL Server">James Serra</a></li>
+<li><a href="http://jsimonbi.wordpress.com" title="John Simon on BI Microsoft Business Intelligence and Data Warehousing">John Simons BI Blog</a></li>
+<li><a href="http://mattmasson.com/" title="Matt Masson (SSIS Teams&#8217; Lead) Blog">Matt Masson (SSIS Teams&#039; Lead) Blog</a></li>
+<li><a href="http://www.mssqlgirl.com/" title="Julie&#8217;s journey as a Microsoft SQL Server [Professional | Girl]">Ms SQL Girl</a></li>
+<li><a href="http://analytics.typepad.com/oz-analytics/" title="Steve Bennetts blog about analytics, business intelligence, data warehousing, information and performance management in Australia">Oz Analytics</a></li>
+<li><a href="http://ssisbi.com/" title="About SSIS and Business Intelligence">SSIS BI &#8211; Duane Douglas</a></li>
+<li><a href="http://blogs.conchango.com/jamiethomson/" title="Jamie Thompson&#8217;s excellent SSIS blog">SSIS Junkie</a></li>
+<li><a href="http://blogs.msdn.com/mattm/default.aspx" title="SSIS Development Team Blog">SSIS Team Blog</a></li>
+<li><a href="http://toddmcdermid.blogspot.com/" title="Posts about SQL Server, Data Warehousing, Integration Services, .Net Development, and other tools of the trade">Todd McDermid&#039;s Blog</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-17" class="widget widget_links"><h4>Resources</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://ssisetlframework.codeplex.com/" title="The Codeplex home of the BI Monkey SSIS ETL Framework">BI Monkey SSIS ETL Framework</a></li>
+<li><a href="http://www.sqlserverdatamining.com/ssdm/" title="SQL Server Data Mining resource site">SQLServerDataMining.com</a></li>
+<li><a href="http://ssisctc.codeplex.com/" title="This is a community project for developing additional tasks and components for SSIS, and identifying other CodePlex projects that do the same. 34 Connection Managers, Tasks, and Components exist on CodePlex &#8211; find them here.">SSIS Community Tasks and Components</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-16" class="widget widget_links"><h4>Training Sites</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.learnintegrationservices.com/" title="SSIS Training Videos" target="_blank">LearnIntegrationServices.com</a></li>
+<li><a href="http://www.learnmicrosoftbi.com/" title="Craig Utley&#8217;s blog on Microsoft BI with great SSAS training videos">LearnMicrosoftBI.com</a></li>
+<li><a href="http://www.youtube.com/channel/UCCCfvrqpqo4krycPTrQT4LA">SQL Pass DW/BI VC Youtube Channel</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-15" class="widget widget_links"><h4>Useful Groups</h4>
+	<ul class='xoxo blogroll'>
+<li><a href="http://analystfirst.com/" title="Analyst Community in Australia focusing on teh people, not the software">Analyst First</a></li>
+<li><a href="http://www.sqlserver.org.au" title="Australian SQL Server User Group &#8211; regular meetings and sessions about MS SQL Server and MS BI" target="_blank">Australian SQL Server User Group</a></li>
+<li><a href="http://www.linkedin.com/groups?gid=1834854" title="BI&amp;DW Australia (LinkedIn Group)">BI&amp;DW Australia (LinkedIn)</a></li>
+<li><a href="http://www.iapa.org.au/" title="The IAPA mission is to unite, inform, support and promote business analytics professionals in Australia">Institute of Analytics Professionals of Australia</a></li>
+<li><a href="http://www.meetup.com/SYBISGROUP/" title="A Social group for all BI professionals in Sydney, managed on MeetUp" target="_blank">Sydney BI Social Group</a></li>
+
+	</ul>
+</li>
+
+<li id="categories-431567681" class="widget widget_categories"><h4>Categories</h4>		<ul>
+	<li class="cat-item cat-item-4"><a href="http://www.bimonkey.com/category/microsoft-bi/ssas/" title="SQL Server Analysis Services">Analysis Services</a>
+</li>
+	<li class="cat-item cat-item-149"><a href="http://www.bimonkey.com/category/business-intelligence/analytics/" title="View all posts filed under Analytics">Analytics</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://www.bimonkey.com/category/bi-monkey-news/" title="Personal news about the BI Monkey">BI Monkey News</a>
+</li>
+	<li class="cat-item cat-item-122"><a href="http://www.bimonkey.com/category/business-intelligence/big-data/" title="View all posts filed under Big Data">Big Data</a>
+</li>
+	<li class="cat-item cat-item-67"><a href="http://www.bimonkey.com/category/business-intelligence/" title="View all posts filed under Business Intelligence">Business Intelligence</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.bimonkey.com/category/consulting/" title="Consulting practices and approaches, and discussions of real life experiences">Consulting</a>
+</li>
+	<li class="cat-item cat-item-58"><a href="http://www.bimonkey.com/category/microsoft-bi/ssas/data-mining-ssas-microsoft-bi/" title="View all posts filed under Data mining">Data mining</a>
+</li>
+	<li class="cat-item cat-item-117"><a href="http://www.bimonkey.com/category/microsoft-bi/data-quality-services/" title="View all posts filed under Data Quality Services">Data Quality Services</a>
+</li>
+	<li class="cat-item cat-item-145"><a href="http://www.bimonkey.com/category/microsoft-bi/hdinsight/" title="View all posts filed under HDInsight">HDInsight</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.bimonkey.com/category/microsoft-bi/ssis/" title="SQL Server Integration Services">Integration Services</a>
+</li>
+	<li class="cat-item cat-item-132"><a href="http://www.bimonkey.com/category/microsoft-bi/master-data-services/" title="View all posts filed under Master Data Services">Master Data Services</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.bimonkey.com/category/microsoft-bi/" title="Microsoft Business Intelligence and SQL Server">Microsoft BI</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://www.bimonkey.com/category/microsoft-bi/pps/" title="View all posts filed under Performance Point Server">Performance Point Server</a>
+</li>
+	<li class="cat-item cat-item-112"><a href="http://www.bimonkey.com/category/microsoft-bi/powerpivot/" title="PowerPivot for Excel">PowerPivot</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="http://www.bimonkey.com/category/presentations/" title="Updates about, and resources from Presentations given by the BI Monkey">Presentations</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="http://www.bimonkey.com/category/professional-certification/" title="Items relating to professional certification">Professional Certification and Training</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.bimonkey.com/category/microsoft-bi/ssrs/" title="SQL Server Reporting Services">Reporting Services</a>
+</li>
+	<li class="cat-item cat-item-155"><a href="http://www.bimonkey.com/category/social-enterprise/" title="Social Enterprise - engaging the business through communication and collaboration">Social Enterprise</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.bimonkey.com/category/sqlserver/" title="SQL Server">SQL Server</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.bimonkey.com/category/uncategorized/" title="View all posts filed under Uncategorized">Uncategorized</a>
+</li>
+		</ul>
+</li>
+	</ul>
+			
+</div>
+</div>
+
+<div class="clear"></div>
+
+</div>
+
+<div id="footer">
+
+    <div class="footer1">
+        <ul id="footerwidgeted-1">
+            <li id="text-431574361" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer2">
+        <ul id="footerwidgeted-2">
+            <li id="text-431574661" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer3">
+        <ul id="footerwidgeted-3">
+            <li id="text-431573541" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>	
+    
+    <div class="footer4">
+        <ul id="footerwidgeted-4">
+            <li id="text-431574001" class="widget widget_text">			<div class="textwidget"></div>
+		</li>
+ 
+        </ul>	
+    </div>
+    
+<div class="clear"></div>
+    
+</div>
+                
+<div id="copyright">
+
+    <div class="copyright">
+		<p>&copy; 2014 <a href="http://www.bimonkey.com/">BI Monkey</a> &middot; <a href="http://www.studiopress.com/themes/shades">Shades of Blue</a> theme by <a href="http://www.studiopress.com" >StudioPress</a> &middot; <a href="http://wordpress.org">WordPress</a> &middot; <a rel="nofollow" href="http://www.bimonkey.com/wp-login.php">Log in</a></p>
+    </div>
+    
+</div>
+                                    
+<script type='text/javascript' src='http://www.bimonkey.com/wp-includes/js/comment-reply.min.js'></script>
+
+    
+	<script src="http://www.bimonkey.com/wp-content/themes/shades-of-blue/js/dropdown.js" type="text/javascript"></script>
+
+</body>
+</html>

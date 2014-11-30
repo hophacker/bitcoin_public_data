@@ -1,0 +1,354 @@
+http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 10:40:11 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 24-Jul-2015 10:40:11 GMT; path=/
+Set-Cookie: lw_user_sid=14d567ed03b0dea166416b0805ac9c2f; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 6387
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-24T12:40:11Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Howto: build and install the intl PECL extension for PHP5 in Debian - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/" class="entry-title">Howto: build and install the intl PECL extension for PHP5 in Debian</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>For the past few days I have been looking for a proper i18n (internationalisation) and l10n (localisation) method for PHP. PHP has quite a few locale aware functions such as <a href="http://www.php.net/manual/en/function.strftime.php">strftime</a> and <a href="http://www.php.net/manual/en/function.sprintf.php">sprintf</a>. In combination with gettext this can work quite well. The major downside is that you need to install all the locales that you want to support on your server. Want to serve your websites in Russian? Then you need to generate a Russian locale system-wide. That won&#8217;t work when you&#8217;re on a shared hosting account somewhere.</p>
+
+<p>PHP6 is promising to solve that problem with the <a href="http://www.php.net/manual/en/book.intl.php">intl</a> functions. Even better, the intl functions are also available as a <a href="http://pecl.php.net/package/intl">PECL extension</a> and works on PHP 5.2.4 and newer. Debian Etch currently packages PHP 5.2.0 which is too old, but Lenny&mdash;Debian&#8217;s upcoming version&mdash;is up to PHP 5.2.6. There is no package (yet) for php5-intl in Debian Lenny but building and installing the extension yourself is really easy. Here&#8217s a short tutorial.</p>
+
+<p>First we need to install a couple of packages that allow us to build PECL extensions on Debian, and we need to install the build and runtime dependencies of the intl package (libicu38, libicu-dev and xsltproc).</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># apt-get install php5-dev dh-make-php fakeroot libicu38 libicu-dev xsltproc</div></li>
+</ol></div></div>
+
+<p>The magic is in the dh-make-php package. It can download and configure a PECL extension for us, ready for building a Debian package. The following command tells dh-make-pecl to download and configure the intl extension.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ dh-make-pecl --depends libicu38 --build-depends libicu-dev --only 5 intl</div></li>
+</ol></div></div>
+
+<p>This downloads the intl extension, configures it and adds libicu38 and libicu-dev as dependencies. The last option tells dh-make-pecl that we only want to build this extension for PHP5 and not for both PHP4 and PHP5 as is the default. Now we can build a binary Debian package.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ cd php-intl-1.0.0/</div></li>
+<li class="li1"><div class="de1">$ dpkg-buildpackage -rfakeroot</div></li>
+</ol></div></div>
+
+<p>Now the binary package will be built. If you have GPG configured then at the end you may get prompted (twice) for your GPG passphrase so that the files can be signed with your GPG signature. You should now have a .deb and various other files in the directory above.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ cd ..</div></li>
+<li class="li1"><div class="de1">$ ls</div></li>
+<li class="li1"><div class="de1">intl-1.0.0.tgz &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; php-intl_1.0.0-1.dsc</div></li>
+<li class="li1"><div class="de1">php5-intl_1.0.0-1_i386.deb &nbsp; &nbsp; &nbsp; &nbsp; php-intl_1.0.0-1_i386.changes</div></li>
+<li class="li1"><div class="de1">php-intl-1.0.0 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; php-intl_1.0.0.orig.tar.gz</div></li>
+<li class="li1"><div class="de1">php-intl_1.0.0-1.diff.gz</div></li>
+</ol></div></div>
+
+<p>Now you can install the extension. If you have Apache running then you need to restart it. Note: You can't restart Apache gracefully with the <tt>apache2ctl graceful</tt> command. A graceful restart of Apache does not restart PHP so the extension will not be loaded. You need to restart Apache through the init.d script.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># dpkg -i php5-intl_1.0.0-1_i386.deb</div></li>
+<li class="li1"><div class="de1">Selecting previously deselected package php5-intl.</div></li>
+<li class="li1"><div class="de1">(Reading database ... 177537 files and directories currently installed.)</div></li>
+<li class="li1"><div class="de1">Unpacking php5-intl (from php5-intl_1.0.0-1_i386.deb) ...</div></li>
+<li class="li1"><div class="de1">Setting up php5-intl (1.0.0-1) ...</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"># /etc/init.d/apache2 restart</div></li>
+<li class="li1"><div class="de1">Restarting web server: apache2 ... waiting .</div></li>
+</ol></div></div>
+
+<p>That&#8217;s all! Now you can go play with the new intl functions. Happy coding!</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-07-24T23:22:00Z">2008-07-24@23:22</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+															&nbsp;<a href="http://www.jejik.com/tag/lenny" rel="tag">lenny</a>
+															&nbsp;<a href="http://www.jejik.com/tag/php" rel="tag">php</a>
+															&nbsp;<a href="http://www.jejik.com/tag/pecl" rel="tag">pecl</a>
+															&nbsp;<a href="http://www.jejik.com/tag/intl" rel="tag">intl</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-05@03:28
+																																			</div>
+																Thanks - very helpful. One minor thing, I also had to install xsltproc in order to build the package, so <br />
+<br />
+# apt-get install php5-dev dh-make-php fakeroot libicu38 libicu-dev<br />
+<br />
+should be changed to<br />
+<br />
+# apt-get install php5-dev dh-make-php fakeroot libicu38 libicu-dev xsltproc
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-07@22:18
+																																			</div>
+																Ah, thanks for that :-) I have updated the article accordingly.<br />
+<br />
+I usually have xsltproc installed on all my machines so I didn't notice that. I do quite a bit of PHP development with XML so xsltproc usually comes in handy.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c3" class="number" id="c3">#3</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-19@19:04
+																																			</div>
+																Doesn't dh-make-pecl use the &lt;dependencies&gt; section of the package.xml distributed with the PECL extension's source to determine the --depends values?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-21@01:16
+																																			</div>
+																If you say so. But the dependencies section of the package.xml only list php-6.0.0-dev and pearinstaller-1.4.0 as dependencies. Nothing else.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.zenwebware.com/" class="name">Blain<small> (http://www.zenwebware.com/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-01-05@01:24
+																																			</div>
+																Thank you, worked perfectly.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c6" class="number" id="c6">#6</a>
+																			<a href="http://universe4you.com" class="name">akki<small> (http://universe4you.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-09-16@10:55
+																																			</div>
+																I am getting this error.<br />
+<br />
+dpkg-buildpackage -rfakeroot<br />
+dpkg-buildpackage: warning: using a gain-root-command while being root<br />
+dpkg-buildpackage: set CFLAGS to default value: -g -O2<br />
+dpkg-buildpackage: warning: using a gain-root-command while being root<br />
+dpkg-buildpackage: set CFLAGS to default value: -g -O2<br />
+dpkg-buildpackage: set CPPFLAGS to default value:<br />
+dpkg-buildpackage: set LDFLAGS to default value:<br />
+dpkg-buildpackage: set FFLAGS to default value: -g -O2<br />
+dpkg-buildpackage: set CXXFLAGS to default value: -g -O2<br />
+tail: cannot open `debian/changelog' for reading: No such file or directory<br />
+dpkg-buildpackage: failure: tail of debian/changelog gave error exit status 1
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#c7" class="number" id="c7">#7</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-09-20@18:50
+																																			</div>
+																Hi akki. Did you use the dh-make-pecl script to download and configure the package? That should create the debian/chaneglog package for you. You could also try creating the file manually.
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/07/howto_build_and_install_the_intl_pecl_extension_for_php5_in_debian/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="af7fa21fc05f0de3dd1f93893be51490" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F07%2Fhowto_build_and_install_the_intl_pecl_extension_for_php5_in_debian%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://howtomatrix.com/node/1853">howtomatrix.com/node/1853</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

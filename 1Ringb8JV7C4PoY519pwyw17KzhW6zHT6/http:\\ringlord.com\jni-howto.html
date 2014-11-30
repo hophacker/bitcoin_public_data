@@ -1,0 +1,616 @@
+http://ringlord.com/jni-howto.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 19:58:19 GMT
+Content-Type: text/html
+Content-Length: 24426
+Connection: close
+Server: Apache/2
+Last-Modified: Sun, 12 Jan 2014 02:41:52 GMT
+ETag: "5f6a-4efbce6dc49e3"
+Cache-Control: max-age=3600
+Expires: Wed, 23 Jul 2014 20:58:19 GMT
+Accept-Ranges: bytes
+Age: 0
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+<meta name="generator" content="WebLord 4.0">
+<meta name="author" content="K. Udo Schuermann">
+<meta name="copyright" content="1997-2013 Ringlord Technologies">
+<meta name="description" content="">
+<meta name="keywords" content="amiga, java, linux">
+<link rel="shortcut icon" href="/icon.png" type="image/png">
+<link rel="stylesheet" type="text/css" href="css/layout.css">
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+<script language="JavaScript">
+<!-- THIS IS A WONDERFUL LITTLE SCRIPT
+<!-- IT WILL BREAK ANY PAGE OUT OF FRAMES
+if (window != window.top)
+  top.location.href = location.href;
+// -->
+</script>
+</head>
+<body>
+<div>
+<div id="logo-area">
+	<span style="margin-right:10px">
+	<a href="index.html" style="background-color:transparent"><img src="img/minilogo.png" width="52" height="44" align="center" border="0"></a>
+	</span>
+	Ringlord Technologies Products
+</div>
+<div id="nav-area">
+	<div id="nav-box">
+<font size="-1"><div><a class="navpage" href="about.html">About</a><br><div style="margin-left:1em"><a class="navpage" href="freedom.html">Freedom</a><br><a class="navpage" href="services.html">Services</a><br><a class="navpage" href="contact.html">Contact</a><br><a class="navpage" href="legal.html">Legal</a><br><a class="navpage" href="people.html">People</a><br></div>
+<a class="navpage" href="news.html">News</a><br><div style="margin-left:1em"><a class="navpage" href="news-archive.html">Archive</a><br></div>
+<a class="navpage" href="products.html">Products</a><br><div style="margin-left:1em"><a class="navpage" href="amiga.html">Amiga</a><br><a class="navpage" href="java.html">Java</a><br><div style="margin-left:1em"><a class="navpage" href="antbuilder.html">AntBuilder</a><br><a class="navpage" href="blocker.html">Blocker</a><br><a class="navpage" href="boxer.html">Boxer</a><br><a class="navpage" href="cryptcreature.html">cryptcreature</a><br><span class="thispage">JNI How-To</span><br><a class="navpage" href="lumberjack.html">LumberJack</a><br><a class="navpage" href="logfish.html">LogFish</a><br><a class="navpage" href="mindflayer.html">MindFlayer</a><br><a class="navpage" href="multicasting.html">Multicasting</a><br><a class="navpage" href="odfdecrypt.html">ODFDecrypt</a><br><a class="navpage" href="odfind.html">ODFind</a><br><a class="navpage" href="odfjlib.html">odfjlib</a><br><a class="navpage" href="signals.html">Signals</a><br><a class="navpage" href="starcat.html">StarCat</a><br><a class="navpage" href="treediff.html">TreeDiff</a><br><a class="navpage" href="weblord.html">Weblord</a><br><a class="navpage" href="xs3d.html">XS3D</a><br></div>
+<a class="navpage" href="gnulinux.html">Linux</a><br></div>
+</div></font>
+	</div>
+</div>
+
+<div id="body-area">
+<h2>The "JNI HOW-TO" by Udo Schuermann</h2>
+
+<font size="-1">Copyright &copy; 1998,2000,2001 RingLord Technologies and Udo K. Schuermann<br>
+All rights reserved<br>
+Revised: 17-Jan-2006<br>
+Revised: 5-Dec-2002<br>
+Revised: 12-Oct-2001<br>
+Revised: 6-Sep-2001<br>
+Revised: 1-Jun-2001<br>
+Revised: 11-Jan-2001<br>
+Revised: 10-Jan-2001<br>
+Revised: 21-Dec-2000<br>
+Revised: 10-Nov-2000<br>
+Revised: 19-Oct-2000<br>
+Revised: 16-Dec-1998<br></font>
+<hr>
+
+<p class="cap">As we have ourselves struggled through some of the
+finer details of using the Java Native Interface (JNI) recently, we
+thought that sharing our new-found insights might help others
+understand the details better.</p>
+
+<p>The following instructions for accessing native code from Java
+through the JNI interface apply to a Unix system with gcc. If you are
+using Microsoft Windows, Apple Macintosh, or another non-Unix
+operating systems then you can obviously not follow these instructions
+too blindly&hellip;</p>
+
+<p><font color="#880000"><b>Note: There is a trouble-shooting section
+at the end of this article that addresses (and has always addressed)
+the majority of the questions we receive from readers.</b></font></p>
+
+<p>Please note that one of our readers, Adrian Agapie, has made us
+aware of the possibility that the information below may not work with
+JDK 1.1 (e.g. JDK 1.1.8); he got it to work with JDK 1.2, though, so
+please be aware that different rules may apply to different (major?)
+versions of the JDK. Without having investigated the matter myself, I
+propose that there is likely some significant differences with JNI
+between what is Java&nbsp;1 and Java&nbsp;2. <i>Caveat emptor</i>.</p>
+
+<hr>
+
+<h3>The Goal</h3>
+
+<p class="cap">We will call a method in a native library and return a
+java.lang.String to the calling Java application. This is useful when
+we need to access some machine dependent information or perhaps call
+on a faster native code routine to accomplish what would take too long
+in Java's interpreted code model.</p>
+
+<p>In this particular case we will make use of a native library to obtain a UUID
+(Universally Unique Identification). This is a 128-bit quanity that depends on the network
+card's unique 6-byte (48 bit) address, a representation of the current machine time
+(hopefully accurate), as well as a counter to provide a resolution of up to 10000 unique
+identification per timestamp. I think the clock is deemed accurate to nano seconds, but
+I'm probably off there.</p>
+
+<h4>What you will need</h4>
+
+<p class="cap">The native code library that supplies us with this code
+is:</p>
+
+	<div align="center">/usr/lib/libuuid.so</div>
+
+<p>And the include file that matches it is:</p>
+
+	<div align="center">/usr/include/uuid/uuid.h</div>
+
+<p>If you have these files on your system, then you can work through
+the examples below verbatim and should have no trouble getting this to
+work. If you do not have either of the above files you must first
+choose something to accomplish, then apply some thought as to where
+your project differs from the one we are presenting here.</p>
+
+<hr>
+
+<h3>Creating the Java program to call native code</h3>
+
+<p class="cap">The following program will compile with Sun's javac,
+Blackdown's port of the JDK to Linux, and with IBM's fantastic Jikes
+compiler. The comments in the code will explain what the code is
+doing, including how to bind to a native code library and call native
+methods in it:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" bgcolor="#f0f0f0" align="center">
+<tr bgcolor="black"><td><tt><font color="white" size="+1"><b>UUID.java</b></font></tt></td></tr>
+<tr><td><pre>
+package com.ringlord.util;
+
+public class UUID
+{
+  /**
+   * The program entry point. Call it as:
+   * <tt>java&nbsp;com.ringlord.util.UUID</tt> with an optional numeric
+   * parameter 1 or higher for the total number of UUIDs to be generated.
+   */
+  public static void main( String args[] )
+    {
+      int count;
+      try
+        {
+          if( (count = Integer.parseInt(args[0])) &lt; 1 )
+            {
+              count = 1;
+            }
+        }
+      catch( Exception e )
+        {
+          count = 1;
+        }
+      for( int i=0; i&lt;count; i++ )
+        {
+	  // create a new UUID object (this same class)
+	  // using the default constructor (see below)
+          UUID test = new UUID();
+          System.out.println( "{" + test + "}" );
+        }
+    }
+  
+  /**
+   * Default constructor: calls the getUUID() method which is defined
+   * (below) as a native method!
+   */
+  public UUID()
+    {
+      super();		// always a good idea to call the super constructor
+      uuid = getUUID();	// call the native method
+    }
+
+  /**
+   * A convenient way of ensuring that the String representation of this
+   * object is the UUID itself. This makes for very easy ways of printing
+   * the object's value (see the main(java.lang.String[]) method above)
+   */
+  public String toString()
+    {
+      return uuid;
+    }
+
+  /**
+   * This is the defininition of our native method. NOTICE THAT IT HAS NO
+   * BODY. The static block following it is executed as part of the class
+   * construction.
+   */
+  private native String getUUID();
+  static
+    {
+      // Load a library whose "core" name is 'java-rlt-uuid' Operating
+      // system specific stuff will be added to make from this an actual
+      // filename: Under Unix this will become
+      // <tt><b>lib</b>java-rlt-uuid<b>.so</b></tt> while under Windows it
+      // will become <tt>java-rlt-uuid<b>.DLL</b>
+      System.loadLibrary("java-rlt-uuid");
+    }
+
+  // the constructor stores here the result of the native method call
+  private String uuid;
+}
+</pre></td></tr>
+</table>
+
+<p>We compile this code with the following command (we use IBM's Jikes because it's an
+order of magnitude better than anything else we've used; it's also Open Source, and
+it's available for free):</p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><td width="1%" bgcolor="#ffff00">Command&nbsp;line:</td><td bgcolor="#e0e0e0">jikes UUID.java</td></tr>
+</table>
+
+<h3 id="javah">Creating the .h (include) file</h3>
+
+<p class="cap">The include file is easily generated with the
+<tt>javah</tt> program that should be part of every self-respecting
+Java development environment. This command will parse the
+byte-compiled Java class file and generate an appropriate file that
+tells us all we need to know to write the native code that the Java
+class wants to call. <em>Be sure to use the fully qualified name of
+the class, not just the relative name of the class file!</em> This is
+how <tt>javah</tt> is called:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><td width="1%" bgcolor="#ffff00">Command&nbsp;line:</td><td bgcolor="#e0e0e0">javah&nbsp;-jni&nbsp;com.ringlord.util.UUID</td></tr>
+</table>
+
+<p>We have provided the output of this program below so that you get to see all the pieces
+in operation. <b>Again, this is machine-generated code and should not be provided by
+you!</b> You will notice that the filename reflects the name of the package and class name
+(com.ringlord.util.UUID) from which the file was generated.</p>
+
+<table border="1" cellpadding="4" cellspacing="0" bgcolor="#f0f0f0" align="center">
+<tr bgcolor="black"><td><tt><font color="white" size="+1"><b>com_ringlord_util_UUID.h</b></font></tt></td></tr>
+<tr><td><pre>
+/* <font color="red">DO NOT EDIT THIS FILE - it is machine generated</font> */
+#include &lt;jni.h&gt;
+/* Header for class com_ringlord_util_UUID */
+
+#ifndef _Included_com_ringlord_util_UUID
+#define _Included_com_ringlord_util_UUID
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     com_ringlord_util_UUID
+ * Method:    getUUID
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_ringlord_util_UUID_getUUID
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+</pre></td></tr>
+</table>
+
+<h3>Creating the native code (.c) file</h3>
+
+<p class="cap">We are now ready to write the native code. We are under
+no obligation to use the long and unwieldy name that the
+<tt>javah</tt> program chose. We'll just use "UUID.c" for our
+purposes, although we will have to include the .h file from above:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" bgcolor="#f0f0f0" align="center">
+<tr bgcolor="black"><td><tt><font color="white" size="+1"><b>UUID.c</b></font></tt></td></tr>
+<tr><td><pre>
+#include &lt;stdio.h&gt;
+#include &lt;uuid/uuid.h&gt;
+#include "com_ringlord_util_UUID.h"
+
+jstring Java_com_ringlord_util_UUID_getUUID(JNIEnv *env, jobject this)
+{
+  jstring value;                /* the return value */
+  uuid_t id;                    /* a UUID we're building */
+  unsigned char buf[40];        /* working buffer (really only need 37) */
+  int i,j;                      /* counters into 'id' &amp; 'buf' */
+
+  /* generate a uuid as per 'libuuid.so' library call (Unix). */
+  uuid_generate( id );
+
+  /* format the (16) bytes we get back as follows:
+   *    01020304-0102-0102-0102-010203040506
+   * including the dashes in the middle.
+   */
+  for( i=0,j=0; i&lt;sizeof(uuid_t); i++ )
+    {
+      sprintf( buf+j, "%02x", id[i] );
+      j += 2;
+      if( (i==3) || (i==5) || (i==7) || (i==9) )
+        {
+          *(buf+j) = '-';
+          ++j;
+        }
+    }
+
+  /* N.B.
+   * as we always end with a normal digit that is added with an sprintf()
+   * call, it is not necessary to ensure that the string is 0 terminated:
+   * sprintf() has already accomplished this for us.
+   */
+
+  /* now create from this nicely formatted result a Java-native UTF-8(?)
+   * string (java.lang.String) and return that as the fruit of our labors.
+   */
+  value = (*env)-&gt;NewStringUTF(env,buf);
+  return value;
+}
+</pre></td></tr>
+</table>
+
+<p>The "uuid/uuid.h" file defines the <tt>uuid_t</tt> type (which
+happens to be 16 unsigned characters, or 128 bits of data for the
+UUID) as well as function prototypes that the compiler should use to
+ensure that we're not messing up on parameters or return types.</p>
+
+<p>If you don't have this file then you probably don't have the shared
+code library either. This particular example won't work for you in
+that case, but you are still likely to learn a lot from continuing to
+read.</p>
+
+<h3>Compiling the native code</h3>
+
+<p class="cap">We will first examine each of the two steps in the
+compilation separately, and afterwards present you with a handy
+Makefile that you can use to build and rebuild the example.</p>
+
+<p>The first step is to compile the <tt>UUID.c</tt> file. The
+following centered line(s) are actually all one command line:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><td width="1%" bgcolor="#ffff00">Command&nbsp;line:</td><td bgcolor="#e0e0e0">gcc -I/java/jdk/include -I/java/jdk/include/genunix -c UUID.c -o UUID.o</td></tr>
+</table>
+
+<p>You will notice that we are specifying the
+<tt>/java/jdk/include</tt> directory. We have installed the JDK class
+files in the <tt>/java/jdk/</tt> directory. Your own choice probably
+is different. The point is that there is an include directory with
+some platform independent and platform dependent files. For the
+platform dependent files we choose the "genunix" subdirectory.</p>
+
+<p>The <tt>-c UUID.c</tt> command compiles (but does not link) our
+native code. The output goes to the UUID.o file (as per <tt>-o
+UUID.o</tt> option).</p>
+
+<p>The only step left to accomplish is to generate a loadable file.
+Again, the following centered line(s) are actually all one command
+line:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><td width="1%" bgcolor="#ffff00">Command&nbsp;line:</td><td bgcolor="#e0e0e0">ld -shared -f /usr/lib/libuuid.so UUID.o -o libjava-rlt-uuid.so</td></tr>
+</table>
+
+<p>The <tt>-shared</tt> option is required here. In versions of this
+document prior to 5-Dec-2002 this option was described as <tt>-G</tt>
+which is (no longer) correct.</p>
+
+<p>To ensure that the native code library can properly link to what
+may otherwise appear to be a quite elusive shared library, we need to
+give the linker a reference to the actual file that contains
+unresolved external symbols, such as the call to the
+<tt>generate_uuid()</tt> method in the <tt>UUID.c</tt> program we
+wrote. This is what the <tt>-f /usr/lib/libuuid.so</tt> parameter
+does.</p>
+
+<p>And again, output goes to a specific file
+<tt>libjava-rlt-uuid.so</tt> the name of which we discussed in the
+<tt>UUID.java</tt> source code. This name is, naturally, platform
+dependent.</p>
+
+<p>There is a method in java.lang.System that you can use to find out
+what actual filename the native code shared object file is expected to
+have:</p>
+
+	<div align="center"><tt>static String mapLibraryName(&nbsp;String&nbsp;libname&nbsp;)</tt></div>
+
+<p>At the very end of this article is a little Java program that you
+can use to explore the native names (in case you're too lazy to write
+your own ;-)</p>
+
+<h3>Ready? GO!!</h3>
+
+<p class="cap">You should now have the following files; the only ones
+you actually need to run the program are the ones
+<b><u>indicated</u></b>:</p>
+
+<pre>
+	UUID.c
+	<b><u>UUID.class</u></b>
+	UUID.java
+	UUID.o
+	com_ringlord_util.UUID.h
+	<b><u>libjava-rlt-uuid.so</u></b>
+</pre>
+
+<p>You run the program in the following manner:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><td width="1%" bgcolor="#ffff00">Command&nbsp;line:</td><td bgcolor="#e0e0e0">java com.ringlord.util.UUID 5</td></tr>
+</table>
+
+<p>&hellip;and you should see 5 universally unique identifiers appear,
+similar to the following:</p>
+
+<pre>
+	{1e38f892-94a6-11d2-8143-00e018901983}
+	{1e394fe0-94a6-11d2-8143-00e018901983}
+	{1e396f98-94a6-11d2-8143-00e018901983}
+	{1e398eba-94a6-11d2-8143-00e018901983}
+	{1e39af26-94a6-11d2-8143-00e018901983}
+</pre>
+
+<h3>Troubleshooting</h3>
+
+<p class="cap">There are bound to be some glitches that occur. Before
+you use the Makefile below, make sure that each step alone works
+properly. Use the following checklist to see if you can't find the
+problem:</p>
+
+<ol>
+<li><b>Can't compile the Java program</b><br>
+    <ul>
+    <li>Is your Java compiler properly installed and in the path?
+    <li>Is your CLASSPATH set? Alternately, try <tt>-classpath&nbsp;${CLASSPATH}</tt>
+        as arguments to the compiler.
+    <li>The <tt>UUID.java</tt> program above is defined as part of the
+        <tt>com.ringlord.util</tt> package. Did you create it in a
+	directory <tt>com/ringlord/util/</tt>?
+    </ul>
+    <p>
+<li><b>Can't generate the .h file</b><br>
+    <ul>
+    <li>Is the <tt>javah</tt> program (or equivalent) available?
+    <li>Is your CLASSPATH set? (see (1) above)
+    </ul>
+    <p>
+<li><b>Can't compile the .c file</b><br>
+    <ul>
+    <li>Are you using <tt>gcc 2.7.2</tt> or later? We compiled fine
+	with version 2.7.2.3
+    <li>Are you specifying directories where some of the following
+	files are located? <tt>jni_md.h</tt>, <tt>byteorder_md.h</tt>,
+	etc. If not, make sure you locate the appropriate directory
+	where the JDK's include files are located. These are required
+	to provide the proper translation to native architecture
+	conventions.
+    <li>Do you actually have the "uuid/uuid.h" file in your path?
+	This file is located (on our system) in <tt>/usr/lib/uuid/uuid.h</tt>
+    <li>Are you compiling <b>but not linking</b> the program, i.e. are
+	you using the <tt>-c</tt> switch on <tt>gcc</tt>?
+    </ul>
+    <p>
+<li><b>Can't link the shared library</b><br>
+    <ul>
+    <li>Make sure you have <tt>ld</tt> available; it's the native linker
+	for your system.
+    <li>Make sure you give it the <tt>-shared</tt> argument, otherwise it
+	will not generate the correct type of file.
+    <li>Make sure you give it the <tt>-f /usr/lib/libuuid.so</tt>
+	argument. You must ensure that the <tt>libuuid.so</tt> file
+	exists on your system. Substitute the correct path where this
+	file lives. The <tt>-f</tt> option tells the linker that at
+	run-time it is to resolve symbols using that file (in addition
+	to more generic I/O libraries and the like.)
+    <li>Make sure you give it the <tt>UUID.o</tt> name, too, which is
+	the result of the previous step's compilation.
+    </ul>
+    <p>
+<li><b>Can't run the <tt>com.ringlord.util.UUID</tt> program</b><br>
+    <ul>
+    <li>"<b>&hellip;cannot open shared object file&hellip;</b>"<br>
+	The <tt>libjava-rlt-uuid.so</tt> file is not available. Look
+	at the name of the file and compare it to the core name that
+	the <tt>UUID.java</tt> program is hoping to find.
+        <br><br>
+    <li>"<b>&hellip;UnsatisfiedLinkError&hellip;</b>"<br>
+	There are two possibilities of which I know:
+        <ol>
+        <li>Your shared object (e.g. <tt>libjava-rlt-uuid.so</tt> file)
+	cannot be located by Java. There are several solutions to this:
+
+	<ol type='a'>
+
+	<li>The first is to ensure that you use the fully qualified
+	class name, not just the relative name of the class file. We've
+	now <a href="#javah">emphasized this above</a> as well.<br><br>
+
+	<li>The second (and the only other I can recommend at this point)
+	is to add the directory where the .so file is stored to the
+	<tt>LD_LIBRARY_PATH</tt> environment variable before running
+	the JVM; Java will pick up a few additional directories for
+	its own use. That combination will be reflected in the JVM's
+	<tt>java.library.path</tt> property. You can check the value
+	of System.getProperties().get("java.library.path");<br><br>
+
+	<li>The third applies if you are using Sun Solaris. Apparently
+	adding <tt>-g&nbsp;-DSOLARIS2</tt> to the compiler options will
+	also help.<br><br>
+
+	<li>The fourth is to directly modify the JVM's
+	<tt>java.library.path</tt> property (when starting the JVM,
+	not when it's already running!)  using the
+	<tt>-Djava.library.path=&hellip;</tt> argument to the JVM.  You'd
+	first have to find out what other libraries your JVM would
+	need. This is about the very, very last solution I'd look at
+	because it's completely non-portable and will vary depending
+	on where the JVM is installed. Why do I even mention such a
+	shoddy idea?  Because I can, that's why; and to take this
+	opportunity to steer you to the <tt>LD_LIBRARY_PATH</tt>
+	solution instead, just in case you thought of this one
+	yourself :)
+	</ol><br>
+
+        <li>Something is wrong with the shared library you created: it's
+	not the one that the Java program was hoping to find, or the
+	methods it is looking for are not actually in the library.
+	Check the .h file and make sure you use the same signature
+	for the method as what Java will expect to be calling!
+        </ol>
+    </ul>
+</ol>
+
+<h3>A Makefile for convenience</h3>
+
+<table border="1" cellpadding="4" cellspacing="0" bgcolor="#f0f0f0" align="center">
+<tr bgcolor="black"><td><tt><font color="white" size="+1"><b>Makefile</b></font></tt></td></tr>
+<tr><td><pre>
+INCLUDE=/java/jdk/include
+
+all:
+        make uuid
+	jikes *.java
+
+uuid:   UUID.class libjava-rlt-uuid.so
+
+clean:
+        rm -f *.class *.so *.o
+
+cleanall:
+        rm -f *.class *.so *.o *~
+
+UUID.class:     UUID.java
+        jc UUID.java
+        javah -jni -classpath ${CLASSPATH} com.ringlord.util.UUID
+
+libjava-rlt-uuid.so:    UUID.c  com_ringlord_util_UUID.h
+        gcc -I$(INCLUDE) -I$(INCLUDE)/genunix -c UUID.c -o UUID.o
+        ld -shared -f /usr/lib/libuuid.so UUID.o -o libjava-rlt-uuid.so
+</pre></td></tr>
+</table>
+
+<h3>Map Java Library Names to Native Filesystem Names</h3>
+
+<p class="cap">This code might be useful to you if you are curious
+what the physical name of the library file should be that Java expects
+to be loading when you use a <tt>System.loadLibrary</tt> call:</p>
+
+<table border="1" cellpadding="4" cellspacing="0" bgcolor="#f0f0f0" align="center">
+<tr bgcolor="black"><td><tt><font color="white" size="+1"><b>NativeName.java</b></font></tt></td></tr>
+<tr><td><pre>
+final class NativeName
+{
+  static final public void main( final String[] args )
+  {
+    if( args.length == 0 )
+      {
+        System.out.println( "Give me one or more Java library names "+
+                            "to display as native names" );
+        return;
+      }
+
+    final String os = (String)System.getProperties().get("os.name");
+    for( int i=0; i&lt;args.length; i++ )
+      {
+        System.out.println( "On '"+os+"' "+
+                            "the library '"+args[i]+"' "+
+                            "maps to '"+System.mapLibraryName(args[i])+"'" );
+      }
+  }
+}
+</pre></td></tr>
+</table>
+
+<hr>
+
+<h3>Other Resources</h3>
+
+<dl>
+<dt><a href="http://java.sun.com/docs/books/jni/jniexamples.tar.gz" target="_blank">Sun Microsystems: Java Native Interface: Programmer's Guide and Specifications</a>
+<dd>A book as well as downloadable source code of the book's examples, which may lend additional insight into JNI.
+<dt><a href="http://weblogs.java.net/blog/kellyohair/archive/2006/01/compilation_of_1.html" target="_blank">Kelly O'Hair's Blog: Compilation of JNI Code</a>
+<dd>Lots of details on Solaris, Linux, and Windows compilation of JNI code with explanation of compiler options.
+</dl>
+
+<h3>Thanks</h3>
+
+<p class="cap">Long(!) overdue, we thank Sun Microsystems for
+providing a link to this page. (12-Oct-2001)</p>
+</div>
+
+<div id="foot-area">
+<p>All content is copyright &copy; Ringlord Technologies unless otherwise stated. We <em>do encourage deep linking</em> to our site's pages but forbid direct reference to images, software or other non-page resources stored here; likewise, do not embed our content in frames or other constructs that may mislead the reader about the content ownership. Play nice, yes?</p><p><a href="bitcoin:1Ringb8JV7C4PoY519pwyw17KzhW6zHT6">Find something useful here? Maybe donate some Bitcoin!</a></p></div>
+</body>
+</html>

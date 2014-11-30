@@ -1,0 +1,292 @@
+http://thomassileo.com/blog/2012/09/10/build-a-backbone-slash-brunch-slash-chaplin-backend-with-python-flask-and-mongodb/
+HTTP/1.1 200 OK
+Server: nginx/1.2.7
+Date: Tue, 22 Jul 2014 07:18:50 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 28397
+Last-Modified: Fri, 16 May 2014 12:50:18 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/style.css">
+  <!-- <link rel="stylesheet/less" type="text/css" href="/theme/css/style.less">
+  <script src="/theme/js/less-1.3.3.min.js" type="text/javascript"></script> -->
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/pygments.min.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,600italic">
+  <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/cosmic-sans-neue-mono" rel="stylesheet" type="text/css"/>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@trucsdedev">
+  <meta name="twitter:creator" content="@trucsdedev">
+  <meta name="twitter:domain" content="thomassileo.com">
+  <link rel="canonical" href="http://thomassileo.com/blog/2012/09/10/build-a-backbone-slash-brunch-slash-chaplin-backend-with-python-flask-and-mongodb/">
+<meta name="twitter:title" content="Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB">
+<meta name="twitter:description" content="Some tips on how to use Flask with MongoDB to build a REST Backend for Backbone/Brunch/Chaplin. With both these tools, it ...">
+  <meta charset="utf-8" />
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0">
+  <meta name="author" content="Thomas Sileo">
+
+    <link href="http://thomassileo.com/atom.xml" type="application/atom+xml" rel="alternate" title="Thomas Sileo Full Atom Feed" />
+    
+  <meta name="date" contents="2012-09-10 10:22:00" />
+<meta name="description" content="Some tips on how to use Flask with MongoDB to build a REST Backend for Backbone/Brunch/Chaplin. With both these tools, it's extremely easy to build a ...">
+
+  <title>
+    Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB - Thomas Sileo  </title>
+</head>
+
+<body>
+  <aside>
+    <div id="user_meta">
+      <a href="http://thomassileo.com">
+        <img src="http://thomassileo.s3.amazonaws.com/logo.jpg" alt="logo" class="user_logo">
+      </a>
+      <h2><a href="http://thomassileo.com">Thomas Sileo</a></h2>
+      <p>/home/thomas</p>
+      <ul>
+                                <li><a href="http://thomassileo.com/about/">About</a></li>                                        <li><a href="http://thomassileo.com/search/">Search</a></li>                        <li><a href="/archives.html">Archives</a></li>
+                        <li><a href="https://github.com/tsileo"><i class="icon-large icon-github"></i> GitHub</a></li>
+                <li><a href="https://twitter.com/trucsdedev"><i class="icon-large icon-twitter"></i> Twitter</a></li>
+              </ul>
+    </div>
+  </aside>
+
+  <main>
+        <article>
+  <div id="article_title">
+<h1><a href="http://thomassileo.com/blog/2012/09/10/build-a-backbone-slash-brunch-slash-chaplin-backend-with-python-flask-and-mongodb/" rel="bookmark" title="Permalink to Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB">Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB</a></h1>
+
+    <p class="article_meta"><time datetime="2012-09-10T10:22:00" pubdate>Mon 10 September 2012</time> by <a rel="author" href="https://plus.google.com/105383704566845547994">Thomas Sileo</a></p>
+  </div>
+  <div id="article_text">
+    <p>Some tips on how to use <a href="http://flask.pocoo.org/">Flask</a> with <a href="http://www.mongodb.org/">MongoDB</a> to build a REST Backend for <a href="http://backbonejs.org/">Backbone</a>/<a href="http://brunch.io">Brunch</a>/<a href="https://github.com/chaplinjs/chaplin">Chaplin</a>.</p>
+<p>With both these tools, it's extremely easy to build a full featured REST Backend ready to use with Backbone Models/Collections.
+I hope these tips will help you avoid some pitfalls I've fallen into.</p>
+<h2>Set Backbone Model idAttribute to _id</h2>
+<p>By default Backbone expects an <code>id</code> key, but MongoDB use an <code>_id</code> key, so you have to change the default id attribute. 
+You can check the <a href="http://backbonejs.org/#Model-idAttribute">Backbone documentation on the idAttribute</a>.</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Meal</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">idAttribute</span><span class="o">:</span> <span class="s2">&quot;_id&quot;</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>You can also make the change globally:</p>
+<div class="highlight"><pre><span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">idAttribute</span> <span class="o">=</span> <span class="s2">&quot;_id&quot;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>If you forget to do this, when updating a model, Backbone will make a POST request instead of a PUT request because the <code>id</code> attribute won't be set.</p>
+<h2>Serve the index file with render_template</h2>
+<p>I use the backbone project index file as a flask template, and render it using <code>render_template</code> so it's possible to use flask <code>session</code> object and make link to custom flask view.</p>
+<div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&quot;index.html&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>If you use a tool like <a href="http://brunch.io">Brunch</a> to build your backbone application, you might have an additional <strong>public</strong> directory, and if you want to use <code>render_template</code> with the index.html file, here is a way to make the folder available for flask:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">jinja2</span>
+
+<span class="c"># Here is how I initialize flask when using Brunch with Chaplin</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="s">&quot;public&quot;</span><span class="p">,</span> <span class="n">static_url_path</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">my_loader</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">ChoiceLoader</span><span class="p">([</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">jinja_loader</span><span class="p">,</span>
+    <span class="n">jinja2</span><span class="o">.</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;/public&#39;</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">jinja_loader</span> <span class="o">=</span> <span class="n">my_loader</span>
+</pre></div>
+
+
+<h2>Custom jsonify</h2>
+<p>Flask has a little helper <a href="http://flask.pocoo.org/docs/api/#returning-json">jsonify</a> that create a <a href="http://flask.pocoo.org/docs/api/#response-objects">Response</a> object with a json mimetype, it makes use of simplejson or the default python json module.</p>
+<div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/api/test&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_test</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;item1&quot;</span><span class="p">,</span> <span class="s">&quot;item2&quot;</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Since jsonify "acts like a python dict", you must return something like <code>jsonify(items=items)</code> or <code>jsonify(**mydict)</code>, so you must define a <a href="http://backbonejs.org/#Model-parse">parse</a> function in your backbone Collections</p>
+<div class="highlight"><pre><span class="nx">parse</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">items</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Also, with MongoDB Document, <code>jsonify</code> will throw an <code>TypeError</code> exception saying that <code>ObjectId</code>/<code>Datetime</code> is not JSON serializable, so I cast them to string using a custom <a href="http://simplejson.readthedocs.org/en/latest/index.html#simplejson.JSONEncoder">JSONEncoder</a> and a custom <code>jsonify</code>.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">import</span> <span class="nn">simplejson</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Response</span>
+
+
+<span class="k">class</span> <span class="nc">MongoDocumentEncoder</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">simplejson</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">mongodoc_jsonify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">cls</span><span class="o">=</span><span class="n">MongoDocumentEncoder</span><span class="p">),</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Authentication</h2>
+<p>Here is how I typically handle authentication in a flask/backbone application.</p>
+<p>First, Flask handle everything (user status stored in flask session, login, logout...), see <a href="http://flask.pocoo.org/docs/quickstart/#sessions">Flask Quickstart on Sessions for a basic user authentication example</a>, and if you are looking for a secure way to store user password, I recommend you to read <a href="http://throwingfire.com/storing-passwords-securely/">this excellent article on how to store password securely using python-bcrypt</a>.</p>
+<p>Then, for every request (user/ajax request) I check user authentication using two differents <a href="http://flask.pocoo.org/docs/patterns/viewdecorators/">Flask View Decorator</a>. One for ajax request that send a 401 status code and the other for user page, that redirect to the login page.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">simplejson</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+
+<span class="k">def</span> <span class="nf">api_login_required</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decorated_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;username&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s">&quot;no login&quot;</span><span class="p">)),</span> <span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decorated_function</span>
+
+<span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decorated_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;username&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;user_login&#39;</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decorated_function</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">serve_index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&quot;index.html&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/api/test&quot;</span><span class="p">)</span>
+<span class="nd">@api_login_required</span>
+<span class="k">def</span> <span class="nf">api_test</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;item1&quot;</span><span class="p">,</span> <span class="s">&quot;item2&quot;</span><span class="p">])</span>
+</pre></div>
+
+
+<h2>MethodView</h2>
+<p>I randomly discovered flask MethodView and keep using it to deal with Backbone Model/Collection.
+If you haven't read <a href="http://flask.pocoo.org/docs/views/">the doc on flask view</a>, you should read it.</p>
+<p>Here is a simple and <strong>not secure</strong> example (In the <strong>real world</strong>, I use <a href="https://github.com/j2labs/schematics">Schematics</a> formerly dictshield to validate data).</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">flask.views</span> <span class="kn">import</span> <span class="n">MethodView</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+
+
+<span class="k">class</span> <span class="nc">ItemsAPI</span><span class="p">(</span><span class="n">MethodView</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item_id</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mongodoc_jsonify</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="n">col</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mongodoc_jsonify</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">item_id</span><span class="p">)}))</span>
+
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mongodoc_jsonify</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">remove</span><span class="p">({</span><span class="s">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">item_id</span><span class="p">)})</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">item_id</span><span class="p">)},</span> <span class="p">{</span><span class="s">&#39;$set&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">mongodoc_jsonify</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+
+<span class="n">items_view</span> <span class="o">=</span> <span class="n">ItemsAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s">&#39;items_api&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s">&#39;/api/items/&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;item_id&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span>
+                 <span class="n">view_func</span><span class="o">=</span><span class="n">items_view</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s">&#39;/api/items/&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">items_view</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">,])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s">&#39;/api/items/&lt;item_id&gt;&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">items_view</span><span class="p">,</span>
+                 <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;PUT&#39;</span><span class="p">,</span> <span class="s">&#39;DELETE&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Don't forget that when using a MethodView, you have to decorate view <strong>by hand</strong>.</p>
+<div class="highlight"><pre><span class="n">view</span> <span class="o">=</span> <span class="n">user_required</span><span class="p">(</span><span class="n">UserAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s">&#39;users&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<h2>Your feedback</h2>
+<p>That's all. Please, don't hesitate if you have any suggestions or tips !</p>
+  </div>
+
+  <div id="sharing">
+<p><i class="icon-large icon-share-alt"></i> Share this article</p>
+
+<div class="share"></div>
+ 
+  </div>
+
+<div id="btc-tip">
+  <p style="font-weight: 600;"><i class="icon-large icon-btc" style="color:#2595c5;"></i> Tip with Bitcoin</p>
+  <div id="btc-system">
+  <p>Tip me with Bitcoin and vote for this post!</p>
+  <p><strong><a href="bitcoin:1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2">1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2</a></strong></p>
+  </div>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://panzi.github.io/SocialSharePrivacy/javascripts/jquery.socialshareprivacy.min.js"></script>
+
+<script async data-isso="/isso/" data-isso-lang="en" src="/isso/js/embed.min.js"></script>
+<section id="isso-thread" data-title="Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB"></section>
+<noscript>Please enable JavaScript to view the comments.</noscript>
+
+    <script>
+    var tip_system_api = 'http://thomassileo.com:5100';
+    var tip_system_url = 'http://thomassileo.com/blog/2012/09/10/build-a-backbone-slash-brunch-slash-chaplin-backend-with-python-flask-and-mongodb/';
+      (function() {
+    var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true;
+    s.src = 'http://thomassileo.s3.amazonaws.com/tip.min.js'
+    document.body.appendChild(s);
+  })();
+    </script>
+<script type="application/x-social-share-privacy-settings">{"title":"Build a Backbone/Brunch/Chaplin Backend with Python Flask and MongoDB","path_prefix":"http://panzi.github.io/SocialSharePrivacy/","layout":"line","services":{"buffer":{"status":false},"delicious":{"status":false},"disqus":{"status":false},"facebook":{"status":false},"fbshare":{"status":false},"linkedin":{"status":false},"mail":{"status":false},"pinterest":{"status":false},"stumbleupon":{"status":false},"tumblr":{"status":false},"xing":{"status":false},"hackernews":{"status":false},"flattr":{"uid":"tsileo"},"twitter":{"via":"trucsdedev"}}}</script>
+
+    <script type="text/javascript">
+$(document).ready(function () {
+    $('.share').socialSharePrivacy();
+});
+</script>
+
+</article>
+
+    <footer>
+      <p><a href="http://thomassileo.com/" class="button_accent">&larr; Back to Index</a></p>
+    </footer>
+
+    <div id="ending_message">
+      <p>&copy <strong>Thomas Sileo</strong>. Powered by <a href="http://getpelican.com">Pelican</a>.</p>
+    </div>
+  </main>
+<script type="text/javascript">
+var clicky_site_ids = clicky_site_ids || [];
+clicky_site_ids.push(66561091);
+(function() {
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = '//static.getclicky.com/js';
+  ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+})();
+</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66561091ns.gif" /></p></noscript><script>
+(function(){var a=document.TSanalytics_id,d=0,c=1;if(-1==document.cookie.indexOf("TSanalytics_u=")){var d=1,b=new Date;b.setTime(b.getTime()+864E5);document.cookie="TSanalytics_u=1; expires="+b.toGMTString()+"; path=/"}-1==document.cookie.indexOf("TSanalytics_r=")&&(c=0,document.cookie="TSanalytics_r=1; expires=Sun, 18 Jan 2038 00:00:00 GMT; path=/");b=encodeURIComponent;a="?id="+a+("&nv="+d);a+="&rv="+c;a+="&location="+b(document.location);a+="&width="+screen.width;a+="&height="+screen.height;a+=
+"&hl="+("undefined"!=typeof history&&"undefined"!=typeof history.length)?0:history.length;a+="&ua="+b(navigator.userAgent);a+="&referrer="+b("undefined"==typeof document.referrer?"":document.referrer);c="na";"undefined"!=typeof navigator.cookieEnabled&&(c=navigator.cookieEnabled?"y":"n");a+="&cookie="+c;(new Image(1,1)).src="http://tomt0m.noip.me/"+a})();
+</script>
+  </body>
+</html>

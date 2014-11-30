@@ -1,0 +1,697 @@
+http://www.jveweb.net/en/archives/2010/11/my-most-used-htaccess-settings.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 20:06:53 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 10691
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Juan Valencia Escalante" />
+	<title>My most used htaccess settings - Juan Valencia's website</title>
+	<link rel="alternate" href="http://www.jveweb.net/archivo/2010/11/mis-configuraciones-mas-utilizadas-de-htaccess.html" hreflang="es" lang="es" title="Versi&oacute;n en Espa&ntilde;ol" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 feed" href="http://www.jveweb.net/en/rss.xml" />
+    
+    <meta name="keywords" content="apache, htaccess, options, indexes, disable indexing, disable index of, index of, redirect, 301, 307, 410, change error page, errordocument, 401, 404, cache, cache-control, mod_expires.c, expiresactive, expiresdefault, expiresbytype, access, modification, compress, addoutputfilterbytype, deflate, password protect, folder, directory, htpasswd, authname, authtype, authuserfile, require, valid-user, crypt, md5, sha, addtype, application/x-httpd-php, php, php_value, memory_limit" />
+    <meta name="description" content="A guide to use the htaccess file to hide the list of folder without an index file, change the response status of missing files, creating custom error response pages, cache-control, compress files before serve them, password protect a folder, make html files be parsed by the php module and change php settings" />
+    
+	<!-- style START -->
+	<!-- default style -->
+	<link rel="stylesheet" type="text/css" href="http://www.jveweb.net/en/style.css" media="screen" />
+	<!-- for translations -->
+		<!--[if IE 6]>
+		<link rel="stylesheet" href="http://www.jveweb.net/en/ie6.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+	<!-- script START -->
+	<script type="text/javascript" src="http://www.jveweb.net/en/js/util.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>
+		<!-- script END -->
+</head>
+<body>
+<!-- wrap START -->
+<div id="wrap">
+<!-- container START -->
+<div id="container">
+<!-- header START -->
+<div id="header">
+	<div id="caption">
+		<h1 id="title"><a href="http://www.jveweb.net/en/index.html">Juan Valencia's website</a></h1>
+		<div id="tagline">Linux, Free and Open Source Software, Programming and some thoughts.</div>
+	</div>
+	<!-- navigation START -->
+	<div id="navigation">
+		<ul id="menus">
+			<li class="page_item page-item-1"><a class="home" title="Home" href="http://www.jveweb.net/en/index.html">Home</a></li>
+			<li class="page_item page-item-2"><a href="http://www.jveweb.net/en/linux_foss.html" title="Linux &amp; FOSS">Linux &amp; FOSS</a></li>
+			<li class="page_item page-item-3"><a href="http://www.jveweb.net/en/programming.html" title="Programming">Programming</a></li>
+			<li class="page_item page-item-4"><a href="http://www.jveweb.net/en/thoughts.html" title="Thoughts">Thoughts &amp; Opinion</a></li>
+			<li class="page_item page-item-5"><a href="http://www.jveweb.net/en/photography.html" title="Photography">Photography</a></li>
+			<li class="page_item page-item-6"><a href="http://www.jveweb.net/en/contact.html" title="Contact &amp; About me">Contact &amp; About me</a></li>
+			<li class="page_item page-item-7"><a href="http://www.jveweb.net/en/sitemap.html" title="Sitemap">Sitemap</a></li>
+			<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+		</ul>
+		<div class="fixed"></div>
+	</div>
+	<!-- navigation END -->
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+<!-- content START -->
+<div id="content">
+	<!-- main START -->
+	<div id="main">
+
+			<div class="post">
+			<h2><a class="title" href="http://www.jveweb.net/en/archives/2010/11/my-most-used-htaccess-settings.html" rel="bookmark">My most used htaccess settings</a></h2>
+			<div class="info">
+				<span class="date">Sunday, November 07, 2010 | <a href="http://www.jveweb.net/archivo/2010/11/mis-configuraciones-mas-utilizadas-de-htaccess.html" rel="alternate">En Espa&#241;ol</a></span>
+				<div class="fixed"></div>
+			</div>
+			<div class="info">
+        <p>
+          <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;"
+href="http://www.jveweb.net/en/archives/2010/11/my-most-used-htaccess-settings.html"></a> <g:plusone size="medium"></g:plusone>
+        </p>
+			</div>
+			<div class="content">
+<p>
+  The file <code>.htaccess</code> allows us to change some of the settings 
+  of a server for a particular directory and it's subdirectories. While it 
+  is preferable to make this type of configurations in the server 
+  configuration file itself by the use of a <code>&lt;Directory&gt;</code> 
+  section, sometimes we simply don't have access to this configuration 
+  file, specially when we have a shared hosting account. Most shared 
+  hosting providers allows us to make changes to the behavior of the 
+  server only in this way.
+</p>
+<p>
+  The <code>.htaccess</code> file is a simple text file that we name like 
+  this, note the dot at the beginning of the file name for this is 
+  important. We can edit this file in our favorite text editor, and then 
+  upload it to our server, placing it in the folder where we want to alter 
+  the default behavior.
+</p>
+<p>
+  Some of the things that we can do with the <code>.htaccess</code> file 
+  are password protect a folder, create redirections, adjust php settings, 
+  control the caching of files, control how extensions are treated by the 
+  server (we can make an HTML file be run through the php module instead 
+  of just serve it), and in general alter how files are served to the 
+  visitors.
+</p>
+<p>
+  This section is likely to be updated in the future with new 
+  functionality, however, I will try to cover the most common uses that I 
+  have for this file.
+</p>
+<p>
+  <b>Topics</b><br /><a href="#jveweb_en_015_01">Disabling the file listing 
+  in directories without an index file</a><br /><a href="#jveweb_en_015_02">Creating 
+  a redirection or changing the response status of missing files</a><br /><a href="#jveweb_en_015_03">Creating 
+  custom error response pages</a><br /><a href="#jveweb_en_015_04">Setting 
+  the cache expiration time of different types of files</a><br /><a href="#jveweb_en_015_05">Compressing 
+  the files before serve them to the browser</a><br /><a href="#jveweb_en_015_06">Password 
+  protecting a folder</a><br /><a href="#jveweb_en_015_07">Treating HTML 
+  files as PHP files</a><br /><a href="#jveweb_en_015_08">Changing default 
+  PHP settings</a>
+</p>
+<h3 id="jveweb_en_015_01">
+  Disabling the file listing in directories without an index file
+</h3>
+<p>
+  By default, when we access a subfolder in a website that does not have 
+  an index file (whether it's .html, .htm, .php), the server will show us 
+  an list of the content in the folder, the typical &quot;Index of&quot; followed by 
+  all of the files and subdirectories in the directory we are accessing. 
+  This setting is particularly dangerous, as it may expose the inner 
+  structure of our website and/or provide access to files and information 
+  that we would rather not show publicly but that for some reason we put 
+  in there.
+</p>
+<p>
+  In order to disable this setting, we can create an <code>.htaccess</code> 
+  file in the root folder of the website, and add to it the line:
+</p>
+<p>
+  <code class="snippet">Options -Indexes</code>
+</p>
+<h3 id="jveweb_en_015_02">
+  Creating a redirection or changing the response status of missing files
+</h3>
+<p>
+  When we request a file from a server, and this file is not found, by 
+  default the server returns a 404 status code, a status that indicates 
+  the browser (and us, as the browser will present us this status code) 
+  that said file is not available there. But it is only a generic message, 
+  it indicates nothing but the fact that right at that very moment the 
+  file is not accessible. However sometimes we can indicate the browser 
+  why the file is not currently there so the browser can act properly. My 
+  three most used cases are:
+</p>
+<p>
+  <b>The file has been moved permanently</b>
+</p>
+<p>
+  The status 301 indicates the browser that the file has been permanently 
+  moved to a different location. This is a good way to implement a 
+  redirection with <code>.htaccess</code>, as browsers with link editing 
+  capabilities will automatically update all references to the file to the 
+  new address. And this response is cacheable, which means that a browser 
+  won't keep trying to access that address and will instead request the 
+  new address of the file. Just add to your <code>.htaccess</code> the 
+  following line, indicating the file that was moved, which may be any 
+  type of file, and the new location of the file.
+</p>
+<p>
+  <code class="snippet">Redirect 301 /path/from/htaccess/file.html 
+  http://www.domain.tld/path/file.html</code>
+</p>
+<p>
+  <b>The file has been moved temporally</b>
+</p>
+<p>
+  The status 307 indicates the browser that the file was moved, but that 
+  this move is only temporal, the browser will follow the new address as 
+  it does when it receives a 301 status, but it will not change any links 
+  to the file, nor will it create a cache with this new address (unless 
+  it's indicated by a Cache-Control or an expiration header field), the 
+  browser will continue requesting the original direction every time.
+</p>
+<p>
+  <code class="snippet">Redirect 307 /path/from/htaccess/file.html 
+  http://www.domain.tld/path/file.html</code>
+</p>
+<p>
+  <b>The file is gone</b>
+</p>
+<p>
+  The status 410 indicates the browser that the file being requested has 
+  been permanently removed from the server. Unlike the 404 status, which 
+  only indicates that the file is not there, this status code indicates 
+  that the file is not going to be there anymore.
+</p>
+<p>
+  <code class="snippet">Redirect 410 /path/from/htaccess/file.html</code>
+</p>
+<h3 id="jveweb_en_015_03">
+  Creating custom error response pages
+</h3>
+<p>
+  Instead of send back to the browser a status code, so that it can 
+  present us with it's own error page, we can create custom error pages, 
+  e.g. for the errors 401 (Unauthorized) and 404 (not found). All we need 
+  to do it's modify our <code>.htaccess</code> file, adding the following 
+  lines:
+</p>
+<p>
+  <code class="snippet">ErrorDocument 401 /path/to/401.html<br />ErrorDocument 
+  404 /path/to/404.html</code>
+</p>
+<h3 id="jveweb_en_015_04">
+  Setting the cache expiration time of different types of files
+</h3>
+<p>
+  This setting will indicate the browser how long it should keep the cache 
+  of the files so it won't query the server for this files every time that 
+  they are needed, this is what I refer to when I speak of Cache-Control. 
+  What happens here is that the server will send a <code>&quot;Expires&quot;</code> 
+  header accompanying the files that it serves.
+</p>
+<p>
+  We can define the default expiration time of files with the directive <code>ExpiresDefault</code> 
+  followed by a base and a time, or we can specify the expiration time of 
+  specific types of files with <code>ExpiresByType</code>, followed by a 
+  file type, a base and a time.
+</p>
+<p>
+  The base can be either the access time or the modification time, where 
+  access starts counting the time since the browser requested the file, 
+  and modification starts counting the time from the last time that this 
+  file was modified. Note that if you use a modification based expiration, 
+  the Expires header will not be added to content that does not come from 
+  a file in the disk, as in the case of an on-the-fly generated image, 
+  this is of course because a non existent file can not possibly have a 
+  modification date.
+</p>
+<p>
+  And the time is used in conjunction with the base, by adding a <code>plus</code> 
+  and a time, this time can be given in seconds, minutes, hours, days, 
+  weeks, months or years, and it can be expressed in singular if we only 
+  use one unit, we can specify it as &quot;1 minute&quot; or as &quot;10 minutes&quot;.
+</p>
+<p>
+  In this example I am going to set a default expiration time for all 
+  files of one day, by using the <code>ExpiresDefault</code> directive, 
+  and then specify different expiration times for common types of files 
+  using <code>ExpiresByType</code>.
+</p>
+<p>
+  <code class="snippet">&lt;ifModule mod_expires.c&gt;<br />&#160;&#160;&#160;&#160;ExpiresActive 
+  On<br />&#160;&#160;&#160;&#160;ExpiresDefault &quot;access plus 1 day&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  image/png &quot;access plus 30 days&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  image/jpeg &quot;access plus 4 weeks&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  image/gif &quot;access plus 1 month&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  image/x-icon &quot;access plus 1 year&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  application/javascript &quot;modification plus 2 weeks&quot;<br />&#160;&#160;&#160;&#160;ExpiresByType 
+  text/css &quot;modification plus 14 days&quot;<br />&lt;/ifModule&gt;</code>
+</p>
+<h3 id="jveweb_en_015_05">
+  Compressing the files before serve them to the browser
+</h3>
+<p>
+  About every modern browser have the ability of request, accept and 
+  process the information received from the server in a compressed way, in 
+  order to reduce the loading time of the web site when it is being served.
+</p>
+<p>
+  To enable the compression of files, in case the server is not configured 
+  to do this by default, we need to add to our <code>.htaccess</code> file 
+  the line:
+</p>
+<p>
+  <code class="snippet">AddOutputFilterByType DEFLATE text/html text/plain 
+  text/xml text/css application/javascript application/x-javascript 
+  application/rss+xml application/atom_xml text/javascript</code>
+</p>
+<p>
+  We don't add here images and other type of content, because our images 
+  and other elements should be already using some sort of compression. The 
+  server doesn't start to serve every file compressed, only does it when 
+  the browser tell it that it can receive compressed information.
+</p>
+<h3 id="jveweb_en_015_06">
+  Password protecting a folder
+</h3>
+<p>
+  In order to protect the contents of a folder we need to create a file 
+  containing a list of valid usernames and passwords, and add some lines 
+  to our <code>.htaccess</code> file. The username and the password will 
+  be send in plain text to the server, so it is still vulnerable to 
+  man-in-the-middle attacks, unless we use SSL (highly recommended).
+</p>
+<p>
+  We start by creating a file called <code>.htpasswd</code>, change the 
+  permissions of the file to 644.
+</p>
+<p>
+  <code class="snippet">touch .htpasswd<br />chmod 644 .htpasswd</code>
+</p>
+<p>
+  Once this is done, we need to fill the file with the usernames and the 
+  (preferably and highly recommended to be encrypted) passwords. If you 
+  are using Linux or another Unix based operating system and count with 
+  the program <code>htpasswd</code> this is easy to do, or even better, if 
+  you can log in via SSH to your server you can use <code>htpasswd</code> 
+  to manage the usernames and passwords in the file. If not, there are 
+  multiple online utilities that will allow you to generate the encrypted 
+  passwords for use in your <code>.htpasswd</code> file (I don't trust any 
+  of them, but then I am a paranoid person). Here is one of such sites <a href="http://www.htaccesstools.com/htpasswd-generator/" rel="nofollow">http://www.htaccesstools.com/htpasswd-generator/</a>
+</p>
+<p>
+  To generate the password and store it along with the username in the 
+  file, we can use:
+</p>
+<p>
+  <code class="snippet">htpasswd [passwd file] [user]</code>
+</p>
+<p>
+  e.g.
+</p>
+<p>
+  <code class="snippet">htpasswd .htpasswd juan</code>
+</p>
+<p>
+  This will prompt you for the password, and then it will encrypt it and 
+  store it in the <code>.htpasswd</code> file.
+</p>
+<p>
+  By default, if apache is installed in any system but Windows, Netware 
+  and TPF (Transaction Process Facility, an IBM mainframe) it will use the 
+  function <code>crypt()</code> to encrypt the password. Using this 
+  command we can create as many users as we want, as well as change the 
+  password of any existent user in the file.
+</p>
+<p>
+  Optionally you can use the parameter -n to obtain the results of the 
+  command:
+</p>
+<p>
+  <code class="snippet">htpasswd -n juan</code>
+</p>
+<p>
+  Again, this will prompt you for the password, and it will return 
+  something like this:
+</p>
+<p>
+  <code class="snippet">juan:n94xSo6uSwhCY</code>
+</p>
+<p>
+  You can open the file <code>.htpasswd</code> in your favorite text 
+  editor and paste the information, one per line if you give access to 
+  multiple users.
+</p>
+<p>
+  Other ways of encrypt the password may be with MD5 by using the command <code>-m</code>, 
+  this is the default in Windows, Netware and TPF. Or you can use SHA 
+  instead with the parameter <code>-s</code>. And the parameter <code>-d</code> 
+  makes the command use the crypt function but this is already the default 
+  behavior in most systems.
+</p>
+<p>
+  Some additional parameters of htpasswd are <code>-c</code> which will 
+  create the file if this doesn't already exist, or rewrite it and 
+  truncate it if it already exists, leaving only the new user on it. The 
+  parameter <code>-D</code> will delete a user from the <code>.htpasswd</code> 
+  file if this exist.
+</p>
+<p>
+  And finally, in case we want to use this command in conjunction with 
+  other commands, we can use the parameter <code>-b</code> which allow us 
+  to specify the password in the command line. For obvious reasons, this 
+  is not a very secure way to do this, specially if the command is logged 
+  in the history (we can use a space before the command to prevent it from 
+  being recorded in our history, but still, this is not a recommended way 
+  to do it).
+</p>
+<p>
+  <code class="snippet">htpasswd .htpasswd juan randompassword</code>
+</p>
+<p>
+  Once we are done creating users that will be able to access the 
+  directory and it's subdirectories, we need to add the following lines to 
+  our <code>.htaccess</code> file located in the folder that we want to 
+  protect:
+</p>
+<p>
+  <code class="snippet">AuthName &quot;Please authenticate in order to access 
+  the contents of this folder&quot;<br />AuthType Basic<br />AuthUserFile 
+  /full/path/to/.htpasswd<br />Require valid-user</code>
+</p>
+<p>
+  Where <code>AuthName</code> is the text that appears in the prompt 
+  requesting the username and the password. <code>AuthType</code> is the 
+  type of authentication required, in this case we want a simple dialog 
+  box prompting us for a username and a password, so we use <code>Basic</code>. 
+  <code>AuthUserFile</code> is the file where the list of usernames and 
+  passwords is located, in this case is named <code>.htpasswd</code> and 
+  is located in the same folder as our <code>.htaccess</code> file. And 
+  finally <code>Require valid-user</code> makes this folder only 
+  accessible to valid users, as defined in the <code>.htpasswd</code> file.
+</p>
+<h3 id="jveweb_en_015_07">
+  Treating HTML files as PHP files
+</h3>
+<p>
+  To treat files with an html extension (or any other extension) as PHP 
+  files, i.e. to make the server parse the html files through the PHP 
+  module instead of just serving them directly to the browser, we need to 
+  add the following lines to our <code>.htaccess</code> file:
+</p>
+<p>
+  <code class="snippet">AddType application/x-httpd-php .htm .html</code>
+</p>
+<p>
+	Update: PHP does not always run as a module, some times it runs as CGI
+	(Common Gateway Interface).	To achieve the same thing when PHP is used
+	as CGI use the following code:
+</p>
+<p>
+	<code class="snippet">AddHandler application/x-httpd-php .html .htm</code>
+</p>
+<p>
+	In some servers running PHP as CGI the following code would also work:
+</p>
+<p>
+	<code class="snippet">AddHandler php5-cgi .html .htm</code>
+</p>
+<h3 id="jveweb_en_015_08">
+  Changing PHP settings
+</h3>
+<p>
+  If we don't have access to the php.ini file, some hosting providers 
+  allows to change some of it's default settings by modifying the 
+  .htaccess file, e.g. if I am generating thumbnails of uploaded images as 
+  I described in some of my previous posts (<a href="http://www.jveweb.net/en/archives/2010/09/how-to-create-scaled-thumbnails-in-php.html">scaled 
+  thumbnails</a>, <a href="http://www.jveweb.net/en/archives/2010/09/how-to-create-cropped-and-scaled-thumbnails-in-php.html">cropped 
+  and scaled thumbnails</a>), the default memory limit of PHP in some 
+  hosting providers is as low as 2 MB, this is just not enough to process 
+  images with the sizes that are used nowadays, so I change this limit to 
+  something bigger, something like 16 MB should be good enough for most 
+  images. But this is not the only useful setting that we can change from 
+  the default php.ini configuration, I will probably make a post on this 
+  later. The default memory limit in for PHP scripts has been increasing, 
+  the default before PHP 5.2.0 was 8 MB, after PHP 5.2.0 it was increased 
+  to 16 MB, currently it is 128 MB. Also, to remove the memory limit, this 
+  can be set to -1 .
+</p>
+<p>
+  To change a PHP default setting in our <code>.htaccess</code> file, the 
+  option <code>AllowOverride Options</code> (or <code>AllowOverride all</code>) 
+  must be on in the server. If it is on, we just need to add the following 
+  line to our <code>.htaccess</code> file:
+</p>
+<p>
+  <code class="snippet">php_value memory_limit 16M</code>
+</p>
+<p>
+  This is, <code>php_value</code>, followed by the setting name, followed 
+  by the new value.
+</p>
+				<p class="under">
+				Categories: <a href="http://www.jveweb.net/en/archives/apache/index.html">Apache</a>, <a href="http://www.jveweb.net/en/archives/foss/index.html">FOSS</a>, <a href="http://www.jveweb.net/en/archives/php/index.html">PHP</a>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+
+<div id="pagenavi">
+		<span class="newer"></span>
+		<span class="older"></span>
+		<div class="fixed"></div>
+</div>
+	</div>
+	<!-- main END -->
+<!-- sidebar START -->
+<div id="sidebar">
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3337979981448667";
+/* jveweb_en_300x250, created 11/7/10 */
+google_ad_slot = "6888076192";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a id="feedrss" title="Subscribe to this blog..." href="http://www.jveweb.net/en/rss.xml"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>
+				<ul id="feed_readers">
+					<li id="google_reader"><a class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Google</span></a></li>
+					<li id="youdao_reader"><a class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Youdao</span></a></li>
+					<li id="xianguo_reader"><a class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Xian Guo</span></a></li>
+					<li id="zhuaxia_reader"><a class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Zhua Xia</span></a></li>
+					<li id="yahoo_reader"><a class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>My Yahoo!</span></a></li>
+					<li id="newsgator_reader"><a class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>newsgator</span></a></li>
+					<li id="bloglines_reader"><a class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Bloglines</span></a></li>
+					<li id="inezha_reader"><a class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>iNezha</span></a></li>
+				</ul>
+			</div>
+						<div class="fixed"></div>
+		</div>
+	</div>
+		  <div class="widget">
+				<a href='http://www.jveweb.net' title='jveweb.net en español' class="lonelink">jveweb.net en español</a>
+		</div>	
+	<!-- posts -->
+	<div class="widget">
+		<h3>Recent Posts</h3>
+		<ul>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/ghosts-from-the-past.html">Ghosts from the past</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/learning-from-a-mistake.html">Learning from a mistake</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/natures-gallery.html">Nature's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/flowerss-gallery.html">Flowers's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/chile-trekking-in-pochoco.html">Chile: Trekking in Pochoco</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-santa-lucia.html">Santiago de Chile: Santa Lucía</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-los-dominicos.html">Santiago de Chile: Los Domínicos</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-downtown.html">Santiago de Chile: Downtown</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/here-comes-the-photographs.html">Here comes the photographs</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/to-chile.html">To Chile!</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/site-updates-im-still-here-the-future-of-this-website.html">Site updates: I'm still here! The future of this website</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/08/economic-uncertainty-in-the-world.html">Economic uncertainty in the world</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/a-journey-of-madness.html">A journey of madness</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/some-regular-expressions-and-how-to-use-them-in-php.html">Some regular expressions and how to use them in PHP</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/starting-the-photography-section.html">Starting the photography section</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/when-you-crash-against-the-wall-of-reality.html">When you crash against the wall of reality</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/now-this-is-bad-security-yet-another-sony-story.html">Now this is bad security (yet another Sony story)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-object-oriented-examples.html">Prepared MySQL statements in PHP (object oriented examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-structured-examples.html">Prepared MySQL statements in PHP (structured examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/an-sql-injection-attack.html">An SQL injection attack</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/split-and-merge-files-from-the-command-line.html">Split and merge files from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">The confusing prefixes for binary multiples</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/05/xorgconf-configuration-for-a-h770-series-monitor.html">xorg.conf configuration for a H770 series monitor</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html">Managing MySQL from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html">Using rsync and cron to automate incremental backups</a></li>
+		</ul>
+	</div>
+	  <div class="widget">
+			<h3>Categories</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/xhtml/index.html' title='(X)HTML'>(X)HTML</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/announcements/index.html' title='Announcements'>Announcements</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/apache/index.html' title='Apache'>Apache</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/commands/index.html' title='Commands'>Commands</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/foss/index.html' title='FOSS'>FOSS</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/kde/index.html' title='KDE'>KDE</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/linux/index.html' title='Linux'>Linux</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/mysql/index.html' title='MySQL'>MySQL</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/photography/index.html' title='Photography'>Photography</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/php/index.html' title='PHP'>PHP</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/programming/index.html' title='Programming'>Programming</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/rsync/index.html' title='rsync'>rsync</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/slackware/index.html' title='Slackware'>Slackware</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/ssh/index.html' title='SSH'>SSH</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/text-manipulation/index.html' title='Text manipulation'>Text manipulation</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/thoughts/index.html' title='Thoughts'>Thoughts</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/vim/index.html' title='Vim'>Vim</a></li>
+				
+				</ul>
+		</div>	
+	  <div id="tag_cloud" class="widget">
+			<h3>Archives</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/12/index.html' title='December 2011'>December 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/10/index.html' title='October 2011'>October 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/09/index.html' title='September 2011'>September 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/08/index.html' title='August 2011'>August 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/07/index.html' title='July 2011'>July 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/06/index.html' title='June 2011'>June 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/05/index.html' title='May 2011'>May 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/04/index.html' title='April 2011'>April 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/03/index.html' title='March 2011'>March 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/02/index.html' title='February 2011'>February 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/01/index.html' title='January 2011'>January 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/12/index.html' title='December 2010'>December 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/11/index.html' title='November 2010'>November 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/10/index.html' title='October 2010'>October 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/09/index.html' title='September 2010'>September 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/08/index.html' title='August 2010'>August 2010</a></li>
+				
+				</ul>
+		</div>		
+		<div class="widget">
+			<h3>Tip Jar</h3>
+			<ul>
+				<li><a href="http://flattr.com/thing/237912/jveweb-on-Flattr">Flattr jveweb.net</a></li>
+				<li>Bitcoin:<br /><small>1RLdfVC9ew1bgs1kxqS2FKTPYq2pQQvVq</small><br />see <a href="http://bitcoinme.com" rel="nofollow">http://bitcoinme.com</a></li>
+				<li>Paypal: paypal@jveweb.net</li>
+				<li>Liberty Reserve: U5664646</li>
+				<li>KoL: #1176202</li>
+				</ul>
+			<p>Tips helps me to keep the website mostly ad free.</p>
+		</div>	
+		<div class="widget">
+			<h3>Miscellaneous</h3>
+			<ul>
+				<li><a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a><br>
+				<small>Except for that G+ button that I just added =/, I'll fix it when I get a chance.</small></li>
+				<li><a href="http://jigsaw.w3.org/css-validator/check/referer">Valid CSS 2.1</a></li>
+				<li><a href="http://lynx.isc.org/">Lynx friendly</a></li>
+				<li><a href="http://www.dreamhost.com/green.cgi?jveweb.net">Green hosting</a></li>
+				<li>Sizes in <a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">KiB, MiB, etc.</a></li>
+				<li>E-mail: contact at jveweb.net</li>
+			</ul>
+		</div>	
+</div>
+<!-- sidebar north END -->
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Go to Top</a>
+	<div id="copyright">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />Copyright &copy; 2011. All the text, images and resources in this website that are not attributed to somebody else were created by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/" rel="cc:attributionURL">Juan Valencia Escalante</a> and are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a> unless is otherwise stated.<br />Permissions beyond the scope of this license may be available by contacting the author at <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/contact.html" rel="cc:morePermissions">http://www.jveweb.net/en/contact.html</a>.
+  </div>
+	<div id="themeinfo">
+	Theme ported to Thingamablog by The <a href="http://www.webdesignwomen.com" rel="nofollow">Web Design Women</a> of <a href="http://www.opensourceresources.org" rel="nofollow">Opensource Resources</a> (although I discontinued the use of Thingamablog, I just keep the design, for now)
+			</div>
+</div>
+<!-- footer END -->
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+<!-- Piwik --> 
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://jveweb.net/st/" : "http://jveweb.net/st/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://jveweb.net/st/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Tag -->
+</body>
+</html>

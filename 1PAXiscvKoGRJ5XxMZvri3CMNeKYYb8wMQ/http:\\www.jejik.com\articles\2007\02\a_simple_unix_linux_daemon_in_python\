@@ -1,0 +1,2288 @@
+http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+A simple unix/linux daemon in Python - Lone Wolves - Web, game, and open source development
+Lone Wolves
+Web, game, and open source development
+Skip to menu
+A simple unix/linux daemon in Python
+by Sander Marechal
+I've written a simple Python class for creating daemons on unix/linux systems. It was pieced together for various other examples, mostly corrections to various Python Cookbook articles and a couple of examples posted to the Python mailing lists. It has support for a pidfile to keep track of the process. I hope it's useful to someone.
+Below is the Daemon class. To use it, simply subclass it and implement the run() method. Download this file.
+Update 2009-05-31: An anonymous contributor has written a version of the Daemon class suitable for Python 3.x. Download the Python 3.x version here. The code below is for Python 2.x
+#!/usr/bin/env python
+import sys, os, time, atexit
+from signal import SIGTERM class Daemon:
+"""
+A generic daemon class.
+Usage: subclass the Daemon class and override the run() method
+"""
+def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+self.stdin = stdin
+self.stdout = stdout
+self.stderr = stderr
+self.pidfile = pidfile
+def daemonize(self):
+"""
+do the UNIX double-fork magic, see Stevens' "Advanced Programming in the UNIX Environment" for details (ISBN 0201563177)
+http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+"""
+try: pid = os.fork() if pid > 0:
+# exit first parent
+sys.exit(0) except OSError, e: sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+sys.exit(1)
+# decouple from parent environment
+os.chdir("/") os.setsid() os.umask(0) # do second fork
+try: pid = os.fork() if pid > 0:
+# exit from second parent
+sys.exit(0) except OSError, e: sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+sys.exit(1) # redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+si = file(self.stdin, 'r')
+so = file(self.stdout, 'a+')
+se = file(self.stderr, 'a+', 0)
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+# write pidfile
+atexit.register(self.delpid)
+pid = str(os.getpid())
+file(self.pidfile,'w+').write("%s\n" % pid)
+def delpid(self):
+os.remove(self.pidfile)
+def start(self):
+"""
+Start the daemon
+"""
+# Check for a pidfile to see if the daemon already runs
+try:
+pf = file(self.pidfile,'r')
+pid = int(pf.read().strip())
+pf.close()
+except IOError:
+pid = None
+if pid:
+message = "pidfile %s already exist. Daemon already running?\n"
+sys.stderr.write(message % self.pidfile)
+sys.exit(1)
+# Start the daemon
+self.daemonize()
+self.run()
+def stop(self):
+"""
+Stop the daemon
+"""
+# Get the pid from the pidfile
+try:
+pf = file(self.pidfile,'r')
+pid = int(pf.read().strip())
+pf.close()
+except IOError:
+pid = None
+if not pid:
+message = "pidfile %s does not exist. Daemon not running?\n"
+sys.stderr.write(message % self.pidfile)
+return # not an error in a restart
+# Try killing the daemon process try:
+while 1:
+os.kill(pid, SIGTERM)
+time.sleep(0.1)
+except OSError, err:
+err = str(err)
+if err.find("No such process") > 0:
+if os.path.exists(self.pidfile):
+os.remove(self.pidfile)
+else:
+print str(err)
+sys.exit(1)
+def restart(self):
+"""
+Restart the daemon
+"""
+self.stop()
+self.start()
+def run(self):
+"""
+You should override this method when you subclass Daemon. It will be called after the process has been
+daemonized by start() or restart().
+"""
+And here is an example implementation. It implements the daemon as well as it's controlling client. Simply invoke this script with start, stop or restart as it's first argument. Download this file.
+#!/usr/bin/env python
+import sys, time
+from daemon import Daemon
+class MyDaemon(Daemon):
+def run(self):
+while True:
+time.sleep(1)
+if __name__ == "__main__":
+daemon = MyDaemon('/tmp/daemon-example.pid')
+if len(sys.argv) == 2:
+if 'start' == sys.argv[1]:
+daemon.start()
+elif 'stop' == sys.argv[1]:
+daemon.stop()
+elif 'restart' == sys.argv[1]:
+daemon.restart()
+else:
+print "Unknown command"
+sys.exit(2)
+sys.exit(0)
+else:
+print "usage: %s start|stop|restart" % sys.argv[0]
+sys.exit(2)
+That's it! I hope this is of some use to someone. Happy coding!
+Posted on 2007-02-02@09:09
+Permalink
+Tags:
+python
+unix
+daemon
+Comments
+#1
+Guido van Steen
+Posted on 2008-09-27@01:15
+Wonderful python code! Thanks very much!
+#2
+coolluck (http://tech.coolluck.org/)
+Posted on 2008-10-15@11:39
+Thank you for your daemon code
+I think it'll be better add checking pidfile existance
+because atexit handler may delete pidfile before execute os.remove(self.pidfile) in exception Handler "except OSError, err"
+...
+except OSError, err:
+err = str(err)
+if err.find("No such process") > 0:
+if os.path.exists(self.pidfile):
+os.remove(self.pidfile)
+...
+#3
+Sander Marechal (http://www.jejik.com)
+Posted on 2008-10-15@12:01
+Thank you for your suggestion. I have updated the daemon code accordingly.
+#4
+narthollis
+Posted on 2008-11-08@06:49
+Thanks very much - highly useful bit of code!
+And far more elegant than my previous solution.
+Many Thanks :)
+#5
+Anonymous Coward
+Posted on 2008-11-26@16:37
+What is the license on this code? Can I have it under GPL?
+#6
+Sander Marechal (http://www.jejik.com)
+Posted on 2008-11-26@16:40
+@Anonymous Coward
+This is really basic stuff and not very original. It's Public Domain, so do with it as you please.
+#7
+Jacob Singh (http://pajamadesign.com)
+Posted on 2008-11-28@10:38
+Thanks for the code,
+I've got it working, but I have one problem. I'm trying to do some stuff before exiting. So, in my code:
+signal.signal(signal.SIGTEM,myhandler)
+def myhandler(signum,frame):
+#do something
+sys.exit()
+I assume that my sys.exit is calling itself by raising a SIGTERM somehow which is really annoying. How can I stop this?
+Thanks!
+Jacob
+#8
+Sander Marechal (http://www.jejik.com)
+Posted on 2008-11-28@11:09
+@Jacob: Use the atexit function instead. If you look at line 59 you see that I am registering the self.delpid() function to be run when the daemon shuts down. That function will be run by automatically by Python when the program stops.
+So, add the stuff you want to do before shutdown to the self.delpid() function.
+#9
+Anonymous Coward
+Posted on 2009-01-14@20:27
+excellent, thx. i'm running on os x and only got things to work by commenting out this section:
+# redirect standard file descriptors
+#sys.stdout.flush()
+#sys.stderr.flush()
+#si = file(self.stdin, 'r')
+#so = file(self.stdout, 'a+')
+#se = file(self.stderr, 'a+', 0)
+#os.dup2(si.fileno(), sys.stdin.fileno())
+#os.dup2(so.fileno(), sys.stdout.fileno())
+#os.dup2(se.fileno(), sys.stderr.fileno())
+any idea? thx
+#10
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-01-14@21:33
+Nope, none. The section you commented out should work on MacOSX as well as Linux because both are basically Unix-like POSIX systems. I'm not nearly familiar enough with MacOSX to be able to tell why it doesn't work. Sorry.
+#11
+Anonymous Coward
+Posted on 2009-01-16@10:29
+k. seems that /dev/null isn't working, at least for my 2.52, os 10.5x config. however, py's os.devnull works like a charm.
+#12
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-01-16@12:51
+There's no /dev/null on a Mac machine? MacOSX 10.5 claims to be POSIX compliant, and I believe that having /dev/null is required by POSIX.
+Can you tell me what os.path.devnull is set to in Python on OSX?
+#13
+Preston Hunt (http://prestonhunt.com)
+Posted on 2009-01-21@08:17
+A beautiful piece of code, thank you for sharing!
+#14
+Guilherme Gall
+Posted on 2009-01-23@00:45
+Nice code, very useful. I think it would be useful the creation of a method to show the status of the process/pidfile to allow the identification of a manual kill.
+Something like that:
+def status(self):
+try:
+pf = file(self.pidfile, 'r')
+pid = int(pf.read().strip())
+pf.close()
+except IOError:
+pid = None
+try:
+procfile = file("/proc/%d/status" % pid, 'r')
+procfile.close()
+except IOError:
+sys.stdout.write("there is not a process with the PID specified in %s\n" % self.pidfile)
+sys.exit(0)
+except TypeError:
+sys.stdout.write("pidfile %s does not exist\n" % self.pidfile)
+sys.exit(0)
+sys.stdout.write("the process with the PID %d is running\n" % pid)
+#15
+Jonathan Manning
+Posted on 2009-01-23@19:27
+For the /dev/null issue, on OS X or Windows, try:
+if (hasattr(os, "devnull")):
+DEVNULL = os.devnull
+else:
+DEVNULL = "/dev/null"
+Then use DEVNULL instead of the string "/dev/null" in the default arguments.
+~J
+#16
+HosipLan (http://kdyby.org)
+Posted on 2009-03-02@23:00
+Thank you i'm going to use this for my little robot and it helped a lot
+#17
+Raj (http://rajorshi.net/blog)
+Posted on 2009-03-04@13:59
+Very useful, thanks a lot :)
+#18
+Anonymous Coward
+Posted on 2009-03-05@17:15
+Hi. Great code, however i have a problem writing to a log file in my run function :
+def run(self):
+while True:
+print "test1\n"
+time.sleep(1)
+This does not log anything in the log file specified in the constructor of Daemon. If I remove the sleep(1) call, it works. I was thinking of a buffering issue but removing the buffering to stdout in daemon.py did not change anything.
+Any idea ?
+#19
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-03-06@09:21
+You may want to flush stdout before you sleep() using self.stdout.flush().
+A far better alternative however is to use the "logging" module instead.
+#20
+Anonymous Coward
+Posted on 2009-03-06@10:17
+Thanks - sys.stdout.flush() works. self.stdout.flush() does not.
+I tried replacing the print statement with logging.info("Test"). This has the same buffer issue as print statement. Can you explain why you redirect in your code stdout if it cannot be used reliably for output ? For example, when the daemon is stopped, there is no flush or close in the stop function and information that was sent to the log file is lost.
+#21
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-03-06@17:48
+When you use the logging module you should log to a file, not to stdout. A true daemon has no environment. No parent process, no working directory and no stdin, stdout and stderr. That's why I redirect everything to /dev/null and that's why you need to fork() twice.
+Using stdout and flush() can sorta work, but you don't have a real daemon anymore. Consider this. Open a terminal, start your program and then close the terminal. What happens to stdout now? It's gone. That's why it needs to be redirected to /dev/null. And that's why all daemons use logfiles or log to the syslog.
+#22
+Vik
+Posted on 2009-03-06@18:29
+Excellent stuff. Thanks. I have just started learning python & this has helped me a lot.
+I have a question, I need to start some scripts and stop them when I want and would also like to know their status, I have attached to this daemon, but then when I am starting the daemon, in ps -aux only the daemon is shown, not that those scripts have started. Or maybe I am going in the wrong way... Can someone help me?
+#23
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-03-07@14:36
+I m not quite sure what you mean Vik. Is your source code online somewhere? If not, you can post it here (use the pre tags) or post it to a service like pastebin.com.
+#24
+Roel
+Posted on 2009-03-20@16:28
+I'd like to be able to ask the status of my daemon by issuing 'daemon status'. So I implemented the status method in my subclass of Daemon and added the necessary lines to the starter script. However, I do not get the desired result as the starter script creates a new instance and then call the .status() from that instance instead of querying the status from the running instance. How would you solve this issue? Thanks for your help and the code!
+#25
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-03-20@19:29
+What status do you want to show? Just running or not running? Just try to read the pidfile and see if that process still exists. For anything above and beyond that you need a way to communicate between the base script and the running instance. So I suggest you take a look at the python library under the inter-process communication section.
+#26
+Andr
+Posted on 2009-04-27@12:06
+Thank you it works perfect when the class is in the module I use it from... When I extract this class to a submodule it does not work. It seems that the wrong process is terminated after the first fork...
+Here is my modulcode... Help would really be appriciated...
+
+#!/usr/bin/env python
+
+try:
+    import os
+    import sys
+    import time
+    import atexit
+    from signal import SIGTERM
+except StandardError, e:
+    import sys
+    print &quot;Error while loading libraries: &quot;
+    print e
+    sys.exit()
+
+class HcpDaemon:
+    &quot;&quot;&quot;
+    A generic daemon class.
+
+    Usage: subclass the Daemon class and override the run() method
+    &quot;&quot;&quot;
+
+    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.pidfile = pidfile
+
+    def daemonize(self):
+        try:
+            pid = os.fork()
+            if pid &gt; 0:
+                # exit first parent
+                sys.exit(0)
+        except OSError, e:
+            print &gt;&gt;sys.stderr, &quot;fork #1 failed: %d (%s)&quot; % (e.errno, e.strerror)
+            sys.exit(1)
+
+        # decouple from parent environment
+        os.chdir(&quot;/&quot;)
+        os.setsid()
+        os.umask(0)
+
+        # do second fork
+        try:
+            pid = os.fork()
+            if pid &gt; 0:
+                # exit from second parent, print eventual PID before
+                print &quot;Daemon PID %d&quot; % pid
+                sys.exit(0)
+        except OSError, e:
+            print &gt;&gt;sys.stderr, &quot;fork #2 failed: %d (%s)&quot; % (e.errno, e.strerror)
+            sys.exit(1)
+
+        sys.stdout.flush()
+        sys.stderr.flush()
+        si = file(self.stdin, 'r')
+        so = file(self.stdout, 'a+')
+        se = file(self.stderr, 'a+', 0)
+        os.dup2(si.fileno(), sys.stdin.fileno())
+        os.dup2(so.fileno(), sys.stdout.fileno())
+        os.dup2(se.fileno(), sys.stderr.fileno())
+
+        pid = str(os.getpid())
+        file(self.pidfile,'w+').write(&quot;%s\n&quot; % pid)
+
+        atexit.register(self.delpid)
+
+    def delpid(self):
+        os.remove(self.pidfile)
+
+    def stop(self):
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if not pid:
+            message = &quot;pidfile %s does not exist. Daemon not running?\n&quot;
+            sys.stderr.write(message % self.pidfile)
+            return # not an error in a restart
+
+        try:
+            while 1:
+                os.kill(pid, SIGTERM)
+                time.sleep(0.1)
+        except OSError, err:
+            err = str(err)
+            if err.find(&quot;No such process&quot;) &gt; 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                print str(err)
+                sys.exit(1)
+
+    def restart(self):
+        self.stop()
+        self.start()
+
+    def start(self):
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if pid:
+            message = &quot;pidfile %s already exist. Daemon already running?\n&quot;
+            sys.stderr.write(message % self.pidfile)
+            sys.exit(1)
+        self.daemonize()
+        self.run()
+
+    def run(self):
+        &quot;&quot;&quot;Override while subclassing&quot;&quot;&quot;
+#27
+Andr
+Posted on 2009-04-27@13:36
+Nevermind
+just stupid me forget to import a module required by the overriding run method...
+#28
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-04-27@16:48
+I wrote a little workaround to help me debug issues like that. I added another option besides start, stop and restart called "foreground". When I use that, it calls daemon.run() instead of daemon.start(). That means the application will not fork to the background but run in the foreground instead. That means you can easily spot errors like this because exceptions get printed to the commandline instead of to a logfile or pipe. It's really useful for debugging :-)
+#29
+Andre
+Posted on 2009-04-29@00:54
+Thank you, sounds like a good idea ;-)
+#30
+Brian
+Posted on 2009-05-26@22:56
+Shouldn't your example MyDaemon provide an __init__ routine and call the parent class's __init__?
+#31
+Robert
+Posted on 2009-05-27@01:17
+Thank you for this code! I'm using it for a python based weather station logger.
+#32
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-05-27@08:17
+@Brian: No. Because MyDaemon does not implement __init__, the parent's __init__ will be called automatically.
+@Robert: That sounds like a great project. I always like hearing where my code ends up :-)
+#33
+Brian
+Posted on 2009-05-28@01:11
+Ah, yes. I'm still new to Python. Thanks for the very useful code! I'm using it to implement an IRC bot. Works great.
+#34
+Vik
+Posted on 2009-05-29@18:54
+I am using a similar daemon and that daemon for me does call quite a lot of functions for me from various scripts. I also have a log file for errors and warnings. After the daemon is up for certain amount of time, I am getting the following error:
+close failed: [Errno 10] No child processes
+I am not sure as where I am going wrong, when I looked up on google to find out that this might be a bug in python:
+http://mail.python.org/pipermail/python-bugs-list/2007-August/039194.html
+I wanna keep my logs and get rid of this error, the problem is the error is continuously writing to a file and that way in a certain period of time my hard drive will be full with just one text file. Please let me know if anyone has ever faced this error. Any help is appreciated.
+Thanks
+Vik
+#35
+Anonymous Coward
+Posted on 2009-05-29@19:06
+Very nice code. Here is an updated version for python 3.x series:
+"""Generic linux daemon base class for python 3.x."""
+import sys, os, time, atexit, signal
+class daemon:
+"""A generic daemon class.
+Usage: subclass the daemon class and override the run() method."""
+def __init__(self, pidfile): self.pidfile = pidfile
+def daemonize(self):
+"""Deamonize class. UNIX double fork mechanism."""
+try: pid = os.fork() if pid > 0:
+# exit first parent
+sys.exit(0) except OSError as err: sys.stderr.write('fork #1 failed: {0}\n'.format(err))
+sys.exit(1)
+# decouple from parent environment
+os.chdir('/') os.setsid() os.umask(0) # do second fork
+try: pid = os.fork() if pid > 0:
+# exit from second parent
+sys.exit(0) except OSError as err: sys.stderr.write('fork #2 failed: {0}\n'.format(err))
+sys.exit(1) # redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+si = open(os.devnull, 'r')
+so = open(os.devnull, 'a+')
+se = open(os.devnull, 'a+')
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+# write pidfile
+atexit.register(self.delpid)
+pid = str(os.getpid())
+with open(self.pidfile,'w+') as f:
+f.write(pid + '\n')
+def delpid(self):
+os.remove(self.pidfile)
+def start(self):
+"""Start the daemon."""
+# Check for a pidfile to see if the daemon already runs
+try:
+with open(self.pidfile,'r') as pf:
+pid = int(pf.read().strip())
+except IOError:
+pid = None
+if pid:
+message = "pidfile {0} already exist. " + \
+"Daemon already running?\n"
+sys.stderr.write(message.format(self.pidfile))
+sys.exit(1)
+# Start the daemon
+self.daemonize()
+self.run()
+def stop(self):
+"""Stop the daemon."""
+# Get the pid from the pidfile
+try:
+with open(self.pidfile,'r') as pf:
+pid = int(pf.read().strip())
+except IOError:
+pid = None
+if not pid:
+message = "pidfile {0} does not exist. " + \
+"Daemon not running?\n"
+sys.stderr.write(message.format(self.pidfile))
+return # not an error in a restart
+# Try killing the daemon process	try:
+while 1:
+os.kill(pid, signal.SIGTERM)
+time.sleep(0.1)
+except OSError as err:
+e = str(err.args)
+if e.find("No such process") > 0:
+if os.path.exists(self.pidfile):
+os.remove(self.pidfile)
+else:
+print (str(err.args))
+sys.exit(1)
+def restart(self):
+"""Restart the daemon."""
+self.stop()
+self.start()
+def run(self):
+"""You should override this method when you subclass Daemon.
+It will be called after the process has been daemonized by start() or restart()."""
+#36
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-05-31@13:19
+Vik, I don't think that error has anything to do with the daemon code. According to the post you linked, this is about threading and subprocesses.
+I suggest you look at the backtraces for your error and see where they originate. Then simply catch the OSError and act appropriately (i.e. assume the thread has died, clean up and restart it for example).
+#37
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-05-31@13:35
+@Anonymous: Thanks for the Python 3.x code. I have updated the main article with a link you your implementation.
+#38
+Vik
+Posted on 2009-06-01@19:37
+hey Sander, Thanks for your help. I shall try that. Might need your help again in case.
+#39
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-06-05@02:03
+Oops! There were two comments posted here that I accidentally removed as spam (the spam/ham buttons are perhaps a tad too close together on my admin panel). Anyway, I will try to answer them from memory.
+The first poster had a problem implementing his own daemon. He was implementing his code after the run() function. The answer is that your code should replace the run() function. That is what overriding a function means. You create your own function that replaces the original. You should make sure that the run() function never exits. That is why the example code has an infinite loop in it. If the run() function ever exits then the daemon stops.
+The second poster had a question about the pidfile. IIRC he had a problem under Python 2.4 that the PID of the first fork was written to the pidfile and not the PID from the second fork, the one that keeps running. If I get this wrong, please re-post and I promise I will press the "ham" button this time :-)
+Anyway, I have no idea what would cause this. I have tested this daemon code in 2.4, 2.5 and 2.6 and it works fine for me. The code that reads the pid and created the pidfile happens after the second fork. The original process and the first fork should already be dead by the time the pidfile is written.
+It may be possible that there is a bug in the 2.4 version of os.getpid() but that is pure speculation. I know of no such bug, but one hypothetical scenario is that the second fork reaches os.getpid() before the first fork has exited completely (remember, forks run in parrallel). You could try a simple time.sleep(1) after the second fork but before calling the os.getpid() function. That sleep will make sure that the first fork is dead by the time the pidfile is created.
+#40
+Justin
+Posted on 2009-06-05@06:18
+Second poster here.
+The issue I was wondering about is that the pid of the daemon is the same as the second parent's pid--that's what's actually running, and that's what's in pidfile. To see what I'm seeing, add 'print pid' after each occurrence of 'if pid > 0:' in daemonize(), just before 'sys.exit()'. If I'm understanding correctly, those should be the pids of the first and second parents, while the second child's pid is obtained further on with a call to 'os.getpid()'. In my environment, python 2.4 on CentOS 5.3, the second child's pid is the same as the second parent's pid.
+It's not really a problem, but I'm obviously not getting something here. I thought the process went like this: first parent->fork->first child/second parent->fork->second child. So there should be three pids in all.
+The purpose of the second fork is to make sure that the daemon isn't the process group leader of the new session, but if the second fork isn't taking a new pid, then it's still the process group leader, yes?
+#41
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-06-05@08:40
+Ah, I see now. Your assumptions about pid are not correct.
+The fork() command returns 0 in the child and returns the child's pid in the parent. So, the value of pid that you are printing just after 'if pid > 0:' is the pid of the child, not the pid of the parent. You are printing the pid of the first child and second child, not of the parent and first child.
+You can see that by leaving those print statements in and adding a 'print os.getpid()' all the way at the beginning of the daemonize() method, before the first fork. Now you should see three different pid's printed. The original parent, the first child and the second child.
+#42
+Seth
+Posted on 2009-06-13@15:13
+Refined on the Python 3 version a bit. The original version has the attitude of creating a new daemon instance on every call (on stop calls too), which might have some unwanted side effects. I separated the daemon and control logic in different classes:
+daemon.py:
+
+&quot;&quot;&quot;\
+Daemon base and control class.
+
+This file contains the daemon base class for a UNIX daemon and the control
+class for it. See test logic at the end of file and test_daemon.py to
+understand how to use it.\
+&quot;&quot;&quot;
+
+import sys, os, time, atexit, signal
+
+# -- generic daemon base class ------------------------------------------ #
+
+class daemon_base:
+	&quot;&quot;&quot;A generic daemon base class.
+	
+	Usage: subclass this class and override the run() method.
+	&quot;&quot;&quot;
+	def __init__(self, pidfile, workpath='/'):
+		&quot;&quot;&quot;Constructor.
+
+		We need the pidfile for the atexit cleanup method.
+		The workpath is the path the daemon will operate
+		in. Normally this is the root directory, but can be some
+		data directory too, just make sure it exists.
+		&quot;&quot;&quot;
+		self.pidfile = pidfile
+		self.workpath = workpath
+	
+	def perror(self, msg, err):
+		&quot;&quot;&quot;Print error message and exit. (helper method)
+		&quot;&quot;&quot;
+		msg = msg + '\n'
+		sys.stderr.write(msg.format(err))
+		sys.exit(1)
+
+	def daemonize(self):
+		&quot;&quot;&quot;Deamonize calss process. (UNIX double fork mechanism).
+		&quot;&quot;&quot;
+		if not os.path.isdir(self.workpath):
+			self.perror('workpath does not exist!', '')
+
+		try: # exit first parent process
+			pid = os.fork() 
+			if pid &gt; 0: sys.exit(0) 
+		except OSError as err:
+			self.perror('fork #1 failed: {0}', err)
+	
+		# decouple from parent environment
+		try: os.chdir(self.workpath)
+		except OSError as err:
+			self.perror('path change failed: {0}', err)
+
+		os.setsid() 
+		os.umask(0) 
+	
+		try: # exit from second parent
+			pid = os.fork() 
+			if pid &gt; 0: sys.exit(0) 
+		except OSError as err:
+			self.perror('fork #2 failed: {0}', err)
+	
+		# redirect standard file descriptors
+		sys.stdout.flush()
+		sys.stderr.flush()
+		si = open(os.devnull, 'r')
+		so = open(os.devnull, 'a+')
+		se = open(os.devnull, 'a+')
+		os.dup2(si.fileno(), sys.stdin.fileno())
+		os.dup2(so.fileno(), sys.stdout.fileno())
+		os.dup2(se.fileno(), sys.stderr.fileno())
+	
+		# write pidfile
+		atexit.register(os.remove, self.pidfile)
+		pid = str(os.getpid())
+		with open(self.pidfile,'w+') as f:
+			f.write(pid + '\n')
+		self.run()
+	
+	def run(self):
+		&quot;&quot;&quot;Worker method.
+		
+		It will be called after the process has been daemonized
+		by start() or restart(). You'll have to overwrite this
+		method with the daemon program logic.
+		&quot;&quot;&quot;
+		while True:
+			time.sleep(1)
+
+# -- daemon control class ----------------------------------------------- #
+
+class daemon_ctl:
+	&quot;&quot;&quot;Control class for a daemon.
+
+	Usage:
+	&gt;&gt;&gt;	dc = daemon_ctl(daemon_base, '/tmp/foo.pid')
+	&gt;&gt;&gt;	dc.start()
+
+	This class is the control wrapper for the above (daemon_base)
+	class. It adds start/stop/restart functionality for it withouth
+	creating a new daemon every time.
+	&quot;&quot;&quot;
+	def __init__(self, daemon, pidfile, workdir='/'):
+		&quot;&quot;&quot;Constructor.
+
+		@param daemon: daemon class (not instance)
+		@param pidfile: daemon pid file
+		@param workdir: daemon working directory
+		&quot;&quot;&quot;
+		self.daemon = daemon
+		self.pidfile = pidfile
+		self.workdir = workdir
+	
+	def start(self):
+		&quot;&quot;&quot;Start the daemon.
+		&quot;&quot;&quot;
+		try: # check for pidfile to see if the daemon already runs
+			with open(self.pidfile, 'r') as pf:
+				pid = int(pf.read().strip())
+		except IOError: pid = None
+	
+		if pid:
+			message = &quot;pidfile {0} already exist. &quot; + \
+					&quot;Daemon already running?\n&quot;
+			sys.stderr.write(message.format(self.pidfile))
+			sys.exit(1)
+		
+		# Start the daemon
+		d = self.daemon(self.pidfile, self.workdir)
+		d.daemonize()
+
+	def stop(self):
+		&quot;&quot;&quot;Stop the daemon.
+
+		This is purely based on the pidfile / process control
+		and does not reference the daemon class directly.
+		&quot;&quot;&quot;
+		try: # get the pid from the pidfile
+			with open(self.pidfile,'r') as pf:
+				pid = int(pf.read().strip())
+		except IOError: pid = None
+	
+		if not pid:
+			message = &quot;pidfile {0} does not exist. &quot; + \
+					&quot;Daemon not running?\n&quot;
+			sys.stderr.write(message.format(self.pidfile))
+			return # not an error in a restart
+
+		try: # try killing the daemon process	
+			while 1:
+				os.kill(pid, signal.SIGTERM)
+				time.sleep(0.1)
+		except OSError as err:
+			e = str(err.args)
+			if e.find(&quot;No such process&quot;) &gt; 0:
+				if os.path.exists(self.pidfile):
+					os.remove(self.pidfile)
+			else:
+				print (str(err.args))
+				sys.exit(1)
+
+	def restart(self):
+		&quot;&quot;&quot;Restart the daemon.
+		&quot;&quot;&quot;
+		self.stop()
+		self.start()
+
+# -- test logic --------------------------------------------------------- #
+
+if __name__ == '__main__':
+	&quot;&quot;&quot;Daemon test logic.
+
+	This logic must be called as seperate executable (i.e. python3
+	daemon.py start/stop/restart).	See test_daemon.py for
+	implementation.
+	&quot;&quot;&quot;
+	usage = 'Missing parameter, usage of test logic:\n' + \
+			' % python3 daemon.py start|restart|stop\n'
+	if len(sys.argv) &lt; 2:
+		sys.stderr.write(usage)
+		sys.exit(2)
+
+	pidfile = '/tmp/test_daemon.pid'
+	dc = daemon_ctl(daemon_base, pidfile)
+
+	if sys.argv[1] == 'start':
+		dc.start()
+	elif sys.argv[1] == 'stop':
+		dc.stop()
+	elif sys.argv[1] == 'restart':
+		dc.restart()
+I also wrote an improvised test file for this file (still ugly, but does the job), test_daemon.py:
+&quot;&quot;&quot;\
+Base daemon test file.
+
+This file tests the base daemon (runs it's test logic). The daemon is
+started, then stopped, then started then restarted then stopped again.
+
+The output of this file should look like this (with different pids):
+
+starting daemon
+listing processes
+15554 ?        S      0:00 python3 daemon.py start
+-rw-rw-rw- 1 seth seth 6 2009-06-13 14:55 /tmp/test_daemon.pid
+stopping daemon
+listing processes
+ls: cannot access /tmp/test_daemon.pid: No such file or directory
+starting daemon
+listing processes
+15572 ?        S      0:00 python3 daemon.py start
+-rw-rw-rw- 1 seth seth 6 2009-06-13 14:55 /tmp/test_daemon.pid
+restarting daemon
+listing processes
+15582 ?        S      0:00 python3 daemon.py restart
+-rw-rw-rw- 1 seth seth 6 2009-06-13 14:55 /tmp/test_daemon.pid
+stopping daemon
+listing processes
+ls: cannot access /tmp/test_daemon.pid: No such file or directory
+&quot;&quot;&quot;
+
+import os, time
+
+if __name__ == '__main__':
+	start_cmd = 'python3 daemon.py start'
+	stop_cmd = 'python3 daemon.py stop'
+	restart_cmd = 'python3 daemon.py restart'
+
+	os.chdir(os.path.abspath(os.path.dirname(__file__)))
+	
+	print('starting daemon')
+	os.system(start_cmd)
+	time.sleep(0.2)
+	print('listing processes')
+	os.system('ps x | grep &quot;python3 daemon.py&quot; | grep -v grep')
+	os.system('ls -l /tmp/test_daemon.pid')
+
+	print('stopping daemon')
+	os.system(stop_cmd)
+	time.sleep(0.2)
+	print('listing processes')
+	os.system('ps x | grep &quot;python3 daemon.py&quot; | grep -v grep')
+	os.system('ls -l /tmp/test_daemon.pid')
+	
+	print('starting daemon')
+	os.system(start_cmd)
+	time.sleep(0.2)
+	print('listing processes')
+	os.system('ps x | grep &quot;python3 daemon.py&quot; | grep -v grep')
+	os.system('ls -l /tmp/test_daemon.pid')
+	print('restarting daemon')
+	os.system(restart_cmd)
+	time.sleep(0.2)
+	print('listing processes')
+	os.system('ps x | grep &quot;python3 daemon.py&quot; | grep -v grep')
+	os.system('ls -l /tmp/test_daemon.pid')
+	print('stopping daemon')
+	os.system(stop_cmd)
+	time.sleep(0.2)
+	print('listing processes')
+	os.system('ps x | grep &quot;python3 daemon.py&quot; | grep -v grep')
+	os.system('ls -l /tmp/test_daemon.pid')
+#43
+Vik
+Posted on 2009-07-08@00:29
+Will this daemon listen on a specific port which I would want it to and what should be done in order to do that? Any help
+#44
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-07-08@00:44
+Hi Vik. No, this daemon does not listen to TCP. It's just a daemon. It runs in the background doing whatever you tell it to do. If you want a Python daemon that communicated over TCP then I highly recommend checking out the Twisted framework instead of this daemon.
+#45
+Vik
+Posted on 2009-07-09@06:07
+Hi Sander, Thanks for your help. I appreciate that.
+#46
+acid (http://blutrache.blogspot.com)
+Posted on 2009-07-20@21:45
+hi the next part never execute I think must be into a second fork in the if pid > 0: statement
+# redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+si = file(self.stdin, 'r')
+so = file(self.stdout, 'a+')
+se = file(self.stderr, 'a+', 0)
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+# write pidfile
+atexit.register(self.delpid)
+pid = str(os.getpid())
+file(self.pidfile,'w+').write("%s\n" % pid)
+#47
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-07-21@10:10
+Acid: Are you sure it never executes? It is also possible that your daemon is exiting immediately after starting. In that case it looks like it is never starting because there is no output and no pidfile (the pidfile is removed when the program exits).
+#48
+acid (http://blutrache.blogspot.com)
+Posted on 2009-07-21@16:39
+:( I wasn't doing importing the atexit package thousand apologies
+#49
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-07-21@20:16
+No problem. I'm glad you got it fixed :-)
+#50
+Doug
+Posted on 2009-07-24@20:47
+The daemon is not running self.delpid() at exit, take a look at: http://docs.python.org/library/atexit.html
+"Note: the functions registered via this module are not called when the program is killed by a signal, when a Python fatal internal error is detected, or when os._exit() is called."
+If you step through the code you'll see that the function is never called.
+So, is there any way to get some cleanup function to run when Daemon.stop() is called?
+#51
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-07-25@01:11
+I'll have to look into that, because the pidfile is removed on my system when I call the stop() function.
+Anyway, one workaround would be to trap the SIGTERM in the daemon and call a clean sys.exit() so that the atexit function does work.
+#52
+Doug
+Posted on 2009-07-28@20:18
+It's removed on my system too, but not from delpid(). When you call stop(), the daemon calls 'os.kill(pid, SIGTERM)' in the try statement, which throws an exception when it's called a second time (since it's in an infinite while loop and the process gets killed the first time). Then 'os.remove(self.pidfile)' takes care of the 'pid' file and delpid() is never touched.
+try:
+while 1:
+os.kill(pid, SIGTERM)
+time.sleep(0.1)
+except OSError, err:
+err = str(err)
+if err.find("No such process") > 0:
+os.remove(self.pidfile)
+else:
+print str(err)
+sys.exit(1)
+Can you give an example of how to trap the SIGTERM? I can't seem to get it to work. Thanks for this writeup by the way, I use it all the time!
+#53
+Doug
+Posted on 2009-07-28@20:27
+Nevermind, figured it out ;)
+#54
+Chenix
+Posted on 2009-08-04@10:35
+I'm new to linux, and was wondering how daemons gets their permissions, specifically disk access permissions. 1. does a daemon needs to have a user attached to it in some way, so it gets the user's
+access policy for itself too?
+2. what would be a good practice for a disk location of application files designed to run as a daemon? (/usr/local maybe?)
+3. putting all this together, lets say my python application files and some data files
+are located under /usr/local/myapp, what steps do i have to take in order that my daemon
+will be able to access this location?
+thanks
+#55
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-05@00:30
+All applications, including daemons, run as a certain user. Often a daemon is started as root and then executes some special code to change itself to a different user. The Python daemon I wrote does not have such code. It simply inherits from the user who started it.
+A daemon is no different from a regular application. Application files should be in the same place (/usr or /usr/local). Privileges work the same. The only thing that is different about a daemon is that you get your terminal back after starting it :-)
+#56
+Mike
+Posted on 2009-08-07@04:27
+Thanx alot for the script, it's incredibly useful! I'm using it for a project using MPD (music player daemon) and the serial port. Basically a microcontroller will tell the daemon to change song and such over the serial port.
+So I got the script working and all, after starting the daemon I can see (and hear) that the song is playing. The problem is that it doesn't stop playing when I stop the daemon. I modified the delpid() method:
+...
+def delpid(self):
+os.system('mpc stop')
+os.remove(self.pidfile)
+...
+but somehow the command "os.system('mpc stop')" doesn't run. The "mpc" manual is very simple and I know that "mpc stop" works fine outside of the script. Any idea what I might be doing wrong? The script runs as root and everything else works perfectly (up to now :)
+#57
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-07@06:43
+Mike, I think the problem is that a daemon does not have an environment anymore. So executing commands with os.system() does not work. There is no shell, to environmnet, no input/output streams.
+Instead, try sending a signal to MPD. You need to know it's process ID (pid) though. Example:
+
+# Tell MPD to terminate
+os.kill (mpd_pid, signal.SIGTERM)
+# wait a few seconds for MPD to finish
+time.sleep(3)
+# If MPD still lives, kill it the hard way
+try:
+    os.kill (mpd_pid, signal.SIGKILL)
+except OSError:
+    pass # SIGTERM already shut down MPD
+#58
+Mike
+Posted on 2009-08-07@16:33
+Thanks for the quick reply. I use os.system() to start, suffle, play, etc the songs with "mpc command" so I know it works, exept when I call it from delpid(). Also I just want to stop MPC (music player client) from playing, not to kill MPD (... daemon).
+Hum the indentation didn't come right on my last post.
+#59
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-07@17:00
+Oh wait. Duh. I see it now. Have a look at comment #50 above. The delpid() function isn't called because stop() uses os.kill() to terminate the daemon. Functions registered with atexit() are not called when a program is terminated with os.kill().
+If you are terminating the daemon from within (e.g. based on serial port communication) you could use sys.exit() instead of Daemon.stop(). That way the atexit() will fire and execute delpid().
+#60
+Mike
+Posted on 2009-08-07@17:55
+Ah I missed #50, thanx alot! It's working now!
+#61
+Seth
+Posted on 2009-08-09@15:18
+Happened to come across the atexit issue too. The way to make it work correctly is to set up a signal handler while daemonizing:
+
+import signal
+
+[...]
+
+def cleanup_handler(signum, frame):
+	os.remove(pidfile)
+
+signal.signal(signal.SIGTERM, cleanup_handler)
+#62
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-09@23:28
+Perfect. Thanks!
+#63
+stelvis
+Posted on 2009-08-24@05:02
+firstly a huge thanks for this - it has really helped me out (I'm building a small server that will receive filepaths over TCP and automatically build symlinks to the files - its part of an asset management and versioning system where the file server is running linux but the files will be accessed via symlinks by numerous windows machines on the other side of a samba connection - hence why it has to run server side as a daemon)
+couple of questions:
+regarding Seth's post on using signal handlers to get cleaner exit behaviour - any chance of any elaboration on how that should work? (sorry if I'm missing the obvious)- eg I assume the def is another method declared in the Daemon parent class, but where exactly is the signal stuff called from? does it replace the stop method?
+secondly I have been trying to get logging to work, and seem to have a working model but it ONLY works if i call the run() method directly (I implemented a 'debug' or 'foreground' mode as you suggested above) - if run() is called from start() after self.daemonize() the logging stuff just hangs the daemon (ie no PID file is created, run() isn't called)
+code is below:
+class SymServer(Daemon):
+def run(self):
+#logging.config.fileConfig("SymServer_logging.conf")
+#logger = logging.getLogger("SymServer")
+#create socket
+s = socket(AF_INET, SOCK_STREAM) # create a TCP socket
+s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # don't wait for port to be releaed
+s.bind((myHost, myPort)) # bind it to the server s.listen(5) # allow 5 simultaneous pending connections
+#logger.info("server starting on port: %d" % (myPort))
+# listen for clients
+while 1:
+connection, address = s.accept() # connection is a new
+while 1:
+data = connection.recv(1024) # receive up to 1K bytes
+if data:
+connection.send('echo -> ' + data)
+#logger.info("echoing: " + data)
+else:
+#logger.info("Client exiting")
+break
+connection.close() # close socket
+(the actual symlinking stuff will eventually replace the simple echo stuff there currently)
+#64
+stelvis
+Posted on 2009-08-25@04:36
+ok, dumped the logging.config stuff and the logging code works fine
+:)
+#65
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-25@11:35
+Stelvis: The problem probably is that you don't have the correct permission to write the logfile. Remember that when the daemon starts it detaches from it's environment and changes it's working directory to the root /. So, if you're trying to write your symserver.log it will try to write it to /symserver.log and not to /home/stelvis/symserver/symserver.log (or wherever your code is located). You probably don't have rights to write in /.
+#66
+stelvis
+Posted on 2009-08-29@03:40
+ahhh
+actually the log file was being directed to /home/%user%/python/symserver/symserver.log anyway and I did make sure it had write permissions...as soon as I stopped using a seperate logging.config file it worked fine.
+BUT
+the logging conf file (which was also in that dir) didn't have an explicit path set (so your right in a way i think) - it just wasn't finding the config file
+cheers
+#67
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-08-29@08:11
+Glad to hear you solved it!
+#68
+dik123
+Posted on 2009-08-31@15:44
+Thanks for code!!
+For me this code:
+# redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+si = file(self.stdin, 'r')
+so = file(self.stdout, 'a+')
+se = file(self.stderr, 'a+', 0)
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+Dose not work for pythons 'print'
+But this code works:
+# redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+sys.stdout = file(self.stdout, 'a+')
+sys.stderr = file(self.stderr, 'a+', 0)
+si = file(self.stdin, 'r')
+os.dup2(si.fileno(), sys.stdin.fileno())
+#69
+prakash
+Posted on 2009-09-26@10:10
+Firstly thanx to the one who coded this.I tried using this to creat a daemon process.here is my run method
+
+def run(self):
+    while True:
+        Date=date.today()
+        open('/proc/net/dev','r')
+        Lines=DevFile.readlines()
+        Line1=Lines[3].split(':')
+        Line2=Line1[1].split()
+        Ty=Date.strftime("%y")
+        Tm=Date.strftime("%m")
+        Td=Date.strftime("%d")
+        TH=time.strftime("%H")
+        TM=time.strftime("%M")
+        TS=time.strftime("%S")
+        #L=open("log.txt",'a')
+        #L.write("in run of my daemon")
+        path=Ty+"/"+Tm+"/"+Td+"/"+TH+"/"+TM
+        Ap=open(path,"a")   
+        Ap.write(Ty+":"+Tm+":"+Td+":"+TH+":"+TM+":"+TS+":"+
+                 Line2[0]+":"+Line2[8]+"\n")
+        Ap.close()      
+        time.sleep(1)
+
+and my code is giving me trouble.This process is not starting(i checked using ps) .What i observed is if i remove all those file descriptors the code works.But it should work with those .Also i made sure that the directory structure is correct.so can someone plz sort this out
+#70
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-09-26@13:24
+prakash: What happens if you call daemon.run() instead of daemon.start()? When you do that, you essentially run your code in the foreground instead of as a daemon. Does it work then without throwing any exceptions?
+#71
+Peter (http://sourceforge.net/projects/cozy/)
+Posted on 2009-09-29@00:36
+Hi Sanders, also from me a big thank you for this code! I'm using it in my backup program.
+Following up on the discussion on exiting the daemon, I wondered which signal it receives if I log out. It seems like it's not a SIGTERM. I tried the SIGHUP, but it doesn't work either. So whenever I log out and log in (it's in the autostart), it doesn't start because the pid-file already exists. Note that everything's fine if I restart the complete machine. Any hints?
+#72
+solarn
+Posted on 2009-09-29@19:56
+Thanks! Great piece of code, I love it! But perhaps it would be good to update the code and include the signal handling stuff Seth shared with us in post #61, ie:
+signal.signal(signal.SIGTERM, self.delpid)
+atexit.register(self.delpid)
+[....]
+def delpid(self):
+os.remove(self.pidfile)
+self.cleanup()
+I also added a call to self.cleanup(), to simplify customisations even more by allowing the user to override cleanup(), without having to touch delpid() (and perhaps the risk of forgetting to remove the pidfile?)
+#73
+solarn
+Posted on 2009-09-29@20:07
+Oh yeah, while I'm at it, perhaps add that foreground() method from #28, so the people who don't browse through the comments will not miss the, in my opinion, important changes? (nearly happened for me, heh..)
+#74
+solarn
+Posted on 2009-09-29@21:02
+(Arghh, I should stop spamming already)
+Smal misstake in prev. post:
+signal.signal(signal.SIGTERM, self.delpid)
+atexit.register(self.delpid)
+should instead be:
+def cleanup_handler(signum, frame):
+sys.exit(0)
+signal.signal(signal.SIGTERM, cleanup_handler)
+atexit.register(self.delpid)
+Now, whenever a SIGTERM is caught, sys.exit() is called and atexit should kick in and cleanup.
+#75
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-09-29@23:48
+@Peter (Comment #71): I'm not sure but I would not be surprised if you get a SIGKILL. Unfortunately you can't trap a SIGKILL.
+@Solarn: I'll see if I have time to update the article in the coming few days. I've just moved so I have been a bit busy paiting, redecorating, shopping for furniture and yelling at my ISP for the low quality ADSL connection I get at my new house.
+#76
+eromirou
+Posted on 2009-10-16@02:31
+Hi Sander,
+first of all, thanks a lot for this code, it was really helpful.
+I'm having a weird problem...
+I'm using '/var/log/mydaemon.log' and '/var/log/mydaemon.err' as stdout and stderr respectively, but I'm not getting anything on those files unless I print something before redirecting the output...
+When I print something before redirecting, it goes to the terminal, the daemon goes in the background, and then anything that's printed during execution goes into the files I stated.
+Any ideas on what might be causing this behaviour?
+Thanks
+#77
+Girish Venkatachalam (http://spam-cheetah.com)
+Posted on 2009-10-16@08:57
+Brilliant page design and equally brilliant code.
+Can you please explain the need for the Pid file and sleep(2)?
+Without that it would be perfect I think.
+Great work. Keep going!
+Ever yours,
+Girish
+#78
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-10-16@12:06
+@eromirou: You could try Dik123's modifications from comment #68.
+@Girish: After the daemon has started you still need to communicate with it from the outside. For example, in order to stop it. To do that you need to know the process ID, which is stored in the pidfile. The pidfile also acts as a lockfile, preventing multiple instances of the daemon running.
+I don't see any sleep(2) in the code. Which sleep do you mean?
+#79
+eromirou
+Posted on 2009-10-19@02:08
+Thanks for your response. The proposed solution did not work for me though, but I found a fix for it.
+I made stdout unbuffered like so:
+sys.stdout = file(self.stdout, 'a+', 0)
+Do you see any problems with this?
+Thanks
+#80
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-10-19@11:29
+I don't see any problem with that directly. The stderr is also unbuffered. You could probably still use buffered but you should flush it regularly to get the output in the file.
+#81
+Monte Davis
+Posted on 2009-10-19@21:32
+Hey --
+I'm using this code to daemonize a number of different business processes that we have. It works very well and very cleanly. I have however run into a little problem.
+I want to start and stop the daemon from a web-interface using django. I save a django object and on save I run the command(python daemon-file-name start or python daemon-file-name stop accordingly).
+The stop works fine. However, the start results in the web page never "hanging". The process actually starts but I find it listening on port 80.
+I have found in a forum someone who had a similar issue in Python Win32. The link is here -
+http://mail.python.org/pipermail/python-win32/2005-May/003310.html
+It seems that I need to close stdout in order to return control to the webserver and not inherit the handles of the process that launches the daemon.
+This is consistent with some other comments that I have found on the web.
+In this other daemon code,
+http://code.activestate.com/recipes/278731/
+os.close(1) and os.close(2) are called as are the sys.stdout.close()
+Here is another incomplete post that deals with similar issues --
+http://code.activestate.com/recipes/186101/
+I have tried to add these lines in a number of places in your code but nothing works. Either the daemon doesn't start from the command line or the daemon does not release when called from the webserver.
+Any help here would be very appreciated.
+Thanks
+Monte
+#82
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-10-20@11:32
+Hi Monte. I think you not only need to close stdout and stderr, but also stdin. I would add it to the daemonize() function. Replace the part that duplicates the file descriptors with this:
+
+# redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+
+# Close the old descriptors
+sys.stdin.close()
+sys.stdout.close()
+sys.stderr.close()
+os.close(0)
+os.close(1)
+os.close(2)
+
+# Create the new file descriptors and attach them
+si = file(self.stdin, 'r')
+so = file(self.stdout, 'a+')
+se = file(self.stderr, 'a+', 0)
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+Note: I have not tested the above code. I don't know Django. If this does not work, please tell me how Django runs external scripts. Does it use subprocess.Popen?
+#83
+Megaman821
+Posted on 2009-10-20@17:54
+Why write your own daemon function instead of using something like, http://pypi.python.org/pypi/python-daemon/ ?
+#84
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-10-21@00:02
+Customisability? Also, this article is almost two years older than that library and the PEP that goes along with it.
+#85
+Adam Collard
+Posted on 2009-11-01@15:32
+You should check out http://daemonize.sourceforge.net/ too
+#86
+CMFL
+Posted on 2009-12-06@23:50
+Appologies if this has already been answered but I read above where someone wanted to see an example of signal handling. Here is an example of a two classes SignalHandler and SigAction that uses polymorphism to handle trapped signals. This could be easily implemented in the Daemon class that Sander has wonderfully demonstrated. I used this in my Daemon class.
+This was written in python 2.6. I am not sure if it will work with python 3. To use this, you can either fork this script to the background or open another terminal and send the signals. The defined signals are SIGTERM (kill -15) and SIGINT (kill -2) -> CTRL-C. If you type CTRL-C on your keyboard and this script is not forked to the backgournd you will see that the class handled the SIGINT signal correctly.
+
+#!/usr/bin/python                                  
+#############################################################
+# Script: sighandler.py                                      
+# Description:                                               
+#   Demonstrate generic polymorphism example of how to setup and
+#   handle implemented signals through python.                  
+#                                                               
+# Author: Cody Lane                                             
+# Date: 12-4-2009                                               
+#############################################################   
+
+import signal
+import sys   
+import os    
+
+class SignalHandler:
+    '''             
+    This class is used to handle and trap a signal and associate
+    it back to a python callable object. When a new SignalHandler
+    object is created you must call the register() method to register
+    the signal and callback.  See register() for details.            
+
+    This superclass has an abstract method called 'handler' which
+    should be defined in a sub-class.                            
+
+    This class is a super class for SigAction. SigAction is the 
+    class that performs the signal event handling.              
+    '''                                                         
+    SIGNALS = ()                                                
+                                                                
+    def register(self, signum, callback):                       
+        '''                                                     
+        Registers a new signal handler action object (SigAction) 
+        for trapping a signal and then calling a python object.  
+
+        When this method is called it also updates the static SIGNALS
+        tuple appending the new SigAction class.  To get this tuple  
+        see getActions().                                            
+
+        @param signum: int -> Should be signal int.  Ex: signal.SIGTERM
+        @param callback: pythonObj -> Should be python object.  Ex: somemethod
+            NOTE: Don't put () around your callback function or the function  
+                  will be called when the callback is initialized..           
+        '''                                                                   
+        self.SIGNALS += (SigAction(signum, callback), )                       
+
+    def getActions(self):
+        '''              
+        Return a tuple of defined signal actions if any.  If defined, 
+        the tuple will contain SigAction instances.                   
+        '''                                                           
+        return self.SIGNALS                                           
+
+    def handler(self, signum, frame):
+        '''                          
+        Abstract method, which must be defined when sub-classing.
+        If the method is not defined, an AssertionError will be raised.
+        '''                                                            
+        assert 0, "You must define a handler(signum, frame) method in %s" %(self)
+
+    def __repr__(self):
+        '''            
+        Custom string method when printing the class object.  
+            Example:                                          
+                >>> print self                                
+                &lt;Class: SignalHandler&gt;                        
+        '''                                                   
+        return "&lt;Class:%s&gt;" %(self.__class__.__name__)        
+
+class SigAction(SignalHandler):
+    '''                        
+    This class defines how a signal should be traped and what do when
+    a signal trap occurs.  This class should NOT be instantiated because
+    the superclass SignalHandler will setup and create a SigAction object
+    when the SignalHandler.register() method is called.                  
+
+    '''
+    def __init__(self, signum, callback):
+        '''                              
+        Create a SigAction object.  Also setup the signal trap.
+
+        @param signum: int -&gt; Should be signal int.  Ex: signal.SIGTERM
+        @param callback: pythonObj -&gt; Should be python object.  Ex: somemethod
+            NOTE: Don't put () around your callback function or the function  
+                  will be called when the callback is initialized..           
+        '''                                                                   
+        self.signum = signum                                                  
+        self.callback = callback                                              
+        signal.signal(self.signum, self.handler)                              
+
+    def handler(self, signum, frame):
+        '''                          
+        Overrides the superclass definition so that each new signal performs
+        it's own action.                                                    
+
+        NOTE: You do not have to pass arguments to this method. See help(signal)
+        for details.                                                            
+        '''
+        self.callback()
+
+    def __repr__(self):
+        '''
+        Custom string message when class object is printed.
+
+        Example:
+            &gt;&gt;&gt; print self
+            &lt;Class:SigAction signal:15&gt;
+        '''
+        return "&lt;Class:%s signal:%s&gt;" %(self.__class__.__name__, self.signum)
+
+def stop():
+    print "Called the stop().... Exitting 0"
+    sys.exit(0)
+
+def abort():
+    print "Called abort().... Exitting 1"
+    sys.exit(1)
+
+if __name__ == '__main__':
+    # Create SignalHandler object
+    sighandler = SignalHandler()
+
+    # Now register a SIGTERM (kill -15) and callback
+    # object when signal is trapped.
+    sighandler.register( signal.SIGTERM, stop)
+
+    # Register a SIGINT (kill -2) and callback
+    # object when sign is trapped.
+    # This is equivalent to CTRL-C
+    sighandler.register( signal.SIGINT, abort )
+
+    # Display the current registered signal events.
+    # This is just for show and tell purposes.
+    print "Implemented Signals: ", sighandler.getActions()
+
+    while True:
+        print "Waiting for signal.... Running pid: %s" %(os.getpid())
+        signal.pause()
+Here is the example not forking script to the background and issuing a CTRL-C in the terminal the script was run from.
+
+$ ./sighandler.py
+Implemented Signals:  (&lt;Class:SigAction signal:15&gt;, &lt;Class:SigAction signal:2&gt;)
+Waiting for signal.... Running pid: 5276
+^CCalled abort().... Exitting 1
+Here is an example of the script being forked to the background, and then sending a kill command to the running proccess.
+
+$ ./sighandler.py &
+[1] 5277
+Implemented Signals:  (&lt;Class:SigAction signal:15&gt;, &lt;Class:SigAction signal:2&gt;)
+Waiting for signal.... Running pid: 5277
+
+$ kill 5277
+Called the stop().... Exitting 0
+$
+#87
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-12-07@09:33
+@CMFL: That looks very nice. Thank you!
+#88
+CMFL
+Posted on 2009-12-08@03:50
+Thanks Sander for demonstrating this, there is some really neat informatoin in this thread. I find myself visiting this thread often to review other user's comments. Perhaps I should register. :) I hope the example I provided helps out others as much as the information contained here.
+#89
+Anonymous Coward
+Posted on 2009-12-09@03:59
+I am a relatively newbie. Sorry for posting windows questions in a unix spot. I have a .py file that seems to be exactly what I need except I need to have it started on a shared network drive on NTFS and then just have it run indefinitely. I would prefer not to have the server admin start it. Nothing malicious..just our IT dept may never get to it. I need to avoid crashing any machines. (the .py file polls a folder for new .csv files and then reformats them and generates an email alert) I would want it to run.
+#90
+Sander Marechal (http://www.jejik.com)
+Posted on 2009-12-09@08:34
+I have no idea how to do that Anonymous. Daemons like this don't work on Windows.
+#91
+Batista
+Posted on 2010-01-10@01:25
+Really slick python coding there! This will be a huge help to one of my projects, thank you for sharing!
+#92
+Alfredo
+Posted on 2010-01-10@12:23
+Very useful snippet! Thanks!
+#93
+Josh R
+Posted on 2010-01-16@01:16
+Nice code. Should come handy. Thank a lot!
+#94
+Anonymous Coward
+Posted on 2010-02-05@07:25
+Very nice! I'm trying to writing a scipt like this.
+#95
+Vindicar
+Posted on 2010-03-21@18:13
+Thanks for this useful code! It should be much easier to start .py script than to use a .sh wrapper...
+I'm just too new to *nix. =[
+#96
+haridsv
+Posted on 2010-03-25@20:32
+Thanks to @Sander and @CMFL for very informative posts, this will get me a head start. I didn't know about the double fork() pattern before, but now I know why it is needed. I combined @CMFL's code to call self._shutdown() on SIGINT and SIGTERM. The _shutdown method spawns a thread to call os._exit() after a 3 second grace period (threading.Condition.wait(3)) followed by a call to self.shutdown() that can be overridden to do custom cleanup (when shutdown() returns, _shutdown() calls threading.Condition.notify() to signal an immediate exit). This seems to work really nicely. I just need to tune it a little more to redirect stdio to files instead of loosing it (should make any troubleshooting easier) and ensure our standard logging configuration works fine.
+#97
+thcourbon (http://blog.cafeaumiel.com)
+Posted on 2010-04-05@23:59
+Many thanks to you and to the other who suggested modifications for this useful piece of code.
+#98
+Senton
+Posted on 2010-04-15@10:16
+Really helpfull piece of code. Thanks a lot
+#99
+James (http://linux-101.org)
+Posted on 2010-04-23@20:35
+@Sander - Cheers for this, you have simplified what would otherwise have been a very difficult and daunting task.
+@Seth and @CMFL - Fantastic contributions. Thank you both.
+#100
+J_Skrilla
+Posted on 2010-05-03@08:30
+Thanks Sanders for posting this nugget, and to everyone else who contributed along the way, thanks as well. What a time saver!!!
+#101
+Anonymous Coward
+Posted on 2010-05-09@12:32
+For those wanting to integrate this with their own code, and are looking to do the usual:
+super(MyClass, self).__init__()
+.. you might want to make Deamon inherit from object so that it works.
+great work everyone.. very useful
+#102
+Anonymous Coward
+Posted on 2010-05-19@21:11
+What would I need to write so that my daemon can shut down properly when stop(self) is called?
+#103
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-05-20@10:36
+Nothing specific. If you need to add extra code for your own reason, simply subclass Daemon and override the stop() method. Add whatever code you want and call Daemon.stop(self) at the end.
+#104
+Rico (http://www.rodaddys.com)
+Posted on 2010-06-01@18:37
+I'm try'n to daemonize some code that works from the console, but when i run it as a daemon it's error'n out on the first sys.exit of the os.fork. I've try'd to debug this, but the eclipse debugger doesn't work very well when you try to daemonize code it's try'n to run. I do know that I get the proper pid from the os.fork, then when it trys to do tyhe sys.exit(0) it fails, and actually exits the whole app, but I do not get the error that "fork #1 failed...."
+Any Ideas?
+Rico
+#105
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-06-01@22:11
+I have no idea Rico. Can you send me some code? My e-mail address is s.marechal [at] jejik [dot] com. Also let me know what Python version and what OS/distro you are using.
+#106
+Greggory Hernandez (http://www.icount.com)
+Posted on 2010-09-16@23:16
+First of all, awesome script. This was exactly what I was looking for and is extremely useful.
+The only problem I'm having is when I set stderr and stdout to be two different files (just not /dev/null), and then from the EventHandler class I call sys.stderr.write('test') and sys.stdout.write('test'), 'test' only gets written to stderr, and not stdout.
+Any thoughts on this? That'd be a big help.
+Thanks again!
+#107
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-09-18@21:38
+Did you flush()?
+#108
+Andreas
+Posted on 2010-09-25@17:14
+Looks like a great script to use, but I have one question: where do I have to put the code I want to have executed?
+This is how I have it now in daemon-example.py:
+def run(self):
+while True:
+foo.bar()
+time.sleep(1)
+but the daemon keeps exiting when it is started. Could you give me an example which writes something to an file or something similar?
+#109
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-09-26@23:22
+If the daemon keeps exiting when started you probably have an error in your code. The way you are using the daemon should be fine. Instead of calling Daemon.start(), call Daemon.run() instead to run your code in the foreground. See if you get any errors and fix them.
+#110
+Andreas
+Posted on 2010-09-27@14:48
+That did it, thanks. Had something to do with a bash script I called that exits. Now I have rewrote it and it works great. =)
+#111
+olavgg
+Posted on 2010-10-02@12:10
+Thank you for sharing this code, however I have some problems running this. I've been trying to debug what goes wrong but can't figure it out. It seems like the execution just dies.
+51 print 0.5
+52 os.dup2(si.fileno(), sys.stdin.fileno())
+53 print 0.7
+54 try:
+55 print so.fileno()
+56 print sys.stdout.fileno()
+57 os.dup2(so.fileno(), sys.stdout.fileno())
+58 except OSError, e:
+59 print str(e)
+60 print 0.8
+61 os.dup2(se.fileno(), sys.stderr.fileno())
+62 print 1.2
+</code
+The code above gives the following output
+0.5
+0.7
+6
+1
+It seems like it just dies for a weird reason running os.dup2(so.fileno(), sys.stdout.fileno())
+I use Python2.7 and FreeBSD-8.1 Release
+#112
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-10-04@08:55
+@olavgg: Try changing line 58. Instead of just catching the OSError, catch all errors and print them. Perhaps a different kind of exception is occuring but because you are running in the background it does not show up.
+Alternatively, you could try to comment out the double fork to keep it in the foreground. See if any exceptions crop up. If they do, fix them and the uncomment the double fork again.
+#113
+Ryan (http://www.ryanbrady.org)
+Posted on 2010-10-22@20:17
+I've been trying to use your daemon to interact with Django and have had a ton of problems with ImportErrors. I have a more detailed post of the problem here: http://stackoverflow.com/questions/3992175/python-import-module-results-in-nameerror
+#114
+chzealot (http://blog.losthit.com)
+Posted on 2010-10-27@10:40
+Nice code!
+I think it's better to check the pid to see if the process really exists
+such as (OS X or Linux)
+if pid:
+try:
+os.kill(pid, 0)
+except OSError:
+pid = None
+#115
+Sam Thomson
+Posted on 2010-12-10@23:55
+I might be thinking about this wrong, but this behaves differently than I would expect.
+As it is, when you daemonize, the parent is killed and the child takes over. So if you do anything in your main program after daemonizing, it gets done by the child.
+E.g. in
+&lt;code&gt;
+# main program
+Daemon('a').start() # first daemon
+print &quot;we're in the first daemon now, so you'll never see this&quot;
+Daemon('b').start() # second daemon
+print &quot;we're in the second daemon now. you'll also never see this&quot;
+&lt;/code&gt;
+the second daemon is spawned BY the first daemon, and doesn't start until after the first daemon finishes.
+What I actually want to do is fork off a daemon then continue with normal operation WHILE the daemon is running. I.e. those two daemons should run simultaneously, and you should see the print statements because they should come from the main thread.
+Here's a patch that behaves more like I would expect:
+&lt;code&gt;
+*** daemon.py	2010-12-10 17:01:20.000000000 -0500
+--- daemon2.py	2010-12-10 17:21:17.000000000 -0500
+***************
+*** 20,31 ****
+  		do the UNIX double-fork magic, see Stevens' &quot;Advanced 
+  		Programming in the UNIX Environment&quot; for details (ISBN 0201563177)
+  		http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+  		&quot;&quot;&quot;
+  		try: 
+  			pid = os.fork() 
+  			if pid &gt; 0:
+! 				# exit first parent
+! 				sys.exit(0) 
+  		except OSError, e: 
+  			sys.stderr.write(&quot;fork #1 failed: %d (%s)\n&quot; % (e.errno, e.strerror))
+  			sys.exit(1)
+--- 20,32 ----
+  		do the UNIX double-fork magic, see Stevens' &quot;Advanced 
+  		Programming in the UNIX Environment&quot; for details (ISBN 0201563177)
+  		http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
++                 Returns True in the child process, False in the parent
+  		&quot;&quot;&quot;
+  		try: 
+  			pid = os.fork() 
+  			if pid &gt; 0:
+!                             # return to the first parent's normal operation
+!                             return False
+  		except OSError, e: 
+  			sys.stderr.write(&quot;fork #1 failed: %d (%s)\n&quot; % (e.errno, e.strerror))
+  			sys.exit(1)
+***************
+*** 59,64 ****
+--- 60,66 ----
+  		atexit.register(self.delpid)
+  		pid = str(os.getpid())
+  		file(self.pidfile,'w+').write(&quot;%s\n&quot; % pid)
++                 return True
+  	
+  	def delpid(self):
+  		os.remove(self.pidfile)
+***************
+*** 81,89 ****
+  			sys.exit(1)
+  		
+  		# Start the daemon
+! 		self.daemonize()
+! 		self.run()
+! 
+  	def stop(self):
+  		&quot;&quot;&quot;
+  		Stop the daemon
+--- 83,94 ----
+  			sys.exit(1)
+  		
+  		# Start the daemon
+! 		if self.daemonize():
+!                     # we're in the child now
+!                     self.run()
+!                     sys.exit(0)
+!                 # otherwise, we're in the parent. return to where we were called from
+!         
+  	def stop(self):
+  		&quot;&quot;&quot;
+  		Stop the daemon
+
+&lt;/code&gt;
+#116
+Sander Marechal (http://www.jejik.com)
+Posted on 2010-12-12@08:05
+Thanks for the patch, Sam. I really should combine all the changes posted in all the various comments together some day and build a Daemon v2.0 out of it. I'll be sure to add your changes in there as well.
+#117
+Jill
+Posted on 2010-12-12@09:23
+I'm just learning python and this code is helping me a lot. Very nicely done! And thanks to all contributions in the comments too.
+I'm sure it would be much appreciated if you find the time to combine everything into Daemon v2.0. For me, it would be great to be able to compare with what I have done.
+#118
+kaliko
+Posted on 2011-01-03@14:27
+First thanks for this piece of code. I'm using it in a MPD autoqueue client.
+But I don't get the while loop over os.kill(pid, SIGTERM) (line 106). If the process is not shuting down after the first SIGTERM it is usually because the soft is stuck and only a SIGKILL would stop it (that's what my experience in *nix administration tells me, I might be wrong).
+And because the exception caught right after is redundant with Daemon().delpid() I'm willing to remove this bloc of code.
+Could you explain your choice?
+k.
+#119
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-01-03@22:10
+@kaliko: Some daemons can be very slow to terminate. Think about OpenOffice in daemon mode). delpid() isn't guaranteed to run (some signals cause the atexit() to not run at all, so the exception is necessary to clean up the pidfile. Hence the loop, waiting for the daemon to terminate.
+In theory you could send a single SIGTERM and then loop over a 0 (zero) signal, waiting for the daemon to exit.
+#120
+PoTe
+Posted on 2011-01-16@01:10
+Thank you very much, this code looks great and works great, I am currently using it on a project.
+I see lots of comments, and lots of people submitting new features for this - increasingly less so - simple daemon. I think you should publish it on github, that way we can all make our contributions and push them to you. I know it's not supposed to be a big thing, but it is a good solution for problems that require a lightweight daemon on them instead of something big and cumbersome like twisted. What do you think?
+#121
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-01-17@18:54
+@PoTe: Putting it on github is on my todolist! Honest!
+#122
+Francisco Ram rez
+Posted on 2011-02-22@19:01
+One simple question comming from a newbie:
+>How do you interact with the deamon after starting it? I mean, after calling "python <daemonname.py> start". If you want to stop it. How do you access to it? Because if you call "python <daemonname.py> stop" you are dealing with a new instance, doesn't it?
+#123
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-02-24@00:39
+Yes, you get a new instance. But that new instance looks at the pidfile to fond the old instance and sends it a kill signal. So, the new instance is telling the old instance to stop.
+#124
+Francisco Ramirez
+Posted on 2011-02-24@16:39
+Nevermind Sander, I've discovered that I was missing including the main code in an while 1 loop. Sorry for the inconveniences.
+#125
+Francisco Ramirez
+Posted on 2011-03-10@22:52
+Sander, need your help once again. I am launching two threads in the run method of the daemon. I would like to access to them after in other command (status, for example). Is there any way to recover the data of the process from its pid?
+#126
+Francisco Ramirez
+Posted on 2011-03-11@20:38
+I also have found that I'm not able to deal with files inside the overridden run method of the daemon. Is it normal?
+#127
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-03-12@02:02
+@Francisco: Not directly. You will need to implement this yourself. It is called inter-process-communication. The usual solution for this is that you daemon opens a socket and listens to it. Other processes (like those requesting a status) the connect to that socket and send some commands. The daemon replies, etcetera. Inside your daemon you can use whatever threading module you use for inter-thread communication.
+As for file access, remember that the current working directory of a daemon is the filesystem root (/), so use full paths.
+#128
+Hammy Havoc (http://www.hammyhavoc.com)
+Posted on 2011-03-24@03:30
+The Python code works perfectly, thank you very much!
+#129
+Strae
+Posted on 2011-04-06@10:48
+There is a little typo erro on line 112:
+if os.path.exists(self.pidfile:
+shuld be
+if os.path.exists(self.pidfile):
+Thanks for sharing, great article!
+#130
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-04-06@23:01
+@Strae: Whoops, fixed. Thanks for pointing it out!
+#131
+Mike Fuzzy Partin
+Posted on 2011-04-12@05:38
+Very clean, very pythonic, very nice code. A million thanks for sharing.
+#132
+David Underhill (http://www.dound.com)
+Posted on 2011-05-03@06:35
+Ditto Mike's comments - this is great. Thanks Sander!
+#133
+Jan de Jager (http://www.bleepsquare.co.za)
+Posted on 2011-05-24@12:12
+Trying to use you code to setup a simple socket server, code to follow (oh, i suck at python, so be nice)...
+#!/usr/bin/env python
+
+import sys, time
+import SocketServer
+import pymongo
+import datetime
+from daemon import Daemon
+
+class EchoRequestHandler(SocketServer.BaseRequestHandler):
+	def handle(self):
+		while 1:
+			data = self.request.recv(1024)
+			from bson.objectid import ObjectId    
+			gpsdata = self.data.replace('+++','').split('|')
+			post = {
+				"_id" : ObjectId(),
+				"serial" : gpsdata[0],
+				"date" : datetime.datetime.utcnow(),
+				"latitude" : float(gpsdata[1]),
+				"longitude" : float(gpsdata[2]),
+				"altitude" : float(gpsdata[3]),
+				"course" : float(gpsdata[4]),
+				"speed" : float(gpsdata[5]),
+				"horizontalAccuracy" : 0,
+				"verticalAccuracy" : 0
+			}
+			from pymongo import Connection
+			connection = Connection()
+			db = connection.test
+			ping = db['ping']
+			ping.insert(post)
+			self.request.send("0")
+
+class BleepDaemon(Daemon):
+	def run(self):
+		server = SocketServer.ThreadingTCPServer(('0.0.0.0', 81), EchoRequestHandler)
+		server.serve_forever()
+		while True:
+			time.sleep(1)
+
+if __name__ == "__main__":
+	daemon = BleepDaemon('/tmp/daemon-bleep.pid')
+	if len(sys.argv) == 2:
+		if 'start' == sys.argv[1]:
+			daemon.start()
+		elif 'stop' == sys.argv[1]:
+			daemon.stop()
+		elif 'restart' == sys.argv[1]:
+			daemon.restart()
+		else:
+			print "Unknown command"
+			sys.exit(2)
+		sys.exit(0)
+	else:
+		print "usage: %s start|stop|restart" % sys.argv[0]
+		sys.exit(2)
+#134
+John Randall
+Posted on 2011-06-21@14:47
+If python language is not english this script won't work, because of finding the text "No such process" in "daemon.py:111". You better should watch on err.errno without converting err to string so use the following patch:
+--- a/daemon.py	2011-06-21 14:39:30.783947588 +0200
++++ b/daemon.py	2011-06-21 14:38:37.895947562 +0200
+@@ -107,7 +107,8 @@ class Daemon:
+os.kill(pid, SIGTERM)
+time.sleep(0.1)
+except OSError, err:
+-	if err.errno == 3:
++	err = str(err)
++	if err.find("No such process") > 0:
+if os.path.exists(self.pidfile):
+os.remove(self.pidfile)
+else:
+#135
+computerquip
+Posted on 2011-07-28@00:39
+It seems the need for strip() isn't neccessary. The linefeed or linefeed/carriage-return is actually added to the file whenever you open it. To avoid this, you can open it in binary mode. Otherwise, int() knows to ignore the linefeed and acts normally anyways.
+#136
+Justin Barber (https://github.com/barberj/Saerpent)
+Posted on 2011-08-22@16:09
+I've updated this recipe. Now it will receive and signal and setup a variable to discontinue work allowing for a clean exit.
+#137
+Anonymous Coward
+Posted on 2011-10-06@17:48
+A Cowards Way of Shutting Down:
+I found it more useful to kill the pid file and give the process a little time to react to it's absence, so any housekeeping necessary could be completed (exit gracefully) before the process is killed.
+
+	def stop(self):
+		&amp;quot;&amp;quot;&amp;quot;
+		Stop the daemon
+		&amp;quot;&amp;quot;&amp;quot;
+		# Get the pid from the pidfile
+		try:
+			pf = file(self.pidfile,'r')
+			pid = int(pf.read().strip())
+			pf.close()
+		except IOError:
+			pid = None
+	
+		if not pid:
+			message = &amp;quot;pidfile %s does not exist. Daemon not running?\n&amp;quot;
+			sys.stderr.write(message % self.pidfile)
+			return # not an error in a restart
+                else:
+                    if os.path.exists(self.pidfile):
+                        os.remove(self.pidfile)
+                        time.sleep(3)
+
+		# Try killing the daemon process	
+		try:
+			while 1:
+				os.kill(pid, SIGTERM)
+				time.sleep(2)
+		except OSError, err:
+			err = str(err)
+			if err.find(&amp;quot;No such process&amp;quot;) &amp;gt; 0:
+				if os.path.exists(self.pidfile):
+					os.remove(self.pidfile)
+			else:
+				print str(err)
+				sys.exit(1)
+And MyDaemon:
+
+class MyDaemon(Daemon):
+
+    def checkpid(self):
+
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except:
+            pid=0
+
+        # logging.debug('PID: %i.' % (pid))
+
+        return pid
+
+    def run(self):
+
+        logging.debug('Running...')
+
+        pid = self.checkpid()
+
+        while (pid &amp;gt; 0):
+
+            ...
+       
+            pid = self.checkpid()
+            # End of loop
+
+        # out of the loop
+        logging.debug('Shutting down %i' % (pid))
+
+        # Logging
+        logging.shutdown()
+
+        # System
+        sys.exit(0)
+#138
+Wawrzek (http://wawrzek.name)
+Posted on 2011-11-28@00:24
+Hi,
+Nice code. butI have a problem and I'm not sure if it bug or maybe feature. Let assume that we are calling our daemon as a normal user, but pidfile passed to your module is '/var/log/mydaemon.pid' (something where user cannot write). It seems that daemon dying quietly without any error message. Am I right?
+#139
+Kasun
+Posted on 2011-12-05@12:37
+Hi Sander
+Thank you very much for the code. I have been using, modifying this for some time for my needs and I thought of open sourcing it. Basically using my code you can call Daemon.daemonize() and then the rest of the code would run in daemon mode.
+You can have a look at it in https://github.com/kasun/YapDi #140
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-12-09@07:37
+@Wawrzek: It appears you are right. You could wrap the part that writes the pidfile in a try/catch block. You could also add a bit of code to the beginning of the daemonize() function to see if the pidfile location is readable.
+#141
+Sander Marechal (http://www.jejik.com)
+Posted on 2011-12-09@07:39
+@Kasun: It's always nice to hear where my code ends up being used :-)
+#142
+jazzuell
+Posted on 2012-02-20@00:01
+Thank you for your work. It has helped me a lot.
+#143
+aprendice
+Posted on 2012-02-27@04:15
+hi
+I want to convert my script in python a daemon but I am new in this and I dont know modifies the code that you placed here. Can you help me to do what i want?
+thanks
+#144
+Sander Marechal (http://www.jejik.com)
+Posted on 2012-02-27@19:36
+@aprendice: You don't need to modify the code. Just download the daemon.py file and use it. The second code block in the article is an example of how you can use it. Just call your code from the run() method. That's all!
+#145
+Anonymous Coward (http://deneme.com)
+Posted on 2012-04-18@22:53
+how can we add our python daemon (which is created with author's deamon) to start up of the ubuntu?
+i want my deamon autostart when the ubuntu is started.
+#146
+Sander Marechal (http://www.jejik.com)
+Posted on 2012-04-19@07:16
+The best thing would be to write an init script for your daemon. Have a look at the scripts in your /etc/init.d directory and the symlinks in the /etc/rc* directories.
+#147
+sun
+Posted on 2012-04-19@21:09
+Hi,
+I am using your code to run my script as a daemon.
+In the run() method,
+I have an infinite loop which calls iterate() method after every few seconds.
+I use time.sleep() between the calls to the iterate() method.
+In the iterate() method,
+I am creating other processes using subprocess.popen() command.
+But when these processes complete, they turn zombies.
+How do I prevent zombies in this case?
+#148
+Anonymous Coward
+Posted on 2012-06-14@04:08
+Hi, thanks for your great script. I'm new to daemon coding and I'm a little confused about how to "install" this. You mentioned above that we need to write a shell script in /etc/init.d but why can't we just put our completed python script in /etc/init.d ? Do we really need a shell script to run the python script? If so, where in the filesystem should we put the python script?
+Also what's the best way to make this actively stay alive in your opinion? Some people suggest something in /etc/inittab, others suggest a cron job.
+Thanks :)
+#149
+Sander Marechal (http://www.jejik.com)
+Posted on 2012-06-15@09:12
+The daemon script should be part of your application. You don't install applications directly into /etc/init.d. You should put the python code where regular application code goes (/usr/local, /usr/bin, /usr/share, etcetera).
+Keeping it alive should probably not be part of the application. Leave that up to your users. Some will like Nagios, others Monit or Keepalived or some custom monitoring scripts.
+#150
+paroariax
+Posted on 2012-06-15@18:29
+Hi, thanks for your great script. I'm new to daemon coding and I'm a little confused about how to "install" this. You mentioned above that we need to write a shell script in /etc/init.d but why can't we just put our completed python script in /etc/init.d ? Do we really need a shell script to run the python script? If so, where in the filesystem should we put the python script?
+Also what's the best way to make this actively stay alive in your opinion? Some people suggest something in /etc/inittab, others suggest a cron job.
+Thanks :)
+#151
+paroariax
+Posted on 2012-06-15@18:40
+Sorry for the double post, feel free to delete my second one.
+@Sander: So effectively I should have a shell script that simply passes the command line argument though to my python script? Seems like a bit of a waste, especially as I intend the entire application to be a single .py file so it's really simple for the client to use.
+By the way, did you ever get a chance to combine all the contributed changes here into a Daemon v2.0? If not I'll do it and post it back here.
+#152
+Sander Marechal (http://www.jejik.com)
+Posted on 2012-06-23@10:21
+@paroariax: The init.d script should not pass commandline arguments to your daemon.
+Think about what the init.d script is for. It's not for users. It for the computer. The init.d scripts exist for the system to automatically start and stop services when you switch runlevels. The only commandline arguments your system knows are "start" and "stop".
+The init.d script exists to turn a complex custom command like:
+/usr/bin/my-daemon.py --working-dir=/home/foo --some-option --other-option --config=/etc/my/daemon.ini --etcetera
+into a simple command like this, which your computer understands:
+/etc/init.d/my-daemon start
+So, you have /usr/bin/my-daemon.py which your users can use with all the complexity that your daemon provides. And you have /etc/init.d/my-dameon which only accepts "start" and "stop". And all the other commandline arguments you need you put into that init.d script. Your users can edit that init.d script to add/remove the commandline arguments they need.
+As for v2.0, I haven't gotten around to it yet. I'm quite busy :-) There are two people who have taken this code and added some of the improvements. Both can be found at github:
+https://github.com/kasun/YapDi
+https://github.com/barberj/Saerpent
+Perhaps you could collaborate with those two to get a canonical version with all the improvements in it and publish it on github? I'd be happy to directly link that from the article.
+#153
+Amir
+Posted on 2012-07-24@22:28
+I have an action-queue that submits different actions to servers in a non-blocking way. I was thinking if I can use this method as the ssh + command on the action-queue terminates immediately and kills the action on the server. Using re-parenting (or demonizing), I wished I could make it work, but no luck so far. Do you guys have any idea why?
+Amir.
+#154
+geeky583
+Posted on 2012-08-24@02:20
+Works great! Thanks :)
+#155
+Niklas (https://github.com/nthorne/xmppmote)
+Posted on 2012-09-01@00:40
+Just wanted to thank you for this piece of code. I've included it in XMPPMote, a daemon for remote server administration over XMPP.
+/Niklas
+#156
+David Karlsson (http://automagically.weebly.com)
+Posted on 2012-09-17@07:43
+Thanks for a excellent snippet of code! Very useful (after a couple of minor modifications to suit my specific needs)
+#157
+megrez80
+Posted on 2012-10-24@14:00
+Thanks for this great module.
+I just wanted to give folks a heads up on a minor tweak I had to make in my situation. For some reason, the 2nd parent was failing to exit, which subsequently would prevent the killing of the child later on. I use os._exit to exit the 2nd parent instead of sys.exit.
+#158
+Anonymous Coward
+Posted on 2012-10-29@19:40
+This is great stuff. I've made a few changes to make it production ready. These changes remedy three issues:
+- The start up race where two daemons can begin running simultaneously
+- The failure to check the process table when establishing whether a process is running. If you have a data center outage or your daemon is sent sigkill, the last thing you want to worry about is a daemon failing to starting at boot.
+- The ability for a third party to read the pid file with guaranteed coherent results.
+These are remedied primarily by establishing an exclusive lock on the pidfile. Updated code below. Common code mostly omitted.
+
+#!/usr/bin/env python
+import sys, os, time, atexit
+from signal import SIGTERM
+import fcntl
+import subprocess
+
+class Pidfile(object):
+    def __init__(self, pidfile, procname):
+        try:
+            self.fd = os.open(pidfile, os.O_CREAT | os.O_RDWR)
+        except IOError, e:
+            sys.exit(&quot;Failed to open pidfile: %s&quot; % str(e))
+        self.pidfile = pidfile
+        self.procname = procname
+        assert not fcntl.flock(self.fd, fcntl.LOCK_EX)
+
+    def unlock(self):
+        assert not fcntl.flock(self.fd, fcntl.LOCK_UN)
+
+    def write(self, pid):
+        os.ftruncate(self.fd, 0)
+        os.write(self.fd, &quot;%d&quot; % int(pid))
+        os.fsync(self.fd)
+
+    def kill(self):
+        pid = int(os.read(self.fd, 4096))
+        os.lseek(self.fd, 0, os.SEEK_SET)
+
+        try:
+            os.kill(pid, SIGTERM)
+            time.sleep(0.1)
+        except OSError, err:
+            err = str(err)
+            if err.find(&quot;No such process&quot;) &gt; 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                return str(err)
+
+        if self.is_running():
+            return &quot;Failed to kill %d&quot; % pid
+
+    def is_running(self):
+        contents = os.read(self.fd, 4096)
+        os.lseek(self.fd, 0, os.SEEK_SET)
+
+        if not contents:
+            return False
+
+        p = subprocess.Popen([&quot;ps&quot;, &quot;-o&quot;, &quot;comm&quot;, &quot;-p&quot;, str(int(contents))],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        if stdout == &quot;COMM\n&quot;:
+            return False
+
+        if self.procname in stdout[stdout.find(&quot;\n&quot;)+1:]:
+            return True
+
+        return False
+
+
+class Daemon:
+    &quot;&quot;&quot;
+    A generic daemon class.
+    Usage: subclass the Daemon class and override the run() method
+    &quot;&quot;&quot;
+    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.pidfile = Pidfile(pidfile, &quot;python&quot;)
+
+    def daemonize(self):
+        ...
+        # write pidfile
+        atexit.register(self.delpid)
+        pid = str(os.getpid())
+        self.pidfile.write(pid)
+
+    def start(self):
+        &quot;&quot;&quot;
+        Start the daemon
+        &quot;&quot;&quot;
+        # Check for a pidfile to see if the daemon already runs
+        if self.pidfile.is_running():
+            self.pidfile.unlock()
+            sys.exit(&quot;Daemon already running.&quot;)
+
+        # Start the daemon
+        self.daemonize()
+        self.pidfile.unlock()
+        self.run()
+
+    def stop(self):
+        &quot;&quot;&quot;
+        Stop the daemon
+        &quot;&quot;&quot;
+        # Get the pid from the pidfile
+        if not self.pidfile.is_running():
+            self.pidfile.unlock()
+            print &gt;&gt;sys.stderr,&quot;Daemon not running.&quot;
+            return
+
+        # Try killing the daemon process
+        error = self.pidfile.kill()
+        if error:
+            self.pidfile.unlock()
+            sys.exit(error)
+#159
+Anonymous Coward
+Posted on 2012-11-28@05:23
+Does the PID file contain an arbitrary #?
+How do you pick a PID number?
+How does one verify their daemon is running. I've checked my ps aux and I don't see my daemon running. In my pid file I placed a random number 666 and ran the daemon, but I don't see anything in ps aux output... I also made sure pid 666 is not in use prior to running the daemon.
+Thanks, AC
+#160
+Ariel Monaco
+Posted on 2012-11-29@02:26
+Neat and simple. Will use it on my next project. Thanks!
+#161
+Sander Marechal (http://www.jejik.com)
+Posted on 2012-12-04@15:07
+@Anonymous 159: The PID number is assigned by the OS to the process when the daemon starts. The daemon then writes it to the pidfile so it can reference it later. You do not create a pidfile manually.
+#162
+jPLOS
+Posted on 2012-12-27@22:47
+I didn't carefully read all the comments, so ignore me if it's been covered already.
+Where you say:
+" if err.find("No such process") > 0:"
+Couldn't you get an off-by-one error if that string is actually at the beginning of the string? You could cover all your bases instead like so:
+" if err.find("No such process") > 1:"
+#163
+Oleg
+Posted on 2013-01-09@17:06
+the best variant by cron
+*/5 * * * * os pgrep -f /home/os/takeSpeed_8.py &>/dev/null || python /home/os/takeSpeed_8.py
+#164
+bbwolf
+Posted on 2013-01-28@15:41
+For some reason, daemonize is not working. It seems that it encounters a problem within these lines of code, probably between line 2 and 3:
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+Any suggestions?
+Thanks!
+BB
+#165
+jiamo
+Posted on 2013-12-13@11:18
+Why this init can't work?
+daemon = MyDaemon('/tmp/daemon-example.pid',stdout=sys.stdout)
+I may want to see daemon 's output when i am testing .
+File "daemon-example.py", line 24, in <module>
+daemon.start()
+File "/home/engine/Zealot/src/release/xcc_server/daemon.py", line 84, in start
+self.daemonize()
+File "/home/engine/Zealot/src/release/xcc_server/daemon.py", line 52, in daemonize
+so = file(self.stdout, 'a+')
+TypeError: coercing to Unicode: need string or buffer, file found
+#166
+Sander Marechal (http://www.jejik.com)
+Posted on 2013-12-15@14:03
+@jiamo: Are you using Python 3? This daemon was written for Python 2. Someone ported it to Python 3 though. Here you go.
+#167
+hagak
+Posted on 2014-01-02@23:16
+Actually I was wondering why it was not working for me and I just noticed that I am running python2, and the script posted is for python3. Is the python2 script still available somewhere?
+#168
+domoarrigato
+Posted on 2014-06-22@22:19
+Hi, like a number of other users, I cannot get past the following lines of code:
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+it breaks silently, with no errors thrown (i tried catching them in Exception, e) after the stdin line. I am using OSX and Python 2.7.5. Could the problem be related to the following?
+This
+it seems that os.dup2 is not available on mac, although if not, it seems strange that the script gets through the first call.
+I even tried replacing the last two lines with:
+sys.stdout = file(self.stdout, 'a+')
+sys.stderr = file(self.stderr, 'a+', 0)
+per #68 dik123's suggestion (and also with a , 0 per #79) but to no avail. Am passing os.devnull vs. "dev/null" as well.
+Any ideas?
+#169
+Sander Marechal (http://www.jejik.com)
+Posted on 2014-06-23@06:43
+os.dup2 should be available on a Mac (Mac is a Unix variant, according to Python anyway). Is that the only thing that makes it fail to work? What if you comment out those lines and instead just close all the sys.stdin/stdout/stderr file descriptors? That should also work, except you get no output. The daemon should still be running.
+#170
+domoarrigato
+Posted on 2014-06-23@14:27
+Your comment hereHi, thanks for getting back to me on such an old thread.
+I replaced # sys.stdout.flush()
+# sys.stderr.flush()
+# si = file(self.stdin, 'r')
+# so = file(self.stdout, 'a+')
+# se = file(self.stderr, 'a+', 0)
+# os.dup2(si.fileno(), sys.stdin.fileno())
+# os.dup2(so.fileno(), sys.stdout.fileno())
+# os.dup2(se.fileno(), sys.stderr.fileno())
+with:
+for f in sys.stdout, sys.stderr: f.flush( )
+si = file(stdin, 'r')
+so = file(stdout, 'a+')
+se = file(stderr, 'a+', 0)
+os.dup2(si.fileno( ), sys.stdin.fileno( ))
+os.dup2(so.fileno( ), sys.stdout.fileno( ))
+os.dup2(se.fileno( ), sys.stderr.fileno( ))
+from StackOverflow, and it worked - no idea why...
+Post a new comment
+Registration is not required to post comments, but cookies must be enabled. One of the advantages of registration is that you can edit your comments later on (editing not yet implemented). You can register or login here. Name (required) E-mail address Website URL Your comment (required) Your comment here
+Your e-mail address will not be published, but your website URL will. All links that you post
+will tagged rel="nofollow" to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+<em> <strong> <u> <b> <i> <strike> <blockquote> <big> <small> <ul> <ol> <li> <a href=""> <pre> <code> <tt> <br>. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+Menu
+Home
+Blog archives
+Web development
+Past work
+Projects
+Gnome Hearts
+ODF-XSLT Generator
+Officeshots.org Resources
+Bugzilla
+Subversion
+Mailing lists
+API References
+About us
+Contact
+Old stuff
+Your account
+Feeds
+Donate!
+Please consider donating if my work has been useful to you.
+Bitcoin address:
+1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ
+Pingbacks
+vcsandangels.com/blog/?p=10765
+andy.edmonds.be/2008/08/lin...
+andy.csartec.com/2008/08/01...
+evalinux.wordpress.com/2008...
+mjipeo.net/?p=253
+archix.wordpress.com/2008/1...
+omerucel.com/gunluk/2009/02...
+gmgall.wordpress.com/2009/0...
+deathofagremmie.com/2009/05...
+kingcritter.kupatrix.net/?p...
+www.ezran.org/blog/2009/09/...
+javier.aravena.blogs.inf.sa...
+blog.andsky.com/2009/11/28/...
+zhesto.wordpress.com/2010/0...
+linuxdevmag.wordpress.com/2...
+www.vimer.cn/2010/08/%e7%94...
+www.4pang.com/2010/09/21/%e...
+www.lmatt.com/archives/134
+developerquestion.com/pytho...
+james.limsbros.com/2010/12/...
+saliano.net/2010/12/22/pyth...
+codeme.gotdns.com/2011/01/1...
+globalconstant.scnay.com/20...
+blog.boxedice.com/2011/04/1...
+Latest comments
+domoarrigato: Your comment hereHi,...
+Sander Marechal: os.dup2 should be...
+domoarrigato: Hi, like a number of...
+Alex: I am writing because I used...
+hagak: Actually I was wondering why...
+Sander Marechal: @jiamo: Are you...
+Sander Marechal: You can install it...
+jiamo: Why this init can't work?...
+Richard van Wingerden: How to install...
+RPW: Maximum respect!
+This repacked...
+Links
+LXer Linux News
+Groklaw
+Consortium info
+Planet ODF
+A List Apart
+The Register
+Userfriendly
+Gamedev.net
+Save the internet
+Copyright© 2003-2014 Stichting Lone Wolves
+[ XHTML
+| CSS
+| WAI-AA
+| 508
+| Privacy policy ]
+

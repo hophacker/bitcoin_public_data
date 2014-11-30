@@ -1,0 +1,115 @@
+http://spatulatzar.com/wireless_detonator/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 22:25:08 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 2947
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+	<title>Wireless Detonator</title>
+	<link rel="stylesheet" type="text/css" href="../style1.css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link rel="shortcut icon" href="../favicon.ico" />
+	<link rel="icon" href="../favicon.ico" />
+</head>
+
+<body>
+<table><tr><td>
+
+<!-- Title -->
+<h1>Wireless Detonator</h1>
+
+<!-- Credit and logo -->
+<h2><a href="/contact/">By: Spatula Tzar</a></h2>
+</td><td><a href="http://spatulatzar.com"><img src="../logo.png" alt="Spatula &amp; Sickle" width="130" height="250" /></a></td></tr></table>
+
+<p>Wireless detonators are wonderful. They allow a great distance to be placed between a user and their device 
+without even the need to run wires. Most amateur remotes however have a fatal flaw: stray radio waves can 
+potentially trigger the device prematurely. My design completely eliminates accidental activation through the use of 
+a security code.</p>
+
+<table>
+<tr><td><img src="phone.jpg" alt="Cordless Phone" width="640" height="435" /></td>
+<td><p>To start, you need a radio transmitter and receiver. No expensive device need be bought. You probably already 
+have it. A standard cordless telephone works perfectly. It even has a built in keypad. Newer sophisticated phones 
+might not work unless connected to a phone line, but older models usually work without problems.</p>
+<p>The phone need not be modified, but I chose to paint mine yellow with electrical tape stripes for sheer 
+awesomeness.
+</p></td></tr>
+
+<tr><td><a href="schematic.png"><img src="thumbnail.png" alt="Circuit Schematic" width="640" height="375" 
+/></a></td>
+<td><p>This is the circuit I designed. (Click for the <a href="schematic.png">full image</a>.) The phone line is fed 
+into the 8870 DTMF decoder where any keypresses are converted to four parallel data lines. These lines are read by 
+the PIC16F84 microcontroller where all the dirty work is done. Once the code is validated, the PIC activates a 15 
+amp relay, closing the circuit for one or more <a href="../igniters/">electrical igniters</a>.</p>
+<p>Close observers may notice the switch is breaking the negative terminal of the battery instead of the customary 
+positive. There is a very good reason for this. If the cathode of an alkaline battery is connected to a large 
+conductor for long periods of time, galvanic corrosion develops. This is why the anode of cylindrical batteries has 
+several times the surface area of the cathode. It wont make much of a difference in this small circuit, but it's 
+good practice.
+</p></td></tr>
+
+<tr><td><img src="prototype.jpg" alt="Prototype Circuit" width="640" height="480" /></td>
+<td><p>Here's my prototype circuit, planned out on a solderless breadboard. The LEDs were used for debugging the 
+microcontroller program, and have no use in the final circuit.</p>
+<p>If you're having trouble finding the 8870 chip, look inside old answering machines. It's used when checking your 
+messages from a remote location.
+</p></td></tr>
+
+<tr><td><img src="code.png" alt="Program Code" width="640" height="480" /></td>
+<td><p>The program is fairly simple. It takes the data lines from the DTMF decoder, and stores each keypress in 
+memory. When the # key is pressed, it compares the numbers to the programmed security code. If they match, it sets a 
+pin high, activating the relay for two seconds. If the code is invalid, it resets. If it is ever idle for more than 
+three seconds, it resets. A one second wait at the beginning prevents false readings from the decoder chip.</p>
+<p>Here is the source code:<br />
+<a href="dtmf.c">dtmf.c</a><br />
+<a href="dtmf.asm">dtmf.asm</a><br />
+<a href="dtmf.hex">dtmf.hex</a><br />
+The default keycode is set to "2486#".</p>
+<p>Programming PIC microcontrollers is beyond the scope of this writeup, but you might want to try <a 
+href="http://www.lirtex.com/tutorials/beginners-guide-to-microchip-pic-programming/">this site</a> to familiarize yourself with the basics.
+</p></td></tr>
+
+<tr><td><img src="lined.jpg" alt="Electrical Tape Liner" width="640" height="406" /></td>
+<td><p>Now we can begin constructing the container. I chose to build the circuit inside an Altoids tin (wintergreen 
+flavour). After cutting holes for the switch and connectors, I soldered a pair of bolts to the bottom of the tin. 
+They will serve to hold the circuit board in place. The inside  is then lined with electrical tape to prevent short 
+circuits.
+</p></td></tr>
+
+<tr><td><img src="finished.jpg" alt="Finished" width="640" height="415" /></td>
+<td><p>It was a tight fit, but I managed to cram everything inside the tin. I had to cut off the top of the tall 
+LM7805 voltage regulator in order to close the lid, but is doesn't draw much power, so there is no need to worry 
+about heat dissipation.</p>
+<p>Yes, that is an RCA socket connected to the relay. It was the only connector I could find capable of handling 
+large currents. The 9V battery connector is actually made from a dead 9V battery. Pretty shrewd, huh?
+</p></td></tr>
+
+<tr><td><img src="setup.jpg" alt="Controller Setup" width="640" height="480" /></td>
+<td><p>This is my igniter setup. The lead acid battery is switched by the relay circuit, sourcing a large current 
+through 14 gauge wire to a pair of alligator clips. This setup conveniently interfaces with my <a 
+href="../igniters/">electrical igniters</a> and <a href="../squibs/">squibs</a>.
+</p></td></tr>
+</table>
+
+<p>I know this may be beyond the means of many of you, but I will try to provide help with construction. If there is 
+enough interest, I may even start selling them.</p>
+
+<!-- Contact -->
+<h3><a href="/contact/">~~Spatula Tzar</a><br />
+<!-- Link to parent directory -->
+<a href="../">&larr;Back</a></h3>
+
+<!-- Donate -->
+<p>Bitcoin: <a href="bitcoin:1KEWmWK3Sn9ToEHxhXmoXax6ycNGgLMfLv">1KEWmWK3Sn9ToEHxhXmoXax6ycNGgLMfLv</a></p>
+
+
+</body>
+</html>
+

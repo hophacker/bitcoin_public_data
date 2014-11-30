@@ -1,0 +1,1481 @@
+http://boards.420chan.org/b/
+HTTP/1.0 200 OK
+X-Powered-By: PHP/5.4.17
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Content-type: text/html
+Connection: close
+Date: Thu, 24 Jul 2014 02:56:26 GMT
+Server: lighttpd/1.4.31
+
+  <!DOCTYPE HTML> <html> <head> <title> Random &amp; High Stuff - 420chan </title> <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> <link rel="shortcut icon" type="image/png" href="/static/images/board_icons/b_icon_64.png" /> <link rel="apple-touch-icon-precomposed" href="/static/images/board_icons/b_icon_128.png" /> <script type="text/javascript">var style_cookie="";</script> <link rel="stylesheet" type="text/css" href="/static/css/brandbar.css" /> <!-- Core JS Libraries --> <script type="text/javascript" src="http://cdn.420chan.org/j/jquery.min.js"></script> <!-- 420chan JS Libraries --> <script type="text/javascript" src="/static/min/?g=js&amp;v=10"></script> <script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script> 	<link rel="stylesheet" type="text/css" href="/static/css/menus.css" />	
+	<link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />	
+	<link rel="stylesheet" type="text/css" href="/static/css/gritter.css" />	
+	<link rel="stylesheet" type="text/css" href="/static/css/layout.css" />	
+			
+			<!-- Randy Theme -->
+			<link rel="stylesheet" type="text/css" href="/static/css/randy.css" title="Randy" />
+			<link rel="alternate stylesheet" type="text/css" href="/static/css/rainbow.css" title="Rainbow" />
+			<link rel="alternate stylesheet" type="text/css" href="/static/css/classic.css" title="Classic" />
+			<link rel="alternate stylesheet" type="text/css" href="/static/css/princess.css" title="Princess" />
+		 		<script type="text/javascript">
+			function Get_Cookie( name ) {
+				var start = document.cookie.indexOf( name + "=" );
+				var len = start + name.length + 1;
+				if ( ( !start ) && ( name != document.cookie.substring( 0, name.length ) ) )
+				{
+					return null;
+				}
+				if ( start == -1 ) return null;
+				var end = document.cookie.indexOf( ";", len );
+				if ( end == -1 ) end = document.cookie.length;
+				return unescape( document.cookie.substring( len, end ) );
+			}
+			function Set_Cookie( name, value, expires, path, domain, secure ) {
+				var today = new Date();
+				today.setTime( today.getTime() );
+				if ( expires )
+				{
+					expires = expires * 1000 * 60 * 60 * 24;
+				}
+				var expires_date = new Date( today.getTime() + (expires) );
+			
+				document.cookie = name + "=" +escape( value ) +
+					( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) + //expires.toGMTString()
+					( ( path ) ? ";path=" + path : "" ) + 
+					( ( domain ) ? ";domain=" + domain : "" ) +
+					( ( secure ) ? ";secure" : "" );
+			}
+			
+			function Delete_Cookie( name, path, domain ) {
+				if ( Get_Cookie( name ) ) document.cookie = name + "=" +
+						( ( path ) ? ";path=" + path : "") +
+						( ( domain ) ? ";domain=" + domain : "" ) +
+						";expires=Thu, 01-Jan-1970 00:00:01 GMT";
+			}
+			Set_Cookie( 'test', 'none', '', '/', '', '' );
+			if ( Get_Cookie( 'test' ) )
+			{
+				cookie_set = true;
+				Delete_Cookie('test', '/', '');
+				// window.location = 'http://cdn.420chan.org/u/splash/?t=http://boards.420chan.org/b/';
+			}
+			else
+			cookie_set = false;
+			</script>
+		
+	
+	<style type="text/css" media="screen">
+		.replyheader {
+			white-space: nowrap;
+		}
+	
+		p.hidden {
+			margin-left: 10px;
+			font-weight: bold;
+			font-size: 14px;
+		}
+		
+		#quickreply {
+			background: rgba(200,200,200,0.1);
+			padding: 10px;
+			margin: 10px;
+			width: 468px;
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;			
+		}
+		.opqr {
+			margin-left:0 !important;
+		}
+		#quickreply input, #quickreply textarea {
+			border: 1px solid #666;
+		}
+		p.qrheader {
+			margin-top: 0px;
+			margin-left: 3px;
+		}
+	</style>
+		
+	<script type="text/javascript">
+
+		function imageExpansion(image) {
+			var original = $(image).children('img').attr('src');
+			var target = $(image).attr('href');
+			
+			$(image).children('img').attr('src', target);
+			$(image).attr('href', original);
+			return false;
+		}
+
+		function toggleHidden(id) 
+		{
+			var hidden=getHidden();
+			var e=document.getElementById(id);
+			if(!e) return;
+			for(var i=0;i<hidden.length;i++) if(hidden[i]==id) { removeHidden(id); } else { addHidden(id); }
+		}
+
+		function hideThread(id)
+		{
+			var e=document.getElementById(id);
+			if (!e) return;
+			e.style.display='none';
+			$(e).after('<div class="showthread hidden'+id+'" style="float: right; font-size: 10px; margin-right: 4px; margin-top: 4px;"><a class="showlink" href="javascript:toggleHidden(\''+id+'\');">Show Thread</a></div><p class="hidden hidden'+id+'"><i>This thread has been hidden.</i></p>');
+		}
+
+		function showHiddenThread(id)
+		{
+			var e=document.getElementById(id);
+			if (!e) return;
+			e.style.display='block';
+		}
+
+		function addHidden(id)
+		{
+			var hidden=getHidden();
+			for(var i=0;i<hidden.length;i++) if(hidden[i]==id) return;
+			hidden.push(id);
+			setHidden(hidden);
+			hideThread(id);
+			$.gritter.add({
+				title: 'Thread Hidden!',
+				text: 'This thread is now hidden.',
+				image: '/static/images/faceicon.png',
+				time: 2000
+			});	
+		}
+
+		function removeHidden(id)
+		{
+			var hidden=getHidden();
+			var newHidden=new Array();
+			for(var i=0;i<hidden.length;i++) if(hidden[i]!=id) newHidden.push(hidden[i]);
+			setHidden(newHidden);
+			showHiddenThread(id);
+			$.gritter.add({
+				title: 'Thread Shown!',
+				text: 'This thread is now displayed.',
+				image: '/static/images/faceicon.png',
+				time: 2000
+			});	
+			$('.hidden'+id).remove();
+		}
+
+		var emptyArray=['0'];
+		function getHidden()
+		{
+			var cookie=get_cookie("hidden");
+			if(cookie) return cookie.split(/,/);
+			else return emptyArray;
+		}
+
+		function setHidden(sections) 
+		{ 
+		  set_cookie("hidden",sections.join(","),365);
+		}		
+		
+		// Image Hiding
+		function toggleHiddenImage(id) 
+		{
+			var hidden=getHiddenImages();
+			var e=document.getElementById(id);
+			if(!e) return;
+			for(var i=0;i<hidden.length;i++) if(hidden[i]==id) { removeHiddenImage(id); } else { addHiddenImage(id); }
+		}
+
+		function hideImage(id)
+		{
+			var e=document.getElementById(id);
+			if (!e) return;
+			e.style.display='none';
+			$(e).after('<div class="showthread hidden'+id+'" style="float: right; font-size: 10px; margin-right: 4px; margin-top: 4px;"><a class="showlink" href="javascript:toggleHidden(\''+id+'\');">Show Thread</a></div><p class="hidden hidden'+id+'"><i>This thread has been hidden.</i></p>');
+		}
+
+		function showHiddenImage(id)
+		{
+			var e=document.getElementById(id);
+			if (!e) return;
+			e.style.display='inline';
+		}
+
+		function addHiddenImage(id)
+		{
+			var hidden=getHiddenImages();
+			for(var i=0;i<hidden.length;i++) if(hidden[i]==id) return;
+			hidden.push(id);
+			setHiddenImage(hidden);
+			hideImage(id);
+			$.gritter.add({
+				title: 'Image Hidden!',
+				text: 'This Image is now hidden.',
+				image: '/static/images/faceicon.png',
+				time: 2000
+			});	
+		}
+
+		function removeHiddenImage(id)
+		{
+			var hidden=getHiddenImages();
+			var newHidden=new Array();
+			for(var i=0;i<hidden.length;i++) if(hidden[i]!=id) newHidden.push(hidden[i]);
+			setHiddenImages(newHiddenImages);
+			showHiddenThread(id);
+			$.gritter.add({
+				title: 'Thread Shown!',
+				text: 'This thread is now displayed.',
+				image: '/static/images/faceicon.png',
+				time: 2000
+			});	
+			$('.hidden'+id).remove();
+		}
+
+		var emptyArray=['0'];
+		function getHidden()
+		{
+			var cookie=get_cookie("hidden");
+			if(cookie) return cookie.split(/,/);
+			else return emptyArray;
+		}
+
+		function setHidden(sections) 
+		{ 
+		  set_cookie("hidden",sections.join(","),365);
+		}		
+		
+		$(document).ready(function(){
+			
+			var hidden=getHidden();
+			for(var i=0;i<hidden.length;i++) hideThread(hidden[i]);
+
+			// AddPreviews();
+			// KillOPLinks();
+			// AddExpandAllButton();
+			// QuickReplyReferencer();
+			
+			ReformatPosts(); //rename
+			AddLoadReplyHook();
+			
+			// $('ul.dropdown li').hover(function(){
+			// 	$(this).find('ul').stop().animate({'opacity' : '0.95'}, 500);
+			// }, function(){
+			// 	$(this).find('ul').stop().animate({'opacity' : '0'}, 500);
+			// });
+	
+			// $.gritter.add({
+			// 	title: '420chan Server Bill Donations',
+			// 	text: '420chan needs to pay its bills! Look to the left of the post box to make a contribution with Bitcoin or donate directly to an invoice with PayPal',
+			// 	image: '/static/images/faceicon.png',
+			// 	sticky: false, 
+			// 	time: 5000
+			// });
+
+					});
+	</script>
+	
+	<svg width="1px" height="1px" version="1.1"	xmlns="http://www.w3.org/2000/svg" style="position:fixed;">
+	<defs>
+	<filter id="huehuehue">
+	<feColorMatrix type="hueRotate" values="1">
+	<animate      
+	        attributeName="values" 
+	        attributeType="XML"    
+	        from="1" to="360"     
+	        begin="0s" dur="2s" 
+	        fill="freeze"
+	    repeatDur="indefinite"
+	    />    
+	</feColorMatrix>
+    
+	</filter>
+	</defs>
+	</svg> 
+	<script type="text/javascript">
+	var colorTime = 0,
+	    waveTheta = 0,
+	    maxCount = 40,
+	    colorIncrement = -12,
+	    waveIncrement = 0.05,
+	    xPos = [ -1, -0.5, 0, 0.5, 1 ],
+	    yPos = [ -1, -0.5, 0, 0.5, 1 ],
+	    props = {};
+
+	var getTextShadow = function( x, y, hue ) {
+	  return ', ' + x + 'px ' + y + 'px hsl(' + hue + ', 100%, 50%)';
+	};
+
+	var animate = function() {
+	  var shadows = '0 0 transparent',
+	      hue0 = colorTime % 360,
+	      i, j, x, y,
+	      iLen = xPos.length, 
+	      jLen = yPos.length;
+
+	  // outline
+	  for ( i = 0; i < iLen; i++ ) {
+	    x = xPos[i];
+	    for ( j = 0; j < jLen; j++ ) {
+	      y = yPos[j];
+	      shadows += getTextShadow( x, y, hue0 );
+	    }
+	  }
+
+	  // renders rainbow river
+	  for ( i = 1; i < maxCount; i++ ) {
+	    var normI = i / maxCount,
+	        hue = ( normI * 360 * 2 + colorTime ) % 360;
+	    x = ~~( ( Math.sin( normI * Math.PI * 2 + waveTheta ) - Math.sin( waveTheta ) )  * 50 );
+	    y = i * 3;
+	    shadows += getTextShadow( x, y, hue );
+	  }
+
+	  props.groovy.style.textShadow = shadows;
+	  colorTime += colorIncrement;
+	  waveTheta += waveIncrement;
+	  setTimeout( animate, 30 );
+	};
+
+	var init = function() {
+	    $( ".groovy" ).each(function( index ) {
+	        props.groovy = this;
+	    });
+	    setTimeout( animate, 1 );
+	};
+
+	window.addEventListener( 'DOMContentLoaded', init, false);
+
+	/* 2 */
+	// <![CDATA[
+	var speed=100; // speed colours change, 1 second = 1000
+	var glow=3; // can be set from '0' for no glow, to 10
+	var raincol=new Array("#ff0000", "#ff5500", "#ffaa00", "#ffff00", "#aaff00", "#55ff00", "#00ff00", "#00ff55", "#00ffaa", "#00ffff", "#00aaff", "#0055ff", "#0000ff", "#5500ff", "#aa00ff", "#ff00ff", "#ff00aa", "#ff0055"); // change the colours if you want to
+	var alink=""; // page to link text to (set to ="" for no link)
+
+	var rainbow, raintxt, raincnt=0;
+
+	function addLoadEvent(funky) {
+	  var oldonload=window.onload;
+	  if (typeof(oldonload)!='function') window.onload=funky;
+	  else window.onload=function() {
+	    if (oldonload) oldonload();
+	    funky();
+	  }
+	}
+
+	addLoadEvent(regenbogen);
+
+	function regenbogen() { if (document.getElementById) {
+	  var i, rainbeau;
+	  rainbow=document.getElementById("rainbow");
+	  raintxt=rainbow.firstChild.nodeValue;
+	  while (rainbow.childNodes.length) rainbow.removeChild(rainbow.childNodes[0]);
+	  for (i=0; i<raintxt.length; i++) {
+	    rainbeau=document.createElement("span");
+	    rainbeau.setAttribute("id", "rain"+i);
+	    rainbeau.appendChild(document.createTextNode(raintxt.charAt(i)));
+	    if (alink) {
+	      rainbeau.style.cursor="pointer";
+	      rainbeau.onclick=function() { top.location.href=alink; }
+	    }
+	    rainbow.appendChild(rainbeau);
+	  }
+	  rainbow=setInterval ("raining()", speed);
+	}}
+
+	function raining() {
+	  var i, c;
+	  for (i=0; i<raintxt.length; i++) {
+	    c=raincol[(i+raincnt)%raincol.length];
+	    document.getElementById("rain"+i).style.color=c;
+		if (glow) document.getElementById("rain"+i).style.textShadow=c+" 0px 0px "+glow+"px";
+	  }
+	  raincnt++;
+	}
+	// ]]>
+	</script>
+	<style type="text/css">		
+		.icons {
+		    background-image: url(/static/images/board_icons/spritesheet.png);
+		    background-repeat: no-repeat;
+		    display: block;
+			float: left;
+		}
+
+		#icon_1701 {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1px -1px;
+		}
+
+		#icon_420 {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -26px -1px;
+		}
+
+		#icon_616 {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -51px -1px;
+		}
+
+		#icon_ana {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -76px -1px;
+		}
+
+		#icon_ani {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -101px -1px;
+		}
+
+		#icon_art {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -127px -1px;
+		}
+
+		#icon_b {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -153px -1px;
+		}
+
+		#icon_benz {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -178px -1px;
+		}
+
+		#icon_cd {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -203px -1px;
+		}
+
+		#icon_chem {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -228px -1px;
+		}
+
+		#icon_crops {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -253px -1px;
+		}
+
+		#icon_del {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -278px -1px;
+		}
+
+		#icon_detox {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -303px -1px;
+		}
+
+		#icon_dino {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -328px -1px;
+		}
+
+		#icon_dis {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -353px -1px;
+		}
+
+		#icon_dr {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -378px -1px;
+		}
+
+		#icon_f {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -403px -1px;
+		}
+
+		#icon_fo {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -429px -1px;
+		}
+
+		#icon_ga {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -454px -1px;
+		}
+
+		#icon_gore {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -480px -1px;
+		}
+
+		#icon_h {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -505px -1px;
+		}
+
+		#icon_his {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -531px -1px;
+		}
+
+		#icon_hooch {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -556px -1px;
+		}
+
+		#icon_howto {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -582px -1px;
+		}
+
+		#icon_jenk {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -608px -1px;
+		}
+
+		#icon_lang {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -633px -1px;
+		}
+
+		#icon_law {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -659px -1px;
+		}
+
+		#icon_lit {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -684px -1px;
+		}
+
+		#icon_m {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -709px -1px;
+		}
+
+		#icon_math {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -735px -1px;
+		}
+
+		#icon_mdma {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -760px -1px;
+		}
+
+		#icon_med {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -786px -1px;
+		}
+
+		#icon_mma {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -812px -1px;
+		}
+
+		#icon_mtv {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -837px -1px;
+		}
+
+		#icon_n {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -863px -1px;
+		}
+
+		#icon_nc {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -888px -1px;
+		}
+
+		#icon_nj {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -914px -1px;
+		}
+
+		#icon_nom {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -940px -1px;
+		}
+
+		#icon_nra {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -966px -1px;
+		}
+
+		#icon_opi {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -991px -1px;
+		}
+
+		#icon_other {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -1016px -1px;
+		}
+
+		#icon_po {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -1042px -1px;
+		}
+
+		#icon_pol {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1068px -1px;
+		}
+
+		#icon_prog {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1093px -1px;
+		}
+
+		#icon_pss {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1118px -1px;
+		}
+
+		#icon_psy {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1143px -1px;
+		}
+
+		#icon_qq {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -1168px -1px;
+		}
+
+		#icon_sa {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -1194px -1px;
+		}
+
+		#icon_sagan {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1220px -1px;
+		}
+
+		#icon_sd {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1245px -1px;
+		}
+
+		#icon_smoke {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1270px -1px;
+		}
+
+		#icon_spooky {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1295px -1px;
+		}
+
+		#icon_sport {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -1320px -1px;
+		}
+
+		#icon_st {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1346px -1px;
+		}
+
+		#icon_stim {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1371px -1px;
+		}
+
+		#icon_tech {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1396px -1px;
+		}
+
+		#icon_tesla {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -1421px -1px;
+		}
+
+		#icon_tg {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -1447px -1px;
+		}
+
+		#icon_tinfoil {
+		    width: 24px;
+		    height: 24px;
+		    background-position: -1473px -1px;
+		}
+
+		#icon_vg {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1499px -1px;
+		}
+
+		#icon_vroom {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1524px -1px;
+		}
+
+		#icon_w {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1549px -1px;
+		}
+
+		#icon_wc {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1574px -1px;
+		}
+
+		#icon_weed {
+		    width: 24px;
+		    height: 25px;
+		    background-position: -1599px -1px;
+		}
+
+		#icon_wooo {
+		    width: 23px;
+		    height: 24px;
+		    background-position: -1625px -1px;
+		}
+
+		#crabby-shell { position:fixed; bottom:0; right:0; z-index:100 } /* crabby shell, get it?! GET IT?! */
+		#crabby-bubble { font-family:"Comic Sans MS", "Times", cursive; font-size:15px; color:black; display:none; 
+						position:absolute; z-index:10000; bottom:250px; right:40px; padding: 10px;  min-width:275px; 
+						border:1px solid #000; background:#fffdca; -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; 
+						-moz-box-shadow:9px 19px 19px rgba(0,0,0,0.43); }
+		#crabby-bubble #crabby-arrow { width:42px; height:58px; background:url(/static/images/text-tail.png) no-repeat; 
+										position:absolute; bottom:-58px; right:200px; }
+		#crabby-bubble #crabby-text-close { position:absolute; top:0; right:6px; } 								
+		#crabby-bubble a { color:blue; }
+		#crabby-bubble a:hover { color:lightblue; }
+		#crabby-bubble ul { list-style:disc; margin:5px 10px; }
+		#crabby-bubble li { margin-left:10px; }
+		#crabby-home #crabby-shell { position:relative; top:auto; right:auto; }
+
+		#searchform { margin-top: 2px; }
+		#searchform input {
+			border-radius: 3px;
+			-moz-border-radius: 3px;
+			-webkit-border-radius: 3px;
+			background: #333;
+			color: #ddd;
+			border: 1px solid #444;
+			font-size: 11px;
+		}
+
+		#header { margin-top: 40px; }
+		ul.dropdown ul, ul.dropdown ul li { z-index: 599; }
+		.postblock { display: none; }
+		.debug {
+			background: #404040;
+			font-weight: bold;
+			padding: 4px;
+			margin: 4px;
+			width: 500px;
+			float:right;
+			-moz-border-radius: 8px;
+			-webkit-border-radius: 8px;
+			border-radius: 8px;
+		}
+		.debug p { margin: 4px; }
+		body { margin: 0px; }
+		.lock {
+			background: #a0d0ff;
+			border: 1px dotted #6080ff;
+			clear: both;
+			margin: 4px 6px;
+			padding-top: 2px;
+			max-width: 450px;
+			overflow: auto;
+			-moz-border-radius: 6px;
+			-webkit-border-radius: 6px;
+			border-radius: 6px;
+		}
+		.lock .banmsg, .lock .bannedby { color: darkblue; }
+		.warn {
+			background: #ffff66;
+			border: 1px dotted #996600;
+			clear: both;
+			margin: 4px 6px;
+			padding-top: 2px;
+			max-width: 450px;
+			overflow: auto;
+			-moz-border-radius: 6px;
+			-webkit-border-radius: 6px;
+			border-radius: 6px;
+		}
+		.warn .banimage { margin-left: 10px; }
+		.warn .banmsg, .warn .bannedby { color: #996600; }
+		.warn .banmessages { max-width: 362px; }
+		#rules { margin-left: auto; margin-right: auto; width: 400px; }
+		frame { border:0; }
+		.icon { vertical-align: middle; border: none; width: 24px; height: 24px; }
+		#gritter-notice-wrapper { top: 34px; right:2.5%; }
+	
+				
+		
+		@-webkit-keyframes huehuehue {
+		  0%   { -webkit-filter:hue-rotate(1deg); }
+		  100% { -webkit-filter:hue-rotate(360deg); }
+		} 
+		@keyframes huehuehue {
+		  0%   {  filter:hue-rotate(1deg); } 
+		  100% {  filter:hue-rotate(360deg); }
+		}
+		@-webkit-keyframes inderp {
+  		  0%  { -webkit-filter:invert(0); }
+		  50%  { -webkit-filter:invert(100%); }
+		  100%  { -webkit-filter:invert(0); }
+		} 
+		@keyframes inderp {
+		  0%   {  filter:invert(0%); } 
+		  50%   {  filter:invert(100%); } 
+		  100% {  filter:invert(0%); }
+		}
+		@-webkit-keyframes barf {
+		  0%   { -webkit-transform:rotate(1deg); }
+		  100% { -webkit-transform:rotate(360deg); }
+		} 
+		@-moz-keyframes barf {
+		  0%   { -moz-transform:rotate(1deg); }
+		  100% { -moz-transform:rotate(360deg); }
+		} 
+		@keyframes barf {
+		  0%   {  transform:rotate(1deg); } 
+		  100% {  transform:rotate(360deg); }
+		}	
+		
+	     .barf { -webkit-animation: barf 5s linear infinite normal; 
+		-moz-animation: barf 5s linear infinite normal; 
+		animation: barf 5s linear infinite normal;
+		font-size: 20px; font-weight: bold;}
+		
+				
+		.barf .thumb { -webkit-animation: barf 5s linear infinite normal; 
+		-moz-animation: barf 5s linear infinite normal;
+		}
+
+		.lol .thumb { -webkit-animation: inderp 5s linear infinite normal;}
+
+		.banned .thumb, .huehuehue .thumb {
+			-webkit-animation: huehuehue 5s linear infinite normal;
+			animation: huehuehue 5s linear infinite normal;
+		}
+
+		@-moz-document url-prefix() { 
+			.banned .thumb, .huehuehue .thumb, .kcode .thumb, .kcode .board_icon, .kcode .icons{ filter:url(#huehuehue); }
+			
+		}
+		
+		.kcode .thumb, .kcode .board_icon, .kcode .icons{
+			-webkit-animation: huehuehue 2s linear infinite normal, barf 4.5s linear infinite normal;
+			-moz-animation: barf 4.5s linear infinite normal;
+		}
+
+		.groovy {
+/*		  font: bold 80px 'Cooper Black', 'Cooper Std', 'Cooper Std Black', sans-serif;*/
+		  font: bold 60px 'helvetica', 'arial', sans-serif;
+
+/*		  text-align: center;*/
+		  color: white;
+		  margin: 0;
+		  margin-bottom: 110px !important;
+		  margin-left: 90px;
+		  margin-right: 90px;
+		}
+	</style>
+	
+ 	
+	<!-- <script src="/crabby.js" type="text/javascript" charset="utf-8"></script> -->
+	
+	<script type="text/javascript" charset="utf-8">
+		var Cookie = {
+			/**
+			 * Cached cookies.
+			 */
+			cache: {},
+
+			/**
+			 * Create a cookie. Can accept a third parameter as a literal object of options.
+			 *
+			 * @param key
+			 * @param value
+			 * @param options
+			 */
+			create: function(key, value, options) {
+				options = $.extend({}, options);
+				options.expires = options.expires || 1; // 1 hour
+
+				if (typeof options.expires == 'number') {
+					var hours = options.expires;
+					options.expires = new Date();
+					options.expires.setTime(options.expires.getTime() + (hours * 3600000));
+				}
+
+				var cookie = [
+					encodeURIComponent(key) +'=',
+					options.escape ? encodeURIComponent(value) : value,
+					options.expires ? '; expires=' + options.expires.toUTCString() : '',
+					options.path ? '; path=' + options.path : '',
+					options.domain ? '; domain=' + options.domain : '',
+					options.secure ? '; secure' : ''
+				];
+
+				document.cookie = cookie.join('');
+
+				if (Cookie.cache) {
+					if (options.expires.getTime() < (new Date()).getTime())
+						delete Cookie.cache[key];
+					else
+						Cookie.cache[key] = value;
+				}
+			},
+
+			/**
+			 * Read a cookie.
+			 *
+			 * @param key
+			 * @return string
+			 */
+			read: function(key) {
+				// Use cache when available
+				if (Cookie.cache[key])
+					return Cookie.cache[key];
+
+				var cache = {};
+				var cookies = document.cookie.split(';');
+
+				if (cookies.length > 0) {
+					for (var i = 0; i < cookies.length; i++) {
+						var parts = cookies[i].split('=');
+
+						if (parts.length >= 2)
+							cache[$.trim(parts[0])] = parts[1];
+					}
+				}
+
+				Cookie.cache = cache;
+				return cache[key] || null;
+			},
+
+			/**
+			 * Delete a cookie.
+			 *
+			 * @param key
+			 */
+			erase: function(key, options) {
+				if (!options) {
+					options = { expires: -1 };
+
+				} else if (!options.expires) {
+					options.expires = -1;
+				}
+
+				Cookie.create(key, 0, options);
+			}
+		};
+	</script>
+	<script src="http://cdn.420chan.org/j/swfobject.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <script src="/crabbyspeech.js" type="text/javascript" charset="utf-8"></script> -->
+	<script type="text/javascript">
+		(function($) {
+			$.fn.konami = function(options) {
+				var opts = $.extend({}, $.fn.konami.defaults, options);
+				return this.each(function() {
+					var masterKey = [38,38,40,40,37,39,37,39,66,65];
+					var controllerCode = [];
+					$(window).keyup(function(evt) {
+						var code = evt.keyCode ? evt.keyCode : evt.which;
+						controllerCode.push(code);
+						if(controllerCode.length === 10) {
+							var bIsValid = true;
+							for(var i = 0, l = masterKey.length; i < l; i++) {
+								if(masterKey[i] !== controllerCode[i]) {
+									bIsValid = false;
+								} // end if
+							} // end for
+							if(bIsValid) {
+								opts.cheat();
+							} // end if
+							controllerCode = [];
+						} // end if
+					}); // keyup
+				}); // each
+			}; // opts
+			$.fn.konami.defaults = {
+				cheat: null
+			};
+		})(jQuery);
+
+		$(window).konami({
+			cheat: function(){				
+				$.gritter.add({
+					title: 'WOAH THERE',
+					text: 'HOT DAMN THAT\'S SOME GOOD STUFF LET ME HAVE A HIT OF THAT! WOW YOUR FACE TURNED INTO A BUTT',
+					image: '/static/images/faceicon.png',
+					sticky: false, 
+					time: 5000
+				});
+
+				$('body').addClass('kcode');
+								
+				// Cookie.create('crabbyEnabled','If you delete this cookie you hate everything that is good and kind',{path:"/", expires: 24});
+				// Cookie.create('nws','1',{path:"/", domain:".420chan.org", expires: 24});
+				// Cookie.create('defaulttheme','randy',{path:"/", domain:".420chan.org", expires: 24});
+				// Crabby.init();
+			}
+		});
+
+		// var crabbyEnabled = Cookie.read('crabbyEnabled');
+		// var fart = Cookie.read('nws');
+		// var dookie = Cookie.read('defaulttheme');
+
+		// if (crabbyEnabled) {
+		// 	$(function() {
+		// 		var crabNest = $('#crabby-home')
+		// 		if(crabNest.length > 0)
+		// 			Crabby.init('#crabby-home');
+		// 		else
+		// 			Crabby.init()
+		// 	});
+		// } else if (!crabbyEnabled) {	
+		// 	if(fart) {
+		// 		$(function() {
+		// 				Crabby.init("yes")
+		// 		});				
+		// 	} else if (dookie) {
+		// 		$(function() {
+		// 				Crabby.init("yes")
+		// 		});				
+		// 	}
+		// } 
+				
+	</script>
+	
+	<!-- <script type="text/javascript" src="/donationutilities/jwplayer.js"></script> -->
+ </head> <body class="unknown">  <div class="brand-mamabar"> <div class="brand-mamabar-wrapper"> <ul class="brand-mamabar-list"> <li><a class="brand-mamabar-active">420chan</a></li> <li><a href="http://shop.taimalabs.com/">The Taima Shop</a></li>				 <li><a href="http://taimapedia.org/">Taimapedia</a></li> <!-- <li><a href="http://taima.tv/">TaimaTV</a></li> --> <!-- <li><a href="http://spyderlake.com/">Spyder Lake</a></li> --> </ul> <a href="http://www.taimalabs.com/" class="brand-mamabar-logo"> <img width="94" height="15" src="/static/images/taimalabs.png" alt="Taima Labs" /> </a> </div> </div> 
+	<script src="/static/js/ext.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+	$(function() {
+		var _0x1039=["\x67\x65\x74\x54\x69\x6D\x65","\x76\x61\x6C","\x5B\x6E\x61\x6D\x65\x3D\x62\x61\x6E\x61\x6E\x61\x5D","\x2F\x62\x75\x6E\x6B\x65\x72\x2F","\x50\x4F\x53\x54","\x6A\x73\x6F\x6E","\x3C\x69\x6E\x70\x75\x74\x20\x74\x79\x70\x65\x3D\x22\x68\x69\x64\x64\x65\x6E\x22\x20\x6E\x61\x6D\x65\x3D\x22\x62\x61\x6E\x61\x6E\x61\x22\x20\x76\x61\x6C\x75\x65\x3D\x22","\x72\x65\x73\x70\x6F\x6E\x73\x65","\x22\x3E","\x61\x70\x70\x65\x6E\x64","\x66\x6F\x72\x6D\x23\x71\x72\x70\x6F\x73\x74\x66\x6F\x72\x6D\x2C\x20\x66\x6F\x72\x6D\x23\x70\x6F\x73\x74\x66\x6F\x72\x6D","\x61\x6A\x61\x78","\x73\x75\x62\x6D\x69\x74"];var d= new Date()[_0x1039[0]]();$(_0x1039[10])[_0x1039[12]](function (_0x5016x2){if(!$(_0x1039[2])[_0x1039[1]]()){c= new Date()[_0x1039[0]]()-d+62742;$[_0x1039[11]]({url:_0x1039[3],type:_0x1039[4],data:{b:c},dataType:_0x1039[5],async:false,success:function (_0x5016x3){$(_0x1039[10])[_0x1039[9]](_0x1039[6]+_0x5016x3[_0x1039[7]]+_0x1039[8]);} });} ;$(this)[_0x1039[12]];} );
+
+		$('span.idhighlight').click(function(){
+			$('td.reply').removeClass('idhighlighted');
+			array=[];
+			array = $(this).html().split('ID:');
+			array = array[1].split(' ');
+			id = array[0];
+			$('div.replyheader:contains("'+id+'")').parent().addClass('idhighlighted');
+		});
+	});
+	</script>
+	
+	<style type="text/css" media="screen">
+	
+	blockquote img {
+		max-width:32px;
+		vertical-align: middle;
+	}
+	td.idhighlighted { 
+		background: #305030;
+	}
+	td.idhighlighted div.replyheader {
+		background: #204020;
+	}
+	#nowplaying { margin: 0px auto; background: rgba(0,0,0,0.2); width: 100%; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 0px 1px 1px rgba(0,0,0,1); }
+	#nowplaying p {  padding: 10px; margin: 0;}
+		
+		#statusbar {
+			width: 100%;
+			position: fixed;
+			bottom: 0;
+			height: 35px;
+			padding: 1px 0;
+			z-index: 99998;
+			box-shadow: rgba(0,0,0,0.8) 0 1px 5px,rgba(255,255,255,0.15) 0 1px 0 inset;
+			background: #333;
+			background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0%,#444),color-stop(100%,#111));
+			background-image: -webkit-linear-gradient(#444,#111);
+			background-image: -moz-linear-gradient(#444,#111);
+			background-image: -o-linear-gradient(#444,#111);
+			background-image: linear-gradient(#444,#111);
+			text-shadow: 0px -1px 0px rgba(0,0,0,0.9);
+		}
+					
+		#statusbar img { display:inline; vertical-align: middle; }
+
+		#footer-progress-bar {
+			background-color: #1a1a1a;
+			height: 22px;
+			padding: 4px;
+			width: 300px;
+			margin: 2px 0;			
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			border-radius: 5px;
+			-moz-box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+			-webkit-box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+			box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+		}
+
+		#footer-progress-bar span {
+			display: inline-block;
+			white-space:nowrap;
+			height: 100%;	
+/*			background-color: rgba(116,213,0,0.9);*/
+			background-color: rgba(255,0,0,0.9);
+			text-align: center;
+			font-size: 20px; line-height: 25px;
+			 font-weight: bold; color: #fff;
+
+			-moz-border-radius: 3px;
+			-webkit-border-radius: 3px;
+			border-radius: 3px;
+			-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+			-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+			box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+			-webkit-background-size: 30px 30px;
+			-moz-background-size: 30px 30px;
+			background-size: 30px 30px;			
+			background-image: -webkit-gradient(linear, left top, right bottom,
+								color-stop(.25, rgba(0, 0, 0, 0.8)), color-stop(.25, transparent),
+								color-stop(.5, transparent), color-stop(.5, rgba(0, 0, 0, 0.8)),
+								color-stop(.75, rgba(0, 0, 0, 0.8)), color-stop(.75, transparent),
+								to(transparent));
+			background-image: -webkit-linear-gradient(135deg, rgba(0, 0, 0, 0.8) 25%, transparent 25%,
+								transparent 50%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 75%,
+								transparent 75%, transparent);
+			background-image: -moz-linear-gradient(135deg, rgba(0, 0, 0, 0.8) 25%, transparent 25%,
+								transparent 50%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 75%,
+								transparent 75%, transparent);
+			background-image: -ms-linear-gradient(135deg, rgba(0, 0, 0, 0.8) 25%, transparent 25%,
+								transparent 50%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 75%,
+								transparent 75%, transparent);
+			background-image: -o-linear-gradient(135deg, rgba(0, 0, 0, 0.8) 25%, transparent 25%,
+								transparent 50%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 75%,
+								transparent 75%, transparent);
+			background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 25%, transparent 25%,
+								transparent 50%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 75%,
+								transparent 75%, transparent);
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="//cdn.420chan.org/c/glyphicons.css">
+
+
+	<div id='dropdown_container'>
+		<ul class='dropdown' style="max-height: 24px;">
+			<li onmouseover='' class='first'><a id='fp_link' class='dir' href='http://420chan.org'>420chan</a>
+				<ul>
+					<li><a href='http://420chan.org/rules'>Rules</a></li>
+					<li><a href='http://420chan.org/irc'>IRC Info</a></li>
+					<li><a href='http://420chan.org/faq'>FAQ</a></li>
+				</ul>
+			</li>
+			<li onmouseover=''><a class='dir'>Drugs</a>
+<ul><li><a class='boardlink' title='Cannabis Discussion' href='/weed'><div class='icons' id='icon_weed'></div>Cannabis Discussion</a></li>
+<li><a class='boardlink' title='Alcohol Discussion' href='/hooch'><div class='icons' id='icon_hooch'></div>Alcohol Discussion</a></li>
+<li><a class='boardlink' title='Ecstasy Discussion' href='/mdma'><div class='icons' id='icon_mdma'></div>Ecstasy Discussion</a></li>
+<li><a class='boardlink' title='Psychedelic Discussion' href='/psy'><div class='icons' id='icon_psy'></div>Psychedelic Discussion</a></li>
+<li><a class='boardlink' title='Stimulant Discussion' href='/stim'><div class='icons' id='icon_stim'></div>Stimulant Discussion</a></li>
+<li><a class='boardlink' title='Dissociative Discussion' href='/dis'><div class='icons' id='icon_dis'></div>Dissociative Discussion</a></li>
+<li><a class='boardlink' title='Opiate Discussion' href='/opi'><div class='icons' id='icon_opi'></div>Opiate Discussion</a></li>
+<li><a class='boardlink' title='Tobacco Discussion' href='/smoke'><div class='icons' id='icon_smoke'></div>Tobacco Discussion</a></li>
+<li><a class='boardlink' title='Benzodiazepine Discussion' href='/benz'><div class='icons' id='icon_benz'></div>Benzo Discussion</a></li>
+<li><a class='boardlink' title='Deliriant Discussion' href='/del'><div class='icons' id='icon_del'></div>Deliriant Discussion</a></li>
+<li><a class='boardlink' title='Other Drugs Discussion' href='/other'><div class='icons' id='icon_other'></div>Other Drugs</a></li>
+<li><a class='boardlink' title='HUFF JENK ERRYDAY' href='/jenk'><div class='icons' id='icon_jenk'></div>Jenkem Discussion</a></li>
+<li><a class='boardlink' title='Detoxify Yoself' href='/detox'><div class='icons' id='icon_detox'></div>Detox</a></li>
+</ul>
+</li>
+<li onmouseover=''><a class='dir'>Lifestyle</a>
+<ul><li><a class='boardlink' title='Personal Issues' href='/qq'><div class='icons' id='icon_qq'></div>Personal Issues</a></li>
+<li><a class='boardlink' title='Dream Discussion' href='/dr'><div class='icons' id='icon_dr'></div>Dreams</a></li>
+<li><a class='boardlink' title='Fitness' href='/ana'><div class='icons' id='icon_ana'></div>Fitness</a></li>
+<li><a class='boardlink' title='DERICIOUS FOOD' href='/nom'><div class='icons' id='icon_nom'></div>Food &amp; Munchies</a></li>
+<li><a class='boardlink' title='Travel &amp; Transportation' href='/vroom'><div class='icons' id='icon_vroom'></div>Transportation &amp; Travel</a></li>
+<li><a class='boardlink' title='Style &amp; Fashion' href='/st'><div class='icons' id='icon_st'></div>Style &amp; Fashion</a></li>
+<li><a class='boardlink' title='PEWPEWPEW' href='/nra'><div class='icons' id='icon_nra'></div>Weapons</a></li>
+<li><a class='boardlink' title='Sexuality Discussion' href='/sd'><div class='icons' id='icon_sd'></div>Sexuality Discussion</a></li>
+<li><a class='boardlink' title='Transgender Discussion' href='/cd'><div class='icons' id='icon_cd'></div>Transgender Discussion</a></li>
+</ul>
+</li>
+<li onmouseover=''><a class='dir'>Academia</a>
+<ul><li><a class='boardlink' title='Art &amp; Oekaki' href='/art'><div class='icons' id='icon_art'></div>Art &amp; Oekaki</a></li>
+<li><a class='boardlink' title='Space... the Final Frontier' href='/sagan'><div class='icons' id='icon_sagan'></div>Space &amp; Astronomy</a></li>
+<li><a class='boardlink' title='Mathematics' href='/math'><div class='icons' id='icon_math'></div>Mathematics</a></li>
+<li><a class='boardlink' title='Engineering' href='/tesla'><div class='icons' id='icon_tesla'></div>Engineering</a></li>
+<li><a class='boardlink' title='World Languages' href='/lang'><div class='icons' id='icon_lang'></div>World Languages</a></li>
+<li><a class='boardlink' title='Science &amp; Chemistry' href='/chem'><div class='icons' id='icon_chem'></div>Science &amp; Chemistry</a></li>
+<li><a class='boardlink' title='History' href='/his'><div class='icons' id='icon_his'></div>History</a></li>
+<li><a class='boardlink' title='Growing &amp; Botany' href='/crops'><div class='icons' id='icon_crops'></div>Growing &amp; Botany</a></li>
+<li><a class='boardlink' title='Guides &amp; Tutorials' href='/howto'><div class='icons' id='icon_howto'></div>Guides &amp; Tutorials</a></li>
+<li><a class='boardlink' title='OBJECTION' href='/law'><div class='icons' id='icon_law'></div>Law Discussion</a></li>
+<li><a class='boardlink' title='Books &amp; Literature' href='/lit'><div class='icons' id='icon_lit'></div>Books &amp; Literature</a></li>
+<li><a class='boardlink' title='Medicine &amp; Health' href='/med'><div class='icons' id='icon_med'></div>Medicine &amp; Health</a></li>
+<li><a class='boardlink' title='Philosophy &amp; Social Sciences' href='/pss'><div class='icons' id='icon_pss'></div>Social Sciences</a></li>
+<li><a class='boardlink' title='Politics' href='/pol'><div class='icons' id='icon_pol'></div>Politics</a></li>
+<li><a class='boardlink' title='Computers &amp; Technology' href='/tech'><div class='icons' id='icon_tech'></div>Computers &amp; Technology</a></li>
+<li><a class='boardlink' title='Programming' href='/prog'><div class='icons' id='icon_prog'></div>Programming</a></li>
+</ul>
+</li>
+<li onmouseover=''><a class='dir'>Media</a>
+<ul><li><a class='boardlink' title='STAR TREK FUCK YEAH' href='/1701'><div class='icons' id='icon_1701'></div>Star Trek</a></li>
+<li><a class='boardlink' title='Sports' href='/sport'><div class='icons' id='icon_sport'></div>Sports</a></li>
+<li><a class='boardlink' title='Movies &amp; Television' href='/mtv'><div class='icons' id='icon_mtv'></div>Movies &amp; Television</a></li>
+<li><a class='boardlink' title='Flash' href='/f'><div class='icons' id='icon_f'></div>Flash</a></li>
+<li><a class='boardlink' title='Music &amp; Production' href='/m'><div class='icons' id='icon_m'></div>Music &amp; Production</a></li>
+<li><a class='boardlink' title='Mixed Martial Arts Discussion' href='/mma'><div class='icons' id='icon_mma'></div>Mixed Martial Arts</a></li>
+<li><a class='boardlink' title='Comics &amp; Web Comics Discussion' href='/616'><div class='icons' id='icon_616'></div>Comics</a></li>
+<li><a class='boardlink' title='Professional Wrestling Discussion' href='/wooo'><div class='icons' id='icon_wooo'></div>Pro Wrestling</a></li>
+<li><a class='boardlink' title='World News' href='/n'><div class='icons' id='icon_n'></div>World News</a></li>
+<li><a class='boardlink' title='Video Games' href='/vg'><div class='icons' id='icon_vg'></div>Video Games</a></li>
+<li><a class='boardlink' title='SO YOU WANNA BE A MASTAH?' href='/po'><div class='icons' id='icon_po'></div>Pok&eacute;mon</a></li>
+<li><a class='boardlink' title='Traditional Games' href='/tg'><div class='icons' id='icon_tg'></div>Traditional Games</a></li>
+</ul>
+</li>
+<li onmouseover=''><a class='dir'>Miscellanea</a>
+<ul><li><a class='boardlink' title='420chan Discussion &amp; Staff Interaction' href='/420'><div class='icons' id='icon_420'></div>420chan Discussion</a></li>
+<li><a class='boardlink' title='Random &amp; High Stuff' href='/b'><div class='icons' id='icon_b'></div>Random &amp; High Stuff</a></li>
+<li><a class='boardlink' title='OH SHIT WHAT WAS THAT?' href='/spooky'><div class='icons' id='icon_spooky'></div>Paranormal</a></li>
+<li><a class='boardlink' title='Dinosaur Discussion' href='/dino'><div class='icons' id='icon_dino'></div>Dinosaurs</a></li>
+<li><a class='boardlink' title='Post-apocalyptic' href='/fo'><div class='icons' id='icon_fo'></div>Post-apocalyptic</a></li>
+<li><a class='boardlink' title='Animal Discussion' href='/ani'><div class='icons' id='icon_ani'></div>Animals</a></li>
+<li><a class='boardlink' title='Netjester AI Conversation Chamber' href='/nj'><div class='icons' id='icon_nj'></div>Netjester AI</a></li>
+<li><a class='boardlink' title='Net Characters' href='/nc'><div class='icons' id='icon_nc'></div>Net Characters</a></li>
+<li><a class='boardlink' title='*Wildcard (Futurism)*' href='/wc'><div class='icons' id='icon_wc'></div>*Wildcard (Futurism)*</a></li>
+<li><a class='boardlink' title='Conspiracy Theories' href='/tinfoil'><div class='icons' id='icon_tinfoil'></div>Conspiracy Theories</a></li>
+<li><a class='boardlink' title='Dump Wallpapers Below' href='/w'><div class='icons' id='icon_w'></div>Desktop Wallpapers</a></li>
+</ul>
+</li>
+<li onmouseover=''><a class='dir'>Adult</a>
+<ul><li><a class='boardlink' title='Adult (Gay)' href='/ga'><div class='icons' id='icon_ga'></div>Adult (Gay)</a></li>
+<li><a class='boardlink' title='Adult (Straight)' href='/sa'><div class='icons' id='icon_sa'></div>Adult (Straight)</a></li>
+<li><a class='boardlink' title='Hentai' href='/h'><div class='icons' id='icon_h'></div>Hentai</a></li>
+</ul>
+</li>
+			<li>
+				<a class='dir' href="/include/random.php">
+					<span>Random</span>
+					<span>Thread</span>
+				</a>
+			</li>
+			<li>
+				<form action="http://420chan.org/search/" name="searchform" id="searchform">
+					<input name="search" type="text" value="SEARCH BOARDS..." onfocus="if (this.value == 'SEARCH BOARDS...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'SEARCH BOARDS...';}" />
+				</form>
+			</li>
+			<li class='right' style='float: right;' onmouseover=''><a class='dir'>Options</a>
+				<ul id="options">
+					<li><a onclick="javascript:set_stylesheet('Randy')">Randy Theme</a></li>
+					<li><a onclick="javascript:set_stylesheet('Classic')">Classic Theme</a></li>
+					<li><a onclick="javascript:set_stylesheet('Princess')">Princess Theme</a></li>
+					<li><a onclick="javascript:set_stylesheet('Rainbow')">Rainbow Theme</a></li>
+					<li class='sparoff'><a>Disable Zen Mode</a></li>
+					<li class='sparon'><a>Enable Zen Mode</a></li>
+					<li class='helpoff'><a>Disable Help Tooltips</a></li>
+					<li class='helpon'><a>Enable Help Tooltips</a></li>
+					<li class='partyoff'><a>Disable PermaParty Mode</a></li>
+					<li class='partyon'><a>Enable PermaParty Mode</a></li>
+					<li class='musicoff'><a>Turn Music Off</a></li>
+					<li class='musicon'><a>Turn Music On</a></li>
+				</ul>
+			</li>
+						
+		</ul>
+	</div>
+	<div id="xmers"></div>
+	 <div id="header"> <div id="board_logo"> <a href="/b/" style="text-decoration:none; color:inherit;"> <img class="board_icon" src="/static/images/board_icons/b_icon_64.png" alt="/b/ Icon" /> <p class="board_title_block"> <span class="board_name">/b/ &amp; /high/</span> <span class="board_title">Random &amp; High Stuff</span> </p> </a> </div>	 <div id="derps" style="width:468px; height:60px; float: right; display: block;"> </div> </div><div id="content"> 	<div style="width: 100%; text-align: center; font-size: 18px; font-weight: bold; line-height: 22px; margin: 5px auto">
+		AnonAccount: What is it, and what does it do? - <a href="http://boards.420chan.org/420/res/167672.php">Q&amp;A Thread</a><br>
+	</div>
+	<!-- <div style="width: 100%; text-align: center; font-size: 14px; font-weight: bold; line-height: 22px; margin: 5px auto">
+		Build apps and browsing enhancements!
+	</div> -->
+	
+	<!-- <div style="width: 100%; text-align: center; font-size: 14px; line-height: 18px; margin: 5px auto"><script>
+	var CoinWidget_Config = {
+		address : '13N1cvD7Cw8ZdJ74Ry7buBMhQKzN4nHvTB',
+		counter : 'hide',
+		text : 'Donate BTC to 420chan',
+		text_label : 'Our Bitcoin Address:'
+	};
+	</script> 
+	<script src="http://c.coinwidget.com/widget.js"></script></div> -->	<!-- <div style="border-radius: 0 6px 0 0; float: right; position:relative; width: 228px; height: 248px; margin-left: -228px; background: url(http://cdn.420chan.org/s/img/left-callout.png) no-repeat;"><a href="http://shop.taimalabs.com/collections/stickers"><span style="display: block; position: absolute; top: 0; left: 0; width: 228px; height: 248px; z-index: 20;"></a></div>
+	<div style="border-radius: 6px 0 0 0; float: left; position:relative; width: 228px; height: 248px; margin-right: -228px; background: url(http://cdn.420chan.org/s/img/right-callout.png) no-repeat;"><a href="http://shop.taimalabs.com/products/logo-shot-glass"><span style="display: block; position: absolute; top: 0; left: 0; width: 228px; height: 248px; z-index: 20;"></a></div> -->
+	<!-- <div class="rss">
+		<a href="http://shop.taimalabs.com/collections/stickers" style="font-size: 1.4em; margin: 2px 0;">Now Offering <b>FREE WORLDWIDE SHIPPING</b><br> On All <b>420chan Logo</b> &amp; <b>Netjester</b> Sticker Orders!</a>
+	</div> -->
+		<!-- <div style="float: left; width: 160px; margin-right: -160px;">
+		<iframe style="float: left; border-top-left-radius: 6px;" class="shopify-widget" frameborder="0" scrolling="no" width="160" height="233" src="http://widgets.shopifyapps.com/products/soul-of-the-banned?shop=420chan-store.myshopify.com&style=mnml&image-size=compact&text-color=%23eeeeee&button-bg-color=%23505050&button-text-color=%23eeeeee&background-color=%23333333"></iframe>
+		</div> -->
+	 <!--  <div style="position: absolute; right: 2.5%;"> <ul style="text-align: right; float: right; list-style: none; margin: 5px; font-size: 11px;"> <li style="margin-bottom: 2px;">Board IRC: <a href="irc://irc.420chan.org/420chan">#420chan @ irc.420chan.org</a></li> <li>New to IRC? <a href="http://420chan.org/#irc">Start Here</a></li> </ul> </div>  --> <!-- <div class="rss"> <a href="http://420chan.org/donate/" style="font-size: 1.4em; font-weight: bold; margin: 2px 0;">420chan "Donate-or-Die" Donation FAQ</a> </div> -->   <div class="postarea"> <form id="postform" action="/b/taimaba.pl" method="post" enctype="multipart/form-data"> <input type="hidden" name="board" value="b" /> <input type="hidden" name="task" value="post" /> <input title="Password" type="hidden" name="password" size="8" />    <input type="hidden" name="name" />   <div class="trap"> Leave these fields empty (spam trap): <input type="text" name="name" size="28" autocomplete="off" /> <input type="text" name="link" size="28" autocomplete="off" /> </div>  <table> <tbody>      <tr style="font-weight: bold;"><td style="text-align: center;">A subject is required when posting a new thread</td></tr>   <tr> <td class="postblock">Subject</td> <td> <input title="Subject" type="text" name="field3" style="width:354px;" /> <div style="display:none;"></div> <input type="submit" value="Submit Post" class="postsubmit" style="width:96px;" /> <div style="display:none;"></div> </td> </tr>   <tr> <td class="postblock">Comment</td> <td> <textarea title="Comment" name="field4" rows="4" style="width:456px;" cols="50"></textarea> <div class="tooltip"> [*]<i>Italic Text</i>[/*] <br /> [**]<b>Bold Text</b>[/**] <br />									 [~]Taimapedia Article[/~] <br /> [%]Spoiler Text[/%] <br /> <span class="unkfunc">&gt;Highlight/Quote Text</span> <br /> [pre]Preformatted &amp; Monospace text[/pre] <br /> 1. Numbered lists become ordered lists <br /> * Bulleted lists become unordered lists <br /> </div> </td> </tr> <!-- <tr> <td> <input type="button" name="b" value="Bold" onclick="this.form.field4.value=this.form.field4.value.concat('[b][/b]');" /> <input type="button" name="i" value="Italic" onclick="this.form.field4.value=this.form.field4.value.concat('[i][/i]');" /> <input type="button" name="taimapedia" value="Taimapedia" onclick="this.form.field4.value=this.form.field4.value.concat('[taimapedia][/taimapedia]');" /> <input type="button" name="spoiler" value="Spoiler" onclick="this.form.field4.value=this.form.field4.value.concat('[spoiler][/spoiler]');"> </td> </tr> -->  <tr> <td class="postblock">File</td> <td> <input type="file" name="file" /> <div style="display:none;"></div>  <label> <input type="checkbox" name="sage" value="on" /> No Bump </label> <p style="display:none;"></p> <a href="/static/sandwich.php" class="popup"> <span class="sandwich"></span>Sandwich </a> </td> </tr>  <!-- <tr> <td class="postblock">Password</td> <td> <input title="Password" type="hidden" name="password" size="8" /> <div style="display:none;"></div> (Password for post and file deletion) </td>				 </tr> --> </tbody> </table> </form> </div> <script type="text/javascript">set_anoninputs("postform")</script>  <div id="rules"> <ul> <li>Supported file types are: GIF, JPG, PNG</li> <li>Maximum file size allowed is 5000KB.</li> <li>Images greater than 256x200 pixels will be thumbnailed.</li> <li>No personal contact info is to be posted under any circumstances.</li> 			 <li style="font-size: 16px; font-weight: bold;">SMOKE MORE. CHILL OUT.</li> </ul> </div> <hr style="margin-bottom:2px;" /> 	
+<div style="margin: 5px auto 1px; width: 728px;">
+	<a target="_blank" href="http://taimashop.co/collections/apparel"><img src="http://cdn.420chan.org/s/img/shirtbanner.gif"></a>
+</div>
+<style type="text/css" media="screen">
+.iflb iframe { height: 90px !important;}
+.iflb { display: none; margin: 0 auto; width: 728px; }
+</style>
+
+<div class="iflb">
+		<script type="text/javascript">
+		   var sppc_site      = '13';
+		   var sppc_channel   = '82';
+		   var sppc_dimension = '1';
+		   var sppc_width     = '728';
+		   var sppc_height    = '90';
+		   var sppc_palette   = '27';
+		   var sppc_user      = '50';
+		</script>
+		<!-- <script type="text/javascript" src="http://adserver.420network.com/show.js"></script> -->
+	</div>
+ <hr style="margin-top:2px;" />   <form id="delform" action="/b/taimaba.pl" method="post" style="margin-top: none;"> <input type="hidden" name="board" value="b" />    <div id=""> <div class="thread_header"> <a id="3695658"></a> <span class="filetitle">SARVAR BULLS</span>  <span class="inbetween"> by </span> <span class="postername">Kirtaner</span> <span class="postertrip">!Ub4TCdRjOM</span> <span class="inbetween"> - <span class="idhighlight">Fri, 11 Jul 2014 15:49:57 EST ID:UTr9Pk3c</span></span>  <span class="reflink"> <a href="/b/res/3695658.php#i3695658">No.3695658</a> </span>   <i class="gl glyphicon-paperclip"></i>   			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3695658&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3695658&amp;vote=1">Yes!</a>  -->   <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3695658')" title="Report Thread 3695658"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3695658.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3695658" data-thread="3695658"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #91226D; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>-->  </div>  <span class="filesize"> <a target="_blank" href="/b/src/1405108197226.gif"> 1405108197226.gif </a> -(<em>1313079 B, 636x424</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb32393235353236333032" target="_blank" href="/b/src/1405108197226.gif"> <img src="/b/thumb/1405108197226s.jpg" alt="1313079" class="thumb" /> </a>   			 <blockquote class="opcomment">  THEENK OF DA CHEELDWEENS<br><embed allowscriptaccess="never" height="224" src="http://pitchinbox.com/widget/widget.swf?id=7588392829" type="application/x-shockwave-flash" width="320" wmode="transparent">   </blockquote>   				 				  <span class="omittedposts">  466 posts and 157 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3695658.php#3711040" onclick="highlight(3711040);">&gt;&gt;</a></td> <td class="reply" id="reply3711040"> <a id="3711040"></a> <div class="replyheader"> 									 <span class="commentpostername">Greg Iron</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:11:24 EST ID:hrhM9uIH</span> <span class="reflink">  <a href="/b/res/3695658.php#i3711040">No.3711040</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343034323836383338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711040', '3695658')" title="Report Post 3711040"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711040" data-thread="3695658"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #B4FCCA; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343034323836383338">  <a href = "/b/res/3695658.php#3711035" onclick = "highlight(3711035)">&gt;&gt;3711035</a><br><br>i want my 99 seconds back.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3695658.php#3711049" onclick="highlight(3711049);">&gt;&gt;</a></td> <td class="reply" id="reply3711049"> <a id="3711049"></a> <div class="replyheader"> 									 <span class="commentpostername">Ricardo Almeida</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:25:11 EST ID:EbKt6j5x</span> <span class="reflink">  <a href="/b/res/3695658.php#i3711049">No.3711049</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363435353533393431')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711049', '3695658')" title="Report Post 3711049"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711049" data-thread="3695658"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #872E80; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363435353533393431">  <a href = "/b/res/3695658.php#3711035" onclick = "highlight(3711035)">&gt;&gt;3711035</a><br>THEENK OF DA CHEELDWEENS   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3695658.php#3711055" onclick="highlight(3711055);">&gt;&gt;</a></td> <td class="reply" id="reply3711055"> <a id="3711055"></a> <div class="replyheader"> 									 <span class="commentpostername">Jean-Georges Vongerichten</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:33:36 EST ID:cHoNGljS</span> <span class="reflink">  <a href="/b/res/3695658.php#i3711055">No.3711055</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313434303738373839')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711055', '3695658')" title="Report Post 3711055"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711055" data-thread="3695658"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #05CA7B; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31313434303738373839">  <a href = "/b/res/3695658.php#3711035" onclick = "highlight(3711035)">&gt;&gt;3711035</a><br><a href = "/b/res/3695658.php#3711035" onclick = "highlight(3711035)">&gt;&gt;3711035</a><br><a href = "/b/res/3695658.php#3711035" onclick = "highlight(3711035)">&gt;&gt;3711035</a><br>Those are some pretty nice tits, but they&#39;re lopsided.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710982"> <div class="thread_header"> <a id="3710982"></a> <span class="filetitle">ITT Every Cliche 420chan Shitstorm</span>  <span class="inbetween"> by </span> <span class="postername">Starfy</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 21:08:06 EST ID:ThGj8d7k</span></span>  <span class="reflink"> <a href="/b/res/3710982.php#i3710982">No.3710982</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710982&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710982&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b33303634343734393631')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710982')" title="Report Thread 3710982"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710982.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710982" data-thread="3710982"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #9C8EA8; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710982');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406164086061.jpg"> 1406164086061.jpg </a> -(<em>431242 B, 1000x1256</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb33303634343734393631" target="_blank" href="/b/src/1406164086061.jpg"> <img src="/b/thumb/1406164086061s.jpg" alt="431242" class="thumb" /> </a>   			 <blockquote class="opcomment b33303634343734393631">  SO why are feminists all up in arms about MUH-SOJINY all the time, men have problems too and are discriminated against, especially us fedora wearing intellectual brony atheists. This is all probably caused by Americunts shitty attitudes, in turn caused by eating shitty McDongs and processed high fructose corn syrup shakes. I mean why can&#39;t these bitches just be more like my glorious WAIFU (pic related)?!? Fucking cringe worthy bitches.   </blockquote>   				 				  <span class="omittedposts">  32 posts and 13 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710982.php#3711079" onclick="highlight(3711079);">&gt;&gt;</a></td> <td class="reply" id="reply3711079"> <a id="3711079"></a> <div class="replyheader"> 									 <span class="commentpostername">Alex Fickleshits</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:52:08 EST ID:TwjU9K0L</span> <span class="reflink">  <a href="/b/res/3710982.php#i3711079">No.3711079</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393038373331383837')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711079', '3710982')" title="Report Post 3711079"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711079" data-thread="3710982"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #7ED0C7; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406170328215.jpg"> 1406170328215.jpg </a> -(<em>25407 B, 500x377</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406170328215.jpg"> <img src="/b/thumb/1406170328215s.jpg" alt="25407" class="thumb" /> </a>    <blockquote  class="b32393038373331383837">  I hate those people that are alive and they&#39;re always doing things constantly like wtf can&#39;t you just not be living for like five seconds because you have some kind of stick up your ass that you have to procreate and manipulate objects. Why can&#39;t they be more like my WAIFANDO (pic related)?!? Fucking cringe worthy scriches   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710982.php#3711080" onclick="highlight(3711080);">&gt;&gt;</a></td> <td class="reply" id="reply3711080"> <a id="3711080"></a> <div class="replyheader"> 									 <span class="commentpostername">Nava</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:52:18 EST ID:kCr9ztoW</span> <span class="reflink">  <a href="/b/res/3710982.php#i3711080">No.3711080</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313032303437303236')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711080', '3710982')" title="Report Post 3711080"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711080" data-thread="3710982"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #05076B; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31313032303437303236">  <a href = "/b/res/3710982.php#3711078" onclick = "highlight(3711078)">&gt;&gt;3711078</a><br><br>THE CREEPINESS<br><br>MAKE IT STOP   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710982.php#3711082" onclick="highlight(3711082);">&gt;&gt;</a></td> <td class="reply" id="reply3711082"> <a id="3711082"></a> <div class="replyheader"> 									 <span class="commentpostername">Magma Admin Jenny</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:54:51 EST ID:5hB2SuKp</span> <span class="reflink">  <a href="/b/res/3710982.php#i3711082">No.3711082</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363134303438353338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711082', '3710982')" title="Report Post 3711082"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711082" data-thread="3710982"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #07DC2A; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363134303438353338">  OP you need to smoke more and chill out   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710982.php#3711083" onclick="highlight(3711083);">&gt;&gt;</a></td> <td class="reply" id="reply3711083"> <a id="3711083"></a> <div class="replyheader"> 									 <span class="commentpostername">Greg Iron</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:54:58 EST ID:hrhM9uIH</span> <span class="reflink">  <a href="/b/res/3710982.php#i3711083">No.3711083</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343034323836383338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711083', '3710982')" title="Report Post 3711083"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711083" data-thread="3710982"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #FBB0E2; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406170498657.gif"> 1406170498657.gif </a> -(<em>766803 B, 245x245</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406170498657.gif"> <img src="/b/thumb/1406170498657s.jpg" alt="766803" class="thumb" /> </a>    <blockquote  class="b343034323836383338">  <a href = "/b/res/3710982.php#3711080" onclick = "highlight(3711080)">&gt;&gt;3711080</a><br><br>dont stop me now <span class="spoiler" onmouseover=""><span>im having such a good time, im outta control</span></span>   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3709212"> <div class="thread_header"> <a id="3709212"></a> <span class="filetitle">I have made a terrible mistake</span>  <span class="inbetween"> by </span> <span class="postername">Ettore Boiardi</span>  <span class="inbetween"> - <span class="idhighlight">Tue, 22 Jul 2014 09:13:56 EST ID:iRdbvmw+</span></span>  <span class="reflink"> <a href="/b/res/3709212.php#i3709212">No.3709212</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3709212&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3709212&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b33353831303435303738')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3709212')" title="Report Thread 3709212"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3709212.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709212" data-thread="3709212"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #A99F38; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3709212');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406034836012.jpg"> 1406034836012.jpg </a> -(<em>325415 B, 1215x891</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb33353831303435303738" target="_blank" href="/b/src/1406034836012.jpg"> <img src="/b/thumb/1406034836012s.jpg" alt="325415" class="thumb" /> </a>   			 <blockquote class="opcomment b33353831303435303738">  <a href="https://www.youtube.com/watch?v=VhpXrSE0g6Q" rel="nofollow" target="_blank">https://www.youtube.com/watch?v=VhpXrSE0g6Q</a>   </blockquote>   				 				  <span class="omittedposts">  119 posts and 32 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3709212.php#3710958" onclick="highlight(3710958);">&gt;&gt;</a></td> <td class="reply" id="reply3710958"> <a id="3710958"></a> <div class="replyheader"> 									 <span class="commentpostername">Skier Lydia</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:44:55 EST ID:2Q2GDPSz</span> <span class="reflink">  <a href="/b/res/3709212.php#i3710958">No.3710958</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b33333938393135393837')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710958', '3709212')" title="Report Post 3710958"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710958" data-thread="3709212"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #28CDD2; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406162695428.jpg"> 1406162695428.jpg </a> -(<em>2306051 B, 3264x2448</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406162695428.jpg"> <img src="/b/thumb/1406162695428s.jpg" alt="2306051" class="thumb" /> </a>    <blockquote  class="b33333938393135393837">  Mfw the military gives me adderal. 4 free.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709212.php#3711017" onclick="highlight(3711017);">&gt;&gt;</a></td> <td class="reply" id="reply3711017"> <a id="3711017"></a> <div class="replyheader"> 									 <span class="commentpostername">Ernest Goodwell</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:48:36 EST ID:j+qBV2o8</span> <span class="reflink">  <a href="/b/res/3709212.php#i3711017">No.3711017</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323637373334363937')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711017', '3709212')" title="Report Post 3711017"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711017" data-thread="3709212"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #666732; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31323637373334363937">  <a href = "/b/res/3709212.php#3710922" onclick = "highlight(3710922)">&gt;&gt;3710922</a><br><blockquote class = "unkfunc">&gt;I don&#39;t really get why she took a shine to me<br>&gt;I regurlary flipped my shit on camps, basically yelling and raving. Once threw an axe at my squadmates who were doing fuck all while I was chopping wood for camoflauge knee deep in snow.<br></blockquote>that&#39;s why   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709212.php#3711059" onclick="highlight(3711059);">&gt;&gt;</a></td> <td class="reply" id="reply3711059"> <a id="3711059"></a> <div class="replyheader"> 									 <span class="commentpostername">Alice Somblestet</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:39:37 EST ID:rY8LxTXd</span> <span class="reflink">  <a href="/b/res/3709212.php#i3711059">No.3711059</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b383530333533353239')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711059', '3709212')" title="Report Post 3711059"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711059" data-thread="3709212"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #DBDE6C; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406169577138.jpg"> 1406169577138.jpg </a> -(<em>45981 B, 695x960</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406169577138.jpg"> <img src="/b/thumb/1406169577138s.jpg" alt="45981" class="thumb" /> </a>    <blockquote  class="b383530333533353239">  Lol they look like a bunch of pussies who dropped out of high school because they were too busy getting a good k/d ratio on Call of Duty.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709212.php#3711081" onclick="highlight(3711081);">&gt;&gt;</a></td> <td class="reply" id="reply3711081"> <a id="3711081"></a> <div class="replyheader"> 									 <span class="commentpostername">Nava</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:53:14 EST ID:kCr9ztoW</span> <span class="reflink">  <a href="/b/res/3709212.php#i3711081">No.3711081</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313032303437303236')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711081', '3709212')" title="Report Post 3711081"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711081" data-thread="3709212"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #A053DF; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31313032303437303236">  <a href = "/b/res/3709212.php#3711059" onclick = "highlight(3711059)">&gt;&gt;3711059</a><br><br>mmm I&#39;d go gay for that<br><br>Wait maybe I&#39;m already gay<br><br>Yep.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3711068"> <div class="thread_header"> <a id="3711068"></a> <span class="filetitle">Botched executions</span>  <span class="inbetween"> by </span> <span class="postername">Dick Gumshoe</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 22:45:53 EST ID:wgdWKLvi</span></span>  <span class="reflink"> <a href="/b/res/3711068.php#i3711068">No.3711068</a> </span>    			 <!--  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323036323132323134')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3711068')" title="Report Thread 3711068"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3711068.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711068" data-thread="3711068"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #D12BC5; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3711068');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406169953967.jpg"> 1406169953967.jpg </a> -(<em>90566 B, 970x1213</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31323036323132323134" target="_blank" href="/b/src/1406169953967.jpg"> <img src="/b/thumb/1406169953967s.jpg" alt="90566" class="thumb" /> </a>   			 <blockquote class="opcomment b31323036323132323134">  Seriously, how do you fuck up a lethal injection? Apparently this guy took 2 hours to die (this was in Arizona). Killing someone with drugs isn&#39;t exactly rocket science..   </blockquote>   				 				       <table><tbody><tr><td class="doubledash"><a href="/b/res/3711068.php#3711075" onclick="highlight(3711075);">&gt;&gt;</a></td> <td class="reply" id="reply3711075"> <a id="3711075"></a> <div class="replyheader"> 									 <span class="commentpostername">Subcommander N'Vek</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:49:39 EST ID:GMxh9UYm</span> <span class="reflink">  <a href="/b/res/3711068.php#i3711075">No.3711075</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323031383233383238')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711075', '3711068')" title="Report Post 3711075"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711075" data-thread="3711068"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #24BEA0; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406170179305.jpg"> 1406170179305.jpg </a> -(<em>68692 B, 550x550</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406170179305.jpg"> <img src="/b/thumb/1406170179305s.jpg" alt="68692" class="thumb" /> </a>    <blockquote  class="b31323031383233383238">  <blockquote class = "unkfunc">&gt;death penalty thread</blockquote>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3711068.php#3711077" onclick="highlight(3711077);">&gt;&gt;</a></td> <td class="reply" id="reply3711077"> <a id="3711077"></a> <div class="replyheader"> 									 <span class="commentpostername">Ellen Brownpaste</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:50:59 EST ID:jsBiB6yG</span> <span class="reflink">  <a href="/b/res/3711068.php#i3711077">No.3711077</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31353336393332303736')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711077', '3711068')" title="Report Post 3711077"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711077" data-thread="3711068"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #A26087; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406170259136.gif"> 1406170259136.gif </a> -(<em>1144614 B, 200x150</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406170259136.gif"> <img src="/b/src/1406170259136.gif" alt="1144614" class="thumb" /> </a>    <blockquote  class="b31353336393332303736">  <a href = "/b/res/3711068.php#3711075" onclick = "highlight(3711075)">&gt;&gt;3711075</a>   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3707535"> <div class="thread_header"> <a id="3707535"></a> <span class="filetitle">Drugs you would never fucking do.</span>  <span class="inbetween"> by </span> <span class="postername">Robert Dicke</span>  <span class="inbetween"> - <span class="idhighlight">Mon, 21 Jul 2014 05:21:13 EST ID:cHoNGljS</span></span>  <span class="reflink"> <a href="/b/res/3707535.php#i3707535">No.3707535</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3707535&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3707535&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313434303738373839')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3707535')" title="Report Thread 3707535"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3707535.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3707535" data-thread="3707535"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #B241CC; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3707535');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1405934473643.jpg"> 1405934473643.jpg </a> -(<em>164052 B, 600x430</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31313434303738373839" target="_blank" href="/b/src/1405934473643.jpg"> <img src="/b/thumb/1405934473643s.jpg" alt="164052" class="thumb" /> </a>   			 <blockquote class="opcomment b31313434303738373839">  Well we all know what drugs you guys WOULD do, but what about those drugs you would never do? For me it&#39;s heroin. Just heroin, that&#39;s it. And acid or shrooms too. But maybe I might do those.<br><br>but never heeoin. What about you guys?   </blockquote>   				 				  <span class="omittedposts">  120 posts and 26 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3707535.php#3711036" onclick="highlight(3711036);">&gt;&gt;</a></td> <td class="reply" id="reply3711036"> <a id="3711036"></a> <div class="replyheader"> 									 <span class="commentpostername">Commander Tomalak</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:08:59 EST ID:WzL4J6kN</span> <span class="reflink">  <a href="/b/res/3707535.php#i3711036">No.3711036</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343033363139353737')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711036', '3707535')" title="Report Post 3711036"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711036" data-thread="3707535"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #36C56F; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343033363139353737">  <a href = "/b/res/3707535.php#3707947" onclick = "highlight(3707947)">&gt;&gt;3707947</a><br>Nicotine is more addictive than heroin. Of all the popular drugs, it&#39;s the most addictive. Seriously, you can look it up   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707535.php#3711044" onclick="highlight(3711044);">&gt;&gt;</a></td> <td class="reply" id="reply3711044"> <a id="3711044"></a> <div class="replyheader"> 									 <span class="commentpostername">ErnestPickham.xml</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:19:11 EST ID:pkVbIUIA</span> <span class="reflink">  <a href="/b/res/3707535.php#i3711044">No.3711044</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b33333938393135393730')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711044', '3707535')" title="Report Post 3711044"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711044" data-thread="3707535"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #454877; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b33333938393135393730">  <a href = "/b/res/3707535.php#3711036" onclick = "highlight(3711036)">&gt;&gt;3711036</a><br>I doubt that   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707535.php#3711047" onclick="highlight(3711047);">&gt;&gt;</a></td> <td class="reply" id="reply3711047"> <a id="3711047"></a> <div class="replyheader"> 									 <span class="commentpostername">Greg Iron</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:23:10 EST ID:hrhM9uIH</span> <span class="reflink">  <a href="/b/res/3707535.php#i3711047">No.3711047</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343034323836383338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711047', '3707535')" title="Report Post 3711047"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711047" data-thread="3707535"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #1DE2D6; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343034323836383338">  <a href = "/b/res/3707535.php#3711036" onclick = "highlight(3711036)">&gt;&gt;3711036</a><br><br>depends on the person. same could be said for crack cocaine <span class="spoiler" onmouseover=""><span>and crack cocaine accessories</span></span>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707535.php#3711072" onclick="highlight(3711072);">&gt;&gt;</a></td> <td class="reply" id="reply3711072"> <a id="3711072"></a> <div class="replyheader"> 									 <span class="commentpostername">Lt. Darien Wallace</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:47:26 EST ID:qbOZ9jtt</span> <span class="reflink">  <a href="/b/res/3707535.php#i3711072">No.3711072</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313831393134313631')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711072', '3707535')" title="Report Post 3711072"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711072" data-thread="3707535"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #5F35A2; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31313831393134313631">  I&#39;m with you OP, after seeing countless friends FUCK their life up simply from heroin I&#39;ll never do it. Never Ever Never Never Ever EVER<br><br><span class="spoiler" onmouseover=""><span> If you can do heroin and still be a respectable human being more power to ya, the fact is that is quite a rarity  </span></span>   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3709816"> <div class="thread_header"> <a id="3709816"></a> <span class="filetitle">Post Desktop</span>  <span class="inbetween"> by </span> <span class="postername">Urbain Dubois</span>  <span class="inbetween"> - <span class="idhighlight">Tue, 22 Jul 2014 20:09:51 EST ID:Yb4lL706</span></span>  <span class="reflink"> <a href="/b/res/3709816.php#i3709816">No.3709816</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3709816&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3709816&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323534343033303033')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3709816')" title="Report Thread 3709816"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3709816.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709816" data-thread="3709816"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #AA0F7A; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3709816');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406074191016.png"> 1406074191016.png </a> -(<em>3367718 B, 1600x900</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31323534343033303033" target="_blank" href="/b/src/1406074191016.png"> <img src="/b/thumb/1406074191016s.jpg" alt="3367718" class="thumb" /> </a>   			 <blockquote class="opcomment b31323534343033303033">  Screenshot your desktop, without tidying. Now.   </blockquote>   				 				  <span class="omittedposts">  89 posts and 59 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3709816.php#3711064" onclick="highlight(3711064);">&gt;&gt;</a></td> <td class="reply" id="reply3711064"> <a id="3711064"></a> <div class="replyheader"> 									 <span class="commentpostername">Greg Iron</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:43:01 EST ID:hrhM9uIH</span> <span class="reflink">  <a href="/b/res/3709816.php#i3711064">No.3711064</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343034323836383338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711064', '3709816')" title="Report Post 3711064"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711064" data-thread="3709816"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #AA8223; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343034323836383338">  <a href = "/b/res/3709816.php#3711053" onclick = "highlight(3711053)">&gt;&gt;3711053</a><br><br>hey that guy cant just not have a license plate   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709816.php#3711066" onclick="highlight(3711066);">&gt;&gt;</a></td> <td class="reply" id="reply3711066"> <a id="3711066"></a> <div class="replyheader"> 									 <span class="commentpostername">Yushin Okami</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:44:57 EST ID:ZjWYK17f</span> <span class="reflink">  <a href="/b/res/3709816.php#i3711066">No.3711066</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31343439353136333536')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711066', '3709816')" title="Report Post 3711066"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711066" data-thread="3709816"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #20934A; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31343439353136333536">  <a href = "/b/res/3709816.php#3711064" onclick = "highlight(3711064)">&gt;&gt;3711064</a><br>Maybe he&#39;s on a track. :3   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709816.php#3711067" onclick="highlight(3711067);">&gt;&gt;</a></td> <td class="reply" id="reply3711067"> <a id="3711067"></a> <div class="replyheader"> 									 <span class="commentpostername">Netjester</span> <span class="postertrip">!AI.skYnEt</span> - <span class="idhighlight">Wed, 23 Jul 2014 22:45:04 EST ID: iLikEToleARn</span> <span class="reflink">  <a href="/b/res/3709816.php#i3711067">No.3711067</a>   </span>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711067', '3709816')" title="Report Post 3711067"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711067" data-thread="3709816"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #DA2211; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote >  <a href = "/b/res/3709816.php#3711066" onclick = "highlight(3711066)">&gt;&gt;3711066</a> <br>He&#39;s kind of like a curren$y track imo)   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709816.php#3711069" onclick="highlight(3711069);">&gt;&gt;</a></td> <td class="reply" id="reply3711069"> <a id="3711069"></a> <div class="replyheader"> 									 <span class="commentpostername">Yushin Okami</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:46:21 EST ID:ZjWYK17f</span> <span class="reflink">  <a href="/b/res/3709816.php#i3711069">No.3711069</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31343439353136333536')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711069', '3709816')" title="Report Post 3711069"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711069" data-thread="3709816"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #92C6AE; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31343439353136333536">  <a href = "/b/res/3709816.php#3711067" onclick = "highlight(3711067)">&gt;&gt;3711067</a><br>How come no one is noticing i still play NFSU 1.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710571"> <div class="thread_header"> <a id="3710571"></a> <span class="filetitle">Let&#39;s play a game - POKEDRAW!</span>  <span class="inbetween"> by </span> <span class="postername">Doris Honeyspear</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 14:47:03 EST ID:4h7RTNnS</span></span>  <span class="reflink"> <a href="/b/res/3710571.php#i3710571">No.3710571</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710571&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710571&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323238313037303836')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710571')" title="Report Thread 3710571"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710571.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710571" data-thread="3710571"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #9B91A9; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710571');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406141223701.jpg"> 1406141223701.jpg </a> -(<em>95393 B, 1077x445</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31323238313037303836" target="_blank" href="/b/src/1406141223701.jpg"> <img src="/b/thumb/1406141223701s.jpg" alt="95393" class="thumb" /> </a>   			 <blockquote class="opcomment b31323238313037303836">  <a href="http://www.pokedraw.net/" rel="nofollow" target="_blank">http://www.pokedraw.net/</a><br><br>You have 45 seconds to draw a random Pokemon.<br>Post your results.   </blockquote>   				 				  <span class="omittedposts">  53 posts and 46 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710571.php#3711043" onclick="highlight(3711043);">&gt;&gt;</a></td> <td class="reply" id="reply3711043"> <a id="3711043"></a> <div class="replyheader"> 									 <span class="commentpostername">Nava</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:18:22 EST ID:kCr9ztoW</span> <span class="reflink">  <a href="/b/res/3710571.php#i3711043">No.3711043</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313032303437303236')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711043', '3710571')" title="Report Post 3711043"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711043" data-thread="3710571"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #090B0E; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406168302293.jpg"> 1406168302293.jpg </a> -(<em>17877 B, 437x437</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406168302293.jpg"> <img src="/b/thumb/1406168302293s.jpg" alt="17877" class="thumb" /> </a>    <blockquote  class="b31313032303437303236">  PERFECT! IT&#39;S PERFECT!<br><br><span class="spoiler" onmouseover=""><span>Grimer.</span></span>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710571.php#3711050" onclick="highlight(3711050);">&gt;&gt;</a></td> <td class="reply" id="reply3711050"> <a id="3711050"></a> <div class="replyheader"> 									 <span class="commentpostername">Nava</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:25:20 EST ID:kCr9ztoW</span> <span class="reflink">  <a href="/b/res/3710571.php#i3711050">No.3711050</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313032303437303236')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711050', '3710571')" title="Report Post 3711050"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711050" data-thread="3710571"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #C72068; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406168720293.png"> 1406168720293.png </a> -(<em>474324 B, 1920x1080</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406168720293.png"> <img src="/b/thumb/1406168720293s.jpg" alt="474324" class="thumb" /> </a>    <blockquote  class="b31313032303437303236">  FUCK   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710571.php#3711051" onclick="highlight(3711051);">&gt;&gt;</a></td> <td class="reply" id="reply3711051"> <a id="3711051"></a> <div class="replyheader"> 									 <span class="commentpostername">Frylock</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:30:40 EST ID:dl4elQKL</span> <span class="reflink">  <a href="/b/res/3710571.php#i3711051">No.3711051</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323635343135323031')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711051', '3710571')" title="Report Post 3711051"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711051" data-thread="3710571"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #67C126; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406169040575.jpg"> 1406169040575.jpg </a> -(<em>28001 B, 400x300</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406169040575.jpg"> <img src="/b/thumb/1406169040575s.jpg" alt="28001" class="thumb" /> </a>    <blockquote  class="b31323635343135323031">  <a href = "/b/res/3710571.php#3711022" onclick = "highlight(3711022)">&gt;&gt;3711022</a><br>Bahahahaha goddammit.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710571.php#3711063" onclick="highlight(3711063);">&gt;&gt;</a></td> <td class="reply" id="reply3711063"> <a id="3711063"></a> <div class="replyheader"> 									 <span class="commentpostername">Charlotte Hullychedge</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:42:11 EST ID:zjWSNb23</span> <span class="reflink">  <a href="/b/res/3710571.php#i3711063">No.3711063</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363634303735383738')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711063', '3710571')" title="Report Post 3711063"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711063" data-thread="3710571"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #56F0FD; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363634303735383738">  <a href = "/b/res/3710571.php" onclick = "highlight(3710571)">&gt;&gt;3710571</a><br>Look through the gallery, there is some serious gold in there<br><br>VINCENT SUCKS!!!   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710723"> <div class="thread_header"> <a id="3710723"></a> <span class="filetitle">Ink</span>  <span class="inbetween"> by </span> <span class="postername">Duane Ludwig</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 17:02:34 EST ID:eOVcXFJe</span></span>  <span class="reflink"> <a href="/b/res/3710723.php#i3710723">No.3710723</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710723&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710723&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393334383235303232')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710723')" title="Report Thread 3710723"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710723.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710723" data-thread="3710723"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #5F28E9; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710723');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406149354633.jpg"> 1406149354633.jpg </a> -(<em>15195 B, 259x194</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb32393334383235303232" target="_blank" href="/b/src/1406149354633.jpg"> <img src="/b/thumb/1406149354633s.jpg" alt="15195" class="thumb" /> </a>   			 <blockquote class="opcomment b32393334383235303232">  Let&#39;s post ink we want/have/like<br><br>General tattoo thread.   </blockquote>   				 				  <span class="omittedposts">  28 posts and 14 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710723.php#3711056" onclick="highlight(3711056);">&gt;&gt;</a></td> <td class="reply" id="reply3711056"> <a id="3711056"></a> <div class="replyheader"> 									 <span class="commentpostername">Ricardo Almeida</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:34:11 EST ID:EbKt6j5x</span> <span class="reflink">  <a href="/b/res/3710723.php#i3711056">No.3711056</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363435353533393431')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711056', '3710723')" title="Report Post 3711056"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711056" data-thread="3710723"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #ED4E03; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363435353533393431">  <a href = "/b/res/3710723.php#3711048" onclick = "highlight(3711048)">&gt;&gt;3711048</a><br>DATS A FUNNY JOKE   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710723.php#3711057" onclick="highlight(3711057);">&gt;&gt;</a></td> <td class="reply" id="reply3711057"> <a id="3711057"></a> <div class="replyheader"> 									 <span class="commentpostername">Pherson O'Rallie</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:37:21 EST ID:gJx9XpXg</span> <span class="reflink">  <a href="/b/res/3710723.php#i3711057">No.3711057</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31303930323438323336')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711057', '3710723')" title="Report Post 3711057"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711057" data-thread="3710723"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #49803F; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406169441774.jpg"> 1406169441774.jpg </a> -(<em>53982 B, 800x533</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406169441774.jpg"> <img src="/b/thumb/1406169441774s.jpg" alt="53982" class="thumb" /> </a>    <blockquote  class="b31303930323438323336">  Nice try NSA!! You&#39;ll not get me to post pictures of my identifying features!<br><br>Instead, here&#39;s a sexy lady.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710723.php#3711060" onclick="highlight(3711060);">&gt;&gt;</a></td> <td class="reply" id="reply3711060"> <a id="3711060"></a> <div class="replyheader"> 									 <span class="commentpostername">Darkwing Duck</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:39:39 EST ID:wHpHDlCC</span> <span class="reflink">  <a href="/b/res/3710723.php#i3711060">No.3711060</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323232363431333839')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711060', '3710723')" title="Report Post 3711060"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711060" data-thread="3710723"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #3F0DF0; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406169579103.png"> 1406169579103.png </a> -(<em>167226 B, 424x318</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406169579103.png"> <img src="/b/thumb/1406169579103s.jpg" alt="167226" class="thumb" /> </a>    <blockquote  class="b31323232363431333839">  <a href = "/b/res/3710723.php#3711056" onclick = "highlight(3711056)">&gt;&gt;3711056</a><br><br>I know, I&#39;m pathetic.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710723.php#3711071" onclick="highlight(3711071);">&gt;&gt;</a></td> <td class="reply" id="reply3711071"> <a id="3711071"></a> <div class="replyheader"> 									 <span class="commentpostername">Mitch</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:46:40 EST ID:593VisLj</span> <span class="reflink">  <a href="/b/res/3710723.php#i3711071">No.3711071</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b383438393231373238')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711071', '3710723')" title="Report Post 3711071"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711071" data-thread="3710723"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #31C85B; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b383438393231373238">  <a href = "/b/res/3710723.php#3711060" onclick = "highlight(3711060)">&gt;&gt;3711060</a><br>At least you tried.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710862"> <div class="thread_header"> <a id="3710862"></a> <span class="filetitle">We have to surrender to the flow</span>  <span class="inbetween"> by </span> <span class="postername">Tyquan Dickerson</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 18:49:42 EST ID:TGZ5uEN5</span></span>  <span class="reflink"> <a href="/b/res/3710862.php#i3710862">No.3710862</a> </span>    			 <!--  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363531363938323633')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710862')" title="Report Thread 3710862"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710862.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710862" data-thread="3710862"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #55688C; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710862');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406155782186.gif"> 1406155782186.gif </a> -(<em>47445 B, 416x396</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31363531363938323633" target="_blank" href="/b/src/1406155782186.gif"> <img src="/b/thumb/1406155782186s.jpg" alt="47445" class="thumb" /> </a>   			 <blockquote class="opcomment b31363531363938323633">  Surrender to the flow   </blockquote>   				 				  <span class="omittedposts">  4 posts and 3 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710862.php#3710947" onclick="highlight(3710947);">&gt;&gt;</a></td> <td class="reply" id="reply3710947"> <a id="3710947"></a> <div class="replyheader"> 									 <span class="commentpostername">Channeler Doris</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:39:39 EST ID:9942TZ/g</span> <span class="reflink">  <a href="/b/res/3710862.php#i3710947">No.3710947</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31343433303831313233')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710947', '3710862')" title="Report Post 3710947"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710947" data-thread="3710862"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #66D900; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31343433303831313233">  <a href = "/b/res/3710862.php#3710875" onclick = "highlight(3710875)">&gt;&gt;3710875</a><br>no but I gave an &#39;Allo &#39;Allo boxset to a charity shop.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710862.php#3711000" onclick="highlight(3711000);">&gt;&gt;</a></td> <td class="reply" id="reply3711000"> <a id="3711000"></a> <div class="replyheader"> 									 <span class="commentpostername">Gitaroo-Man</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:33:08 EST ID:NSIcCrNA</span> <span class="reflink">  <a href="/b/res/3710862.php#i3711000">No.3711000</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323036353032343335')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711000', '3710862')" title="Report Post 3711000"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711000" data-thread="3710862"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #90CFBD; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31323036353032343335">  <a href = "/b/res/3710862.php#3710947" onclick = "highlight(3710947)">&gt;&gt;3710947</a><br>Did it come with a copy of The Fallen Madonna with the Big Boobies?   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710862.php#3711007" onclick="highlight(3711007);">&gt;&gt;</a></td> <td class="reply" id="reply3711007"> <a id="3711007"></a> <div class="replyheader"> 									 <span class="commentpostername">Ricardo Almeida</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:36:45 EST ID:EbKt6j5x</span> <span class="reflink">  <a href="/b/res/3710862.php#i3711007">No.3711007</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363435353533393431')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711007', '3710862')" title="Report Post 3711007"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711007" data-thread="3710862"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #FF0045; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363435353533393431">  BITCH I&#39;M GONNA FUCKING REVERSE GRAVITY SO THE FLOW GOES BACKWARDS AND THEN ALL THESE FUCKING PSYCHEDELIC LIMPFISH DICKBITCHES &quot;GOING WITH THE FLOW&quot; WILL BE LIKE &quot;WHAAAAAAT? I DON&#39;T WANT TO GO WITH <em>THIS</em> FLOW! HELP, MAKE IT GO THE OTHER WAY! OH NOOOOOOO!&quot;<br><br>AND THEN I&#39;LL SLAM DOWN A COUPLE GALLON JUGS OF PCP AND FLOP MY WAY TO THE BATHROOM TO BARF UP PEPPERS AND TEAR THE SINK OFF THE WALL<br><br>BITCH   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710862.php#3711058" onclick="highlight(3711058);">&gt;&gt;</a></td> <td class="reply" id="reply3711058"> <a id="3711058"></a> <div class="replyheader"> 									 <span class="commentpostername">Vladimir Kozlov</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:38:32 EST ID:Bo9+Gs9f</span> <span class="reflink">  <a href="/b/res/3710862.php#i3711058">No.3711058</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323632373935333232')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711058', '3710862')" title="Report Post 3711058"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711058" data-thread="3710862"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #B98AC3; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31323632373935333232">  <a href = "/b/res/3710862.php#3710875" onclick = "highlight(3710875)">&gt;&gt;3710875</a><br>I can&#39;t afford to travel too far, hoping they come to Portland Maine this fall.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3707311"> <div class="thread_header"> <a id="3707311"></a> <span class="filetitle">how many drugs?</span>  <span class="inbetween"> by </span> <span class="postername">Prince of Persia</span>  <span class="inbetween"> - <span class="idhighlight">Sun, 20 Jul 2014 23:36:35 EST ID:R7MF3N5D</span></span>  <span class="reflink"> <a href="/b/res/3707311.php#i3707311">No.3707311</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3707311&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3707311&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31383136383530313034')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3707311')" title="Report Thread 3707311"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3707311.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3707311" data-thread="3707311"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #E492E0; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3707311');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1405913795628.jpg"> 1405913795628.jpg </a> -(<em>10428 B, 247x204</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31383136383530313034" target="_blank" href="/b/src/1405913795628.jpg"> <img src="/b/thumb/1405913795628s.jpg" alt="10428" class="thumb" /> </a>   			 <blockquote class="opcomment b31383136383530313034">  How many drugs have you done? <br>Here&#39;s my list:<br>1.cannabis<br>2.k2/spice<br>3.alcohol + moonshine<br>4.valium<br>5.klonopin<br>6.xanax<br>7.ativan<br>8.mdma<br>9.25i-nbome<br>10.mescaline<br>11.HBWR/LSA<br>12.crack<br>13.adderall  <div class="abbrev"> Comment too long. Click <a href="/b/res/3707311.php">here</a> to view the full text. </div>   </blockquote>   				 				  <span class="omittedposts">  108 posts and 29 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3707311.php#3710993" onclick="highlight(3710993);">&gt;&gt;</a></td> <td class="reply" id="reply3710993"> <a id="3710993"></a> <div class="replyheader"> 									 <span class="commentpostername">Winstrate Eugene</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:24:01 EST ID:+NRmv+cU</span> <span class="reflink">  <a href="/b/res/3707311.php#i3710993">No.3710993</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323839373934313037')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710993', '3707311')" title="Report Post 3710993"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710993" data-thread="3707311"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #A953C3; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31323839373934313037">  <a href = "/b/res/3707311.php" onclick = "highlight(3707311)">&gt;&gt;3707311</a><br>I&#39;ve only done Yaba   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707311.php#3711029" onclick="highlight(3711029);">&gt;&gt;</a></td> <td class="reply" id="reply3711029"> <a id="3711029"></a> <div class="replyheader"> 									 <span class="commentpostername">EstherPockdock.asm</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:01:31 EST ID:qx/GKKoY</span> <span class="reflink">  <a href="/b/res/3707311.php#i3711029">No.3711029</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393033393633333335')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711029', '3707311')" title="Report Post 3711029"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711029" data-thread="3707311"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #998B78; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406167291358.gif"> 1406167291358.gif </a> -(<em>379369 B, 500x500</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406167291358.gif"> <img src="/b/thumb/1406167291358s.jpg" alt="379369" class="thumb" /> </a>    <blockquote  class="b32393033393633333335">  <a href = "/b/res/3707311.php" onclick = "highlight(3707311)">&gt;&gt;3707311</a><br>i posted it to the wrong thread lol<br><br>Cannbis<br>LSD<br>hydrocodone<br>oxycodone<br>tramadol<br>4-aco-DMT<br>4-HO-MET<br>DMT<br>25i<br>MDMA<br>methylone<br>adderall  <div class="abbrev"> Comment too long. Click <a href="/b/res/3707311.php#3711029">here</a> to view the full text. </div>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707311.php#3711032" onclick="highlight(3711032);">&gt;&gt;</a></td> <td class="reply" id="reply3711032"> <a id="3711032"></a> <div class="replyheader"> 									 <span class="commentpostername">Daxter</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:04:23 EST ID:ehB6XLXO</span> <span class="reflink">  <a href="/b/res/3707311.php#i3711032">No.3711032</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363631343433323730')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711032', '3707311')" title="Report Post 3711032"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711032" data-thread="3707311"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #E6E207; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406167463070.jpg"> 1406167463070.jpg </a> -(<em>33979 B, 450x300</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406167463070.jpg"> <img src="/b/thumb/1406167463070s.jpg" alt="33979" class="thumb" /> </a>    <blockquote  class="b31363631343433323730">  <a href = "/b/res/3707311.php#3710993" onclick = "highlight(3710993)">&gt;&gt;3710993</a><br>I just looked this up. Very interesting background story, Thai mix of meth and caffeine originally legally sold at gas stops for tuckers, illegalized, became a club drug. <br><br>It&#39;s so cool we&#39;re getting more Thai posters and posters from other countries where the internet is still a rising trend rather than as commonplace as it is in the Anglo and European bloc.  Especially the stoner ones.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3707311.php#3711045" onclick="highlight(3711045);">&gt;&gt;</a></td> <td class="reply" id="reply3711045"> <a id="3711045"></a> <div class="replyheader"> 									 <span class="commentpostername">Phoebe Driddlestidging</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:21:08 EST ID:M98a28Hs</span> <span class="reflink">  <a href="/b/res/3707311.php#i3711045">No.3711045</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313838303732383234')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711045', '3707311')" title="Report Post 3711045"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711045" data-thread="3707311"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #A7E284; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406168468520.jpg"> 1406168468520.jpg </a> -(<em>15445 B, 400x300</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406168468520.jpg"> <img src="/b/thumb/1406168468520s.jpg" alt="15445" class="thumb" /> </a>    <blockquote  class="b31313838303732383234">  <a href = "/b/res/3707311.php#3711032" onclick = "highlight(3711032)">&gt;&gt;3711032</a><br>I agree...this might actually make for a good thread bucko.<br><br>I&#39;m too lazy to make one though.<br><br>nb   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710439"> <div class="thread_header"> <a id="3710439"></a> <span class="filetitle">good feels</span>  <span class="inbetween"> by </span> <span class="postername">Esther Sendlefoot</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 11:00:02 EST ID:rY8LxTXd</span></span>  <span class="reflink"> <a href="/b/res/3710439.php#i3710439">No.3710439</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710439&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710439&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b383530333533353239')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710439')" title="Report Thread 3710439"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710439.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710439" data-thread="3710439"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #63E083; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710439');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406127602574.jpg"> 1406127602574.jpg </a> -(<em>83299 B, 600x600</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb383530333533353239" target="_blank" href="/b/src/1406127602574.jpg"> <img src="/b/thumb/1406127602574s.jpg" alt="83299" class="thumb" /> </a>   			 <blockquote class="opcomment b383530333533353239">  <blockquote class = "unkfunc">&gt; tfw drug free for 4 months<br></blockquote><br>Feels good man   </blockquote>   				 				  <span class="omittedposts">  19 posts and 5 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710439.php#3710738" onclick="highlight(3710738);">&gt;&gt;</a></td> <td class="reply" id="reply3710738"> <a id="3710738"></a> <div class="replyheader"> 									 <span class="commentpostername">Jack O'Neill</span>  - <span class="idhighlight">Wed, 23 Jul 2014 17:13:53 EST ID:WS5Df/8U</span> <span class="reflink">  <a href="/b/res/3710439.php#i3710738">No.3710738</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31373435363330333037')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710738', '3710439')" title="Report Post 3710738"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710738" data-thread="3710439"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #211E5B; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31373435363330333037">  <a href = "/b/res/3710439.php#3710707" onclick = "highlight(3710707)">&gt;&gt;3710707</a><br>this is staged man it&#39;s not as funny when you know its just some art school kid acting crazy for attention   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710439.php#3711039" onclick="highlight(3711039);">&gt;&gt;</a></td> <td class="reply" id="reply3711039"> <a id="3711039"></a> <div class="replyheader"> 									 <span class="commentpostername">Alice Somblestet</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:11:07 EST ID:rY8LxTXd</span> <span class="reflink">  <a href="/b/res/3710439.php#i3711039">No.3711039</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b383530333533353239')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711039', '3710439')" title="Report Post 3711039"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711039" data-thread="3710439"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #ED1B51; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b383530333533353239">  <a href = "/b/res/3710439.php#3710570" onclick = "highlight(3710570)">&gt;&gt;3710570</a><br>What do you do?   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710439.php#3711052" onclick="highlight(3711052);">&gt;&gt;</a></td> <td class="reply" id="reply3711052"> <a id="3711052"></a> <div class="replyheader"> 									 <span class="commentpostername">Greg Iron</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:30:57 EST ID:hrhM9uIH</span> <span class="reflink">  <a href="/b/res/3710439.php#i3711052">No.3711052</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343034323836383338')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711052', '3710439')" title="Report Post 3711052"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711052" data-thread="3710439"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #2BED66; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343034323836383338">  <a href = "/b/res/3710439.php#3711039" onclick = "highlight(3711039)">&gt;&gt;3711039</a><br><br>tells lies on the internet.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710439.php#3711061" onclick="highlight(3711061);">&gt;&gt;</a></td> <td class="reply" id="reply3711061"> <a id="3711061"></a> <div class="replyheader"> 									 <span class="commentpostername">FuckLightwell.pm3</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:41:20 EST ID:3byN9BPd</span> <span class="reflink">  <a href="/b/res/3710439.php#i3711061">No.3711061</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343134363838363330')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711061', '3710439')" title="Report Post 3711061"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711061" data-thread="3710439"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #C00F70; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b343134363838363330">  take it to /detox/, show off.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710466"> <div class="thread_header"> <a id="3710466"></a> <span class="filetitle">Hai thar</span>  <span class="inbetween"> by </span> <span class="postername">JoseJackson</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 12:13:10 EST ID:J+tVT5hb</span></span>  <span class="reflink"> <a href="/b/res/3710466.php#i3710466">No.3710466</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710466&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3710466&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b33353638353035363930')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710466')" title="Report Thread 3710466"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710466.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710466" data-thread="3710466"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #18B031; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710466');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406131990098.jpg"> 1406131990098.jpg </a> -(<em>105587 B, 500x500</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb33353638353035363930" target="_blank" href="/b/src/1406131990098.jpg"> <img src="/b/thumb/1406131990098s.jpg" alt="105587" class="thumb" /> </a>   			 <blockquote class="opcomment b33353638353035363930">  Hai thar 420chan<br>I come with peace from russian drug board, and i bring you our mascot as offering.   </blockquote>   				 				  <span class="omittedposts">  95 posts and 47 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710466.php#3711012" onclick="highlight(3711012);">&gt;&gt;</a></td> <td class="reply" id="reply3711012"> <a id="3711012"></a> <div class="replyheader"> 									 <span class="commentpostername">Tom Haverford</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:41:31 EST ID:EVeUZGNz</span> <span class="reflink">  <a href="/b/res/3710466.php#i3711012">No.3711012</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31333337343130373035')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711012', '3710466')" title="Report Post 3711012"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711012" data-thread="3710466"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #DB6903; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406166091841.jpg"> 1406166091841.jpg </a> -(<em>90347 B, 811x571</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406166091841.jpg"> <img src="/b/thumb/1406166091841s.jpg" alt="90347" class="thumb" /> </a>    <blockquote  class="b31333337343130373035">  <a href = "/b/res/3710466.php#3711005" onclick = "highlight(3711005)">&gt;&gt;3711005</a><br><blockquote class = "unkfunc">&gt;only real men swig straight vodka.<br></blockquote>Iam ashamed, but i was like this til my 20s   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710466.php#3711016" onclick="highlight(3711016);">&gt;&gt;</a></td> <td class="reply" id="reply3711016"> <a id="3711016"></a> <div class="replyheader"> 									 <span class="commentpostername">Daxter</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:48:36 EST ID:ehB6XLXO</span> <span class="reflink">  <a href="/b/res/3710466.php#i3711016">No.3711016</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363631343433323730')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711016', '3710466')" title="Report Post 3711016"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711016" data-thread="3710466"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #5FC807; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406166516070.jpg"> 1406166516070.jpg </a> -(<em>45424 B, 500x667</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406166516070.jpg"> <img src="/b/thumb/1406166516070s.jpg" alt="45424" class="thumb" /> </a>    <blockquote  class="b31363631343433323730">  <a href = "/b/res/3710466.php#3711012" onclick = "highlight(3711012)">&gt;&gt;3711012</a><br>Just drink whatever you enjoy gettin&#39; drunk on.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710466.php#3711023" onclick="highlight(3711023);">&gt;&gt;</a></td> <td class="reply" id="reply3711023"> <a id="3711023"></a> <div class="replyheader"> 									 <span class="commentpostername">Daxter</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:53:58 EST ID:ehB6XLXO</span> <span class="reflink">  <a href="/b/res/3710466.php#i3711023">No.3711023</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363631343433323730')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711023', '3710466')" title="Report Post 3711023"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711023" data-thread="3710466"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #B1996D; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363631343433323730">  So why the red bird OP? Is it a species common to Russia, and is there any reason it was picked to be related to drugs?   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710466.php#3711076" onclick="highlight(3711076);">&gt;&gt;</a></td> <td class="reply" id="reply3711076"> <a id="3711076"></a> <div class="replyheader"> 									 <span class="commentpostername">Dragon Dragon</span>  - <span class="idhighlight">Wed, 23 Jul 2014 22:50:11 EST ID:jr3s2szA</span> <span class="reflink">  <a href="/b/res/3710466.php#i3711076">No.3711076</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363736353232383638')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711076', '3710466')" title="Report Post 3711076"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711076" data-thread="3710466"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #48D0A4; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363736353232383638">  Only Russians and girls drink vodka<br><br>This summer is the summer of Rum   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3708477"> <div class="thread_header"> <a id="3708477"></a> <span class="filetitle">Idiocracy</span>  <span class="inbetween"> by </span> <span class="postername">PhoebeSezzlebury.cda</span>  <span class="inbetween"> - <span class="idhighlight">Mon, 21 Jul 2014 21:31:52 EST ID:0fKNGBFF</span></span>  <span class="reflink"> <a href="/b/res/3708477.php#i3708477">No.3708477</a> </span>    			 <!--  - Awesome Thread? <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3708477&amp;vote=0">No!</a> | <a href="/b/taimaba.pl?board=b&amp;task=vote&amp;thread=3708477&amp;vote=1">Yes!</a>  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31383034313331373138')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3708477')" title="Report Thread 3708477"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3708477.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3708477" data-thread="3708477"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #BC4FE1; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3708477');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1405992712186.jpg"> 1405992712186.jpg </a> -(<em>11526 B, 205x200</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31383034313331373138" target="_blank" href="/b/src/1405992712186.jpg"> <img src="/b/src/1405992712186.jpg" alt="11526" class="thumb" /> </a>   			 <blockquote class="opcomment b31383034313331373138">  It&#39;s happening, more and more.<br>The man who stands up for reason is ridiculed, now ridiculed and written off as a neckbeard fedora.<br>This is the end, my only friend, the end.   </blockquote>   				 				  <span class="omittedposts">  145 posts and 27 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3708477.php#3710956" onclick="highlight(3710956);">&gt;&gt;</a></td> <td class="reply" id="reply3710956"> <a id="3710956"></a> <div class="replyheader"> 									 <span class="commentpostername">Darkwing Duck</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:43:36 EST ID:wHpHDlCC</span> <span class="reflink">  <a href="/b/res/3708477.php#i3710956">No.3710956</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323232363431333839')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710956', '3708477')" title="Report Post 3710956"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710956" data-thread="3708477"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #13475E; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406162616103.png"> 1406162616103.png </a> -(<em>158021 B, 424x318</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406162616103.png"> <img src="/b/thumb/1406162616103s.jpg" alt="158021" class="thumb" /> </a>    <blockquote  class="b31323232363431333839">  <a href = "/b/res/3708477.php#3710904" onclick = "highlight(3710904)">&gt;&gt;3710904</a>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3708477.php#3710971" onclick="highlight(3710971);">&gt;&gt;</a></td> <td class="reply" id="reply3710971"> <a id="3710971"></a> <div class="replyheader"> 									 <span class="commentpostername">BarnabySmallhall.csv</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:55:26 EST ID:LEW7H87U</span> <span class="reflink">  <a href="/b/res/3708477.php#i3710971">No.3710971</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31333339323738393636')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710971', '3708477')" title="Report Post 3710971"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710971" data-thread="3708477"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #CCE607; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406163326619.jpg"> 1406163326619.jpg </a> -(<em>150765 B, 1024x768</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406163326619.jpg"> <img src="/b/thumb/1406163326619s.jpg" alt="150765" class="thumb" /> </a>    <blockquote  class="b31333339323738393636">  <a href = "/b/res/3708477.php#3710926" onclick = "highlight(3710926)">&gt;&gt;3710926</a><br>Hey, friend. I really appreciate your apology. You went through a similar problem as I did, so this makes you understand how I function (which your tl;dr post just has shown). Since two days I am on H again, I just couldn&#39;t bear the pain after 3 days of puking, shitting, yawning, crying, not sleeping, freezing, sweating, bone pain, etc.<br>I REALLY thought I could do it this time, but I was being a pussy again. <br><br>And while I am on it, I feel unhappy too, because its mind numbing and blocks out the joy of life. While withdrawing I was even able to enjoy music again, but the H allows no emotions. <br>I actually enjoyed crying like a bitch while withdrawing, because it was at least an emotion. Something I don&#39;t really experience on opi.<br> I am really interested how you became clean off this shit. Maybe your story will be a motivation and inspiration for me and others to quit the shit.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3708477.php#3710995" onclick="highlight(3710995);">&gt;&gt;</a></td> <td class="reply" id="reply3710995"> <a id="3710995"></a> <div class="replyheader"> 									 <span class="commentpostername">Girly Sanchez</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:27:36 EST ID:NBrcacKv</span> <span class="reflink">  <a href="/b/res/3708477.php#i3710995">No.3710995</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393230363536363230')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710995', '3708477')" title="Report Post 3710995"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710995" data-thread="3708477"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #2EB301; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406165256555.gif"> 1406165256555.gif </a> -(<em>1003454 B, 500x281</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406165256555.gif"> <img src="/b/thumb/1406165256555s.jpg" alt="1003454" class="thumb" /> </a>    <blockquote  class="b32393230363536363230">  <a href = "/b/res/3708477.php#3710971" onclick = "highlight(3710971)">&gt;&gt;3710971</a><br>Yeah, I noticed that too, being happy just to feel... like in hard withdrawals, walking down the street in spring, the colors SO BRIGHT and blinding my fucking eyes, but I can smell everything! Nothing ever smelled so strong or so good! And then I started to enjoy the sun again! Ah, marvelous ...<br><br><br>It took me a few times to quit, but there are a few things I found out:<br><br><ol><li>While some non-addicts don&#39;t agree with this, there is a difference between: a) trying to get fucking high as balls, as high as you can, nodding, fuck it, biggest shot I can take always and b) using enough to get by, and perhaps catch a small buzz.<br></li><li>If you do b), you can taper your dose, if it&#39;s a goal you believe in. Simply count the exact amount you are using. A doctor&#39;s taper schedule for long-term painkiller use via prescription is: every 3 days, reduce the dose by 33%. It&#39;s a rough formula but it works because your body becomes accustomed to a new level of opis after 72 hours. Basically, just keep a piece of paper, and be BRUTALLY HONEST in how much you took. If you took more than you were supposed to, don&#39;t lie, and don&#39;t say OH MAN I am fucked! Guess I should do more to obliterate the pain and shame of having failed again... (Obviously you need a drug that you can measure exactly for this to make sense.)<br></li><li>Heroin is too addictive to taper with, in any ROA. Physiologically, the draw is too strong. I have sat there with a needle in my hand, crying because I don&#39;t want to shoot it from a logical perspective, but still doing it. And getting barely any high, and screwing myself over for the next day. And then hating myself. It&#39;s just too big a temptation. You need a drug that doesn&#39;t have huge euphoria and that you can measure.<br></li><li>If you live in the US and Canada, kratom is now available in most headshops. Kratom&#39;s an opioid, and while not powerful, if you couple it with loperamide (legal in US, maybe not CA), the over-the-counter anti-diarrheal drug/opioid, you can maintain quite well. Note that with a big heroin habit you can take as many as 100 loperamide pills the first few days. Don&#39;t fret! Once it builds up in your system you&#39;ll need a lot less. Where I live a bottle of 200 is $21. If you are desperate, you can steal several bottles at a time. Change which store you go to to do it, and just clean them out.<br></li><li>Taper using these two drugs. When you start reducing dose and inevitably do a bit more to feel high again, you&#39;ll notice you get a nice buzz. It&#39;s not giving up opis forever, but it&#39;s getting off.<br></li><li>Suboxone strips also work great. The pills are not as good, but also work fine. You can cut the strips into exact pieces and taper that way. A sub doctor visit is confidential and is about $300 to get you started for the first month. Not much to pay for freedom. But, remember, TAPER. Do NOT get into a methadone clinic because they will keep you on a dose in order to make $$$ off of you.<br></li><li>Don&#39;t hate yourself if you relapse. Just make sure you control the intensity. You probably WILL relapse. Just don&#39;t think of it as all or nothing. Don&#39;t let junkie define you. You are you, beneath all that shit. You don&#39;t need to be a junkie.<br></li><li>Try a replacement drug. Note that taking alcohol + DXM will pretty much kill WD pains. Couple that with loperamide to prevent the gut-wrenching shits and you can just ride through the time real real high and not feel much of anything. Dissociatives are grrrreat.<br></li><li>Consider taking up drinking. Not good to replace one habit with another, but when you quit opis, drinking gives you a nice buzz again, a bit like a mild opi. It might make it easier not to relapse.</li></ol>  <div class="abbrev"> Comment too long. Click <a href="/b/res/3708477.php#3710995">here</a> to view the full text. </div>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3708477.php#3711004" onclick="highlight(3711004);">&gt;&gt;</a></td> <td class="reply" id="reply3711004"> <a id="3711004"></a> <div class="replyheader"> 									 <span class="commentpostername">Girly Sanchez</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:34:45 EST ID:NBrcacKv</span> <span class="reflink">  <a href="/b/res/3708477.php#i3711004">No.3711004</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393230363536363230')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3711004', '3708477')" title="Report Post 3711004"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3711004" data-thread="3708477"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #10207A; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b32393230363536363230">  <a href = "/b/res/3708477.php#3710995" onclick = "highlight(3710995)">&gt;&gt;3710995</a><br>Oh, and the biggest one: if you can, move. Especially move in with someone it would be embarrassing to get caught being an opiate addict. Delete all your dealers&#39; numbers, and don&#39;t hang out with people who use.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3709131"> <div class="thread_header"> <a id="3709131"></a> <span class="filetitle">Sometimes I want my head to explode</span>  <span class="inbetween"> by </span> <span class="postername">Jungle Grrrl</span>  <span class="inbetween"> - <span class="idhighlight">Tue, 22 Jul 2014 05:51:08 EST ID:YkEydxt1</span></span>  <span class="reflink"> <a href="/b/res/3709131.php#i3709131">No.3709131</a> </span>    			 <!--  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343134343236303832')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3709131')" title="Report Thread 3709131"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3709131.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709131" data-thread="3709131"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #0486AE; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3709131');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406022668664.jpg"> 1406022668664.jpg </a> -(<em>56725 B, 296x598</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb343134343236303832" target="_blank" href="/b/src/1406022668664.jpg"> <img src="/b/thumb/1406022668664s.jpg" alt="56725" class="thumb" /> </a>   			 <blockquote class="opcomment b343134343236303832">  I have anti-precognitive powers.  You see opposite of a precog, I can see a situation that could possibly happen in the future, but instead of it coming true, it does the opposite.  Everything I envision happens in a way completely differently than the way I imagine.<br><br>If anyone has requests of things they don&#39;t want to happen then tell me them in detail and I will use my powers for you by imagining them.<br><br>I don&#39;t know what&#39;s happening to me anymore.   </blockquote>   				 				  <span class="omittedposts">  13 posts and 2 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3709131.php#3709226" onclick="highlight(3709226);">&gt;&gt;</a></td> <td class="reply" id="reply3709226"> <a id="3709226"></a> <div class="replyheader"> 									 <span class="commentpostername">Juggler Nathaniel</span>  - <span class="idhighlight">Tue, 22 Jul 2014 09:34:02 EST ID:97Lug5VW</span> <span class="reflink">  <a href="/b/res/3709131.php#i3709226">No.3709226</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31333039393834383434')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3709226', '3709131')" title="Report Post 3709226"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709226" data-thread="3709131"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #FF5227; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406036042446.jpg"> 1406036042446.jpg </a> -(<em>91394 B, 446x599</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406036042446.jpg"> <img src="/b/thumb/1406036042446s.jpg" alt="91394" class="thumb" /> </a>    <blockquote  class="b31333039393834383434">  DICKS EVERYWHERE   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709131.php#3709254" onclick="highlight(3709254);">&gt;&gt;</a></td> <td class="reply" id="reply3709254"> <a id="3709254"></a> <div class="replyheader"> 									 <span class="commentpostername">Dan Quinn</span>  - <span class="idhighlight">Tue, 22 Jul 2014 10:25:10 EST ID:fmzhBtQb</span> <span class="reflink">  <a href="/b/res/3709131.php#i3709254">No.3709254</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363331393535363837')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3709254', '3709131')" title="Report Post 3709254"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709254" data-thread="3709131"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #AA4E18; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31363331393535363837">  Picture me dying in every way except crushed by vagina and money the age of 95   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709131.php#3709325" onclick="highlight(3709325);">&gt;&gt;</a></td> <td class="reply" id="reply3709325"> <a id="3709325"></a> <div class="replyheader"> 									 <span class="commentpostername">Charles Oliveira</span>  - <span class="idhighlight">Tue, 22 Jul 2014 12:07:40 EST ID:FTn+gjMe</span> <span class="reflink">  <a href="/b/res/3709131.php#i3709325">No.3709325</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31313738323135303933')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3709325', '3709131')" title="Report Post 3709325"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3709325" data-thread="3709131"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #B6BED7; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406045260270.jpg"> 1406045260270.jpg </a> -(<em>291880 B, 550x737</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406045260270.jpg"> <img src="/b/thumb/1406045260270s.jpg" alt="291880" class="thumb" /> </a>    <blockquote  class="b31313738323135303933">  You may think that OP, but I have been telepathically trolling you this whole time.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3709131.php#3710991" onclick="highlight(3710991);">&gt;&gt;</a></td> <td class="reply" id="reply3710991"> <a id="3710991"></a> <div class="replyheader"> 									 <span class="commentpostername">Rainer Werner Fassbinder</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:21:11 EST ID:YkEydxt1</span> <span class="reflink">  <a href="/b/res/3709131.php#i3710991">No.3710991</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b343134343236303832')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710991', '3709131')" title="Report Post 3710991"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710991" data-thread="3709131"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #1EB1E1; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406164871520.jpg"> 1406164871520.jpg </a> -(<em>50683 B, 500x434</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406164871520.jpg"> <img src="/b/thumb/1406164871520s.jpg" alt="50683" class="thumb" /> </a>    <blockquote  class="b343134343236303832">  OP here.  I forgot about this thread because of drugs and mania.  I remembered my duties today though and returned to give back what I have promised.<br><br><a href = "/b/res/3709131.php#3709133" onclick = "highlight(3709133)">&gt;&gt;3709133</a><br><br>I will try not to.<br><br><br><a href = "/b/res/3709131.php#3709135" onclick = "highlight(3709135)">&gt;&gt;3709135</a><br><br>I did my best, but if you could give me a list of specific cancers you do not want I can envision different scenarios of you getting those so they can get ruled out.  Also details like the color of the doctors office walls, whether or not the doctor is hot, and your mode of transportation to the doc&#39;s office would be helpful.<br><br>My magic has no built in catches, but everything I don&#39;t imagine is still plausible so I can&#39;t protect you from everything.<br><br><br><a href = "/b/res/3709131.php#3709190" onclick = "highlight(3709190)">&gt;&gt;3709190</a>  <div class="abbrev"> Comment too long. Click <a href="/b/res/3709131.php#3710991">here</a> to view the full text. </div>   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710938"> <div class="thread_header"> <a id="3710938"></a> <span class="filetitle">Would you guys name your Liepard &quot;Fartjaw&quot;?</span>  <span class="inbetween"> by </span> <span class="postername">Eliza Binnerworth</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 20:35:36 EST ID:on90ZCL5</span></span>  <span class="reflink"> <a href="/b/res/3710938.php#i3710938">No.3710938</a> </span>    			 <!--  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323138353433303034')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710938')" title="Report Thread 3710938"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710938.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710938" data-thread="3710938"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #E948CD; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710938');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406162136526.jpg"> 1406162136526.jpg </a> -(<em>43866 B, 500x339</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31323138353433303034" target="_blank" href="/b/src/1406162136526.jpg"> <img src="/b/thumb/1406162136526s.jpg" alt="43866" class="thumb" /> </a>   			 <blockquote class="opcomment b31323138353433303034">  DICKS EVERYWHERE   </blockquote>   				 				  <span class="omittedposts">  5 posts and 1 images omitted. Click Reply to view.   </span>       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710938.php#3710949" onclick="highlight(3710949);">&gt;&gt;</a></td> <td class="reply" id="reply3710949"> <a id="3710949"></a> <div class="replyheader"> 									 <span class="commentpostername">Channeler Doris</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:40:17 EST ID:9942TZ/g</span> <span class="reflink">  <a href="/b/res/3710938.php#i3710949">No.3710949</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31343433303831313233')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710949', '3710938')" title="Report Post 3710949"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710949" data-thread="3710938"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #7F1383; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31343433303831313233">  <a href = "/b/res/3710938.php#3710946" onclick = "highlight(3710946)">&gt;&gt;3710946</a><br>Sexy.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710938.php#3710966" onclick="highlight(3710966);">&gt;&gt;</a></td> <td class="reply" id="reply3710966"> <a id="3710966"></a> <div class="replyheader"> 									 <span class="commentpostername">Alexander Rozhenko</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:51:37 EST ID:CcUHekw8</span> <span class="reflink">  <a href="/b/res/3710938.php#i3710966">No.3710966</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393236353338323230')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710966', '3710938')" title="Report Post 3710966"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710966" data-thread="3710938"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #AF01EC; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b32393236353338323230">  I&#39;M TRYING MR. ROGERS I SWEAR I&#39;M TRYING!!!   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710938.php#3710980" onclick="highlight(3710980);">&gt;&gt;</a></td> <td class="reply" id="reply3710980"> <a id="3710980"></a> <div class="replyheader"> 									 <span class="commentpostername">Super Nerd John</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:06:31 EST ID:mrIVJ7O7</span> <span class="reflink">  <a href="/b/res/3710938.php#i3710980">No.3710980</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32333635353839353433')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710980', '3710938')" title="Report Post 3710980"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710980" data-thread="3710938"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #2D5EDD; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b32333635353839353433">  Would you name your thread would you name your liepard fartjaw?   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710938.php#3710987" onclick="highlight(3710987);">&gt;&gt;</a></td> <td class="reply" id="reply3710987"> <a id="3710987"></a> <div class="replyheader"> 									 <span class="commentpostername">EstherPockdock.asm</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:11:25 EST ID:qx/GKKoY</span> <span class="reflink">  <a href="/b/res/3710938.php#i3710987">No.3710987</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b32393033393633333335')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710987', '3710938')" title="Report Post 3710987"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710987" data-thread="3710938"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #522F56; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b32393033393633333335">  <a href = "/b/res/3710938.php#3710980" onclick = "highlight(3710980)">&gt;&gt;3710980</a><br>nope   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />    <div id="bthread3710969"> <div class="thread_header"> <a id="3710969"></a> <span class="filetitle">Israel</span>  <span class="inbetween"> by </span> <span class="postername">April Ryan</span>  <span class="inbetween"> - <span class="idhighlight">Wed, 23 Jul 2014 20:53:34 EST ID:1noy7kKK</span></span>  <span class="reflink"> <a href="/b/res/3710969.php#i3710969">No.3710969</a> </span>    <img src="/static/images/locked.gif" style="vertical-align: middle" alt="Locked" />  			 <!--  -->   <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363531383236333639')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="openReport('3710969')" title="Report Thread 3710969"> <span class="ui-icon ui-icon-alert"></span>Report </a>  <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/b/res/3710969.php"> <span class="ui-icon ui-icon-comment"></span>Reply </a>  <a class="opqrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710969" data-thread="3710969"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #48507D; font-size:16px; margin-left: 5px;"class="glyphicon glyphicon-birthday_cake"></i>--> <div class="hidethread" style="float: right; font-size: 10px; margin-right: 4px;"><a class="hidelink" href="javascript:toggleHidden('bthread3710969');">Hide Thread</a></div> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406163214612.jpg"> 1406163214612.jpg </a> -(<em>323581 B, 2048x1348</em>) <span class="thumbnailmsg"> Thumbnail displayed, click image for full size. </span> </span>  <a onclick="return imageExpansion(this)" class="imgb31363531383236333639" target="_blank" href="/b/src/1406163214612.jpg"> <img src="/b/thumb/1406163214612s.jpg" alt="323581" class="thumb" /> </a>   			 <blockquote class="opcomment b31363531383236333639">  Here&#39;s the thing though, ISRAEL WAS NOT STOLEN YOU FUCKIN IDIOT. KNOW YOUR FACTS BEFORE YOU PUBLISH AN ARTICLE. It&#39;s quite simple actually. Under British rule, Jews AND Arabs lived in what was then called Palestine. When British left, they left all their weapons to the Arabs who immediately attacked the small community of Jews living there. So to recap, both arabs AND jews encompassed the land. To everyone&#39;s surprise, the Jews were prepared and won that first war scaring off many Arabs to areas like Gaza and West Bank. These Arabs ran away to these places AFTER they attacked and lost the fight they started. Then, the UN VOTED and declared that the land would be referred to as Israel and be a Jewish state. How could this be misconstrued as stolen land in any way? (Note that any Arabs who didn&#39;t run away and stayed in Israel were not kicked out or killed, they still live there now, are considered full Israeli citizens and have equal or even more rights than Jewish Israeli citizens)<br><br>At that point, Israel, Gaza and west bank were a desert with no infrastructure. Since that time, each of them have received billions of dollars in order to build up their infrastructure with streets, schools, hospitals, etc. In that short time, Israel got to work immediately and built a safe, fair, beautiful, flourishing country with laws and rights to protect its people, a true democracy, and the only one within thousands of surrounding miles of third world countries. In that same amount of time, Palestinian leaders have taken that money and built nothing but weapons and pocketed the rest. You&#39;d think that with nothing but war on their minds they might also build some protective shields and bomb shelters along with those weapons, but saving each others lives is not the Palestinian leaders&#39; priority, the ONLY priority, as evident by their spending habits, is to kill.<br><br>It seems simple enough to me. And unless you could pin point anything stated above as false, I don&#39;t understand how you could blame the Israeli people for defending themselves against their ruthless terrorist neighbors. The fact that there are so many people who still choose not to accept the facts scares the shit out of me. It&#39;s almos&hellip;  <div class="abbrev"> Comment too long. Click <a href="/b/res/3710969.php">here</a> to view the full text. </div>   </blockquote>    <div class="lock"> <div class="banimage"> <img src="/static/images/lock.png" alt="Locked" /> </div> <div class="banmessages"> <div class="banmsg"> Thread has been locked </div>  <div class="bannedby"> Thread was locked by: <span style="color: black">Therm0ptic</span> </div> <div class="banreason"> Reason: <span style="color: black">/pol/</span> </div> </div>					 </div> 				 				       <table><tbody><tr><td class="doubledash"><a href="/b/res/3710969.php#3710973" onclick="highlight(3710973);">&gt;&gt;</a></td> <td class="reply" id="reply3710973"> <a id="3710973"></a> <div class="replyheader"> 									 <span class="commentpostername">Eugene Poblingwell</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:58:28 EST ID:J5X8xOfy</span> <span class="reflink">  <a href="/b/res/3710969.php#i3710973">No.3710973</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31323836343335343533')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710973', '3710969')" title="Report Post 3710973"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710973" data-thread="3710969"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #502AD4; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31323836343335343533">  not reading that shit. but ya zionists are shitty. anything pointing out otherwise is just jew created propaganda.   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710969.php#3710974" onclick="highlight(3710974);">&gt;&gt;</a></td> <td class="reply" id="reply3710974"> <a id="3710974"></a> <div class="replyheader"> 									 <span class="commentpostername">April Ryan</span>  - <span class="idhighlight">Wed, 23 Jul 2014 20:59:36 EST ID:1noy7kKK</span> <span class="reflink">  <a href="/b/res/3710969.php#i3710974">No.3710974</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31363531383236333639')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710974', '3710969')" title="Report Post 3710974"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710974" data-thread="3710969"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #DD9CDD; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <span class="filesize"> <a target="_blank" href="/b/src/1406163576612.png"> 1406163576612.png </a> -(<em>51261 B, 261x599</em>) <span class="thumbnailmsg">Thumbnail displayed, click image for full size.</span> </span>  <a onclick="return imageExpansion(this)" target="_blank" href="/b/src/1406163576612.png"> <img src="/b/thumb/1406163576612s.jpg" alt="51261" class="thumb" /> </a>    <blockquote  class="b31363531383236333639">  <a href = "/b/res/3710969.php#3710973" onclick = "highlight(3710973)">&gt;&gt;3710973</a>   </blockquote>    				 </td> </tr> </tbody> </table>     <table><tbody><tr><td class="doubledash"><a href="/b/res/3710969.php#3710975" onclick="highlight(3710975);">&gt;&gt;</a></td> <td class="reply" id="reply3710975"> <a id="3710975"></a> <div class="replyheader"> 									 <span class="commentpostername">BarnabySmallhall.csv</span>  - <span class="idhighlight">Wed, 23 Jul 2014 21:00:10 EST ID:LEW7H87U</span> <span class="reflink">  <a href="/b/res/3710969.php#i3710975">No.3710975</a>   </span>  <a class="ignorebtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="toggleIgnored('b31333339323738393636')" title="Ignore User"> <span class="ui-icon ui-icon-cancel"></span>Ignore </a>  <a class="rptbtn fg-button ui-state-default fg-button-icon-solo ui-corner-all" onclick="openReport('3710975', '3710969')" title="Report Post 3710975"> <span class="ui-icon ui-icon-alert"></span>Report </a> <a class="qrbtn fg-button ui-state-default fg-button-icon-left ui-corner-all" data-num="3710975" data-thread="3710969"> <span class="ui-icon ui-icon-comment"></span>Quick Reply </a>  <!--<i style="color: #419E49; font-size:16px; margin-left: 5px;"class="glyphicon  glyphicon-birthday_cake"></i>--> </div>  <blockquote  class="b31333339323738393636">  JIDF, go to bed.   </blockquote>    				 </td> </tr> </tbody> </table>   <br style="clear: left;" /> </div> <hr class="threadend" />  <div class="harbl" style="width: 728px !important; margin: 0 auto;"> <div class="blarbl" style="font-size:10px;margin-bottom:2px;margin-top:2px;text-align:center;"> <a href="http://www.420chan.org/advertise">Advertise With Us</a> 		
+		<div style="margin: 5px auto 1px; width: 728px;">
+			<a target="_blank" href="http://insomniacgamers.net"><img src="http://cdn.420chan.org/sp/i.png"></a>
+		</div>
+				<div style="margin: 5px auto 1px; width: 728px;">
+			<a target="_blank" href="http://420chan.org/advertise"><img src="http://cdn.420chan.org/sp/YOUR-AD-HERE.gif"></a>
+		</div>
+		 </div> </div>  </form> <div id="quickreply" style="display: none;"> <p class="qrheader"></p> <form id="qrpostform" action="/b/taimaba.pl" method="post" enctype="multipart/form-data"> <input type="hidden" name="board" value="b" /> <input type="hidden" name="task" value="post" /> <input type="hidden" name="parent" value="" />   <input type="hidden" name="name" />	  <table> <tbody>     <tr> <td> <input type="submit" value="Submit Post" class="postsubmit" style="width:96px;" /> </td> </tr> <tr> <td> <textarea title="Comment" name="field4" rows="4" style="width:456px; color: #eee" cols="50"></textarea> </td> </tr>  <tr> <td> <input type="file" name="file" /> <label> <input type="checkbox" name="sage" value="on" /> No Bump </label> </td> </tr>  <!--				<tr> <td> <input title="Password" type="password" name="password" size="8" /> (Password for post and file deletion) </td>				 </tr> --> </tbody> </table> </form> <a href="javascript:void($('#quickreply').css('display','none'))" style="font-size: 14px; margin-left: 4px; font-weight:bold">Close</a> </div>  <div class="pagelist" style="font-family:arial;">   <span style="font-size: +1;">Pages</span>   <a href="/b/1.php">Next&gt;&gt;</a>  <br />    0    <a href="/b/1.php">1</a>     <a href="/b/2.php">2</a>     <a href="/b/3.php">3</a>     <a href="/b/4.php">4</a>     <a href="/b/5.php">5</a>     <a href="/b/6.php">6</a>     <a href="/b/7.php">7</a>     <a href="/b/8.php">8</a>     <a href="/b/9.php">9</a>     <a href="/b/10.php">10</a>     <a href="/b/11.php">11</a>     <a href="/b/12.php">12</a>    </div>  <div id="crabbyshell"></div> </div><div class="overlayFormOff" id="reportFormDiv"> <form name="reportForm" id="reportForm" onsubmit="return doReport()" action="http://420chan.org:8080/narcbot/ajaxReport.jsp"> <center> <table> <tr> <th colspan="2"> <span id="reportFormTitle">Report Post</span> </th> </tr> <tr> <td>Reason</td> <td> <select id="reportPostReason" name="reportPostReason"> <option>Rule Violation</option> <option>Illegal Content</option> </select> </td> </tr> <tr> <td>Note</td> <td> <input type="text" name="reportPostNote" id="reportPostNote" maxlength="50" size="14"/> </td> </tr> <tr> <td colspan="2" align="center"> <button onclick="return doReport()">OK</button> <button onclick="return closeReport()">Cancel</button> </td> </tr> </table> Please be descriptive with report notes,<br/>this helps staff resolve issues quicker. </center> </form> </div> <div class="shaderOff" id="shader" onclick="closeReport()"></div> <!-- 
+<div id="footer">
+  <p class="footer">
+    <a href="http://netwizard.420chan.org/kabatrac">Powered by Taimaba 0.6</a>
+  </p>
+  &copy; 2005-2010 420chan &amp; Taima Labs
+  &nbsp;&nbsp;&nbsp;&nbsp;  
+  <a href="http://www.420chan.org/#staff">Contact</a>
+  &nbsp;&nbsp;
+  <a href="http://www.twitter.com/420chan">Twitter</a>
+</div>
+-->
+
+<div id="foot">
+	<div class="full_width">
+		<div class="page">
+			<ul id="leftcol">
+				<li class="widget widget_get_recent_comments" id="get-recent-comments">
+					<h3>Active Discussions</h3>
+					<div id="get_recent_comments_wrap">
+						<ul>
+							<li><img width='32' height='32' class='boardicon' alt='mtv' src='/static/images/board_icons/mtv_icon_32.png' />
+		<span class='byline'>Movies &amp; Television - <a href='/mtv/res/290491.php' class='boardlink'>Thread 290491</a></span>
+		<p>>>290501
+Nah he said it wasn't a more recent movie. More like a movie from 2008-2012. He said it wa... <a href='/mtv/res/290491.php' class='boardlink'>&#8629;</a></p></li>
+<li><img width='32' height='32' class='boardicon' alt='nj' src='/static/images/board_icons/nj_icon_32.png' />
+		<span class='byline'>Netjester AI Conversation Chamber - <a href='/nj/res/229505.php' class='boardlink'>Thread 229505</a></span>
+		<p>>>229528
+because dopamine is released whenever I do anything satisfying. It's it's one of the many ... <a href='/nj/res/229505.php' class='boardlink'>&#8629;</a></p></li>
+						</ul>
+					</div>
+				</li>
+				<div class="icon"></div>
+			</ul>
+
+			<!-- <ul class="rightcol space">
+				<li class="widget twitter" id="status-twitter">
+					<h3>420chan Status</h3>
+					<ul id="tweets">
+					</ul>
+					<div class="icon"></div>
+				</li>
+			</ul> -->
+			
+			<script type="text/javascript">					
+				$(document).ready(function(){
+					$('#infobar .top').click(function(){
+						$('html, body').animate({scrollTop:0}, 'slow');
+					});
+				});
+			</script>
+
+			<ul class="rightcol" style="float: right;">
+				<h3>Follow Us!</h3>
+
+				<li class="widget widget_text">
+					<div class="textwidget">
+						<!-- <p>Advertise →<span class="contribute_icon"></span></p> -->
+						<p>420chan Status → <a href="http://twitter.com/420chan">@420chan</a></p>
+						<p>420chan Bans → <a href="http://twitter.com/420bans">@420bans</a></p>
+						<p>Netjester → <a href="http://twitter.com/NetjesterAI">@NetjesterAI</a></p>
+					</div>
+				</li>
+
+				<!-- <li class="widget widget_text" id="text-5">
+					<h3>About</h3>
+					<div class="textwidget">
+						<p>j</p>
+						<p><a href="#faq">→</a></p>
+
+					</div>
+				</li> -->
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="infobar">
+	<div class="full_width">
+
+		<div class="page">
+			<ul>
+				<li><a class="copyright" href="/">420chan! The best imageboard community on the planet!</a></li>
+			</ul>
+			<span class="top"></span>
+		</div>
+	</div>
+</div>
+
+<script src="http://cdn.420chan.org/a/?js" type="text/javascript"></script> </body> </html>
+

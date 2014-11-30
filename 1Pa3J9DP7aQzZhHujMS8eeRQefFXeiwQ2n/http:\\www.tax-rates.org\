@@ -1,0 +1,544 @@
+http://www.tax-rates.org/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 11:38:19 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Set-Cookie: __cfduid=d8ec441338e280207d9095d762c89043a1406115499174; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.tax-rates.org; HttpOnly
+X-Powered-By: PHP/5.3.3
+Vary: Accept-Encoding
+CF-RAY: 14e7974ddccb0f39-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+<title> Tax-Rates.org - The Tax Information Portal </title>
+<meta name="description" content="">
+<meta name="keywords" content="income tax, sales tax, property tax, excise tax, tax rates, tax-rates.org">
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<META name="Copyright" content="Copyright (C) 2014 Tax-Rates.org"/>
+<META name="Rating" content="General"/>
+<LINK rel="shortcut icon" href="http://www.tax-rates.org/favicon.ico" type="image/x-icon"/>
+<link rel='stylesheet' id='cptchStylesheet-css' href='http://www.tax-rates.org/wp-content/plugins/captcha/css/style.css?ver=3.5.1' type='text/css' media='all'/>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.tax-rates.org/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.tax-rates.org/wp-includes/wlwmanifest.xml"/>
+<meta name="generator" content="WordPress 3.5.1"/>
+ 
+ 
+ 
+<SCRIPT language="JavaScript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js"></SCRIPT>
+<LINK rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/redmond/jquery-ui.css" type="text/css">
+<LINK rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.css" media="screen"/>
+<LINK rel="stylesheet" href="/css/global.css" type="text/css" media="screen"/>
+ 
+<LINK rel="stylesheet" href="http://www.tax-rates.org/wp-content/themes/whitehouse/core/css/reset.css" type="text/css" media="screen"/>
+<LINK rel="stylesheet" href="http://www.tax-rates.org/wp-content/themes/whitehouse/core/css/wp_core.css" type="text/css" media="screen"/>
+<LINK rel="stylesheet" href="http://www.tax-rates.org/wp-content/themes/whitehouse/style.css" type="text/css" media="screen"/>
+<script src="/scripts/bxslider/jquery.bxslider.min.js"></script>
+<link rel="stylesheet" href="/scripts/bxslider/jquery.bxslider.css" type="text/css"/>
+ 
+<script src="/scripts/vectormap/jquery.vector-map.js" type="text/javascript"></script>
+<script src="/scripts/vectormap/usa-en.js" type="text/javascript"></script>
+<link href="/scripts/vectormap/jquery.vector-map.css" media="screen" rel="stylesheet" type="text/css"/>
+<style type="text/css"></style>
+<style type="text/css">#homeLeaderboard{margin:0px 0px 15px -3px;}#columnOne{float:left;padding-right:2%;width:63%;}.featuredBlurb{margin:.5em 1em 0em 1em;height:175px;}.map{width:100%;height:350px;}.jvectormap-zoomin,.jvectormap-zoomout{display:none;}#promoBox{height:155px;border:1px solid white;border-radius:.5em;background:#FEFEFE;padding:1em;-webkit-box-shadow:0 0 5px #ccc;box-shadow:0 0 5px #ccc;}#promoBox img{float:left;height:100%;margin-right:1em;border-radius:.5em;border:1px solid silver;}#welcomeText{margin:1em 0 1em;}#adBlock{border:1px dashed white;padding:0em!important;overflow:hidden;}h4{margin-bottom:.5em;font-size:1.2em;}#featuredList{padding:.5em 1em 0 1em;}#featured li li{width:97%;border:1px solid silver;border-radius:.5em;margin-bottom:.5em;padding:.5em;list-style-type:none;}#featured li li:hover{background:#EFEFEF;}</style>
+<script language="JavaScript">
+	$(function(){
+	 // Initialize slider
+	 $('#featured').bxSlider({
+		responsive : false,
+		auto : true,
+		pause : 6000		
+	 });
+	 
+    $(".slider_wrap").click(function(e){
+        slider.stopShow();
+    });
+	 
+	 // Initialize tax maps
+	 for( var i = 0; i < maps.length; i++ )
+	  {
+		 currentmap = maps[i];
+		 $("#"+currentmap+"tax_map").vectorMap({
+			map: 'usa_en',
+			values: window[currentmap+"tax_data"],
+			color: '#C0C0C0',
+			hoverOpacity: 0.7,
+			hoverColor: false,
+			scaleColors: [color1, color2],
+			normalizeFunction: 'polynomial',
+			backgroundColor: '#FFFFFF',
+			onRegionClick: showLocation,
+			hoverOpacity: 0.7,
+			hoverColor: false,
+			onLabelShow: function(event, label, code){
+			 curHoverState = label.text();
+			 state = label.text();
+			 taxtype = currentmap;
+			 label.text(label.text() + " - " + window[currentmap+"tax_data"][code] + "%")
+			 $(this).css("cursor", "pointer");
+			}
+		 });
+	  }
+	});
+
+	var maps = Array("income", "sales", "property");
+	var color1 = "#8FD8D8", color2 = "#0B244D";
+	var state = "", taxtype="";
+	
+	var incometax_data = {"al":3.67,"ak":0.00,"az":3.52,"ar":4.08,"ca":7.13,"co":4.63,"ct":5.45,"de":4.06,"dc":6.86,"fl":0.00,"ga":3.50,"hi":7.02,"id":5.00,"il":5.00,"in":3.40,"ia":4.92,"ks":3.95,"ky":4.30,"la":4.00,"me":7.23,"md":4.41,"ma":5.25,"mi":4.25,"mn":6.75,"ms":4.00,"mo":3.75,"mt":3.99,"ne":4.46,"nv":0.00,"nh":5.00,"nj":4.59,"nm":3.63,"ny":6.05,"nc":6.92,"nd":3.02,"oh":3.42,"ok":2.96,"or":7.73,"pa":3.07,"ri":4.83,"sc":4.17,"sd":0.00,"tn":6.00,"tx":0.00,"ut":5.00,"vt":7.18,"va":3.94,"wa":0.00,"wv":4.80,"wi":6.35,"wy":0.00};
+	var salestax_data = {"al":4.00,"ak":0.00,"az":5.60,"ar":6.00,"ca":7.50,"co":2.90,"ct":6.35,"de":0.00,"dc":6.00,"fl":6.00,"ga":4.00,"hi":4.00,"id":6.00,"il":6.25,"in":7.00,"ia":6.00,"ks":6.30,"ky":6.00,"la":4.00,"me":5.00,"md":6.00,"ma":6.25,"mi":6.00,"mn":6.88,"ms":7.00,"mo":4.23,"mt":0.00,"ne":5.50,"nv":6.85,"nh":0.00,"nj":7.00,"nm":5.13,"ny":4.00,"nc":4.75,"nd":5.00,"oh":5.50,"ok":4.50,"or":0.00,"pa":6.00,"pr":5.50,"ri":7.00,"sc":6.00,"sd":4.00,"tn":7.00,"tx":6.25,"ut":4.70,"vt":6.00,"va":5.00,"wa":6.50,"wv":6.00,"wi":5.00,"wy":4.00};
+	var propertytax_data = {"nj":1.89,"nh":1.86,"tx":1.81,"wi":1.76,"ne":1.76,"il":1.73,"ct":1.63,"mi":1.62,"vt":1.59,"nd":1.42,"oh":1.36,"ri":1.35,"pa":1.35,"ks":1.29,"ia":1.29,"sd":1.28,"ny":1.23,"me":1.09,"mn":1.05,"ma":1.04,"ak":1.04,"fl":0.97,"wa":0.92,"mo":0.91,"or":0.87,"md":0.87,"in":0.85,"nv":0.84,"mt":0.83,"ga":0.83,"nc":0.78,"va":0.74,"ok":0.74,"ca":0.74,"ky":0.72,"az":0.72,"id":0.69,"tn":0.68,"ut":0.60,"co":0.60,"wy":0.58,"nm":0.55,"ms":0.52,"ar":0.52,"sc":0.50,"wv":0.49,"dc":0.46,"de":0.43,"al":0.33,"hi":0.26,"la":0.18};
+	
+	function showLocation() {
+	  window.location = "/"+state.toLowerCase().replace(" ", "_")+"/"+taxtype+"-tax";
+	}	
+	</script>
+</head>
+<body class="">
+<div id="site">
+<div id="wrapper">
+<div id="header" class="fix">
+<div class="content fix">
+<LINK href="/css/dropdown.css" rel="stylesheet" type="text/css">
+<a href="#" name="top"></a>
+<a href="http://www.tax-rates.org/"><img src="/images/taxrates-2014.png" id="headerImage" alt="Tax-Rates.org - 2014 State & Federal Taxes"></a>
+<div class="headline" id="siteHeader">
+<h1 class="site-title"><a class="home" href="http://www.tax-rates.org/" title="Tax-Rates.org Home">Tax-Rates.org &#8211; The 2014 Tax Resource</a></h1>
+<div style="margin-top: 40px;">
+<form action="/search.php" method="get">
+<div>
+<input type="text" name="q" size="31"/>
+<input type="hidden" name="cx" value="partner-pub-2244847655937829:3145917468"/>
+<input type="hidden" name="cof" value="FORID:10"/>
+<input type="hidden" name="ie" value="UTF-8"/>
+<input type="submit" style="padding: 4px;" value="Search Tax-Rates.org"/>
+</div>
+</form>
+</div>
+<script type="text/javascript">window.google_analytics_uacct = "UA-"+"1123623"+"2-9";</script>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en"></script>
+</div>
+ 
+<div id="sideBanner">
+<table style="width: 100%;">
+<tr>
+<td>
+<b class="green">Tax-Rates.org is updated for tax year 2014.</b> <br/>
+<b><a href="/income-tax-calculator?ref=banner" style="color: #2E6E9E; text-decoration: underline; font-size: 13px;">Try our powerful Income Tax Calculator!</a></b>
+</td>
+</tr>
+</table>
+</div>
+<div class="icons"></div>
+</div>
+</div>
+<div class="container fix ">
+<div class="effect containershadow">
+<div class="effect containershadow_rpt">
+<div id="sitenav" class="content fix">
+<div id="nav" class="fix">
+<div id='cssmenu'>
+<ul class="clearfix">
+ 
+<li class="page_item  ">
+<a class="home" class='active' href="/" title="Tax-Rates.org Home">Tax-Rates.org</a>
+</li>
+<li class="page_item page-item-4  has-sub">
+<a href="/taxtables/income-tax-by-state">Income Tax</a>  
+<div class="doubleDropdown">
+<ul class="dropdownLeft">
+<li><a href='/income-tax-calculator?ref=nav_income'><span>Income Tax Calculator <img src="http://cdn1.iconfinder.com/data/icons/fatcow/16x16_0600/new.png"/></span></a></li>
+<li><a href='/taxtables/income-tax-by-state'><span>Income Taxes By State</span></a></li>
+<li><a href='/federalincometax'><span>The Federal Income Tax</span></a></li>
+<li><a href='/forms'><span>Print Income Tax Forms</span></a></li>
+<li><a href='/taxtables/local-income-tax-by-state'><span>Local Income Taxes</span></a></li>
+</ul>
+<ul class="dropdownRight">
+<li>
+<a href='/library'><span>Learn More About Income Taxes</span></a>
+</li>
+<ol>
+<li><a href='/library/marginal-tax-brackets'><span>How Marginal Tax Brackets Work</span></a></li>
+<li><a href='/library/social-security-tax-rate'><span>Social Security & Payroll Taxes</span></a></li>
+<li><a href='/library/estimated-income-taxes'><span>Filing Quarterly Estimated Taxes</span></a></li>
+<li><a href='/library/how-to-efile-your-tax-return'><span>E-File With Income Tax Software</span></a></li>
+</ol>
+<li>
+<a href='/library/income-tax-faq'><span>View The Income Tax FAQ</span></a>
+</li>
+</ul>
+</div>
+</li>
+<li class="page_item  has-sub">
+<a href="/taxtables/sales-tax-by-state">Sales Tax</a>  
+<div>
+<ul>
+<li><a href='/taxtables/sales-tax-by-state'><span>Sales Tax By State</span></a></li>
+<li><a href='/taxtables/local-sales-taxes'><span>County Sales Tax Rates</span></a></li>
+ 
+<li><a href='/taxtables/excise-tax-by-state'><span>Excise Taxes By State</span></a></li>
+<li><a href='/taxtables/use-tax-by-state'><span>Use Tax By State</span></a></li>
+</ul>
+</div>
+</li>
+<li class="page_item page-item-4  has-sub">
+<a href="/taxtables/property-tax-by-state">Property Taxes</a>  
+<div>
+<ul>
+<li><a href='/taxtables/property-tax-by-state'><span>Property Tax By State</span></a></li>
+<li><a href='/taxtables/tax-assessors-by-state'><span>Tax Assessors By State</span></a></li>
+<li><a href='/property-tax-calculator'><span>Property Tax Calculator</span></a></li>
+<li><a href='/propertyTaxAppealCalc.php'><span>Is My Home Overassessed?</span></a></li>
+</ul>
+</div>
+</li>
+<li class="page_item page-item-4 ">
+<a href="/taxtables/corporate-income-tax-by-state" title="Corporate Income Tax Rates By State">Business Tax</a>
+</li>
+<li class="page_item page-item-4  has-sub">
+<a href="#">Calculators</a>  
+<div>
+<ul>
+<li><a href='/income-tax-calculator?ref=nav_calcs'><span>Income Tax Calculator</span></a></li>
+<li><a href='/property-tax-calculator'><span>Property Tax Calculator</span></a></li>
+ 
+</ul>
+</div>
+</li>
+<li class="page_item page-item-4 mobilehide">
+<a href="http://world.tax-rates.org/" target="_blank" title="International Tax Rates">World Taxes</a>
+</li>
+<li class="page_item page-item-4  ?> mobilehide">
+<a href="/contact" target="_blank" title="Contact Tax-Rates.org">Contact</a>
+</li>
+</ul>
+</div> 
+</div> 
+<div class="clear"></div>
+</div>
+<div id="contentcontainer" class="content fix">
+<div id="contentborder">
+<div id="maincontent"class="fullwidth" >
+<div id="contentPadding">
+
+<!-- BEGIN MAIN CONTENT -->
+
+<h1 class="ribbon heading paddedHeader flagHeader" align="center" style="width: 100%;">
+ <img src="/images/UnitedStatesFlag.png" alt="United States Tax Rates" class="flagHeaderImage" />
+ <div><b>Tax-Rates.org</b> - The Federal & State Tax Information Portal</div>
+</h1>
+
+<div id="columnOne">
+
+	<!-- Featured Slider -->
+	<ul id="featured">
+	 <li>
+		<div class="featuredBlurb">
+			<h4><b>Income Tax Rates by State</b></h4>
+			<p>			 
+			 A total of 43 states plus the District of Columbia collect a state income tax in addition to the <a href="/federalincometax">Federal Income Tax</a>. Depending on your state and tax bracket, your state tax rate can be as low as 1% or as high as 13.3% of gross income.
+			</p>
+			<p>
+			 For more information on your state's income tax, choose your state from the map below or compare income tax rates across the states on our <a href="/taxtables/income-tax-by-state">income tax by state page &#9654;</a>.
+			</p>
+		</div>
+		
+		<div id="incometax_map" class="map"></div>
+	 </li>
+	 <li>
+		<div class="featuredBlurb">
+			<h4><b>Sales Tax Rates by State</b></h4>
+			<p>			 
+			 A total of 45 states plus the District of Columbia charge a sales tax on most purchases of goods (and sometimes services) within state borders. 
+			</p>
+			<p>	 
+			 Items like groceries, alcohol, gasoline, and prepared food may be subject to a special sales tax rate and / or additional <a href="/taxtables/excise-tax-by-state">excise taxes</a>. The only five states that do not levy a sales tax are Alaska, Delaware, Montana, New Hampshire, and Oregon. 
+			 <a href="/taxtables/sales-tax-by-state">View sales tax rates by state &#9654;</a>
+			</p>
+		</div>
+		
+		<div id="salestax_map" class="map"></div>
+	 </li>
+	 <li>
+		<div class="featuredBlurb">
+			<h4><b>Property Tax Rates by State</b></h4>
+			<p>			 
+			 Every state and county in the United States collects a property tax on real estate, buildings, and other forms of property owned within their jurisdiction. Taxes collected on an identical property may vary widely depending on where the property is located, even within in the same state.
+			</p>
+			<p>
+			 Tax-Rates.org lets you drill down into your state's median property tax rates to a county level to allow in-depth comparisons. For an interactive map, see <a href="/taxtables/property-tax-by-state">property tax by state &#9654;</a>.
+			</p>
+		</div>
+		
+		<div id="propertytax_map" class="map"></div>
+	 </li>
+	 <li>
+		<div id="featuredList">
+			<h4><b> More on Tax-Rates.org </b></h4>
+			
+			<b><strong>Income Taxes:</strong></b>
+			<p>
+			<ul>
+			 <li><a href="/federalincometax">Federal Income Tax Rates <i>(tax year 2013)</i></a></li>
+			 <li><a href="/taxtables/income-tax-by-state">Income Tax Rates By State</a></li>
+			 <li><a href="/taxtables/local-income-tax-by-state">Local Income Tax Rates</a></li>
+			 <li><a href="/taxtables/corporate-income-tax-by-state">Corporate Income Tax Rates By State</a></li>
+			</ul>
+			</p>
+
+			<p><strong>Sales and Excise Taxes:</strong></p>
+			<p>
+			<ul>
+			 <li><a href="/taxtables/sales-tax-by-state">Sales Tax Rates By State</a></li>
+			 <li><a href="/taxtables/local-sales-taxes">Local Sales Tax Rates By City & County</a></li>
+			 <li><a href="/taxtables/excise-tax-by-state">Excise Tax Rates By State</a></li>
+			 <li><a href="/taxtables/use-tax-by-state">Use Tax Rates By State</a></li>
+			</ul>
+			</p>
+			
+			<p><strong>Property Taxes:</strong></p>
+			<p>
+			<ul>
+			 <li><a href="/taxtables/property-tax-by-state">Property Tax Rates By State</a></li>
+			</ul>
+			</p>
+		</div>
+
+	 </li>
+	</ul>
+	
+	<!-- Promo Box -->
+	<div id="promoBox">
+	 <img src="/images/taxforms.jpg" alt="Tax-Rates.org Income Tax Calculator" />
+	 <h4> Estimate your federal and state taxes - <u>fast</u> and <u>free</u>! </h4>
+	 <p>
+	  The <a href="/income-tax-calculator?ref=index">Tax-Rates.org Income Tax Calculator</a> is the most powerful free income tax tool available on the Internet! 
+	 </p>
+	 <p>
+	  Estimate your income tax burden with as much or as little detail as you'd like, and start planning ahead for April.
+	 </p>
+	 <p style="margin-top: -7px;">
+	  <b><a href="/income-tax-calculator?ref=index">Get Started Now!</a></b>
+	 </p>
+	</div>
+	
+</div>
+
+<div id="columnTwo">
+
+	<!-- Ad Block -->
+	<div id="adBlock">
+		<script type="text/javascript">
+		<!-- 
+		google_ad_client = "ca-p"+"ub-507207"+"4722508809";
+		/* Tax-Rates.org - Sales Tax Block */
+		google_ad_slot = "5695586517";
+		google_ad_width = 336;
+		google_ad_height = 280;
+		//-->
+		</script>
+		<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+		</script>
+	</div>
+	
+	<!-- Welcome Blurb -->
+	<div id="welcomeText">
+		<h4>Welcome to Tax-Rates.org!</h4>
+		<p>
+		 We provide a one-stop resource for finding state and federal tax information, including income, sales, and property tax rates.
+		</p>
+		<p>
+		 All information on Tax-Rates.org is updated directly from the latest tax rate information provided by the IRS and the individual state tax and revenue services.
+		</p>
+	</div>
+	
+	<!-- Facebook -->
+	<div class="fb-like-box" data-href="http://www.facebook.com/pages/Tax-Ratesorg/137921262994139" data-width="320"  data-show-faces="true" data-stream="false" data-header="true" id="facebookBox"></div>
+	
+	<!-- Calculator Promo Banner -->
+	<div id="promoBanner">
+	 <b>Tax day is coming - </b> Try our brand-new, powerful <b><a href="/income-tax-calculator?ref=index" target="_blank">Income Tax Calculator!</a></b>
+	</div>
+	
+</div>
+
+
+
+<div style="margin: 5px 0px 7px 0px; overflow: hidden; clear: both;">
+	<script type="text/javascript"><!--
+	google_ad_client = "c"+"a-pu"+"b-224"+"484765"+"5937829";
+	/* Tax-Rates.org - Homepage - Link Unit A */
+	google_ad_slot = "27627"+"68261";
+	google_ad_width = 928;
+	google_ad_height = 15;
+	//-->
+	</script>
+	<script type="text/javascript"
+	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+	</script>
+</div>
+
+<!-- END MAIN CONTENT -->
+
+</div>
+</div>
+</div>
+		
+				
+		<div class="hl"></div>
+<div class="post-footer pfooterdark">
+	<div class="right"><span><a href="#header">Go To Top &raquo;</a></span></div>
+	<div class="clear"></div>
+
+</div>
+<div class="hl2"></div>		<div class="clear"></div>
+	</div>
+</div>
+		</div>
+	</div> 
+</div>
+
+
+		<div class="clear"></div>
+				
+<div  id="footer">
+	<div class="effect">
+		<div class="content">
+						<div id="fcolumns_container" class="fix">
+									<div class="fcol">
+						<div class="fcol_pad">
+						   <!-- Footer Logo -->
+                           <img src="http://www.tax-rates.org/images/taxrates-2012.png" alt="Tax-Rates.org - Free tax advice, tax deductions, and tax calculators">
+						</div>
+					</div>
+					<div class="fcol">
+						<div class="fcol_pad">
+						    <!-- Footer Navigation -->
+							<h3>Tax Resources</h3>
+							<ul>
+							 <li><a href="http://www.tax-rates.org/">Home</a></li>
+							 <li><a href="http://www.tax-rates.org/taxtables/income-tax-by-state">Income Tax By State</a></li>
+							 <li><a href="http://www.tax-rates.org/taxtables/sales-tax-by-state">Sales Tax By State</a></li>
+							 <li><a href="http://www.tax-rates.org/taxtables/property-tax-by-state">Property Tax By State</a></li>
+							 <li><a href="http://www.tax-rates.org/forms">Tax Forms</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="fcol">
+						<div class="fcol_pad">
+							<h3 style="margin-bottom: 12px;">Stay In Touch</h3>
+							<ul>
+							 <li><g:plusone annotation="none" size="medium"></g:plusone></li>
+							</ul>
+						</div>
+					</div>
+					<div class="fcol">
+						<div class="fcol_pad">
+							<h3>More</h3>
+							<div class="welcomemessage">Tax-Rates.org provides free access to tax rates, calculators, and more. 
+
+<div style="margin-top: .75em;">
+<img src="/images/bitcoin.png" alt="Donate to Tax-Rates.org" />
+<b>Donate BitCoin: </b>
+<input type="text" value="1Pa3J9DP7aQzZhHujMS8eeRQefFXeiwQ2n" style="color: #008800; font-size: 11px;" onClick="select()" />
+</div></div>						</div>
+					</div>
+					<div class="fcol">
+						<div class="fcol_pad">
+							<span class="terms">
+							    <!-- Copyright Notice -->
+								<h3 style="font-size: 14px;">
+								 &copy; 2014 <a href="http://www.tax-rates.org/">Tax-Rates.org</a>
+								</h3>
+                                <ul>
+								<li><a href="http://www.tax-rates.org/legal">Terms & Privacy Policy</a></li>
+                                </ul>
+							</span>
+						</div>
+					</div>
+							</div>
+	
+		
+			<div class="clear"></div>
+		</div>		
+	</div>
+
+
+</div>
+	<div class="clear"></div>
+	
+
+  </div><!--/wrapper -->
+</div> <!-- end #site -->
+
+<!-- Google +1 Script -->
+ <SCRIPT type="text/javascript"> 
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();</SCRIPT> 
+
+<!-- Facebook Script -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<!-- Footer Scripts Go Here -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  var pluginUrl = 
+ '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+_gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+  _gaq.push(['_setAccount', "UA-1"+"1236"+"23"+"2-9"]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+window.google_analytics_uacct = "U"+"A-112"+"3623"+"2-9";
+</script>
+
+<!-- Quantcast Tag -->
+<script type="text/javascript">
+var _qevents = _qevents || [];
+
+(function() {
+var elem = document.createElement('script');
+elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+elem.async = true;
+elem.type = "text/javascript";
+var scpt = document.getElementsByTagName('script')[0];
+scpt.parentNode.insertBefore(elem, scpt);
+})();
+
+_qevents.push({
+qacct:"p-4c9tIyB_GOuZY"
+});
+</script>
+
+<noscript>
+<div style="display:none;">
+<img src="//pixel.quantserve.com/pixel/p-4c9tIyB_GOuZY.gif" border="0" height="1" width="1" alt="Quantcast"/>
+</div>
+</noscript>
+<!-- End Quantcast tag -->
+
+<SCRIPT language="JavaScript" type="text/javascript" src="http://direct.marathon-studios.com/serve/tracker/track.js"></SCRIPT> 
+<NOSCRIPT><img src="http://direct.marathon-studios.com/serve/tracker/visit.php" alt="Tax Rates Pixel"></NOSCRIPT> 
+<!-- End Footer scripts -->
+</body>
+</html>

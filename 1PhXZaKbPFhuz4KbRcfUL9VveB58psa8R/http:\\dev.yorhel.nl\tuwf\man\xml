@@ -1,0 +1,265 @@
+http://dev.yorhel.nl/tuwf/man/xml
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 19:23:37 GMT
+Server: Apache
+X-Powered-By: Perl-TUWF
+Content-Encoding: gzip
+Cache-Control: s-max-age=86400, max-age=3600
+Content-Length: 5607
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" href="/style.css" type="text/css" media="all" /><link rel="alternate" type="application/atom+xml" href="/tuwf/feed.atom" title="Site updates" /><title>TUWF::XML Documentation</title></head><body><div id="body"><div id="uglyhack"> </div><div id="left"><h1 class="title">~ Tuwf ~</h1><ul><li><a href="/tuwf">Info</a></li><li><a href="/tuwf/man" class="menusel">Manual</a><ul><li><a href="/tuwf/man">Main</a></li><li><a href="/tuwf/man/db">::DB</a></li><li><a href="/tuwf/man/misc">::Misc</a></li><li><a href="/tuwf/man/request">::Request</a></li><li><a href="/tuwf/man/response">::Response</a></li><li><a href="/tuwf/man/xml" class="menusel">::XML</a></li></ul></li><li><a href="/tuwf/changes">Changelog</a></li><li><a href="/" class="small special">Projects home </a></li></ul><div class="notes">Yoran Heling<br /><a href="mailto:projects@yorhel.nl">projects@yorhel.nl</a><br /><a href="http://yorhel.nl">home</a> - <a href="http://g.blicky.net">git repos</a><br /><b>= donate =</b><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=BBF8LGT2LLNFN&amp;lc=US&amp;currency_code=EUR&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted">paypal</a> - <a href="bitcoin:1PhXZaKbPFhuz4KbRcfUL9VveB58psa8R">bitcoin</a><br /><b>= pgp =</b><a href="http://yorhel.nl/key.asc">key</a> - <a href="http://pgp.mit.edu:11371/pks/lookup?search=0x8c2739fa">mit</a><br /><i>7446 0D32 B808 10EB A9AF A2E9 6239 4C69 8C27 39FA</i></div><img id="scissors" src="/img/scissors.png" alt="Cute decorative scissors, cutting through your code." /></div><div id="main"><h1 class="title">TUWF::XML Documentation</h1>
+<div class='indexgroup'>
+<ul   class='indexList indexList1'>
+  <li class='indexItem indexItem1'><a href='#NAME'>NAME</a>
+  <li class='indexItem indexItem1'><a href='#DESCRIPTION'>DESCRIPTION</a>
+  <li class='indexItem indexItem1'><a href='#FUNCTION-ONLY_FUNCTIONS'>FUNCTION-ONLY FUNCTIONS</a>
+  <ul   class='indexList indexList2'>
+    <li class='indexItem indexItem2'><a href='#new(options)'>new(options)</a>
+    <li class='indexItem indexItem2'><a href='#xml_escape(string)'>xml_escape(string)</a>
+    <li class='indexItem indexItem2'><a href='#html_escape(string)'>html_escape(string)</a>
+  </ul>
+  <li class='indexItem indexItem1'><a href='#METHODS_%26_FUNCTIONS'>METHODS &amp; FUNCTIONS</a>
+  <ul   class='indexList indexList2'>
+    <li class='indexItem indexItem2'><a href='#lit(string)'>lit(string)</a>
+    <li class='indexItem indexItem2'><a href='#txt(string)'>txt(string)</a>
+    <li class='indexItem indexItem2'><a href='#xml()'>xml()</a>
+    <li class='indexItem indexItem2'><a href='#html(options)'>html(options)</a>
+    <li class='indexItem indexItem2'><a href='#tag(name%2C_attribute_%3D%3E_value%2C_..%2C_contents)'>tag(name, attribute =&gt; value, .., contents)</a>
+    <li class='indexItem indexItem2'><a href='#end(name)'>end(name)</a>
+    <li class='indexItem indexItem2'><a href='#%3Cxhtml-tag%3E(attribute_%3D%3E_value%2C_..%2C_contents)'>&lt;xhtml-tag&gt;(attribute =&gt; value, .., contents)</a>
+  </ul>
+  <li class='indexItem indexItem1'><a href='#IMPORT_OPTIONS'>IMPORT OPTIONS</a>
+  <li class='indexItem indexItem1'><a href='#SEE_ALSO'>SEE ALSO</a>
+  <li class='indexItem indexItem1'><a href='#COPYRIGHT'>COPYRIGHT</a>
+  <li class='indexItem indexItem1'><a href='#AUTHOR'>AUTHOR</a>
+</ul>
+</div>
+<!--TUWF::XML--><a name='___top' class='dummyTopAnchor' ></a>
+
+<h1><a class='u'
+name="NAME"
+>NAME</a></h1>
+
+<p>TUWF::XML - Easy XML and HTML generation with Perl</p>
+
+<h1><a class='u'
+name="DESCRIPTION"
+>DESCRIPTION</a></h1>
+
+<p>This module provides an easy and simple method for generating XML (and with that,
+HTML) documents in Perl.
+Unlike most other TUWF modules,
+this one can be used separately,
+outside of the TUWF framework.</p>
+
+<p>The goal of this module is to make HTML generation <b>easier</b>,
+it is certainly not a goal to abstract HTML generation behind generalized functions and objects.
+Nor is it a goal to ensure the correctness of the generated HTML,
+that remains the responsibility of the programmer (although this module can certainly help).
+You will still be writing HTML yourself,
+the only difference is that you use a more convenient syntax and you won't have to manually escape everything you output.</p>
+
+<p>The primary aim of this module was to generate XHTML,
+and since XHTML is a subset of XML,
+extending it to write XML was a small step.
+In fact,
+this module is basically an XML generator with convenience functions for XHTML.</p>
+
+<p>This module provides two interfaces: a functional interface and an object interface.
+Both can be used,
+even at the same time.
+The object interface is required in threaded environments or when you want to generate multiple documents simultaneously,
+while the functional interface is far more convenient,
+but has some limitations and contributes to namespace pollution.</p>
+
+<p>The functional interface looks like this:</p>
+
+<pre>  use TUWF::XML ':html';<br />  # -- or, from within a TUWF website:<br />  use TUWF ':html';<br />  <br />  TUWF::XML-&gt;new(default =&gt; 1);<br />  html;<br />   head;<br />    title 'Document title!';<br />   end;<br />  end 'html';</pre>
+
+<p>And the equivalent, using the object interface:</p>
+
+<pre>  # not required when used within a TUWF website<br />  use TUWF::XML;<br />  <br />  my $xml = TUWF::XML-&gt;new();<br />  $xml-&gt;html;<br />   $xml-&gt;head;<br />    $xml-&gt;title('Document title!');<br />   $xml-&gt;end;<br />  $xml-&gt;end('html');</pre>
+
+<p>You may also combine the two interfaces by setting the <i>default</i> option in <code>new()</code> and mixing method calls and function calls, but that is rather inconsistent and messy.</p>
+
+<p>TUWF automatically calls <code>TUWF::XML-&gt;new(default =&gt; 1, ..)</code> at the start of each request, so you can start generating XML or HTML using the functional interface without having to initialize this module. Of course, if you wish to generate an other XML document while processing a request, you should use the object interface for that, otherwise this may cause problems with other functions within the TUWF framework that assume that the default <code>TUWF::XML</code> object has been set to output to TUWF.</p>
+
+<h1><a class='u'
+name="FUNCTION-ONLY_FUNCTIONS"
+>FUNCTION-ONLY FUNCTIONS</a></h1>
+
+<h2><a class='u'
+name="new(options)"
+>new(options)</a></h2>
+
+<p>Creates a new XML generator object, accepts the following options:</p>
+
+<dl>
+<dt><a name="default"
+>default</a></dt>
+
+<dd>
+<p>0/1. When set to a true value, the newly created object will be used as the default object: Any regular function call (that is, without an object) to any of the functions listed in <a href="#METHODS_%26_FUNCTIONS" class="podlinkpod"
+>METHODS &amp; FUNCTIONS</a> will act as if they were called on this object. Until a new object is created with the <i>default</i> option set, in which case the default object will be overwritten again. Default: 0.</p>
+
+<dt><a name="write"
+>write</a></dt>
+
+<dd>
+<p>Should contain a subroutine reference that accepts a string as argument. This subroutine will be called whenever there is data to output. If this option is not specified, a default function that writes to <code>stdout</code> is used.</p>
+
+<dt><a name="pretty"
+>pretty</a></dt>
+
+<dd>
+<p>Set to a positive integer to pretty-print the generated XML, set to 0 to disable pretty-printing. The integer indicates the number of spaces to use for each new level of indentation. It is recommended to have pretty-printing disabled when generating HTML, since white-space around HTML elements tends to have significance when being rendered, and with pretty-printing you will lose the control on where to (not) insert whitespace. Default: 0 (disabled).</p>
+</dd>
+</dl>
+
+<h2><a class='u'
+name="xml_escape(string)"
+>xml_escape(string)</a></h2>
+
+<p>Returns the XML-escaped string. The characters <code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code> and <code>&quot;</code> will be replaced with their XML entity.</p>
+
+<h2><a class='u'
+name="html_escape(string)"
+>html_escape(string)</a></h2>
+
+<p>Does the same as <code>xml_escape()</code>, but also replaced newlines with <code>&lt;br /&gt;</code> tags.</p>
+
+<h1><a class='u'
+name="METHODS_&amp;_FUNCTIONS"
+>METHODS &amp; FUNCTIONS</a></h1>
+
+<h2><a class='u'
+name="lit(string)"
+>lit(string)</a></h2>
+
+<p>Output the given string <b>lit</b>erally, without modification or escaping. This is equivalent to just calling the <i>write</i> subroutine passed to <code>new()</code>.</p>
+
+<h2><a class='u'
+name="txt(string)"
+>txt(string)</a></h2>
+
+<p>XML-escape the string and then output it, equivalent to <code>lit(xml_escape $string)</code>.</p>
+
+<h2><a class='u'
+name="xml()"
+>xml()</a></h2>
+
+<p>Writes the following XML header:</p>
+
+<pre>  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</pre>
+
+<p>Since this function does not open a tag, it does not have to be <code>end()</code>'ed.</p>
+
+<h2><a class='u'
+name="html(options)"
+>html(options)</a></h2>
+
+<p>Writes an XHTML doctype and opens an <code>&lt;html&gt;</code> tag. Accepts the following options:</p>
+
+<dl>
+<dt><a name="doctype"
+>doctype</a></dt>
+
+<dd>
+<p>Specify the doctype to use. Can be one of the following:</p>
+
+<pre>  xhtml1-strict xhtml1-transitional xhtml1-frameset<br />  xhtml11 xhtml-basic11 xhtml-math-svg</pre>
+
+<p>These refer to the doctypes found at <a href="http://www.w3.org/QA/2002/04/valid-dtd-list.html" class="podlinkurl"
+>http://www.w3.org/QA/2002/04/valid-dtd-list.html</a>. Default: xhtml1-strict.</p>
+
+<dt><a name="lang"
+>lang</a></dt>
+
+<dd>
+<p>Specifies the (human) language of the generated content. This will generate a <code>lang</code> and <code>xml:lang</code> attribute for the html open tag.</p>
+
+<dt><a name="anything_else"
+><i>anything else</i></a></dt>
+
+<dd>
+<p>Any option besides <i>doctype</i> and <i>lang</i> is added as attribute to html open tag.</p>
+</dd>
+</dl>
+
+<p>Since this opens an <code>&lt;html&gt;</code> tag, it should be closed with an <code>end()</code>.</p>
+
+<h2><a class='u'
+name="tag(name,_attribute_=&gt;_value,_..,_contents)"
+>tag(name, attribute =&gt; value, .., contents)</a></h2>
+
+<p>Generates an XML tag or element. The first argument is the name of the tag, attributes can be specified after that with key/value pairs and finally the contents can be specified. If the <i>contents</i> argument is not present, an open tag will be generated, which should be closed later on using <code>end()</code>. If <i>contents</i> is present but undef, the generated tag will be self-closing, i.e. it will end with a <code>/&gt;</code> instead of a regular <code>&gt;</code>. If <i>contents</i> is present and not undef, it will be used as the contents of the tag, after which the tag will be closed with a closing tag (<code>&lt;/tagname&gt;</code>).</p>
+
+<p>The tag name and attribute names are outputted as-is, after some very basic validation. The attribute values and contents are passed through <code>xml_escape()</code>.</p>
+
+<p>Some example function calls and their output:</p>
+
+<pre>  tag('items');<br />  # &lt;items&gt;<br />  end();<br />  # &lt;/items&gt;<br />  <br />  tag('link', href =&gt; '/', undef);<br />  # &lt;link href=&quot;/&quot; /&gt;<br />  <br />  tag('a', href =&gt; '/?f&amp;c', title =&gt; 'Homepage', 'link');<br />  # &lt;a href=&quot;/f&amp;amp;c&quot; title=&quot;Homepage&quot;&gt;link&lt;/a&gt;<br />  <br />  tag('summary', type =&gt; 'html', 'I can write in &lt;b&gt;bold&lt;/b&gt;');<br />  # &lt;summary type=&quot;html&quot;&gt;I can write in &amp;lt;b&amp;gt;bold&amp;lt;/b&amp;gt;&lt;/summary&gt;<br />  <br />  tag qw{content type xhtml xml:base http://example.com/ xml:lang en}, $content;<br />  # is equivalent to:<br />  lit '&lt;content type=&quot;xhtml&quot; xml:base=&quot;http://example.com/&quot; xml:lang=&quot;en&quot;&gt;';<br />  txt $content;<br />  lit '&lt;/content&gt;';<br />  # except tag() can do pretty-printing when requested</pre>
+
+<h2><a class='u'
+name="end(name)"
+>end(name)</a></h2>
+
+<p>Closes the last tag opened by <code>tag()</code> or <code>html()</code>. The <i>name</i> argument is optional, when given, it will be used as validation. If the given <i>name</i> does not equal the last opened tag, an error is thrown.</p>
+
+<h2><a class='u'
+name="&lt;xhtml-tag&gt;(attribute_=&gt;_value,_..,_contents)"
+>&lt;xhtml-tag&gt;(attribute =&gt; value, .., contents)</a></h2>
+
+<p>For convenience, all XHTML 1.0 tags have their own function that acts as a shorthand for calling <code>tag()</code>. The following functions are defined:</p>
+
+<pre>  a abbr acronym address area b base bdo big blockquote body br button caption<br />  cite code col colgroup dd del dfn div dl dt em fieldset form h1 h2 h3 h4 h5<br />  h6 head i img input ins kbd label legend li Link Map meta noscript object ol<br />  optgroup option p param pre q samp script Select small span strong style Sub<br />  sup table tbody td textarea tfoot th thead title Tr tt ul var</pre>
+
+<p>Note that some functions start with an upper-case character. This is to avoid problems with reserved words or overriding Perl core functions with the same name.</p>
+
+<p>Some tags are <i>boolean</i>, meaning that they should always be self-closing and not have any contents. To generate these tags with <code>tag()</code>, you have to specify undef as the <i>contents</i> argument. This is not required when using these convenience functions, the undef argument is automatically added for the following tags:</p>
+
+<pre>  area base br img input Link param</pre>
+
+<p>Again, some examples:</p>
+
+<pre>  br;  # tag 'br', undef;<br />  div; # tag 'div';<br /><br />  title 'Page title';<br />  # tag 'title', 'Page title';<br /><br />  Link rel =&gt; 'shortcut icon', href =&gt; '/favicon.ico';<br />  # tag 'link', rel =&gt; 'shortcut icon', href =&gt; '/favicon.ico', undef;<br /><br />  textarea rows =&gt; 10, cols =&gt; 50, $content;<br />  # tag 'textarea', rows =&gt; 10, cols =&gt; 50, $content;</pre>
+
+<h1><a class='u'
+name="IMPORT_OPTIONS"
+>IMPORT OPTIONS</a></h1>
+
+<p>By default, TUWF::XML does not export anything. You can import any specific function (except <code>new()</code>) by specifying it on the <code>use</code> line:</p>
+
+<pre>  use TUWF::XML 'lit', 'html_escape', 'br';<br /><br />  # after which you can call those functions as follows:<br />  lit html_escape $content;<br />  br;</pre>
+
+<p>Or you can import an entire group of functions by adding <code>:xml</code> or <code>:html</code> to the list. The <code>:xml</code> group consists of the functions <code>xml()</code>, <code>lit()</code>, <code>txt()</code>, <code>tag()</code>, and <code>end()</code>. The <code>:html</code> group consists of all xhtml-tag functions in addition to the following: <code>html()</code>, <code>lit()</code>, <code>txt()</code>, <code>tag()</code> and <code>end()</code>.</p>
+
+<p>When using this module in a TUWF website, you can substitute <code>TUWF::XML</code> with <code>TUWF</code>. The main TUWF module will then redirect its import argments to this module. This saves some typing, and allows you to import functions from other TUWF modules on the same <code>use</code> line.</p>
+
+<h1><a class='u'
+name="SEE_ALSO"
+>SEE ALSO</a></h1>
+
+<p><a href="/tuwf/man" class="podlinkpod"
+>TUWF</a>.</p>
+
+<p>This module was inspired by <a href="http://search.cpan.org/perldoc?XML%3A%3AWriter" class="podlinkpod"
+>XML::Writer</a>, which is more powerful but less convenient.</p>
+
+<h1><a class='u'
+name="COPYRIGHT"
+>COPYRIGHT</a></h1>
+
+<p>Copyright (c) 2008-2011 Yoran Heling.</p>
+
+<p>This module is part of the TUWF framework and is free software available under the liberal MIT license. See the COPYING file in the TUWF distribution for the details.</p>
+
+<h1><a class='u'
+name="AUTHOR"
+>AUTHOR</a></h1>
+
+<p>Yoran Heling &lt;projects@yorhel.nl&gt;</p>
+</div><div id="footer"><p>all lefts and rights reversed</p></div></div></body></html>

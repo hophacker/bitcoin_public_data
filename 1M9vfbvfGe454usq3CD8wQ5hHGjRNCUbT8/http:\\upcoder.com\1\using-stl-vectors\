@@ -1,0 +1,348 @@
+http://upcoder.com/1/using-stl-vectors/
+HTTP/1.1 200 OK
+Server: nginx/1.6.0
+Date: Wed, 23 Jul 2014 10:47:25 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Last-Modified: Wed, 23 Jul 2014 10:47:25 GMT
+Expires: Wed, 23 Jul 2014 10:52:25 GMT
+Cache-Control: max-age=300
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>UpCoder coding blog</title>
+    <link rel="stylesheet" href="/static/css/framework.css" type="text/css"/>
+    <link rel="stylesheet" href="/static/css/blog.css" type="text/css"/>
+    <link rel="stylesheet" href="/static/css/pygments_native.css" type="text/css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed"/>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-46145655-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+</head>
+
+<body>
+    <div id="header">
+        
+            <span class="blogName"><a style="display:inline" href="/">UpCoder</a></span>
+            <span class="tagLine">Up, coder!</span>
+            <span>c++, python, game AI, bitcoin</span>
+        
+    </div>
+    <div class="colmask rightmenu">
+        <div class="colleft">
+            <div class="main-content">
+                
+    <ul>
+        <div class="time">Nov. 18, 2013, 10:39 a.m.</div>
+        <h1 class="title">Using STL Vectors</h1>
+        <div class="body">
+            <p>(First in a <a href="http://upcoder.com/series/1/vectors-and-vector-based-containers/">series of posts</a> about Vectors and Vector based containers.)</p>
+<p>STL style vectors are a pretty useful construct.</p>
+<p>I remember coming to C++ (and the STL) from a background in lower level programming, and finding STL vectors a bit surprising,
+with the idea of <em>amortized constant time</em> complexity and so on.</p>
+<p>And then it was actually something of a minor revolution just to be able to set up a contiguous data buffer, without any significant programming effort,
+and <em>without knowing the maximum required buffer size in advance</em>.</p>
+<p>Before we had C++ and the STL I remember a common source of errors being dynamically generated data overflowing fixed buffers,
+which is something we just don't see any more, thanks in no small part to the humble vector (and brethren).</p>
+<p>But convenience can come at a cost, and there's some stuff you need to be careful about
+when applying STL vectors in performance critical situations.</p>
+<p>In this post I'll discuss the
+main ways in which STL style vectors are applied in PathEngine,
+and look at some of the key performance and memory points coming out of this.</p>
+            <h3 id="prefer-vector-over-list">Prefer vector over list</h3>
+<p>Generally speaking, contiguous buffers are good, and memory allocations and scattered access patterns are to be avoided,
+and we're advised to prefer std::vector over std::list in most situations.</p>
+<p>See <a href="http://channel9.msdn.com/Events/GoingNative/GoingNative-2012/Keynote-Bjarne-Stroustrup-Cpp11-Style">this presentation by Stroustrup</a> and <a href="http://yaserzt.com/blog/archives/615">this blog post</a>, for example.</p>
+<p>And this has certainly been our experience with PathEngine.
+In fact, the SDK now uses vector-like data structures almost completely to the exclusion of pointer based data structures
+(even for things like dynamic meshes).</p>
+<p>In many ways I think vectors can offer us the best of both low level and higher level coding paradigms,
+with the flexibility and automatic memory management of dynamically sized containers,
+but with the the performance benefits of low-level direct access to a contiguous data buffer
+and the simplicity of integer element indexing.</p>
+<h2 id="vector-use-cases">Vector use cases</h2>
+<p>The stuff we do with vectors can be broadly categorised into two main use cases:</p>
+<ol>
+<li>the construction of (potentially complex) preprocess objects, and</li>
+<li>run-time buffers for queries, where buffer size requirements are fundamentally dynamic in nature</li>
+</ol>
+<p>Preprocess objects include things like the pathfinding visibility graph.
+These objects can take time to build, but this is something that can be done by the game content pipeline,
+with preprocess data saved and loaded back from persistence by the game runtime.</p>
+<h2 id="key-issues">Key issues</h2>
+<h3 id="over-allocation-in-preprocess-build">Over-allocation in preprocess build</h3>
+<p>It's a great simplification in preprocess build code to be able to just build objects in one go,
+with buffers created and written to without the need to calculate buffer sizes in advance.
+Vectors let us do this, and then also double up as buffer memory management (and buffer size tracking) once the preprocess objects have been built.</p>
+<p>But if we're not careful, due to the way vectors allocate additional capacity, we can easily end up with a lot of memory wasted in over-allocation.</p>
+<p>For a vector built with push_back() calls, if we assume that the vector doubles its capacity each time capacity is exceeded by a push_back() operation
+(a pretty standard implementation),
+then we'll end up on average with capacity being 1.5 times the actual final required buffer size.</p>
+<p>We can avoid this overallocation with the <a href="http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Shrink-to-fit">shrink to fit</a> idiom,
+e.g. with something like the following:</p>
+<div class="codehilite"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="kt">void</span>
+<span class="n">ShrinkToFit</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;</span> <span class="n">container</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">capacity</span><span class="p">()</span> <span class="o">!=</span> <span class="n">container</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">T</span><span class="p">(</span><span class="n">container</span><span class="p">).</span><span class="n">swap</span><span class="p">(</span><span class="n">container</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This has the effect of replacing the vector buffer with a newly allocated buffer of exactly the required size.
+So we avoid overallocation at the cost of a buffer copy operation (usually not significant at preprocess generation time),
+whilst also retaining all the convenience of the vector object buffer management (automatic buffer deletion and buffer size query).</p>
+<p>With C++11, you can replace the helper function with a call to the new vector::shrink_to_fit() method, which does the same thing.</p>
+<h3 id="iterator-validity">Iterator validity</h3>
+<p>It's great to be able to work with vector buffer contents while the vectors are being built, but it's quite a common gotcha to
+forget that vector resize operations will <em>sometimes</em> invalidate existing iterators, or raw pointers into the buffer.</p>
+<p>A great way to sidestep this issue is to use simple integer indices instead of iterators or pointers, and this also has the advantage
+that indices into a vector remain valid also across load and save operations.</p>
+<h3 id="hidden-costs-for-non-simple-elements">Hidden costs for non simple elements</h3>
+<p>Vectors are good for managing simple data buffers, but things can get costly with elements with significant set up or teardown costs,
+or with their own internal memory management.</p>
+<p>One specific example is the 'vector of vectors' construct.</p>
+<p>I'll talk about this in more detail in a future post, but the short story is that
+building vectors of vectors can potentially be a big performance hit,
+and the resulting data structure can also be the source of quite significant memory inefficiencies,
+and so this construct should be avoided as far as possible.</p>
+<h3 id="run-time-dynamic-buffers">Run-time dynamic buffers</h3>
+<p>Memory allocation is expensive (in general, but particularly so if you're sharing a heap with other threads!),
+and run-time allocations can lead to memory fragmentation, so the ideal situation, if possible, would be to <em>avoid any run-time memory allocations</em>!</p>
+<p>In some cases we <em>can</em> avoid run-time allocations, by preallocating suitably sized buffers,
+but this isn't always possible.</p>
+<p>We can't always predict query buffer requirements, or if there is a theoretical maximum buffer requirement this may be too large to be practical.</p>
+<p>For example, a lot of queries in PathEngine do some work local to a specific part of a ground mesh,
+and will <em>usually</em> only need to work with a small number of elements (e.g. mesh faces, or whatever),
+but with the actual number of elements relating a given query
+depending on stuff like the complexity of local geometry or the query distance or range.</p>
+<p>Ground meshes can potentially be very large, and if we preallocate buffers based on total ground mesh size,
+but then only ever make locally restricted queries then we're potentially wasting a lot of memory.</p>
+<p>We could choose some <em>arbitrary</em> size for preallocated buffers,
+but this is inflexible and prone to failure
+(in a similar way to 'old style' MAX_PATH_LENGTH and fixed buffer path formatting),
+with queries that fail unexpectedly when query complexity takes us just over the preallocated size requirement,
+and it's also much nicer if we can support arbitrary query sizes.
+Maybe the client <em>does want</em> to query over a large area, and <em>can</em> spare the memory for this.</p>
+<p>So often the only choice is to then go ahead and embrace dynamically sized run-time buffers.</p>
+<h3 id="vectors-in-run-time-query-code">Vectors in run-time query code</h3>
+<p>The simplest thing to do is then just to create vectors directly in the code, as and when needed
+in the query code.</p>
+<p>So this could look something like the following:</p>
+<div class="codehilite"><pre><span class="kt">void</span>
+<span class="n">cLocalisedShape</span><span class="o">::</span><span class="n">getFacesOverlapped</span><span class="p">(</span><span class="n">cVector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;&amp;</span> <span class="n">result</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;</span> <span class="n">openQueueBuffer</span><span class="p">;</span>
+    <span class="n">FacesOverlappedByConvexPoly_SI</span><span class="p">(</span><span class="n">_mesh</span><span class="p">,</span> <span class="n">_points</span><span class="p">,</span> <span class="n">_centreF</span><span class="p">,</span> <span class="n">_poly</span><span class="p">,</span> <span class="n">openQueueBuffer</span><span class="p">,</span> <span class="n">results</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This is a made up example, but the idea is that we're going to perform a kind of fill operation through local ground mesh,
+and we need to keep track of 'open' faces during the process.</p>
+<p>We don't know how many faces will actually need to be explored,
+but the fill operation will be restricted by mesh locality,
+and in general the number of faces explored is expected to be much smaller
+than the total number of faces in the mesh.</p>
+<p>But the problem is that sequentially pushing faces on to the buffer is going to
+lead to multiple memory allocations,
+and if the query code is optimised then these memory allocations can easily become
+a significant bottleneck.</p>
+<h3 id="preallocating-at-query-time-be-careful-about-clear-semantics">Preallocating at query time (be careful about clear() semantics!)</h3>
+<p>If we have an idea about common query situations then we could do something like the following:</p>
+<div class="codehilite"><pre><span class="kt">void</span>
+<span class="n">cLocalisedShape</span><span class="o">::</span><span class="n">getFacesOverlapped</span><span class="p">(</span><span class="n">cVector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;&amp;</span> <span class="n">result</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;</span> <span class="n">openQueueBuffer</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+    <span class="n">openQueueBuffer</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">FacesOverlappedByConvexPoly_SI</span><span class="p">(</span><span class="n">_mesh</span><span class="p">,</span> <span class="n">_points</span><span class="p">,</span> <span class="n">_centreF</span><span class="p">,</span> <span class="n">_poly</span><span class="p">,</span> <span class="n">openQueueBuffer</span><span class="p">,</span> <span class="n">results</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>(Although it turns out this is bad general purpose vector useage, see the discussion in <a href="http://upcoder.com/4/avoid-resize">this later post</a>.)</p>
+<p>The idea is to reserve some capacity in the vector to ensure that the buffer doesn't subsequently need to be expanded in common query situations.</p>
+<p>The first thing to note is that the exact semantics of the clear() call here are important.</p>
+<p>What we want this to do is to resize the vector to zero, <em>whilst leaving the buffer allocated</em>.
+If the vector buffer is freed by the clear call than that leaves us worse off than before.</p>
+<p>According to the current standard it should be guaranteed behaviour that clear()
+<em>does not</em> free the underlying buffer, but this wasn't always the case.
+In some versions of Microsoft Visual Studio calling clear() <em>does</em> frees the buffer,
+but this can be worked around by replacing clear() with resize(0) (which doesn't).</p>
+<p>In our case we actually use our own STL style class implementation, so we know we can depend on this, but if you use std::vector and
+your code will run on different platforms and compilation environments then it's worth checking the actual semantics being applied
+(e.g. by asserting that the vector capacity is unchanged after the clear).</p>
+<p>Assuming the buffer is <em>not cleared</em> however, this is still not an ideal solution:</p>
+<ol>
+<li>there's still at least one buffer allocation made for every query (we'd rather see none!), and</li>
+<li>the starting buffer size is arbitrary, and suffers from the same kind of issues as other similar arbitrary constants -
+maybe for some clients the common query situations require exploration of 25 to 30 faces..</li>
+</ol>
+<h3 id="holding-on-to-vectors-across-queries">Holding on to vectors across queries</h3>
+<p>What we do in PathEngine is to hold on to a standard set of vectors and reuse these across queries (and frames).</p>
+<p>The code for this looks something like the following:</p>
+<div class="codehilite"><pre><span class="kt">void</span>
+<span class="n">cLocalisedShape</span><span class="o">::</span><span class="n">getFacesOverlapped</span><span class="p">(</span><span class="n">cQueryContext</span><span class="o">&amp;</span> <span class="n">qc</span><span class="p">,</span> <span class="n">cVector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;&amp;</span> <span class="n">result</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cFace</span><span class="o">&gt;&amp;</span> <span class="n">openQueueBuffer</span> <span class="o">=</span> <span class="n">qc</span><span class="p">.</span><span class="n">lockFaceBuffer</span><span class="p">();</span>
+    <span class="n">openQueueBuffer</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">FacesOverlappedByConvexPoly_SI</span><span class="p">(</span><span class="n">_mesh</span><span class="p">,</span> <span class="n">_points</span><span class="p">,</span> <span class="n">_centreF</span><span class="p">,</span> <span class="n">_poly</span><span class="p">,</span> <span class="n">openQueueBuffer</span><span class="p">,</span> <span class="n">results</span><span class="p">);</span>
+    <span class="n">qc</span><span class="p">.</span><span class="n">releaseFaceBuffer</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Query context objects get passed down through the various query code paths as required.</p>
+<p>In single threaded use there's just one query context passed in to each query, and in multi-threaded use a pool of
+query contexts is created.</p>
+<p>This still is not an ideal solution, for various reasons,
+(for example with the intrusive requirement to pass in a query context object), and I've got a feeling there's
+probably a much nicer general way to handle this run-time buffer requirement out there somewhere,
+but it does the job for us!</p>
+<p>What we get at runtime is then a bunch of allocations triggered when the game starts to call queries,
+but with the number of buffer reallocations allocations trailing off as the game 'warms up'.
+Which is generally fine, from a performance point of view, and also minimises fragmentation issues.</p>
+<p>Note that this leaves us with the same over-allocation issue as with preprocess construction,
+but in practice runtime buffer sizes are smaller than preprocess buffers and so this has turned out not to be significant,
+with both allocation time overheads and fragmentation being higher priority issues.
+(If runtime buffer overallocation <em>is</em> an issue for you, just periodically shrinking to fit all run-time buffers could potentially be good enough.)</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The bottom line is that dynamically sized containers make coding easier and,
+if you know how to use them, STL style vectors can give you this convenience
+without sacrifices in performance or memory efficiency.</p>
+<p>Note that there are issues with the actual stl::vector specification, and standard library stl::vector implementations.
+In some cases you may want to replace stl::vector with your own custom vector class,
+and this is something I'll cover in more detail in a future post.</p>
+<p>The points in this post are intended to apply equally whether you are using stl::vector, or your own custom STL style
+vector class.</p>
+<p>To iterate the main points:</p>
+<ol>
+<li>Look out for over-allocation issues. It's easy to overlook, and in extreme cases 'shrinking to fit' can be give you significant memory gains!</li>
+<li>Indexed element accessing is a good way to go with STL style vectors.</li>
+<li>Be careful about using vectors with non-simple element types.</li>
+<li>Making sure you know what's going on with your vector buffer allocations. Vectors do a good job of hiding the underlying buffer allocation details,
+which is a good thing, but sometimes we need to know these details.
+It can be worth checking the actual allocation semantics being applied explicitly.
+(Check that clear() isn't freeing the buffer, for example.)</li>
+<li>Avoiding runtime allocations can be difficult, but can be the only way to get the best performance,
+and if you need to then there are ways to do this.</li>
+</ol>
+        </div>
+        <hr>
+        
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_shortname = 'upcoder';
+            var disqus_identifier = '1';
+            var disqus_title = 'Using STL Vectors';
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+        
+    </ul>
+
+            </div>
+            <div class="sidebar">
+                <p>
+                    <a class="feed" href="/feed">RSS feed</a>
+                </p>
+                <p>
+                Posts
+                </p>
+                <p>
+                
+                    <a href="/1/using-stl-vectors/">Using STL Vectors</a> <br/>
+                
+                    <a href="/2/efficient-vectors-of-vectors/">Efficient Vectors of Vectors</a> <br/>
+                
+                    <a href="/3/roll-your-own-vector/">Roll-Your-Own Vector</a> <br/>
+                
+                    <a href="/4/avoid-resize/">Avoid resize()?</a> <br/>
+                
+                    <a href="/5/zero-initialisation-for-classes/">Zero Initialisation for Classes</a> <br/>
+                
+                    <a href="/6/custom-vector-allocation/">Custom Vector Allocation</a> <br/>
+                
+                    <a href="/7/bitcoin-rpc-from-python/">Bitcoin RPC from Python</a> <br/>
+                
+                    <a href="/8/fast-blockchain-scanning/">Fast Blockchain Scanning</a> <br/>
+                
+                    <a href="/9/fast-resettable-flag-vector/">Fast Resettable Flag Vector</a> <br/>
+                
+                </p>
+                <p>
+                Series
+                </p>
+                <p>
+                
+                    <a href="/series/1/vectors-and-vector-based-containers/">Vectors and Vector Based Containers</a> <br/>
+                
+                </p>
+                <p>
+                Blog Roll
+                </p>
+                <p>
+                
+                    <a href="http://randomascii.wordpress.com">Random ASCII</a> <br/>
+                
+                    <a href="http://www.codinghorror.com/blog">Coding Horror</a> <br/>
+                
+                    <a href="http://assemblyrequired.crashworks.org">Some Assembly Required</a> <br/>
+                
+                    <a href="http://www.codercorner.com/blog">Coder Corner</a> <br/>
+                
+                    <a href="http://gameangst.com">Game Angst</a> <br/>
+                
+                    <a href="http://www.altdev.co">AltDevBlog</a> <br/>
+                
+                    <a href="http://bitsquid.blogspot.com">Bitsquid</a> <br/>
+                
+                    <a href="http://aras-p.info/blog">Lost in the Triangles</a> <br/>
+                
+                    <a href="http://digestingduck.blogspot.com">Digesting Duck</a> <br/>
+                
+                    <a href="http://c0de517e.blogspot.fr">c0de517e</a> <br/>
+                
+                    <a href="http://eli.thegreenplace.net">Eli Bendersky</a> <br/>
+                
+                    <a href="http://www.jeffknupp.com">Hackers Gonna Hack</a> <br/>
+                
+                </p>
+                <p>
+                    Tips (btc):
+                </p>
+                <p>
+                    <a style="font-size:0.65em" href="https://blockchain.info/address/1M9vfbvfGe454usq3CD8wQ5hHGjRNCUbT8 ">
+                    1M9vfbvfGe454usq3CD8wQ5hHGjRNCUbT8
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+    
+    
+    </div>
+    
+    
+</body>
+</html>
+

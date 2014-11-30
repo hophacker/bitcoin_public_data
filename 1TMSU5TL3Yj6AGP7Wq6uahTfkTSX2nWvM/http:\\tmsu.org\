@@ -1,0 +1,318 @@
+http://tmsu.org/
+HTTP/1.1 200 OK
+Last-Modified: Tue, 04 Mar 2014 13:20:46 GMT
+Accept-Ranges: bytes
+Content-Length: 11828
+Content-Type: text/html
+Date: Wed, 23 Jul 2014 01:38:20 GMT
+Server: Apache/2.2
+ETag: "52c5c84-2e34-4f3c7c59f9044"
+Via: 1.1 vhost.phx2.nearlyfreespeech.net:3128 (squid/2.7.STABLE7)
+Connection: close
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>TMSU</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+    </head>
+
+    <body>
+        <div id="logo-container">
+            <img id="logo" src="images/tmsu.png" alt="TMSU"/>
+        </div>
+
+        <div class="quote">
+            <p style="text-align: center;">
+            TMSU was born out of frustration with the hierarchical nature of filesystems
+            </p>
+        </div>
+
+        <div id="sidebar">
+            <div id="download" class="content">
+                <h1>Download</h1>
+
+                <a href="https://bitbucket.org/oniony/tmsu/downloads">Download Page</a>
+            </div>
+
+            <div id="help" class="content">
+                <h1>Project</h1>
+
+                <p>
+                The project is <a href="https://bitbucket.org/oniony/tmsu">hosted on Bitbucket</a>.
+                </p>
+
+                <h2>Help</h2>
+
+                <pre class="shell">$ tmsu help</pre>
+
+                <h2>Documentation</h2> 
+
+                <p>
+                The documentation is maintained in the <a href="http://bitbucket.org/oniony/tmsu/wiki/">project wiki</a>.
+                </p>
+
+                <p>
+                    <a href="http://bitbucket.org/oniony/tmsu/wiki/FAQ">Frequently Asked Questions</a>
+                </p>
+
+                <h2>Mailing List</h2>
+
+                <p>
+                Any questions, suggestions or bugs then please get in touch via the 
+                <a href="http://groups.google.com/group/tmsu">mailing list</a>
+                </p>
+            </div>
+
+            <div id="appreciation" class="content">
+                <h1>Appreciation</h1>
+
+                Developing TMSU is reward in itself, but should you feel inclined to make a small gift via
+                Bitcoin then it shall be gratefully received:
+
+                <p class="qr">
+                    <a href="https://blockchain.info/address/1TMSU5TL3Yj6AGP7Wq6uahTfkTSX2nWvM"><img class="qr" src="images/tmsu-bitcoin-qr.png" alt="TMSU Bitcoin QR code" title="View address on Blockchain"/></a>
+                    <br/>
+                    <a href="https://blockchain.info/address/1TMSU5TL3Yj6AGP7Wq6uahTfkTSX2nWvM">TMSU bitcoin address</a>
+                </p>
+            </div>
+        </div>
+
+        <div id="main">
+            <div class="content">
+                <h1>Overview</h1>
+
+                <p>
+                TMSU is a tool for tagging your files. It provides a simple command-line tool for applying
+                tags and a virtual filesystem so that you can get a tag-based view of your files from within any other program.
+                </p>
+
+                <p>
+                TMSU does not alter your files in any way: they remain unchanged on disk, or on the network,
+                wherever you put them. TMSU maintains its own database and you simply gain an additional
+                view, which you can mount, based upon the tags you set up. The only commitment required is your time
+                and there's absolutely no lock-in.
+                </p> 
+
+                <h1>Quick Tour</h1>
+
+                <p>
+                This tour will show you how to use the command-line tool to tag and query your files and how to mount and
+                peruse the virtual file-system.
+                </p>
+
+                <h2>Tagging Files</h2>
+
+                <p>
+                Use the <span class="command">tag</span> command to apply tags to files:
+                </p>
+
+                <pre class="shell">$ tmsu tag summer.mp3 music big-jazz mp3
+tmsu: New tag 'music'
+tmsu: New tag 'big-jazz'
+tmsu: New tag 'mp3'</pre>
+
+                <p>
+                If you have a set of files and would like to apply the same tags to each, then there is an alternative
+                form of the command that lets you put the files last. For example we can tag all of the MP3 files in the
+                current directory as both <span class="tag">music</span> and <span class="tag">mp3</span>:
+                </p>
+
+                <pre class="shell">$ tmsu tag --tags "music mp3" *.mp3</pre>
+
+                <p>
+                The 'New tag' messages let you know that you have created new tags, which makes it easy to notice mispellings:
+                </p>
+
+                <pre class="shell">$ tmsu tag spring.mp3 music mp3 folk
+$ tmsu tag winter.mp3 umsic mp3
+tmsu: New tag 'umsic'</pre>
+
+                <p>
+                But it's OK! We can fix this with the <span class="command">merge</span> command, merging the accidentally created <span class="tag">umsic</span> tag into the
+                existing <span class="tag">music</span> tag:
+                </p>
+
+                <pre class="shell">$ tmsu merge umsic music</pre>
+
+                <p>
+                In addition to simple tags, it is possible to specify values for tags when
+                applying them to files. For example:
+                </p>
+
+                <pre class="shell">$ tmsu tag spring.mp3 year=2003
+$ tmsu tag summer.mp3 year=2008
+$ tmsu tag winter.mp3 year=2010</pre>
+
+                <h2>Listing Tags</h2>
+
+                <p>
+                We can view the tags for our newly created tagged files with the <span class="command">tags</span> command:
+                </p>
+
+                <pre class="shell">$ tmsu tags summer.mp3
+big-jazz
+mp3
+music
+year=2008
+
+$ tmsu tags *.mp3
+spring.mp3: folk mp3 music year=2003
+summer.mp3: big-jazz mp3 music year=2008
+winter.mp3: mp3 music year=2010</pre>
+
+                <h2>Listing Files</h2>
+
+                <p>
+                Now we have a set of tagged files we can start using the tag information to do some simple queries.
+                Let's list our MP3s with the <span class="command">files</span> command:
+                </p>
+
+                <pre class="shell">$ tmsu files mp3
+spring.mp3
+summer.mp3
+winter.mp3</pre>
+
+                <p>
+                Or we could get more specific and list just our <span class="tag">big-jazz</span> collection:
+                </p>
+
+                <pre class="shell">$ tmsu files mp3 big-jazz
+summer.mp3</pre>
+
+                <p>
+                There is an implicit 'and' when you list tags one after another.
+                You can also specify the logical 'and' explicitly if you so wish:
+                </p>
+
+                <pre class="shell">$ tmsu files mp3 and big-jazz
+summer.mp3</pre>
+
+                <p>
+                The basic logical operators 'and', 'or' and 'not' are supported, as are parentheses.
+                So it is possible to search our music collection to find exactly what we are looking for, such as our <span class="tag">MP3</span> or <span class="tag">FLAC</span> files excluding the <span class="tag">big-jazz</span> ones:
+                </p>
+
+                <pre class="shell">$ tmsu files "(mp3 or flac) and not big-jazz"
+spring.mp3
+winter.mp3</pre>
+
+                <p>
+                You can also retrieve files based upon the values of tags.
+                We can retrieve all of our files from the year 2010, for example:
+                </p>
+
+                <pre class="shell">$ tmsu files year = 2010
+winter.mp3</pre>
+
+                <p>
+                Or perhaps just music from the naughties:
+                </p>
+
+                <pre class="shell">$ tmsu files "music and year &gt;= 2000 and year &lt; 2010"
+spring.mp3
+summer.mp3</pre>
+
+                <p>
+                Note: some characters may be interpretted by your shell: the query can typically
+                be enclosed in quotation marks to avoid this.
+                </p>
+
+                <h2>Virtual File-System</h2>
+
+                <p>
+                Listing files from the command line is all very well but it is not very useful when we want to access
+                our files from other programs, especially those with graphical interfaces. TMSU 
+                also sports a virtual file-system (VFS) that we can mount:
+                </p>
+
+                <pre class="shell">$ mkdir mp
+$ tmsu mount mp
+$ ls mp
+queries
+tags
+$ ls mp/tags
+big-jazz mp3 music
+$ ls -l mp/tags/music
+drwxr-xr-x 0 paul paul 0 2012-04-13 20:00 big-jazz
+drwxr-xr-x 0 paul paul 0 2012-04-13 20:00 mp3
+drwxr-xr-x 0 paul paul 0 2012-04-13 20:00 spring.<span style="color: red">2</span>.mp3 -&gt; /home/paul/spring.mp3
+drwxr-xr-x 0 paul paul 0 2012-04-13 20:00 summer.<span style="color: red">1</span>.mp3 -&gt; /home/paul/summer.mp3
+drwxr-xr-x 0 paul paul 0 2012-04-13 20:00 winter.<span style="color: red">3</span>.mp3 -&gt; /home/paul/winter.mp3
+                                                 <span style="color: red">&uarr;</span>
+                                             <span style="color: red">file id</span></pre>
+
+                <p>
+                Files in the virtual file-system are actually just symbolic links back to the tagged file's
+                real location elsewhere on the file-system. This means they can be used just like regular
+                files from any application:
+                </p>
+
+                <pre class="shell">$ acmeplayer mp/tags/music/summer.1.mp3
+[####&gt;-------] 34%</pre>
+
+                <p>
+                The entries contain an ID number which ensures the filename is unique within the tag directory,
+                even when multiple files with the same name are tagged with the same tag.
+                </p>
+
+                <h3>Queries</h3>
+
+                <p>
+                In addition to the tags view, there is also a queries directory in which you can run view queries
+                just like those we ran earlier with the <span class="command">files</span> command.
+                </p> 
+
+                <p>To get a query based view you need merely create a directory (under 'queries') containing the query
+                text:
+                </p>
+
+                <pre class="shell">$ ls mp/queries
+README.md
+$ mkdir "mp/queries/mp3 and not folk"
+$ ls "mp/queries/mp3 and not folk"
+summer.1.mp3
+winter.3.mp3</pre>
+
+                <p>
+                In fact, it's even easier than that, as TMSU will automatically create the directory for you:
+                </p>
+
+                <pre class="shell">$ ls mp/queries
+mp3 and not folk
+$ ls "mp/queries/mp3 and big-jazz"
+summer.1.mp3
+$ ls mp/queries
+mp3 and not folk  mp3 and big-jazz</pre>
+
+                <p>
+                This automatic creation of the query directories makes it possible to use new file queries within the
+                file chooser of a graphical program simply by typing the query in.
+                </p>
+
+                <p>
+                The query directories can be removed again with 'rmdir'. (Do <i>not</i> use 'rm -R' as this will also
+                untag the files within.)
+                </p>
+
+                <h2>Where Next?</h2>
+
+                <p>
+                The best place for more information is on the <a href="http://bitbucket.org/oniony/tmsu/wiki/">TMSU wiki</a>.
+                </p>
+
+                <p>
+                TMSU also has integrated help:
+                </p>
+
+                <pre class="shell">$ tmsu help</pre>
+            </div>
+        </div>
+
+        <div id="footer">
+            &copy; 2011-2014 Paul Ruane.
+        </div>
+    </body>
+</html>
+

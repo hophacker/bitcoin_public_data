@@ -1,0 +1,404 @@
+http://eccentric-authentication.org/eccentric-authentication/five-minute-overview.html
+HTTP/1.1 200 OK
+Server: nginx/1.4.1
+Date: Wed, 23 Jul 2014 09:50:33 GMT
+Content-Type: text/html
+Content-Length: 12727
+Last-Modified: Sat, 19 Jul 2014 15:16:45 GMT
+Connection: close
+ETag: "53ca8bdd-31b7"
+Accept-Ranges: bytes
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Five Minute Overview - Eccentric Authentication</title>
+  <meta name="author" content="Guido Witmond">
+
+  
+  <meta name="description" content="Five Minute Overview Eccentric Authentication in 5 minutes Everything is done with cryptography! No more unencrypted connections.
+Secure by default &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://eccentric-authentication.nl//eccentric-authentication/five-minute-overview.html">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Eccentric Authentication" type="application/atom+xml">
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<!--
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+-->
+<style type="text/css"> #nospam { display: none; } </style>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/eccentric-authentication-logo.png" width="522" heigth="160">
+</hgroup>
+
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:eccentric-authentication.nl/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/eccentric-authentication/design-goals.html">Eccentric Authentication</a></li>
+  <!-- <li><a href="/motivation.html">Motivation</a></li> -->
+  <li><a href="/faq.html">FAQ</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/contact.html">Contact</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Five Minute Overview</h1>
+    
+  </header>
+  
+  <h2>Eccentric Authentication in 5 minutes</h2>
+
+<h4>Everything is done with cryptography!</h4>
+
+<pre><code>No more unencrypted connections.
+Secure by default
+</code></pre>
+
+<h4>All crypto is handled by user agents</h4>
+
+<pre><code>User agent does all the cryptographic hard work.
+No need to trust anyone to get security.
+No difficult questions to answer.
+</code></pre>
+
+<h4>We use server certificates to identify servers.</h4>
+
+<pre><code>Each server get a server certificate.
+(nothing new here)
+
+What's different is who signs it.
+It's not a global trusted third party.
+(someone we have to trust not to betray us)
+(which some of them did anyway).
+</code></pre>
+
+<h4>We use client certificates to identify users.</h4>
+
+<pre><code>Client certificates are anonymous.
+   There is no personal identifying information in a client certificate.
+   Client certificates contain only a user-chosen nickname. (pseudonym)
+   Or a user-agent chosen random id.
+   Or a throw-away random id (use once and discard)
+
+Client certificates eliminates accounts with email address and password.
+   No more password breaches when a server is breached.
+   There is no personal identifiable information (at the CA, nor the site)
+</code></pre>
+
+<h4>Each site owner runs their own certificate authority. (this is new!)</h4>
+
+<pre><code>It creates a root key and signs two sub-keys.
+   One subkey to sign the web server certificate
+   Other subkey to sign the client certificates
+       For its own site, only
+       For users to log in at the site.
+
+Users specify a nickname and a public key to be signed.
+   The nickname is the account name.
+   Nicknames are unique at each site.
+   (can't have two different users with the same name)
+
+Important: 
+   The root key stays offline, eg, a smart-card, crypto-stick, HSM.
+   Only the subkey to sign the client certificates is online at the CA.
+</code></pre>
+
+<h4>To reiterate: Each site runs their own CA</h4>
+
+<pre><code>They only trust their own, not any CA from other sites.
+Each site creates their own accounts/identities.
+
+Nobody sees if two accounts on two sites belong to the same user.
+    Unless a user uses the same nickname at different sites.
+
+Even if one can link an account to the users real name
+   all their other accounts remain anonymous.
+   The damage of leaking an account is limited to that account.
+</code></pre>
+
+<h4>Validate uniqueness of the Nicknames</h4>
+
+<pre><code>Nicknames are how people recognise each other at sites,
+   if there are two or more certificates with the same nickname
+      it could be  a Man-in-the-Middle attack by a site/CA, 
+Users need to be able to validate uniqueness of their identity.
+</code></pre>
+
+<h4>Independent registry for nicknames</h4>
+
+<pre><code>We need an independent registry for nickname -&gt; certificate mapping.
+  Independent of the CAs 
+  Could be part of the services of an ISP. 
+  Or a consumer organisation.  
+  Or a global decentralised network.
+
+After signing up for an account, 
+   Users submit (new) certificate to the registry
+   Registry tells whether the nickname is unique, or not 
+
+   Everyone can lookup certificates for any nickname
+   Should return only one certificate.
+
+If there is more than one bearing the same nickname:
+   -&gt; CA is dishonest -&gt; untrustworthy or incompetent
+   -&gt; Run away!
+   -&gt; Blog about it at your favorite security blog.
+      You have a signed confession by the CA.
+
+When to lookup a certificate at the registry?
+   Your own nickname: every once in a while 
+      To check that the CA stays 'honest' towards you;
+
+   The nickname of the people you are comunicating with:
+      Once at first contact to verify it's them
+           And not a snooping web site
+      After that: no more lookups.
+           You know who you're talking to. 
+           Store their public key in your address book.
+</code></pre>
+
+<h4>About privacy</h4>
+
+<pre><code>These client certificates do not contain any personal identifiable information.
+    Only a nickname and a random public key.
+They can be distributed globally without leaking information.
+</code></pre>
+
+<h4>Create global names</h4>
+
+<pre><code>So far, we have made sure nicknames are unique at each CA.
+We need to give unique names to CA.   
+   Each CA is unique by their fingerprint
+      But that is unusable as a name for humans to reference.
+      example: John @@ F3 AB 4C 6D .... (horrible)
+      We need to give the CA a name.      
+
+We use DNSSEC and DANE.
+   DANE lets the site owners publish their CA-certificates in DNS.
+   DNSSEC validates that you receive the correct response.
+   Validation is done by end point (user agent) (against ICANN Root Key)
+      Each domain name points to a single CA.
+
+DNSSEC and DANE are used for two things:
+   1. Efficient scalable distribution of all the site CA-certificates            
+      Needed each time you connect to the site
+   2. Using the fact that the domain names are unique!
+      Trust anchor is the single DNSSEC Root Key.
+      Well guarded at ICANN.
+
+Now we have fully verifiable, anonymous, global unique names.
+   Each name points to a single public key.
+   Publish the name, at a business card.
+       People can retrieve the key (the correct key)
+   To communicate message that no one can intercept and read.
+       Or to set up a encrypted audio/video channel.
+</code></pre>
+
+<h2>Some technical details.</h2>
+
+<p>Here we have some technical details that might be of interest.</p>
+
+<h4>Man-in-the-Middle protection</h4>
+
+<pre><code>User agent connects to site, retrieve server certificate 
+(and validates against sites' CA)
+User agent only logs in with matching client certificates
+(agent lets user choose)
+
+A homograpgh attack may look the same to the user;
+It's a different site with a different CA.
+And thus, no client certificates that match
+-&gt; End of MitM
+</code></pre>
+
+<h4>End XSS, CRSF, enable safe Javascript apps</h4>
+
+<pre><code>Site owner signs all server certificates of all their servers under their control.
+   (all parts that form a single site: main site, images, CDN-resources)
+
+User agent can recognise the same root CA certificate at these servers; 
+   give the same trust-level to all resources from these servers,
+   and lower trust level to all other resources from other sites 
+   (signed by others, or unsigned) 
+   -&gt; End of XSS, CSRF 
+   -&gt; Create safe javascript applications
+
+Local storage (at browser) can be tagged to CA-identity.
+   Safe against domain attacks to retrieve data that 
+   belongs to another web site.
+
+I call this: Cryptographic Same Origin Policy.
+   The CA is the Origin!
+   Not the domain name.
+</code></pre>
+
+<h4>Secure messaging.</h4>
+
+<pre><code>Users can encrypt message to other user with other's public key. 
+   Site does the message delivery.
+       either requires sender to log in 
+          (closed community, dating site)
+       or allow any encrypted message
+           (open mailbox, blog site)
+
+Notice, messages are encrypted with a users public key, 
+   only the intended recipient can decrypt it with her private key.     
+   The site cannot read the messages between the users.
+   Nor can anyone else.
+</code></pre>
+
+  
+    <footer>
+      
+      
+        <div class="sharing">
+  
+  
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Support</h1>
+  <p>This work is all open source.
+
+<br> Please support to continue development.</p>
+
+Donate in Bitcoin<br>
+18bfnzuHUjSCiM6GDFZzofnWKBsMFJVMa4
+
+</section>
+<section>
+  <h1>Menu</h1>
+  <ul id="menu">
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/design-goals.html">1. Design Goals</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/non-goals.html">2. Non Goals</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/five-minute-overview.html">3. Five Minute Overview</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/anonymous_logins.html">4. Anonymous Logins</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/private_messaging.html">5. Anonymous Private Messaging</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/global_registry_of_dishonesty.html">6. Global Registry of (Dis)honesty</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/independent_message_channels.html">7. Independent Message Channels</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/global_unique_secure.html">8. Global Unique Secure Names</a>
+        </li>
+    
+        <li class="eccapage">
+          <a href="/eccentric-authentication/censorship_resistance.html">9. Censorship Resistance</a>
+        </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li><a href="https://github.com/gwitmond/ecca-ca">ecca-ca</a><p>First Party Certificate Authority that signs client certificates for your own web site </p></li>
+    <li><a href="https://github.com/gwitmond/ecca-proxy">ecca-proxy</a><p>A web proxy server that transparantly handles the Eccentric Authentication key and certificate management, making client side certificates easy.</p></li>
+<li><a href="https://github.com/gwitmond/ecca-datingsite">ecca-datingsite</a><p>The world's most secure dating site. </p></li>
+</ul>
+  
+  <a href="https://github.com/gwitmond">@gwitmond</a> on GitHub
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href="/contact.html">Guido Witmond</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p
+
+
+</footer>
+  <!--
+
+
+
+
+
+
+
+
+
+-->
+
+
+
+</body>
+</html>
+

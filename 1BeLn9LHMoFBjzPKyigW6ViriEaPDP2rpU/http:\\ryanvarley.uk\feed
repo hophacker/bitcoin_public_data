@@ -1,0 +1,929 @@
+http://ryanvarley.uk/feed
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Thu, 24 Jul 2014 01:53:55 GMT
+Content-Type: text/xml; charset=utf-8
+Connection: close
+Set-Cookie: __cfduid=d9f8cf0999bc4a7d3877d992d9157d3291406166835194; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.ryanvarley.uk; HttpOnly
+Last-Modified: Mon, 07 Jul 2014 13:02:57 GMT
+Expires: Thu, 24 Jul 2014 02:03:55 GMT
+Cache-Control: max-age=600
+Via: 1.1 varnish
+Age: 0
+X-Served-By: cache-iad2133-IAD
+X-Cache: MISS
+X-Cache-Hits: 0
+X-Timer: S1406166835.192637920,VS0,VE3
+Vary: Accept-Encoding
+CF-RAY: 14ec7c9ffbdf0f33-IAD
+Content-Encoding: gzip
+
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+<title type="text">Ryan Varley</title>
+<generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
+<link rel="self" type="application/atom+xml" href="http://ryanvarley.uk/feed.xml" />
+<link rel="alternate" type="text/html" href="http://ryanvarley.uk" />
+<updated>2014-07-07T14:02:56+01:00</updated>
+<id>http://ryanvarley.uk/</id>
+<author>
+  <name>Ryan Varley</name>
+  <uri>http://ryanvarley.uk/</uri>
+  <email>ryan@ryanvarley.uk</email>
+</author>
+
+
+<entry>
+  <title type="html"><![CDATA[A Guide to Using SSH]]></title>
+  <link>http://ryanvarley.uk/guides/2014/07/01/guide-to-ssh/</link>
+  <id>http://ryanvarley.uk/guides/2014/07/01/guide-to-ssh</id>
+  <updated>2014-07-01T00:00:00-00:00</updated>
+  <published>2014-07-01T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;SSH is a secure protocol that encrypts all traffic between the client and target. It is used to remotely logon to other systems, forward ports through machines and transfer files.&lt;/p&gt;
+
+&lt;p&gt;This is meant as an extensive guide to using ssh and the various things you can do with it. If you find this guide helpful, please consider tipping my bitcoin address &lt;i class=&quot;fa fa-bitcoin&quot;&gt;&lt;/i&gt;  &lt;a href=&quot;bitcoin:1BeLn9LHMoFBjzPKyigW6ViriEaPDP2rpU&quot;&gt;1BeLn9LHMoFBjzPKyigW6ViriEaPDP2rpU&lt;/a&gt;. If you have any feedback or suggestions you can use the comments at the end of this post.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;This guide was written for Mac OSX which uses OpenSSL. The information here is relevant to any system using OpenSSL (i.e. Linux based) but some directories and options may differ. I have tried to highlight this where necessary&lt;/em&gt;&lt;/p&gt;
+
+&lt;section id=&quot;table-of-contents&quot; class=&quot;toc&quot;&gt;
+  &lt;header&gt;
+    &lt;h3&gt;Contents&lt;/h3&gt;
+  &lt;/header&gt;
+&lt;div id=&quot;drawer&quot;&gt;
+&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#basic-usage&quot;&gt;Basic Usage&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#verifying-host-keys&quot;&gt;Verifying Host Keys&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#with-direct-access-to-the-machine&quot;&gt;With direct access to the machine&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#from-dns-if-setup-by-server-admin&quot;&gt;From DNS (if setup by server admin)&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#improving-authentication-with-ssh-keys&quot;&gt;Improving Authentication (with SSH Keys)&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#generating-an-ssh-key&quot;&gt;Generating An SSH Key&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#logging-into-a-server-with-your-key&quot;&gt;Logging Into A Server With Your Key&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#forcing-users-to-login-with-an-ssh-key&quot;&gt;Forcing Users To Login With An SSH Key&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#ssh-agent--keychain&quot;&gt;ssh-agent / keychain&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#common-flags&quot;&gt;Common Flags&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#x11-forwarding-for-guis&quot;&gt;X11 forwarding (for GUI’s)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#port-forwarding&quot;&gt;Port Forwarding&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#local&quot;&gt;Local&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#remote&quot;&gt;Remote&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#advanced-examples-connecting-through-a-third-machine&quot;&gt;Advanced Examples (connecting through a third machine)&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#connecting-to-an-internal-machine-with-vnc&quot;&gt;Connecting to an internal machine with VNC&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#copying-files-from-an-internal-machine&quot;&gt;copying files from an internal machine&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#escape-characters&quot;&gt;Escape Characters&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#further-reading&quot;&gt;Further Reading&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;!-- /#table-of-contents --&gt;
+
+&lt;h2 id=&quot;basic-usage&quot;&gt;Basic Usage&lt;/h2&gt;
+
+&lt;p&gt;A simple ssh tunnel can be setup by typing &lt;code&gt;ssh&lt;/code&gt; with your username (on the server) @ the server url or ip&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;ssh user@host.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If your username has permission you will be asked for your password and logged in.&lt;/p&gt;
+
+&lt;h2 id=&quot;verifying-host-keys&quot;&gt;Verifying Host Keys&lt;/h2&gt;
+&lt;p&gt;The first time you connect to a machine you may get a message similar to the following.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;The authenticity of host &#39;host.example.com (XXX.XXX.XXX.XXX)&#39; can&#39;t be established.
+RSA key fingerprint is XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX.
+Are you sure you want to continue connecting (yes/no)?&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This is an attempt to prevent man-in-the-middle attacks. The fingerprint is a short version of the servers public key which you can use to verify the server is the one you wish to connect to.&lt;/p&gt;
+
+&lt;p&gt;Most users will not bother to verify this message (which can be difficult if you don’t own the server), for most users this is ok if the network you are on is secure as its unlikely someone will be spoofing the server. If you’d prefer to check the fingerprint can be verified in a couple of ways.&lt;/p&gt;
+
+&lt;h3 id=&quot;with-direct-access-to-the-machine&quot;&gt;With direct access to the machine&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;ssh-keygen -l -f /etc/ssh_host_rsa_key
+ssh-keygen -l -f /etc/ssh_host_dsa_key
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;Mac and linux aren&#39;t always equal&lt;/h5&gt;
+&lt;p&gt;keys may be located in &lt;strong&gt;/etc/ssh/&lt;/strong&gt; on linux machines&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;from-dns-if-setup-by-server-admin&quot;&gt;From DNS (if setup by server admin)&lt;/h3&gt;
+
+&lt;p&gt;You can check the fingerprint matches the dns record when you start the ssh session with the command&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;ssh -o &lt;span class=&quot;s2&quot;&gt;&amp;quot;VerifyHostKeyDNS ask&amp;quot;&lt;/span&gt; host.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;You should receive a response like&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;Matching host key fingerprint found in DNS.
+Are you sure you want to continue connecting (yes/no)?&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;After you have accepted it once you wont see this message again unless the servers fingerprint changes (indicating a man-in-the-middle attack or the server has a new private key). You can read more about fingerprints &lt;a href=&quot;http://www.phcomp.co.uk/Tutorials/Unix-And-Linux/ssh-check-server-fingerprint.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;improving-authentication-with-ssh-keys&quot;&gt;Improving Authentication (with SSH Keys)&lt;/h2&gt;
+
+&lt;p&gt;SSH keys can be used to both increase security and remove the need for a password. They work on public-private key cryptography, you give the server your public key and you can then prove it is you by using the private key on your own machine.&lt;/p&gt;
+
+&lt;p&gt;If you leave the private key unencrypted anyone with access to your machine could steal it and logon as you, its equivalent to leaving a very long random password in a text file on your computer - it is near impossible to guess but it could be stolen. However if your computer is secure you may consider this a trade off after all if they can steal your key they can probably install a keylogger to get your password as well - although there are better ways to manage this.&lt;/p&gt;
+
+&lt;p&gt;By encrypting the private key you essentially eliminate the ability to brute force or guess password on your server because they do not require a normal password, but the ssh private key from your computer and the password to unencrypted the key.&lt;/p&gt;
+
+&lt;p&gt;There is a better solution to the password problem. Mac OS will ask you if you want to store the sshkey password in your keychain for encrypted ssh-keys with passwordless logins. On other systems you can use ssh-agent for a similar effect (see &lt;a href=&quot;#ssh-agent--keychain&quot;&gt;§ ssh-agent / keychain&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h3 id=&quot;generating-an-ssh-key&quot;&gt;Generating An SSH Key&lt;/h3&gt;
+
+&lt;p&gt;You can generate a keypair using &lt;code&gt;ssh-keygen -t rsa&lt;/code&gt;. Most people can leave the following options blank unless you want to use a password to encrypt your key (if so you may be required to enter it each time you use it). The output should look similar to this&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/USERNAME/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /Users/USERNAME/.ssh/id_rsa.
+Your public key has been saved in /Users/USERNAME/.ssh/id_rsa_temp.pub.
+The key fingerprint is:
+85:4d:f6:2f:7e:ca:e9:cf:ec:34:d6:83:92:84:df:49 user@users-computer.local
+The key&#39;s randomart image is:
++--[ RSA 2048]----+
+|          o      |
+|         = .     |
+|        . o .    |
+|         ..  .   |
+|        S. ..E.  |
+|          o.+.o. |
+|           +.+=..|
+|           ..O ..|
+|           .=o=  |
++-----------------+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;Humans Like Art&lt;/h5&gt;
+&lt;p&gt;The &lt;em&gt;random&lt;strong&gt;art&lt;/strong&gt;&lt;/em&gt; image is a way to visually verify two public keys as people are not very good at visually comparing two large sets of random characters, you can admire it then ignore it.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You can then find your keys in &lt;code&gt;/Users/USERNAME/.ssh/&lt;/code&gt; the private key is &lt;em&gt;id_rsa&lt;/em&gt; (don’t give anyone this) and the public key is &lt;em&gt;id_rsa.pub&lt;/em&gt; which can be given out freely so you can confirm to people you have the private key.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;Bitcoin and other uses&lt;/h5&gt;
+&lt;p&gt;Private - public keys are used everywhere from securing your online banking to Bitcoin. Bitcoin addresses are your public key and you spend from them by signing a request with your private key.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;logging-into-a-server-with-your-key&quot;&gt;Logging Into A Server With Your Key&lt;/h3&gt;
+
+&lt;p&gt;Now you have your keypair you need to tell the server to let you in if you have the private key. You can do this by adding your public key to the &lt;em&gt;.ssh/authorized_keys&lt;/em&gt; file (which may not exist).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cat ~/.ssh/id_rsa.pub | ssh user@host.example.com &#39;cat &amp;gt;&amp;gt; .ssh/authorized_keys&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This command used &lt;code&gt;cat&lt;/code&gt; to copy the contents of id_rsa.pub and appends it to the file &lt;em&gt;authorized_keys&lt;/em&gt;, creating it if it doesn’t exist. Now try logging in with ssh and you shouldn’t require a password (or at least your server password).&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+&lt;h5&gt;WARNING: UNPROTECTED PRIVATE KEY FILE!&lt;/h5&gt;
+&lt;p&gt;If you get this message or &quot;Failed to add the host to the list of known hosts&quot; your permissions are set incorrectly (and insecurely). We can correct them by using the following commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo chmod 600 ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
+sudo chmod 644 ~/.ssh/known_hosts
+sudo chmod 755 ~/.ssh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;forcing-users-to-login-with-an-ssh-key&quot;&gt;Forcing Users To Login With An SSH Key&lt;/h3&gt;
+
+&lt;p&gt;If you want to stop users log in in with their passwords to stop brute force attacks you need to edit the &lt;code&gt;sshd_config&lt;/code&gt; file on your server (located in &lt;em&gt;/etc/ssh/sshd_config&lt;/em&gt; for linux).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vim /etc/sshd_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And change/modify the following lines&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;PasswordAuthentication no
+RSAAuthentication yes
+PubkeyAuthentication yes&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;If you only want to disable password logins for certain users or groups you can use &lt;code&gt;Match User&lt;/code&gt; and &lt;code&gt;Match Group&lt;/code&gt;. So if you want to disable password login for &lt;em&gt;ryan&lt;/em&gt;, &lt;em&gt;john&lt;/em&gt; and the &lt;em&gt;sudoers&lt;/em&gt; group&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;Match User ryan,john
+PasswordAuthentication no
+
+Match Group sudoers
+PasswordAuthentication no&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You can also use &lt;code&gt;!&lt;/code&gt; for a not statement, i.e. &lt;code&gt;Match User !root&lt;/code&gt; would disable password login for all users except root (which you could use to rescue the system if something went wrong)&lt;/p&gt;
+
+&lt;h3 id=&quot;ssh-agent--keychain&quot;&gt;ssh-agent / keychain&lt;/h3&gt;
+
+&lt;p&gt;You can add an encrypted ssh key to ssh-agent so you don’t have to enter it all the time but you still retain the security of an encrypted key. To do this just type &lt;code&gt;ssh-add&lt;/code&gt; at the beginning of a session and you will be prompted for your password to unlock the keys, you can then login using your ssh key without a password.&lt;/p&gt;
+
+&lt;p&gt;This method will keep your ssh keys in memory so when you are done you will either need to kill the ssh agent process &lt;code&gt;kill $SSH_AGENT_PID&lt;/code&gt; or you can only work in ssh-agent sessions i.e&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh-agent bash
+ssh-add
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;will start a new bash prompt and load your ssh key into it, after you exit the bash session you will need your password to decrypt the key again.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;Mac Users can use Keychain&lt;/h5&gt;
+&lt;p&gt;The first time you try ot login with an encrypted ssh-key Mac OS will ask if you want to remember the password in your keychain, you can then enjoy password-less logins.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;common-flags&quot;&gt;Common Flags&lt;/h2&gt;
+
+&lt;div class=&quot;table-container&quot;&gt;
+&lt;table class=&quot;table table-striped&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Flag&lt;/th&gt;
+      &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-C&lt;/td&gt;
+      &lt;td&gt;Compression - compresses all data through the tunnel. Only useful for slow (dial-up) connections as it will just slow down fast connections.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-f&lt;/td&gt;
+      &lt;td&gt;Requests ssh goes to the background just before command execution. This may be useful if you want the ssh session in the background but need to enter a password first. (note that tasks backgrounded in this way cant be found by using &lt;code&gt;jobs&lt;/code&gt; and you need to find the processes manually i.e. &lt;code&gt;ps -wwajx|grep ssh&lt;/code&gt;). I find &lt;code&gt;-N&lt;/code&gt; more useful&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-N&lt;/td&gt;
+      &lt;td&gt;Do not execute a remote command.  This is useful for just forwarding ports.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-p&lt;/td&gt;
+      &lt;td&gt;Port to connect to if ssh uses a non-standard port (not 22) for incoming ssh sessions&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-t&lt;/td&gt;
+      &lt;td&gt;Force pseudo-tty allocation. aka execute a command on remote machine after logging in and keep the ssh pseudo terminal open.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-X&lt;/td&gt;
+      &lt;td&gt;Enables X11 forwarding.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Y&lt;/td&gt;
+      &lt;td&gt;Enables trusted X11 forwarding.  Trusted X11 forwardings are not subjected to the X11 SECURITY extension controls.&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;strong&gt;Port Forwarding&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-g&lt;/td&gt;
+      &lt;td&gt;Shares your local port forward (using -L) with the rest of your subnet. In practice this means other people on your network should be able to access the port forward&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-L&lt;/td&gt;
+      &lt;td&gt;Local port forward [bind_address:]port:host:hostport Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-R&lt;/td&gt;
+      &lt;td&gt;Remote port forward [bind_address:]port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;strong&gt;Misc&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-o&lt;/td&gt;
+      &lt;td&gt;Option, Can be used to give options in the format used in the configuration file.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-q&lt;/td&gt;
+      &lt;td&gt;Quiet mode.  Causes all warning and diagnostic messages to be suppressed.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-v&lt;/td&gt;
+      &lt;td&gt;Verbose mode.  Causes ssh to print debugging messages about its progress.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-V&lt;/td&gt;
+      &lt;td&gt;Display the version number and exit.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;SSH has many configurations options which are fully detailed in the manual (type &lt;code&gt;info ssh&lt;/code&gt; or &lt;a href=&quot;http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh+1&quot;&gt;web version&lt;/a&gt;). Here are listed some of the most common and useful to know.&lt;/p&gt;
+
+&lt;h2 id=&quot;x11-forwarding-for-guis&quot;&gt;X11 forwarding (for GUI’s)&lt;/h2&gt;
+&lt;p&gt;If you want to view a GUI on the remote machine through ssh you need to use X11 forwarding. You can then use programs that support X11 windows through your ssh tunnel.&lt;/p&gt;
+
+&lt;p&gt;You will need to have an X11 client on your machine. For Mac you can use &lt;a href=&quot;http://xquartz.macosforge.org/landing/&quot;&gt;XQuartz&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;port-forwarding&quot;&gt;Port Forwarding&lt;/h2&gt;
+
+&lt;p&gt;Port forwarding is when you route a port from one machine to another. You can forward ports from your machine to a remote one or from the remote to your local machine.&lt;/p&gt;
+
+&lt;h3 id=&quot;local&quot;&gt;Local&lt;/h3&gt;
+
+&lt;p&gt;A local port forward is set up using the &lt;code&gt;-L&lt;/code&gt; flag and routes a port on your local machine to one on a remote machine. A simple example is forwarding port 2200 (you can generally choose any number &amp;gt; 1000) on our local machine to 22 (the ssh port) on the server.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;ssh -L syntax&lt;/h5&gt;
+&lt;pre&gt;&lt;code&gt;[bind_address:]port:host:hostport&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;em&gt;bind address&lt;/em&gt; is optional and is the address to forward the port from, by default this is localhost. The &lt;em&gt;port&lt;/em&gt; is the port number to forward (generally &amp;gt;1000). The &lt;em&gt;host&lt;/em&gt; is the host address the port is being forwarded too (either the address you are sshing to or the machine you wish to reach through that machine) and the &lt;em&gt;hostport&lt;/em&gt; is the port at this address to forward to (generally its a service port such as 22 for ssh).&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh  user@host.example.com -L 2200:host.example.com:22
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can then test this worked by typing (in a new console/terminal window)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh user@localhost
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And you should be connected to host.example.com&lt;/p&gt;
+
+&lt;p&gt;This example was easy to verify but in reality isn’t that useful (why not ssh as normal?). A more realistic may be printing to a networked printer from outside the network. The server we want to connect to talks to the printer on port 515, we therefore want to forward this port to one on our local machine.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh user@host.example.com -L 5150:host.example.com:515
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can setup and use the printer by looking for it at localhost:5150!&lt;/p&gt;
+
+&lt;h3 id=&quot;remote&quot;&gt;Remote&lt;/h3&gt;
+
+&lt;p&gt;A remote port forwards a port on the server to a port on your local machine. For example, you may want to give users at work access to your home machine, or a friend to help you out. They cant connect directly because your home router blocks the traffic.&lt;/p&gt;
+
+&lt;p&gt;By using a remote port forward you can allow them to connect to you, without needing an ip and only allowing users of the trusted machine to use the port forward.&lt;/p&gt;
+
+&lt;p&gt;In this example both you and your friend / colleague both have access to &lt;em&gt;host.example.com&lt;/em&gt;. First you forward your port (in this case ssh port &lt;em&gt;22&lt;/em&gt;) to port &lt;em&gt;2200&lt;/em&gt; on host.example.com.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh user@host.example.com -R 22:localhost:2200
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Your friend can now login to the server and connect to you using&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh friendsusername@localhost -p 2200
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that your friend will need to have a username (&lt;em&gt;friendsusername&lt;/em&gt;) on your computer with ssh access in order to connect via ssh.&lt;/p&gt;
+
+&lt;h3 id=&quot;advanced-examples-connecting-through-a-third-machine&quot;&gt;Advanced Examples (connecting through a third machine)&lt;/h3&gt;
+
+&lt;h4 id=&quot;connecting-to-an-internal-machine-with-vnc&quot;&gt;Connecting to an internal machine with VNC&lt;/h4&gt;
+
+&lt;p&gt;Internal networks are often designed with a front publicly visible machine that you must connect to to get behind the firewall and access internal machines. We may want to connect to an internal machine to start a &lt;a href=&quot;% post_url 2014-06-09-how-to-vnc-into-one-machine-via-another-through-ssh-port-forwarding %&quot;&gt;VNC session&lt;/a&gt; or copy files from it with &lt;code&gt;rsync&lt;/code&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;half-center&quot;&gt;
+	&lt;a href=&quot;http://ryanvarley.uk/images/2014/06/ssh-port-forward-map-for-vnc.png&quot;&gt;&lt;img title=&quot;Image showing the route from port 5902 on your local machine, through server.mycompany.com to port 5900 on mac1&quot; src=&quot;http://ryanvarley.uk/images/2014/06/ssh-port-forward-map-for-vnc.png&quot; /&gt;&lt;/a&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;We can do this by modifying the &lt;em&gt;host&lt;/em&gt; we are forwarding to to the internal address. Lets forward port 5902 to the VNC port 5900 on the machine &lt;em&gt;internal1&lt;/em&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh user@host.example.com -L 5902:internal1:5900
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;we can then vnc into internal one at &lt;em&gt;localhost:5902&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;copying-files-from-an-internal-machine&quot;&gt;copying files from an internal machine&lt;/h4&gt;
+
+&lt;p&gt;First we setup the port forward, we can use the &lt;code&gt;-N&lt;/code&gt; flag to just forward the ports (and not open a terminal with the remote machine) and add &lt;code&gt;&amp;amp;&lt;/code&gt; at the end of our command to send the job into the background.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh user@host.example.com -NL 2200:internal1:22 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can connect to &lt;em&gt;internal1&lt;/em&gt; at &lt;em&gt;localhost:2200&lt;/em&gt; use rsync/scp/sftp to copy &lt;code&gt;~/Documents&lt;/code&gt; from &lt;em&gt;internal1&lt;/em&gt; to &lt;code&gt;~/Documents/internal1&lt;/code&gt; on our machine with &lt;code&gt;rsync&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rsync -e &#39;ssh -p 2200&#39; -vaz user@localhost:/Documents ~/Documents/internal1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can then end the ssh port forward by finding the job number from &lt;code&gt;jobs&lt;/code&gt; then typing &lt;code&gt;kill %1&lt;/code&gt; where 1 is the job number&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h5&gt;ProxyCommand&#39;s are better&lt;/h5&gt;
+&lt;p&gt;If you need this multi-hop ssh session regularly you would be better off using &lt;em&gt;ProxyCommand&lt;/em&gt;. There is a good guide on how to set this up &lt;a href=&quot;http://sshmenu.sourceforge.net/articles/transparent-mulithop.html&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;escape-characters&quot;&gt;Escape Characters&lt;/h2&gt;
+
+&lt;p&gt;When connected to a machine through ssh and working in the pseudo-terminal (terminal acting like on the remote machine) there are several commands you can use to control the ssh-session from your machine. They are accessed by first typing the escape character &lt;code&gt;~&lt;/code&gt; which must be the first thing you type on that line.&lt;/p&gt;
+
+&lt;p&gt;The list of escape commands is given in the table below&lt;/p&gt;
+
+&lt;div class=&quot;table-container&quot;&gt;
+&lt;table class=&quot;table table-striped&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Command&lt;/th&gt;
+        &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~.&lt;/td&gt;
+        &lt;td&gt;Disconnect. Useful if the session is &quot;stuck&quot; where you can&#39;t type commands into the remote server to end the session (i.e. through `exit`)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~^Z&lt;/td&gt;
+        &lt;td&gt;Background ssh.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~#&lt;/td&gt;
+        &lt;td&gt;List forwarded connections.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~&amp;amp;&lt;/td&gt;
+        &lt;td&gt;Background ssh at logout when waiting for forwarded connection / X11 sessions to terminate.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~?&lt;/td&gt;
+        &lt;td&gt;Display a list of escape characters.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~B&lt;/td&gt;
+        &lt;td&gt;Send a BREAK to the remote system (only useful for SSH protocol version 2 and if the peer supports it).&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~C&lt;/td&gt;
+        &lt;td&gt;Open command line. Currently this allows the addition of port forwardings using the -L and -R options (see above).  It also allows the cancellation of existing remote port-forwardings using -KR hostport. !command allows the user to execute a local command if the PermitLocalCommand option is enabled in ssh_config(5).  Basic help is available, using the -h option.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;~R&lt;/td&gt;
+        &lt;td&gt;Request rekeying of the connection (only useful for SSH protocol version 2 and if the peer supports it).&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;further-reading&quot;&gt;Further Reading&lt;/h2&gt;
+
+&lt;p&gt;I recommend reading the following articles on ssh and related topics.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://martin.kleppmann.com/2013/05/24/improving-security-of-ssh-private-keys.html&quot;&gt;Improving the security of your SSH private key files&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://sshmenu.sourceforge.net/articles/transparent-mulithop.html&quot;&gt;Transparent Multi-hop SSH&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This was meant as an extensive guide to using ssh and the various things you can do with it. If you find this guide helpful, please consider tipping my bitcoin address &lt;i class=&quot;fa fa-bitcoin&quot;&gt;&lt;/i&gt;  &lt;a href=&quot;bitcoin:1BeLn9LHMoFBjzPKyigW6ViriEaPDP2rpU&quot;&gt;1BeLn9LHMoFBjzPKyigW6ViriEaPDP2rpU&lt;/a&gt;. If you have any feedback or suggestions you can use the comments at the end of this post.&lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/guides/2014/07/01/guide-to-ssh/&quot;&gt;A Guide to Using SSH&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on July 01, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How to fix &#8220;Remote: No xauth program; cannot forward with spoofing.&#8221; on a Mac]]></title>
+  <link>http://ryanvarley.uk/2014/06/24/fixing-no-xauth-program-cannot-forward-without-spoofing-on-mac/</link>
+  <id>http://ryanvarley.uk/2014/06/24/fixing-no-xauth-program-cannot-forward-without-spoofing-on-mac</id>
+  <updated>2014-06-24T00:00:00-00:00</updated>
+  <published>2014-06-24T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;When trying to ssh into a server you may run into the error “X11 forwarding request failed on channel 0”. There are several causes of this from issues with your own machine to the server setup. Here is a solution if your server has an error with its xauth setup.&lt;/p&gt;
+
+&lt;p&gt;First its important to find out what the error actually caused by. To do this run ssh in verbose mode with the &lt;code&gt;-v&lt;/code&gt; flag.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh -Xv user@host.example.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you see the following line, the error is with your server.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;debug1: Remote: No xauth program; cannot forward with spoofing.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The server in my case happened to be a Mac Pro with &lt;a href=&quot;http://xquartz.macosforge.org/landing/&quot;&gt;XQuartz&lt;/a&gt; already installed. First check &lt;code&gt;xauth&lt;/code&gt; exists by running and seeing if the &lt;code&gt;xauth&amp;gt;&lt;/code&gt; prompt opens&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/opt/X11/bin/xauth
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If it does, exit (ctrl+c) and open the sshd config file&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo vim /etc/sshd_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Scroll down to the line&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;XauthLocation xauth&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Hit &lt;code&gt;i&lt;/code&gt; to enter insert mode and change it to&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;XauthLocation /opt/X11/bin/xauth&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Exit insert mode (&lt;code&gt;esc&lt;/code&gt;) and save and close the file &lt;code&gt;ZZ&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Now try ssh-ing into the server again to confirm it worked.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/2014/06/24/fixing-no-xauth-program-cannot-forward-without-spoofing-on-mac/&quot;&gt;How to fix &#8220;Remote: No xauth program; cannot forward with spoofing.&#8221; on a Mac&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on June 24, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How To VNC Into One Machine Via Another Through SSH Port Forwarding]]></title>
+  <link>http://ryanvarley.uk/guides/2014/06/09/how-to-vnc-into-one-machine-via-another-through-ssh-port-forwarding/</link>
+  <id>http://ryanvarley.uk/guides/2014/06/09/how-to-vnc-into-one-machine-via-another-through-ssh-port-forwarding</id>
+  <updated>2014-06-09T00:00:00-00:00</updated>
+  <published>2014-06-09T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;When trying to connect to a machine internal to a network you can’t just connect to it directly, you have to connect via another machine.
+You can do this by forwarding the correct ports from your computer, through the third machine and to the internal one.&lt;/p&gt;
+
+&lt;p&gt;To forward ports we use &lt;code&gt;ssh&lt;/code&gt; with the &lt;code&gt;-L&lt;/code&gt; flag for a local port forward. A VNC server broadcasts on port 5900 and is typically connected to via port 5901, 5902 etc so we need to forward port 5902 to 5900.&lt;/p&gt;
+
+&lt;figure class=&quot;half-center&quot;&gt;
+	&lt;a href=&quot;http://ryanvarley.uk/images/2014/06/ssh-port-forward-map-for-vnc.png&quot;&gt;&lt;img title=&quot;Image showing the route from port 5902 on your local machine, through server.mycompany.com to port 5900 on mac1&quot; src=&quot;http://ryanvarley.uk/images/2014/06/ssh-port-forward-map-for-vnc.png&quot; /&gt;&lt;/a&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The following code forwards the 5902 port on your machine (localhost) to &lt;em&gt;mac1&lt;/em&gt; port 5900 via &lt;em&gt;server.mycompany.com&lt;/em&gt;. In this scenario &lt;em&gt;server.mycompany.com&lt;/em&gt; is the computer you connect to to get into the internal network and &lt;em&gt;mac1&lt;/em&gt; is the machine we want to connect to (note this could also be &lt;em&gt;mac1.internal.mycompany.com&lt;/em&gt; depending on how the network is setup).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh -L 5902:mac1:5900 user@server.mycompany.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can then type &lt;code&gt;vnc://user@localhost:5902&lt;/code&gt; in safari to start your VNC session with the internal machine or setup your VNC client to connect to &lt;em&gt;localhost&lt;/em&gt; on port &lt;em&gt;5902&lt;/em&gt;.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/guides/2014/06/09/how-to-vnc-into-one-machine-via-another-through-ssh-port-forwarding/&quot;&gt;How To VNC Into One Machine Via Another Through SSH Port Forwarding&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on June 09, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Installing matplotlib on a Mac. Issues with libpng and libstdc++ (from clang)]]></title>
+  <link>http://ryanvarley.uk/solutions/2014/05/22/fixing-matplotlib-libpng-and-libstdc%2B%2B-install-errors-with-homebrew-on-mac/</link>
+  <id>http://ryanvarley.uk/solutions/2014/05/22/fixing-matplotlib-libpng-and-libstdc++-install-errors-with-homebrew-on-mac</id>
+  <updated>2014-06-24T00:00:00-00:00</updated>
+  <published>2014-05-22T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;I recently moved away from the Enthought python distribution as I found it a little restrictive (after all its goal is to be a consistent cross-machine environment and not very customisable). In doing so I ran into issues with &lt;em&gt;matplotlib&lt;/em&gt;, particularly with the &lt;em&gt;libpng&lt;/em&gt; library which prevented me from saving plots as a png.&lt;/p&gt;
+
+&lt;p&gt;I used &lt;em&gt;homebrew&lt;/em&gt; to install &lt;em&gt;python&lt;/em&gt; and &lt;em&gt;pip&lt;/em&gt; to install &lt;em&gt;matplotlib&lt;/em&gt; and &lt;em&gt;numpy&lt;/em&gt;. The first error I was getting was to do with the version of &lt;em&gt;libpng&lt;/em&gt; running was different to the one used to compile. This let me use &lt;em&gt;matplotlib&lt;/em&gt; as normal, except saving as a png. The solution was to remove &lt;em&gt;libpng&lt;/em&gt; through &lt;code&gt;brew&lt;/code&gt; as I had multiple versions installed and then to install &lt;em&gt;matplotlib&lt;/em&gt; through a &lt;code&gt;brew&lt;/code&gt; keg instead of &lt;code&gt;pip&lt;/code&gt; to install the correct dependencies.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pip uninstall matplotlib
+brew remove --force libpng
+brew install homebrew/python/matplotlib
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;--force&lt;/code&gt; makes &lt;em&gt;homebrew&lt;/em&gt; remove both versions installed, &lt;code&gt;homebrew/python/matplotlib&lt;/code&gt; tells brew to use the matplotlib keg in the homebrew GitHub repo.&lt;/p&gt;
+
+&lt;p&gt;This then failed with the error&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;Error: matplotlib dependency tbb was built with the following
+C++ standard library: libc++ (from clang)
+
+This is incompatible with the standard library being used
+to build matplotlib: libstdc++ (from clang)
+
+Please reinstall tbb using a compatible compiler.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This is apparently due to Mac OS Mavericks (10.9) using a new default stdlib for Clang(++) which is good overall, but is causing this issues due to old dependencies. The solution is to recompile all &lt;em&gt;matplotlib&lt;/em&gt; dependencies including &lt;em&gt;numpy&lt;/em&gt; and then reinstalling &lt;em&gt;matplotlib&lt;/em&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pip uninstall numpy
+brew reinstall `brew deps matplotlib`
+brew reinstall matplotlib
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Afterwards you should have a working matplotlib install. Be sure to follow any instructions brew gives you along the way and run &lt;code&gt;brew doctor&lt;/code&gt; if you have any remaining issues. It normally helps identify issues, especially with linking issues.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h4&gt;If brew fails to find matplotlib&lt;/h4&gt;
+&lt;p&gt;Then you need to first give it the link to the keg &lt;code&gt;brew install homebrew/python/matplotlib&lt;/code&gt;. Afterwards you should be able to just type &lt;code&gt;brew reinstall matplotlib&lt;/code&gt; as normal&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Thanks to the contributors of this &lt;a href=&quot;https://github.com/Homebrew/homebrew-python/issues/56&quot;&gt;issue on github&lt;/a&gt; which helped me solve this problem.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/solutions/2014/05/22/fixing-matplotlib-libpng-and-libstdc%2B%2B-install-errors-with-homebrew-on-mac/&quot;&gt;Installing matplotlib on a Mac. Issues with libpng and libstdc++ (from clang)&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on May 22, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Using Virtualenv to install Python Packages using Pip on a sever or cluster]]></title>
+  <link>http://ryanvarley.uk/guides/2014/05/19/python-virtual-enviroments/</link>
+  <id>http://ryanvarley.uk/guides/2014/05/19/python-virtual-enviroments</id>
+  <updated>2014-06-25T00:00:00-00:00</updated>
+  <published>2014-05-19T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;Virtual environments in python allow you to easily create an isolated version of python with it’s own set of packages. This is useful to run code that requires different package versions on the same machine and for testing code with multiple package versions. It has another use; to allow you to install additional packages using pip on a server you don’t have admin privileges for; but do have a directory you can write to.&lt;/p&gt;
+
+&lt;p&gt;In astronomy it is common to use computer clusters, these machines are more powerful but you typically cant install new software (without compiling in your own directory) or use tools like pip. With virtual environments you can and they are very easy to set up.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+&lt;h4&gt;No Malice&lt;/h4&gt;
+&lt;p&gt;This is not a method to subvert admin restrictions but to easily create your own (local) versions of python without having to compile it in your directory.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;First you need to download &lt;code&gt;virtualenv&lt;/code&gt; to the directory you want to install it in using the &lt;code&gt;wget&lt;/code&gt; or &lt;code&gt;curl&lt;/code&gt; commands. Check &lt;a href=&quot;https://pypi.python.org/packages/source/v/virtualenv/&quot;&gt;this page&lt;/a&gt; to get the latest version (1.9 at time of publication).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.9.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unpack the tarball and you have a working &lt;code&gt;virtualenv&lt;/code&gt; install.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;tar xvfz virtualenv-1.9.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now create a virtual environment by calling the version of python you want to use (i.e. &lt;code&gt;python&lt;/code&gt;, &lt;code&gt;python3.4&lt;/code&gt; or a path to a specific install), the &lt;code&gt;virtualenv&lt;/code&gt; script. The Syntax is:&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;python [location of virtualenv.py] [NameOfEnviroment] (flags)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I called the environment &lt;em&gt;etlospython&lt;/em&gt; and installed it with the &lt;code&gt;--system-site-packages&lt;/code&gt;flag as I wanted the enthought python installed on the cluster with a few more packages (by default Virtualenv creates an fresh python environment).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python virtualenv-1.9/virtualenv.py etlospython --system-site-packages
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can now run your new python by calling &lt;code&gt;python&lt;/code&gt; in the folder you made&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;etlospython/bin/python
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and install packages there using &lt;code&gt;pip&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;etlospython/bin/pip install oecpy
+&lt;/code&gt;&lt;/pre&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/guides/2014/05/19/python-virtual-enviroments/&quot;&gt;Using Virtualenv to install Python Packages using Pip on a sever or cluster&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on May 19, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How to solve the matplotlib &#8220;TclError: no display name&#8221; $DISPLAY error on Travis-ci]]></title>
+  <link>http://ryanvarley.uk/solutions/2014/05/14/how-to-solve-travis-ci-matplotlib-tclerror-no-display/</link>
+  <id>http://ryanvarley.uk/solutions/2014/05/14/how-to-solve-travis-ci-matplotlib-tclerror-no-display</id>
+  <updated>2014-05-14T00:00:00-00:00</updated>
+  <published>2014-05-14T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;I use &lt;a href=&quot;http://travis-ci.org&quot;&gt;Travis-ci&lt;/a&gt; to run unit tests for some of my software like &lt;a href=&quot;https://github.com/ryanvarley/open-exoplanet-catalogue-python&quot;&gt;OECPy&lt;/a&gt; every time I push a new version. Recently the tests involving matplotlib that previously passed started failing with the error &lt;em&gt;“TclError: no display name and no $DISPLAY environment variable”&lt;/em&gt;. This is how you can fix it.&lt;/p&gt;
+
+&lt;p&gt;Why these tests used to pass on Travis-ci and no longer do is a mystery (I suspect a change on the Travis-ci end). The cause however is &lt;strong&gt;matplotlib trying to use a GUI in a non GUI environment&lt;/strong&gt;. For servers this is solved by either using a program like &lt;code&gt;X11&lt;/code&gt; during ssh (&lt;code&gt;ssh -X&lt;/code&gt;) or by specifying matplotlib to use the &lt;code&gt;Agg&lt;/code&gt; renderer as the first matplotlib call in your script.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;matplotlib&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;matplotlib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Agg&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# Must be called before any other matplotlib calls&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The problem when doing this for modules is that doing this would effect all users and prevent them from using the GUI. The best solution is to modify Travis-ci to support the GUI by starting &lt;code&gt;xvfb&lt;/code&gt; on the display port.&lt;/p&gt;
+
+&lt;p&gt;Using &lt;a href=&quot;http://docs.travis-ci.com/user/gui-and-headless-browsers/&quot;&gt;Travis-ci docs&lt;/a&gt; I made the following addition to my &lt;code&gt;travis.yml&lt;/code&gt; file in my project.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;yaml&quot;&gt;&lt;span class=&quot;l-Scalar-Plain&quot;&gt;before_install&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;export&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s&quot;&gt;DISPLAY=:99.0&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;sh&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-e&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/etc/init.d/xvfb&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s&quot;&gt;start&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This solved all my problems with Travis-ci without changing any of the module code which could impact users as well.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/solutions/2014/05/14/how-to-solve-travis-ci-matplotlib-tclerror-no-display/&quot;&gt;How to solve the matplotlib &#8220;TclError: no display name&#8221; $DISPLAY error on Travis-ci&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on May 14, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How to update all outdated packages with Homebrew]]></title>
+  <link>http://ryanvarley.uk/guides/2014/05/08/how-to-update-all-outdated-packages-with-homebrew/</link>
+  <id>http://ryanvarley.uk/guides/2014/05/08/how-to-update-all-outdated-packages-with-homebrew</id>
+  <updated>2014-05-08T00:00:00-00:00</updated>
+  <published>2014-05-08T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;While &lt;a href=&quot;http://brew.sh/&quot;&gt;Homebrew&lt;/a&gt; makes it super simple to install packages on a Mac, its not obvious how to check and install updates for every package. Here is how you do it.&lt;/p&gt;
+
+&lt;p&gt;First you need to check for updates to Homebrew and refresh the package list using &lt;code&gt;brew update&lt;/code&gt;. You can then list outdated packages using &lt;code&gt;brew outdated&lt;/code&gt; and install these updates by running the &lt;code&gt;brew upgrade&lt;/code&gt; command on the list.&lt;/p&gt;
+
+&lt;p&gt;So in one easy to use command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;brew update &amp;amp;&amp;amp; brew upgrade `brew outdated`
+&lt;/code&gt;&lt;/pre&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/guides/2014/05/08/how-to-update-all-outdated-packages-with-homebrew/&quot;&gt;How to update all outdated packages with Homebrew&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on May 08, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How to Compile Nginx with ngx_cache_purge for WordPress on a CentOS VPS]]></title>
+  <link>http://ryanvarley.uk/guides/2014/04/08/compiling-nginx-from-source-centos-vps-ngx_cache_purge/</link>
+  <id>http://ryanvarley.uk/guides/2014/04/08/compiling-nginx-from-source-centos-vps-ngx_cache_purge</id>
+  <updated>2014-06-16T00:00:00-00:00</updated>
+  <published>2014-04-08T00:00:00+01:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;Setting up your own VPS might seem daunting but in reality the main steps are not that hard. Nginx is much faster than Apache making it a good option for your VPS. It is easy to install using &lt;em&gt;yum&lt;/em&gt; but if you plan on using WordPress you will want to compile from source using &lt;em&gt;ngx_cache_purge&lt;/em&gt;. This lets WordPress clear the Nginx fastcgi cache when you modify a post which keeps your your site fast and up to date.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;If you have just got your hands on your new VPS I would recommend following the guide over on &lt;a href=&quot;http://www.lifelinux.com/how-to-install-nginx-and-php-php-fpm-on-centos-6/&quot;&gt;lifelinux&lt;/a&gt; to get you set up. You can come back here for the Nginx step or to reinstall Nginx after you are done.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This guide assumes you are using an account with root access through &lt;code&gt;sudo&lt;/code&gt; or the root account itself.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
+
+&lt;p&gt;First &lt;em&gt;ssh&lt;/em&gt; into your server and install some of the needed tools to compile Nginx.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo yum groupinstall &quot;Development Tools&quot;
+sudo yum install pcre-devel zlib-devel openssl-devel
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you need the &lt;em&gt;Nginx source code&lt;/em&gt; and the &lt;em&gt;ngx_cache_purge module&lt;/em&gt;. Check the download pages for &lt;a href=&quot;http://nginx.org/en/download.html&quot;&gt;Nginx&lt;/a&gt; and the &lt;a href=&quot;http://labs.frickle.com/nginx_ngx_cache_purge/&quot;&gt;ngx_cache_purge&lt;/a&gt; module and amend the version numbers described here to the latest stable version.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd /tmp
+wget http://nginx.org/download/nginx-1.6.0.tar.gz
+wget http://labs.frickle.com/files/ngx_cache_purge-2.1.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unpack both files and move to the Nginx directory (changing version numbers as necessary)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo tar -xzf nginx-1.6.0.tar.gz
+sudo tar -xzf ngx_cache_purge-2.1.tar.gz
+cd nginx-1.6.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;compile-and-install&quot;&gt;Compile and Install&lt;/h2&gt;
+
+&lt;p&gt;Before compiling we need to configure the install. To do so use the following command with includes the &lt;code&gt;--add-module=/tmp/ngx_cache_purge-2.1&lt;/code&gt; flag to install with &lt;em&gt;ngx_cache_purge&lt;/em&gt; (updating the version number if needed). I have also added the &lt;em&gt;http_real_ip_module&lt;/em&gt; which allows you to see real visitor ips when using &lt;a href=&quot;https://www.cloudflare.com/&quot;&gt;CloudFlare&lt;/a&gt; (which i recommend). If your sure you don’t need it you can remove the &lt;code&gt;--with-http_realip_module&lt;/code&gt; flag.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo ./configure --sbin-path=/usr/sbin --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --pid-path=/var/run/nginx.pid --lock-path=/var/lock/nginx.lock --http-log-path=/var/log/nginx/access.log --http-client-body-temp-path=/var/lib/nginx/body --http-proxy-temp-path=/var/lib/nginx/proxy --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --with-debug --with-http_stub_status_module --with-http_flv_module --with-http_ssl_module --with-http_dav_module --with-ipv6 --with-http_realip_module --add-module=/tmp/ngx_cache_purge-2.1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now if you already have Nginx installed you need to stop it before compiling this version. When then start the compile and install using &lt;em&gt;make&lt;/em&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo service nginx stop
+sudo make &amp;amp;&amp;amp; make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After the install has finished you can use &lt;code&gt;nginx -V&lt;/code&gt; to check the &lt;code&gt;--with-http_realip_module&lt;/code&gt; and &lt;code&gt;--add-module=/tmp/ngx_cache_purge-2.1&lt;/code&gt; flags are present. You can start Nginx with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo service nginx start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;finishing-touches&quot;&gt;Finishing Touches&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;To setup WordPress with Nginx follow the instructions at &lt;a href=&quot;http://codex.wordpress.org/Nginx&quot;&gt;http://codex.wordpress.org/Nginx&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Grab the &lt;a href=&quot;https://wordpress.org/plugins/nginx-helper/‎&quot;&gt;Nginx Helper plugin&lt;/a&gt; for WordPress to automatically clear the cache on modifications.&lt;/li&gt;
+  &lt;li&gt;To setup CloudFlare with real ips follow &lt;a href=&quot;https://support.cloudflare.com/hc/en-us/articles/200170706-Does-CloudFlare-have-an-IP-module-for-Nginx-&quot;&gt;this guide&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;em&gt;Thanks to &lt;a href=&quot;http://mkuplens.com/blog/2013/09/30/compiling-nginx-ngx_cache_purge-for-wordpress-on-centos/&quot;&gt;Martin Kuplens-Ewart&lt;/a&gt; for creating the original guide this was derived from.&lt;/em&gt;&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/guides/2014/04/08/compiling-nginx-from-source-centos-vps-ngx_cache_purge/&quot;&gt;How to Compile Nginx with ngx_cache_purge for WordPress on a CentOS VPS&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on April 08, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Solving the &#8220;fatal error: 'freetype/config/ftheader.h' file not found&#8221; When Installing Matplotlib on a Mac]]></title>
+  <link>http://ryanvarley.uk/solutions/2014/03/25/file-not-found-freetype-installing-matplotlib-python-3.3-mac/</link>
+  <id>http://ryanvarley.uk/solutions/2014/03/25/file-not-found-freetype-installing-matplotlib-python-3.3-mac</id>
+  <updated>2014-04-06T00:00:00-00:00</updated>
+  <published>2014-03-25T00:00:00+00:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;When installing matplotlib on my mac with homebrew (specifically the version for python 3.3) I encountered a file not found error which halted the install. The fix is simple but not obvious.&lt;/p&gt;
+
+&lt;p&gt;The exact error i got was the following&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout code-quote&quot;&gt;
+&lt;pre&gt;&lt;code&gt;/usr/X11/include/ft2build.h:56:10: fatal error: &#39;freetype/config/ftheader.h&#39; file not found
+#include &amp;lt;freetype/config/ftheader.h&amp;gt;
+         ^
+1 warning and 1 error generated.
+
+error: command &#39;cc&#39; failed with exit status 1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;After some of searching, following the advice found on &lt;a href=&quot;http://stackoverflow.com/questions/20572366/sudo-pip-install-matplotlib-fails-to-find-freetype-headers-os-x-mavericks&quot;&gt;stack overflow&lt;/a&gt; solved it. The compiler is looking for freetype in a different location. To solve it, just link it to where it needs to be.&lt;/p&gt;
+
+&lt;p&gt;First, try&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ln -s /usr/local/opt/freetype/include/freetype2 /usr/local/include/freetype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If that doesnt work, link it to the current directory where you are running the build (this worked for me)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ln -s . /usr/local/Cellar/freetype/2.5.2/include/freetype2/freetype
+&lt;/code&gt;&lt;/pre&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/solutions/2014/03/25/file-not-found-freetype-installing-matplotlib-python-3.3-mac/&quot;&gt;Solving the &#8220;fatal error: 'freetype/config/ftheader.h' file not found&#8221; When Installing Matplotlib on a Mac&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on March 25, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[How to Solve The LaTeX Error &#8220;Too many unprocessed floats&#8221;]]></title>
+  <link>http://ryanvarley.uk/solutions/2014/02/17/how-to-solve-latex-error-too-many-floats/</link>
+  <id>http://ryanvarley.uk/solutions/2014/02/17/how-to-solve-latex-error-too-many-floats</id>
+  <updated>2014-02-17T00:00:00-00:00</updated>
+  <published>2014-02-17T00:00:00+00:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;Today I was working on &lt;a href=&quot;https://github.com/ryanvarley/latexpy&quot;&gt;LaTeXPy&lt;/a&gt;, my new side project to make it easy for python programs to generate LaTeX output and I came across a new error.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;! LaTeX Error: Too many unprocessed floats&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;What I was trying to do is have hundreds of figures (which each contain 4 figures as subfigures) sequentially in a single document. Figures like tables are a type of LaTeX object known as a ‘float’.&lt;/p&gt;
+
+&lt;p&gt;The reason this occurs is LaTeX is storing the figures waiting for somewhere to put them. In this case there will be a hundred or so figures in a section - after a certain amount of floats in a row LaTeX gives up looking for a place to put them and fails. There is a few ways you can approach the solution.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;use &lt;code&gt;\clearpage&lt;/code&gt; after every few floats. This will give latex a chance to get rid of some of the floats on this empty page. You can do this around the time it fails or in my case after every figure (for me, each figure was meant to take a whole page anyway).&lt;/li&gt;
+  &lt;li&gt;Increase the number of floats before LaTeX fails using the &lt;a href=&quot;http://ctan.org/pkg/morefloats&quot;&gt;morefloats&lt;/a&gt; package - although in documents like mine this will just increase the time before failure.&lt;/li&gt;
+  &lt;li&gt;Use the placeins package to force more ‘dump’ points for floats. ie &lt;code&gt;\usepackage[section]{placeins}&lt;/code&gt; will dump all current floats at the end of the current section&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For me &lt;code&gt;\clearpage&lt;/code&gt; was the easiest and best result as it allowed me to control how the figures were displayed.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/solutions/2014/02/17/how-to-solve-latex-error-too-many-floats/&quot;&gt;How to Solve The LaTeX Error &#8220;Too many unprocessed floats&#8221;&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on February 17, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[New Website]]></title>
+  <link>http://ryanvarley.uk/personal/2014/02/16/new-website-using-jekyll/</link>
+  <id>http://ryanvarley.uk/personal/2014/02/16/new-website-using-jekyll</id>
+  <updated>2014-02-17T00:00:00-00:00</updated>
+  <published>2014-02-16T00:00:00+00:00</published>
+  
+  <author>
+    <name>Ryan Varley</name>
+    <uri>http://ryanvarley.uk</uri>
+    <email>ryan@ryanvarley.uk</email>
+  </author>
+  <content type="html">&lt;p&gt;I finally got round to redesigning my website - and updating the content. The end result is much better, easier to maintain and best of all, free!&lt;/p&gt;
+
+&lt;p&gt;My old website used wordpress and pagelines, a combination I used to love. The difficulty comes with migrations, changing site design, speed, good backups and trying to get custom scripts through the editor - it can become a constant battle. The solution for me came in the form of &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;, a theme to build up from (&lt;a href=&quot;http://hmfaysal.github.io/hmfaysal-omega-theme/&quot;&gt;hmfaysal omega theme&lt;/a&gt;) and free hosting from &lt;a href=&quot;https://github.com/ryanvarley/&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;figure&gt;
+&lt;img src=&quot;http://ryanvarley.uk/images/old_ryanvarleycouk_website.jpg&quot; /&gt;
+&lt;figcaption&gt;My old website, built using wordpress and pagelines&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;There is many advantages to this new setup.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It’s free&lt;/li&gt;
+  &lt;li&gt;Very easy to change (basic html / css templates)&lt;/li&gt;
+  &lt;li&gt;Version controlled and backed up through git&lt;/li&gt;
+  &lt;li&gt;Very fast website (only static files are served)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It also gave me the excuse to rewrite the content and prune the old blog posts. I’ll be giving a detailed rundown on how to get setup with jekyll and github pages soon - i may even release a few themes.&lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://ryanvarley.uk/personal/2014/02/16/new-website-using-jekyll/&quot;&gt;New Website&lt;/a&gt; was originally published by Ryan Varley at &lt;a href=&quot;http://ryanvarley.uk&quot;&gt;Ryan Varley&lt;/a&gt; on February 16, 2014.&lt;/p&gt;</content>
+</entry>
+
+</feed>
+

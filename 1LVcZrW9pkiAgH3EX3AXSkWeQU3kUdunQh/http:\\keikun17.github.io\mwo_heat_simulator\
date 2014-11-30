@@ -1,0 +1,538 @@
+http://keikun17.github.io/mwo_heat_simulator/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Content-Type: text/html; charset=utf-8
+Last-Modified: Tue, 17 Jun 2014 14:02:25 GMT
+Expires: Tue, 22 Jul 2014 11:30:25 GMT
+Cache-Control: max-age=600
+Content-Encoding: gzip
+Content-Length: 4366
+Accept-Ranges: bytes
+Date: Tue, 22 Jul 2014 11:20:25 GMT
+Via: 1.1 varnish
+Age: 0
+Connection: close
+X-Served-By: cache-iad2123-IAD
+X-Cache: MISS
+X-Cache-Hits: 0
+X-Timer: S1406028025.868171930,VS0,VE2
+Vary: Accept-Encoding
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>Mechwarrior Online Heat Simulator</title>
+
+    <link href="stylesheets/normalize.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
+
+    <script src="javascripts/all.js" type="text/javascript"></script>
+  </head>
+
+  <body class="index">
+    <div class='container'>
+  <div class='row'>
+    <h1>Mechwarrior Online Weapon Heat Simulator</h1>
+    <div class='col-lg-6'>
+      <small>
+        <div class='alert alert-warning'>
+          This is outdated for clan drop. currently rewriting the thing to include clan weapons and quirks!
+        </div>
+        <div class='alert alert-info'>
+          <ul>
+            <li>This tool was last updated @ June 4, 2014 (Weapon tweaks)</li>
+            <li>
+              Comment/Discuss on :
+              <a class='alert-link text-warning' href='http://mwomercs.com/forums/topic/135725-mechwarrior-online-heat-simulator/'>MWO Heat Simulator Thread</a>
+            </li>
+            <li>
+              Accepting Bitcoin donations @ address :
+              <strong>
+                <a href="bitcoin:1LVcZrW9pkiAgH3EX3AXSkWeQU3kUdunQh?label=Mechwarrior+Online+Heat+Simulator">1LVcZrW9pkiAgH3EX3AXSkWeQU3kUdunQh</a>
+              </strong>
+            </li>
+          </ul>
+        </div>
+      </small>
+    </div>
+    <div class='col-lg-6'>
+      <div class='alert alert-success'>
+        <div class='row'>
+          <div class='col-lg-12'>
+            Share this build:
+            <span><a id="permalink" class="btn btn-success" data-toggle="tooltip" data-placement="right" data-original-title="Autosaved as you go" href="/">Right click and copy this link</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+      <div class='row'>
+        <p>
+          <div class='progress vertical wide bottom'>
+            <div aria-valuemax='3000' class='progress-bar progress-bar-danger' id='heatlevel'></div>
+          </div>
+        </p>
+      </div>
+      <div class='row'>
+        <p>
+          Enable Ghost Heat :(
+          <input data-original-title='Please note that Ghost Heat only works on linked-fire or Alpha, not on chain-fire' data-placement='right' data-toggle='tooltip' id='ghost_heat' type='checkbox'>
+          <span class='badge' id='ghost_heat_penalty'></span>
+        </p>
+        <p>
+          <a class='btn btn-success' id='flush_coolant'>
+            <span class='glyphicon glyphicon-tint'></span>
+            Flush coolant
+          </a>
+        </p>
+        <div>
+          Cooling time :
+          <span class='badge'>
+            <span id='cooldown_time'>0</span>
+            sec
+          </span>
+        </div>
+        <div>
+          Cooling Rate :
+          <span class='badge'>
+            <span id='cool-rate'></span>
+            heat/sec
+          </span>
+        </div>
+        <div>
+          Heat Threshold :
+          <span class='badge' id='heat-threshold'></span>
+        </div>
+        <hr>
+        <p>
+          Map list
+          <select id='map'>
+            <option data-capacity='0' data-dissipation='0'>Forest Colony</option>
+            <option data-capacity='0' data-dissipation='0'>Canyon Network</option>
+            <option data-capacity='0' data-dissipation='0'>River City (Day/Night)</option>
+            <option data-capacity='0' data-dissipation='0'>Crimson Strait</option>
+            <option disabled='' role='separator'>Cold Maps --</option>
+            <option data-capacity='.25' data-dissipation='.25'>Forest Colony (Snow)</option>
+            <option data-capacity='.25' data-dissipation='.25'>Alpine Peaks</option>
+            <option data-capacity='.25' data-dissipation='.25'>Frozen City</option>
+            <option data-capacity='.25' data-dissipation='.25'>Frozen City (Night)</option>
+            <option disabled='' role='separator'>Hot Maps ----</option>
+            <option data-capacity='-.10' data-dissipation='-.15'>Caustic Valley</option>
+            <option data-capacity='-.20' data-dissipation='-.25'>Terra Therma</option>
+            <option data-capacity='-.10' data-dissipation='-.15'>Tourmaline Desert</option>
+            <option disabled='' role='separator'>Uncertain ---</option>
+            <option data-capacity='-.30' data-dissipation='-.40'>Caustic Valley Caldera</option>
+            <option data-capacity='-.12' data-dissipation='-.60'>Terra Therma Caldera</option>
+          </select>
+          <a target="_blank" href="http://mwomercs.com/forums/topic/137357-maps-heat-and-you/">(Info)</a>
+          <div id='map-modifier'>
+            <p>
+              Effective Cool Rate from map :
+              <span class='label label-info' id='dissipation'></span>
+            </p>
+            <p>
+              Effective Heat Capacity from map :
+              <span class='label label-info' id='capacity'></span>
+            </p>
+          </div>
+        </p>
+        <p class='engines'>
+          Engine Type
+          <select id='engine_type'>
+            <option value='100'>100std/xl</option>
+            <option value='105'>105std/xl</option>
+            <option value='110'>110std/xl</option>
+            <option value='115'>115std/xl</option>
+            <option value='120'>120std/xl</option>
+            <option value='125'>125std/xl</option>
+            <option value='130'>130std/xl</option>
+            <option value='135'>135std/xl</option>
+            <option value='140'>140std/xl</option>
+            <option value='145'>145std/xl</option>
+            <option value='150'>150std/xl</option>
+            <option value='155'>155std/xl</option>
+            <option value='160'>160std/xl</option>
+            <option value='165'>165std/xl</option>
+            <option value='170'>170std/xl</option>
+            <option value='175'>175std/xl</option>
+            <option value='180'>180std/xl</option>
+            <option value='185'>185std/xl</option>
+            <option value='190'>190std/xl</option>
+            <option value='195'>195std/xl</option>
+            <option selected='selected' value='200'>200std/xl</option>
+            <option value='205'>205std/xl</option>
+            <option value='210'>210std/xl</option>
+            <option value='215'>215std/xl</option>
+            <option value='220'>220std/xl</option>
+            <option value='225'>225std/xl</option>
+            <option value='230'>230std/xl</option>
+            <option value='235'>235std/xl</option>
+            <option value='240'>240std/xl</option>
+            <option value='245'>245std/xl</option>
+            <option value='250'>250std/xl</option>
+            <option value='255'>255std/xl</option>
+            <option value='260'>260std/xl</option>
+            <option value='265'>265std/xl</option>
+            <option value='270'>270std/xl</option>
+            <option value='275'>275std/xl</option>
+            <option value='280'>280std/xl</option>
+            <option value='285'>285std/xl</option>
+            <option value='290'>290std/xl</option>
+            <option value='295'>295std/xl</option>
+            <option value='300'>300std/xl</option>
+            <option value='305'>305std/xl</option>
+            <option value='310'>310std/xl</option>
+            <option value='315'>315std/xl</option>
+            <option value='320'>320std/xl</option>
+            <option value='325'>325std/xl</option>
+            <option value='330'>330std/xl</option>
+            <option value='335'>335std/xl</option>
+            <option value='340'>340std/xl</option>
+            <option value='345'>345std/xl</option>
+            <option value='350'>350std/xl</option>
+            <option value='355'>355std/xl</option>
+            <option value='360'>360std/xl</option>
+            <option value='365'>365std/xl</option>
+            <option value='370'>370std/xl</option>
+            <option value='375'>375std/xl</option>
+            <option value='380'>380std/xl</option>
+            <option value='385'>385std/xl</option>
+            <option value='390'>390std/xl</option>
+            <option value='395'>395std/xl</option>
+            <option value='400'>400std/xl</option>
+          </select>
+        </p>
+        <p>
+          Heatsink Type
+          <select id='heatsink_type'>
+            <option value='single'>Single</option>
+            <option value='double'>Double</option>
+          </select>
+        </p>
+        <p>
+          External Heatsink Count
+          <input id='heatsink-count' size='2' type='text' value='0'>
+        </p>
+        <p>
+          Internal Heatsink Count
+          <span class='badge' id='internal-heatsinks'></span>
+        </p>
+        <hr>
+        <div>
+          Cool Run Skill
+          <input id='skill_coolrun' type='checkbox'>
+        </div>
+        <div>
+          Heat Containment Skill
+          <input id='skill_containment' type='checkbox'>
+        </div>
+        <div>
+          Elite Mech
+          <input id='skill_elite' type='checkbox'>
+        </div>
+      </div>
+    </div>
+    <div class='col-lg-6 col-md-6 col-sm-6'>
+      <h4>Equipped Weapons</h4>
+      <ul class='weapon-list list-unstyled'>
+        <li class='equipped-weapon'>
+          <div class='row'>
+            <div class='col-lg-9'>
+              <a class='js-fire btn-default btn-sm' data-weapon-class='slas' href='#'><span class='glyphicon glyphicon-screenshot'></span></a>
+              <a class='js-strip btn-warning btn-sm' href='#'><span class='glyphicon glyphicon-remove'></span></a>
+              <a class='js-weapon_group btn-info assigned btn-sm' data-weapon-group='1' href='#'><span class='glyphicon glyphicon-link'>1</span></a>
+              <a class='js-weapon_group btn-default btn-sm' data-weapon-group='2' href='#'><span class='glyphicon glyphicon-link'>2</span></a>
+              <a class='js-with_tooltip js-weapon_group btn-default btn-sm' data-original-title='Click to assign to weapon group' data-placement='top' data-toggle='tooltip' data-weapon-group='3' href='#'><span class='glyphicon glyphicon-link'>3</span></a>
+              Small Laser
+            </div>
+            <div class='col-lg-3 weapon-cooldown-container'>
+              <div class='progress horizontal'>
+                <div aria-valuemax='5' aria-valuenow='0' aria-valuetransitiongoal='5' class='progress-bar progress-bar-success cooldown-meter slas-cooldown quick-reset' role='progressbar'></div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class='equipped-weapon'>
+          <div class='row'>
+            <div class='col-lg-9'>
+              <a class='js-fire btn-default btn-sm' data-weapon-class='mlas' href='#'><span class='glyphicon glyphicon-screenshot'></span></a>
+              <a class='js-strip btn-warning btn-sm' href='#'><span class='glyphicon glyphicon-remove'></span></a>
+              <a class='js-weapon_group btn-default btn-sm' data-weapon-group='1' href='#'><span class='glyphicon glyphicon-link'>1</span></a>
+              <a class='js-weapon_group btn-info assigned btn-sm' data-weapon-group='2' href='#'><span class='glyphicon glyphicon-link'>2</span></a>
+              <a class='js-weapon_group btn-default btn-sm' data-weapon-group='3' href='#'><span class='glyphicon glyphicon-link'>3</span></a>
+              Medium Laser
+            </div>
+            <div class='col-lg-3 weapon-cooldown-container'>
+              <div class='progress horizontal'>
+                <div aria-valuemax='5' aria-valuenow='0' aria-valuetransitiongoal='5' class='progress-bar progress-bar-success cooldown-meter mlas-cooldown quick-reset' role='progressbar'></div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class='equipped-weapon'>
+          <div class='row'>
+            <div class='col-lg-9'>
+              <a class='js-fire btn-default btn-sm' data-weapon-class='llas' href='#'><span class='glyphicon glyphicon-screenshot'></span></a>
+              <a class='js-strip btn-warning btn-sm' href='#'><span class='glyphicon glyphicon-remove'></span></a>
+              <a class='js-weapon_group btn-default btn-sm' data-weapon-group='1' href='#'><span class='glyphicon glyphicon-link'>1</span></a>
+              <a class='js-weapon_group btn-default btn-sm' data-weapon-group='2' href='#'><span class='glyphicon glyphicon-link'>2</span></a>
+              <a class='js-weapon_group btn-info assigned btn-sm' data-weapon-group='3' href='#'><span class='glyphicon glyphicon-link'>3</span></a>
+              Large Laser
+            </div>
+            <div class='col-lg-3 weapon-cooldown-container'>
+              <div class='progress horizontal'>
+                <div aria-valuemax='5' aria-valuenow='0' aria-valuetransitiongoal='5' class='progress-bar progress-bar-success cooldown-meter llas-cooldown quick-reset' role='progressbar'></div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class='row'>
+        <div class='col-lg-8 col-md-8 col-sm-8'>
+          <p>
+            <a class='js-with_tooltip js-fire_weapon_group btn btn-danger' data-activate-group='1' data-original-title="Click this or  press '1', '2', or '3' on your keyboard to fire weapon group" data-placement='left' data-toggle='tooltip' href='#' id='wg1'>
+              <span class='glyphicon glyphicon-screenshot'></span>
+              Group 1
+            </a>
+            <a class='js-fire_weapon_group btn btn-danger' data-activate-group='2' href='#' id='wg2'>
+              <span class='glyphicon glyphicon-screenshot'></span>
+              Group 2
+            </a>
+            <a class='js-fire_weapon_group btn btn-danger' data-activate-group='3' href='#' id='wg3'>
+              <span class='glyphicon glyphicon-screenshot'></span>
+              Group 3
+            </a>
+          </p>
+          <p>
+            <a class='btn btn-danger' href='#' id='js-alphastrike'>
+              <span class='glyphicon glyphicon-exclamation-sign'></span>
+              Alpha Strike
+            </a>
+            <a class='btn btn-warning' href='#' id='js-stripall'>
+              <span class='glyphicon glyphicon-trash'></span>
+              Strip All
+            </a>
+          </p>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <p class='text-right'>
+            Damage
+            <span class='badge badge-danger'>
+              <span id='damage'>
+                0
+              </span>
+            </span>
+          </p>
+          <p class='text-right'>
+            DPS
+            <span class='badge badge-danger'>
+              <span id='dps'>
+                0.00
+              </span>
+            </span>
+          </p>
+          <p class='text-right'>
+            <a class=' btn-xs btn-danger' id='js-reset_damage'>
+              Reset damage
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class='col-lg-3 armory col-md-3 col-sm-3' id='armory'>
+      <h4>Energy</h4>
+      <ul class='list-unstyled nav'>
+        <li class='weapon-item'>
+          <a class='js-with_tooltip btn-sm btn-primary js-add-weapon' data-original-title='Click to equip' data-placement='top' data-toggle='tooltip' data-weapon-class='slas' data-weapon-name='Small Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Small Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='mlas' data-weapon-name='Medium Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Medium Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='llas' data-weapon-name='Large Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Large Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ellas' data-weapon-name='ER Large Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add ER Large Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='splas' data-weapon-name='Small Pulse Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Small Pulse Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='mplas' data-weapon-name='Medium Pulse Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Medium Pulse Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lplas' data-weapon-name='Large Pulse Laser' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Large Pulse Laser
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ppc' data-weapon-name='PPC' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add PPC
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='eppc' data-weapon-name='ER PPC' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add ER PPC
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='flam' data-weapon-name='Flamer' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Flamer
+          </a>
+        </li>
+      </ul>
+      <h4>Ballistic</h4>
+      <ul class='list-unstyled nav'>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ac2' data-weapon-name='Autocannon 2' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Autocannon 2
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ac5' data-weapon-name='Autocannon 5' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Autocannon 5
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ac10' data-weapon-name='Autocannon 10' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Autocannon 10
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ac20' data-weapon-name='Autocannon 20' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Autocannon 20
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='uac5' data-weapon-name='Ultra Autocannon 5' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Ultra Autocannon 5
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lb10x' data-weapon-name='LB 10-X Autocannon' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add LB 10-X Autocannon
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='gauss' data-weapon-name='Gauss Rifle' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Gauss Rifle
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='mg' data-weapon-name='Machine Gun' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Machine Gun
+          </a>
+        </li>
+      </ul>
+      <h4>Missile</h4>
+      <ul class='list-unstyled nav'>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lrm5' data-weapon-name='Long Range Missile 5' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Long Range Missile 5
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lrm10' data-weapon-name='Long Range Missile 10' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Long Range Missile 10
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lrm15' data-weapon-name='Long Range Missile 15' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Long Range Missile 15
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='lrm20' data-weapon-name='Long Range Missile 20' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Long Range Missile 20
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='srm2' data-weapon-name='Short Range Missile 2' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Short Range Missile 2
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='srm4' data-weapon-name='Short Range Missile 4' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Short Range Missile 4
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='srm6' data-weapon-name='Short Range Missile 6' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Short Range Missile 6
+          </a>
+        </li>
+        <li class='weapon-item'>
+          <a class='btn-sm btn-primary js-add-weapon' data-weapon-class='ssrm2' data-weapon-name='Streak Short Range Missile 2' href='#'>
+            <span class='glyphicon glyphicon-download-alt'></span>
+            Add Streak Short Range Missile 2
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class='footer text-center'>
+  This thing ©2014 keikun17. Say Hello to me in-game @ 'Marthe Pryde'.
+  <br>
+  MechWarrior: Online Copyright ©2014 Piranha Games Inc
+</div>
+
+  </body>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-47070296-1', 'keikun17.github.io');
+        ga('send', 'pageview');
+
+  </script>
+</html>
+
+

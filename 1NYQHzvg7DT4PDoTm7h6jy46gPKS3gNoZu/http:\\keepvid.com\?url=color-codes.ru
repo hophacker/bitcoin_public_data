@@ -1,0 +1,429 @@
+http://keepvid.com/?url=color-codes.ru
+HTTP/1.0 200 OK
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Content-type: text/html
+Content-Length: 7428
+Connection: close
+Date: Wed, 23 Jul 2014 02:27:01 GMT
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>KeepVid: Download and save any video from Youtube, Dailymotion, Metacafe, iFilm and more!</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<meta name="description" content="Download and save videos directly from Youtube, Google, Metacafe, Putfile and more. Simply copy and paste."><meta name="keywords" content="keepvid, keep, vid, keep vid, download, direct, help, rip, copy, save, video, stream, youtube, yuotube, toutube, uoutube, houtube, ifilm, ofilm, ufilm, kfilm, irilm, metacafe, netacafe, ketacafe, jetacafe, meracafe, putfile, putfiel, outfile, lutfile, pitfile"><meta name="robots" content="All,index,follow"><meta name="revisit-after" content="7 days">
+<link rel="shortcut icon" href="http://keepvid.com/favicon.ico" />
+<style type="text/css">
+*{margin:0;padding:0;font-family:Tahoma,Verdana,sans-serif;font-size:11px;line-height:15px;color:#565656;}
+h2{font-size:13px;margin-bottom:9px;color:#5698d4;}
+h3{font-size:13px;margin-bottom:9px;color:#bbb;}
+li{margin-left:40px}
+a{text-decoration:underline;color:#5698d4;}
+a:hover{cursor:pointer;cursor:hand;text-decoration:underline;}
+.c{margin:0 auto;width:760px;}
+.b .logo{float:left;margin:20px 0;background:url('images/logo.png') center no-repeat;height:62px;width:225px;text-indent:-1000px;overflow:hidden;margin-left:-3px;}
+.b .bm{text-indent:-10000px;overflow:hidden;float:right;display:block;margin:20px 0;height:62px;width:268px;background-image:url('images/bm.png');border:none;margin-bottom:15px;margin-right:-3px;}
+.d{float:left;width:760px;}
+.e, .f{-webkit-appearance:none;-moz-border-radius:0;-webkit-border-radius:0;border-radius:0;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;height:20px;padding:3px 6px;display:inline;background:0;margin:0;line-height:14px;}
+.e{border:1px solid #aeaeae;border-right:none;width:100%;-webkit-border-top-left-radius: 3px;-webkit-border-bottom-left-radius:3px;-moz-border-radius-topleft:3px;-moz-border-radius-bottomleft:3px;border-top-left-radius:3px;border-bottom-left-radius:3px;}
+.f{float:right;background:#565656;border:1px solid #565656;color:#fff;width:75px;font-weight:bold;-webkit-border-top-right-radius: 3px;-webkit-border-bottom-right-radius:3px;-moz-border-radius-topright:3px;-moz-border-radius-bottomright:3px;border-top-right-radius:3px;border-bottom-right-radius:3px;}
+.f:hover{cursor:pointer;cursor:hand;background:#787878;border:1px solid #787878;}
+.f::-moz-focus-inner{padding:0;border:0;}
+.g{padding-right:102px;margin-bottom:10px;}
+.ada, .adc{display:block;background:url('images/adbars.png') center no-repeat;width:750px;height:14px;}
+.ada{background-position:0px 0px;}
+.adc{background-position:0px -15px;margin-bottom:10px;}
+.adb{height:90px;text-align:center;}
+.h{float:left;width:740px;padding:10px;min-height:200px;border:1px solid #ddd;margin-bottom:20px;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;}
+.updates tr td{padding:2px 4px;}
+.updates tr .ut{font-weight:bold;}
+.updates tr .ui{height:16px;width:16px;margin-bottom:-4px;padding-right:3px;}
+.add{float:right;}
+.pr{display:block;margin-bottom:10px;}
+.pr,.pr b{color:#777;}
+#applets div{display:inline;height:1px;}
+#dl{float:left;min-width:520px;min-width:490px;}
+#nl{clear:left;line-height:16px;}
+.j{max-width:520px;}
+.ld{margin:0 5px -2px 0;}
+.l{color:#52b27f;font-weight:bold;line-height:16px;}
+.m{float:left;height:48px;width:65px;margin-right:5px;border:0;}
+.n{text-decoration:none;color:#565656;font-weight:bold;}
+.n:hover{text-decoration:underline;color:#565656;}
+.p,.q{color:#999;}
+.dn{text-align:center;margin-bottom:20px;}
+.fo{clear:both;text-align:center;margin-bottom:40px;}
+.fo ul{margin:0;padding:0;}
+.fo ul li{display:inline;list-style:none;margin:0 3px;}
+.fo ul li a{text-decoration:none;color:#888;}
+.fo ul li a:hover{text-decoration:underline;color:#666;}
+.s{height:1px;width:1px;overflow:hidden;}
+#ce-d,#ce-u,#ce-r{display:none;}
+#z{display:none;width:530px;height:180px;margin-bottom:10px;border:1px solid #eee;}
+#javaon, #javaoff, #logon, #logoff, #showsizeon, #showsizeoff{display:none;font-weight:bold;}
+#javaon, #logon, #showsizeon{color:#1ba8e0;}
+#javaoff, #logoff, #showsizeoff{color:#e01b3c;}
+#javaon{display:inline;}#logoff{display:inline;}#showsizeoff{display:inline;}</style>
+<!--[if IE]><style type="text/css">.header .bm{background-image:url('images/bmie.png');}</style><![endif]--> 
+<script type="text/javascript">
+if (parent.frames.length > 0) {window.top.location.href = location.href;};
+//window.onload=function(){document.getElementById("url").focus();};
+var d=document;
+var sa="Save Link As...";
+var ua="CCBot/2.0 (http://commoncrawl.org/faq/)";
+var jc="Run / Allow / Always Trust";
+var jd="Cancel / Deny";
+var ja="Always trust content from this publisher";
+var jar="kv.76.jar";
+var jarpre="KeepVidDownloader";
+var jarcls=jarpre+".class"
+var jaa=new Array();
+var jaaid=1;
+function i(id){return d.getElementById(id)}
+function contains(a,obj){var i=a.length;while (i--){if(a[i]===obj){return true;}}return false;}
+function inbtwn(a,b,c){try{var a1 = a.split(b);var a2 = a1[1].split(c);return a2[0];}catch(err){return '';}}
+function hd(input){
+	var e = document.createElement('div');
+	e.innerHTML = input;
+	return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
+function hj(){if(navigator.userAgent.indexOf('MSIE')>-1){try{var a=new ActiveXObject('JavaWebStart.isInstalled');return true}catch(e){return false}}var b=navigator.mimeTypes&&navigator.mimeTypes.length&&(navigator.mimeTypes['application/x-java-jnlp-file']!=null||navigator.mimeTypes['application/x-java-vm']!=null);var c=navigator.javaEnabled();if(c==false)return c;else return b}
+function jl(){
+	try{d.getElementById("nl").innerHTML='<img src=\"images/ajax-loader.gif\" class=\"ld\" />Java Applet Loaded. Fetching links...';log("Java applet loaded and jl() function sent")}catch(e){}
+}
+function jn(){
+	try{d.getElementById("nl").innerHTML='<b>Error:</b> You clicked "<b>'+jd+'</b>". Please <b>restart</b> your browser and click "<b>'+jc+'</b>".';}catch(e){}
+}
+function rs(w,t){
+	if(w.getAttribute("download")==undefined){
+		//alert("Right-Click this download link and choose \""+sa+"\"");
+		window.prompt("Right-Click this download link and choose \""+sa+"\", then rename the file to this:", t);
+		return false;
+	}else{
+		return true;
+	}
+}
+function rd(){alert("Drag this link to a new tab and press Ctrl+S");return false;}
+function duration(secs){
+    hours = parseInt(secs / 3600) % 24;
+	minutes = parseInt(secs / 60) % 60;
+	seconds = secs % 60;
+    return (hours < 1 ? "" : hours+":")+((minutes < 10 && hours > 0) ? "0" + minutes : minutes)+":"+(seconds < 10 ? "0" + seconds : seconds);
+}
+function di(obj){
+	var output="";
+	d.getElementById("instructs").style.display="none";
+	var e=d.getElementById("dl");
+	e.innerHTML='';
+	var nd=d.createElement("div");nd.setAttribute("class","j");nd.setAttribute("id","info");
+	try{obj.title=decodeURIComponent(escape(obj.title))}catch(e){try{obj.title=decodeURIComponent(unescape(obj.title))}catch(e){}}
+	if(obj.image!=undefined) output+='<a href="'+obj.url+'" target="_blank" rel="nofollow"><img src="'+obj.image+'" class="m" /></a>';
+	output+='<a href="'+obj.url+'" class="n" target="_blank" rel="nofollow">'+obj.title+'</a><br />';
+	output+='<span class="p">'+obj.domain;
+	if(obj.user!=undefined) output+=' / '+obj.user;
+	output+='</span><br />';
+	if(obj.duration!=undefined) output+='<span class="q">'+obj.duration+'</span>';
+	output+='<br clear="both" /><br />';
+	nd.innerHTML=output;
+	e.appendChild(nd);
+}
+function dl(obj){
+	var output="";
+	var e=d.getElementById("dl");
+	var nd=d.createElement("div");
+	var cc="";
+	var colors={
+		"3GP": "2EADC9",
+		"FLV": "BF6D1B",
+		"MP4": "436DBA",
+		"WEBM": "52B27F",
+		"M4A": "87273A",
+		"MP3": "AF43B5",
+		"SRT": "B74B4B"
+	};
+	if(colors[obj.type]!="") cc+=' style="color:#'+colors[obj.type]+';"';
+	
+	if(obj.newtab==1) cc+=' target="_blank"';
+	
+	if(obj.saveas==1 && obj.noref==1){
+		if(navigator.userAgent.match(/webkit/i)!=null) cc+=' rel="noreferrer"';
+		cc+=' onclick="return rd(this);"';
+	}else if(obj.saveas!=1 && obj.noref==1){
+		if(navigator.userAgent.match(/webkit/i)!=null) cc+=' rel="noreferrer"';
+		else cc+=' onclick="return rd(this);"';
+	}else if(obj.saveas==1){
+		cc+=' onclick="return rs(this,\''+obj.title+' '+obj.quality+'.'+obj.type.toLowerCase()+'\');"';
+	}
+	
+	if(obj.saveas!=1 && obj.newtab!=1 && obj.title!=undefined && typeof(document.createElement('a')).download!=undefined) cc+=' download="'+obj.title+' '+obj.quality+'.'+obj.type.toLowerCase()+'"';
+	
+	if(obj.fixedp==1) output+='<b style="color:#436DBA;">*FIXED*</b> ';
+	if(obj.newp==1) output+='<b style="color:#e01b3c;">*NEW*</b> ';
+	
+	output+='<a';
+	if(obj.url!=undefined) output+=' href="'+obj.url+'"';
+	output+=' class="l"'+cc+'>&raquo; ';
+	output+='Download';
+	output+=' '+obj.type+' &laquo;</a>';
+	
+	if(obj.quality!=undefined) output+=' - <b>'+obj.quality+'</b>';
+	
+	if(!isNaN(obj.size)) output+='<span id="fs'+jaaid+'"> - '+(obj.size/1024/1024).toFixed(1).toString()+' MB</span>';
+	
+	if(obj.showsize==1 && document.cookie.match(/showsize=y/g)){
+		output+='<span id="fs'+jaaid+'"></span>';
+		dja({
+		params: {
+				"u": obj.url,
+				"method": "HEAD"
+				},
+		"dispose": 1,
+		"callback": function(da){
+				var fs;
+				try{
+					fstemp = da.headers.match(/Content-Length: ([0-9]+)/g);
+					fs = fstemp[fstemp.length-1].match(/Content-Length: ([0-9]+)/i)[1];
+				}catch(e){
+					fs=0;
+				}
+				d.getElementById('fs'+da.jaaid).innerHTML=" - "+(fs/1024/1024).toFixed(1).toString()+" MB";
+			}
+		});
+	}
+	
+	nd.innerHTML=output;
+	e.appendChild(nd);
+}
+function dr(u){
+	(i = d.createElement("iframe")).setAttribute("id","fr");
+	d.body.appendChild(i);
+	window.frames["fr"].document.body.innerHTML='<form method="get" action="'+u+'"></form>';
+	window.frames["fr"].document.forms[0].submit();
+	return false;
+}
+var stsid=1;
+function appstat(htm){
+	if(d.getElementById("stsin"+stsid) == undefined){
+		(i = d.createElement("div")).setAttribute("id","stsin"+stsid);
+		d.getElementById('stts').appendChild(i);
+	}
+	document.getElementById("stsin"+stsid).innerHTML = htm;
+}
+var jaa=new Array();
+var jaaid=1;
+function dja(obj){
+	if(d.getElementById("jp"+jaaid) == undefined){
+		(i = d.createElement("div")).setAttribute("id","jp"+jaaid);
+		d.getElementById('applets').appendChild(i);
+	}
+	var apple;
+	//default params that never change
+	obj.params['mayscript']="true";
+	obj.params['initial_focus']="true";
+	obj.params['archive']=jar;
+	obj.params['cache_archive']=jar;
+	obj.params['code']=jarcls;
+	obj.params['codebase']="/";
+	obj.params['jaaid']=jaaid;
+	//obj.params['ua']=ua;
+	//document.getElementById('applets').innerHTML += '<div id="'+obj.id+'"></div>';
+	apple = '<object id="'+jarpre+'" height="1" width="1" codetype="application/x-java-applet" type="application/x-java-applet" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93">';
+		for(var param in obj.params){
+			apple += '<param name="'+param+'" value="'+obj.params[param]+'" />';
+		}
+	apple += '<comment><embed id="'+jarpre+'" height="1" width="1" codetype="application/x-java-applet" type="application/x-java-applet" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"';
+		for(var param in obj.params){
+			apple += ' '+param+'="'+obj.params[param]+'"';
+		}
+	apple += '></comment></object>';
+	document.getElementById("jp"+jaaid).innerHTML = apple;
+	
+	jaa[jaaid] = new Object();
+	jaa[jaaid].id = jaaid;
+	jaa[jaaid].dispose = obj.dispose;
+	jaa[jaaid].callback = obj.callback;
+	jaa[jaaid].it = setInterval((function(self){return function(){
+		if(self.response!=undefined){
+			clearInterval(self.it);
+			if(self.dispose==1) setTimeout(function(){d.getElementById('applets').removeChild(d.getElementById('jp'+self.id));},(Math.floor(Math.random() * (30000 - 1000 + 1)) + 1000));
+			d.getElementById('nl').style.display="none";
+			self.callback(self.response);
+		} 
+	}})(this.jaa[jaaid]),1);
+	jaaid++;
+}
+function ap(obj){
+	log("Java applet file: "+jar);
+	if(hj()==false) try{d.getElementById("nl").innerHTML='<b>Error:</b> Java is not installed or has been disabled. You can get Java here: <a href="http://java.com/download" target="_blank">http://java.com/download</a> and enable it in your browsers plugins if necessary.<br /><br />Or if you want, you can simply try turning off KeepVid\'s Java method by clicking <a style="font-weight:bold;color:#1ba8e0;" onclick="return ckswitch(\'java\',\'off\');">here</a> or at the bottom of this page.';log('Error: Java not installed/disabled');appstat('<img src="http://api.stathat.com/c?ukey=NzIxMiBR1SOBbpEy8cWbFp0_rsJ2&key=-ZKAFQd3DWAT8VuINV2F9yBSZmR0&count=1" style="display:none;" width="1" height="1">');}catch(e){}
+	else try{d.getElementById("nl").innerHTML='<img src="images/ajax-loader.gif" class="ld" />Loading Java Applet...';}catch(e){}
+	log('Deploying Java applet...');
+	dja(obj);
+	appstat('<img src="http://api.stathat.com/c?ukey=NzIxMiBR1SOBbpEy8cWbFp0_rsJ2&key=I49p1odgwUfugAknL8zVtiA0eU0z&count=1" style="display:none;" width="1" height="1">');
+	log('Java applet deployed. Waiting for applet to run...');
+}
+function xhr(obj){
+	var xmlhttp;
+	try{
+		xmlhttp=new XMLHttpRequest();
+	}catch(e){
+		var xmlhttp_ids=new Array(
+			'MSXML2.XMLHTTP.5.0',
+			'MSXML2.XMLHTTP.4.0',
+			'MSXML2.XMLHTTP.3.0',
+			'MSXML2.XMLHTTP',
+			'MSXML3.XMLHTTP',
+			'Microsoft.XMLHTTP'
+		);
+		var success=false;
+		for(var i=0;i < xmlhttp_ids.length && !success;i++){
+			try {
+				xmlhttp=new ActiveXObject(xmlhttp_ids[i]);
+				success=true;
+			}catch(e){success=false;}
+		}
+	}
+	if(obj.data) obj.method = "POST";
+	if(obj.method==undefined) obj.method = "GET";
+	xmlhttp.open(obj.method,obj.url,true);
+    if(obj.data) xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+    xmlhttp.onreadystatechange=function(){
+        if(xmlhttp.readyState==4) obj.callback(xmlhttp.responseText);
+    }
+    if(obj.data) xmlhttp.send(obj.data);
+    else xmlhttp.send();
+	return true;
+}
+function log(t){
+	var date = new Date(Math.round(new Date().getTime()/1000)*1000);
+
+	var year = date.getFullYear().toString();
+	var month = (date.getMonth() + 1).toString();if(month.length==1) month="0"+month;
+	var day = date.getDate().toString();if(day.length==1) day="0"+day;
+	var hours = date.getHours().toString();if(hours.length==1) hours="0"+hours;
+	var minutes = date.getMinutes().toString();if(minutes.length==1) minutes="0"+minutes;
+	var seconds = date.getSeconds().toString();if(seconds.length==1) seconds="0"+seconds;
+
+	var ds = "["+year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds+"]";
+	var z=d.getElementById("z");
+	z.innerHTML+="\r\n"+ds+" "+t;
+	if((z.scrollHeight - z.scrollTop)>=180) z.scrollTop = z.scrollHeight;
+}
+function ckswitch(opt,swi){
+	var expires = new Date();
+	expires.setTime(expires.getTime()+(1000*24*60*60*1000));
+	d.getElementById(opt+swi).style.display="inline";
+	if(swi=="on"){
+		document.cookie=opt+"=y; expires="+expires.toGMTString();
+		d.getElementById(opt+"off").style.display="none";
+	}else{
+		document.cookie=opt+"=n; expires="+expires.toGMTString();
+		d.getElementById(opt+"on").style.display="none";
+	}
+	window.location.reload();return false;
+}
+</script>
+</head>
+<body>
+<div class="c">
+<div class="b">
+<h1><a href="http://keepvid.com/" class="logo" title="KeepVid: Download and save any video from Youtube, Dailymotion, Metacafe, iFilm and more!">KeepVid: Download and save any video from Youtube, Dailymotion, Metacafe, iFilm and more!</a></h1>
+<a href="javascript:(a%20=%20(b%20=%20document).createElement('script')).src%20=%20'http://keepvid.com/js/bm.js',%20b.body.appendChild(a);void(0);" title="Keep It!" class="bm">Keep It!</a>
+</div>
+<div class="d">
+<form method="get" action="/">
+<input type="submit" value="DOWNLOAD" class="f" />
+<script type="text/javascript">var d=document;var m="enter the link of the video you want to download: e.g http://www.youtube.com/watch?v=bMUxpTb_wWc";</script>
+<div class="g"><input type="text" name="url" id="url" class="e" value="color-codes.ru" /></div>
+<script type="text/javascript">var b=d.getElementById('url');if(b.value=="") b.value=m;m=b.value;b.onfocus=function(){if(b.value==m)b.value='';};b.onblur=function(){if(b.value=='')b.value=m;};</script>
+</form>
+
+<div class="ada"></div>
+<div class="adb">
+<iframe src='http://cdn.polmontventures.com/polmontventures/scripts/direct/direct.html?a=26201641&size=728x90&ci=1&serverdomain=ads.polmontventures.com&context=c35481065' height='90' width='728' frameborder='0' border='0' marginwidth='0' marginheight='0' scrolling='no'></iframe></div>
+<div class="adc"></div>
+<div class="h">
+<div class="add">
+<iframe src='http://cdn.polmontventures.com/polmontventures/scripts/direct/direct.html?a=26201641&size=200x200&ci=1&serverdomain=ads.polmontventures.com&context=c26231633' height='200' width='200' frameborder='0' border='0' marginwidth='0' marginheight='0' scrolling='no'></iframe></div>
+<div id="stts">
+</div>
+<textarea id="z">[2014-07-23 04:27:01] URL: color-codes.ru
+[2014-07-23 04:27:01] IP Address: 50.17.27.205
+[2014-07-23 04:27:01] User Agent: CCBot/2.0 (http://commoncrawl.org/faq/)
+[2014-07-23 04:27:01] Operating System: OS Unknown
+[2014-07-23 04:27:01] Browser: Unknown ?
+</textarea>
+<span class="pr">Please report any issues to: <b><script>document.write('<'+'a '+'h'+'re'+'f="'+'ma'+'il'+'to:'+'co'+'nt'+'a'+'ct'+'@'+'ke'+'ep'+'vi'+'d.c'+'om">co'+'nt'+'a'+'ct'+'@'+'ke'+'ep'+'vi'+'d.c'+'om'+'</'+'a'+'>');</script></b></span>
+<div id="applets"></div>
+<div id="nl"></div>
+<div id="dl">
+<div id="sl"><img src="images/ajax-loader.gif" id="loaderimg" height="11" width="16" border="0" style="display:block;"></div>
+<div id="sr"></div>
+<script>
+function loadScript(url, callback)
+{
+        var head = document.getElementsByTagName("head")[0];
+        var script = document.createElement("script");
+        script.src = url;
+        var done = false;
+        script.onload = script.onreadystatechange = function(){
+            if(!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")){
+			done = true;
+			callback();
+			script.onload = script.onreadystatechange = null;
+			head.removeChild( script );
+			}
+        };
+        head.appendChild(script);
+}
+loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js", function()
+{
+$.getJSON("http://gdata.youtube.com/feeds/api/videos?q=color-codes.ru&alt=json-in-script&max-results=20&callback=?", function(data) { 
+        $.each(data.feed.entry, function(i, item) {
+        var title = item['title']['$t'];
+        var author = item['author'][0].name.$t;
+        var videoid = item['id']['$t'].replace('http://gdata.youtube.com/feeds/api/videos/', '');
+        var content = item['content']['$t'];
+		$('#sl').css('display','none');
+		$('#sr').append('<div class="j"><a href="http://keepvid.com/?url='+escape('http://www.youtube.com/watch?v='+videoid)+'&fromsearch=1"><img src="http://i.ytimg.com/vi/'+videoid+'/default.jpg" class="m"></a><div class="top-videos-div"><a href="http://keepvid.com/?url='+escape('http://www.youtube.com/watch?v='+videoid)+'&fromsearch=1" class="n">'+title+'</a><br><b>'+author+'</b> / youtube.com</div><br clear="left"><br></div>');
+        });
+    });
+});
+</script></div>
+</div>
+</div>
+<div class="fo">
+	<ul>
+		<li>Java: <a id="javaon" onclick="return ckswitch('java','off');">On</a><a id="javaoff" onclick="return ckswitch('java','on');">Off</a></li>
+		<li>Show Log: <a id="logon" onclick="return ckswitch('log','off');">On</a><a id="logoff" onclick="return ckswitch('log','on');">Off</a></li>
+		<li>Show Sizes (MB): <a id="showsizeon" onclick="return ckswitch('showsize','off');">On</a><a id="showsizeoff" onclick="return ckswitch('showsize','on');">Off</a></li>
+	</ul>
+	<br />
+	<ul>
+		<li><a href="/">Home</a></li>
+		<li><a href="/programs">Programs</a>
+		<li><a href="/java">Java</a>
+		<li><a href="/faq">FAQ</a>
+		<li><a href="/terms">Terms</a>
+		<li><a href="/contact">Contact</a>
+	</ul>
+	<br />
+<div class="dn">
+<b>Donate to the Developer</b><br />
+PayPal: <b><script>document.write('do'+'n'+'a'+'te'+'@'+'ke'+'ep'+'vi'+'d.c'+'om');</script></b><br />
+BitCoin: <a href="bitcoin:1NYQHzvg7DT4PDoTm7h6jy46gPKS3gNoZu">1NYQHzvg7DT4PDoTm7h6jy46gPKS3gNoZu</a><br />
+LiteCoin: <a href="litecoin:LUuiZ159vHUoJPHL86QHE1Megm28YPMn4J">LUuiZ159vHUoJPHL86QHE1Megm28YPMn4J</a>
+</div>
+</div>
+</div>
+<div class="s">
+	<script type="text/javascript" src="http://s21.sitemeter.com/js/counter.js?site=s52keepvid">
+	</script>
+	<noscript>
+	<a href="http://s21.sitemeter.com/stats.asp?site=s52keepvid" target="_top">
+	<img src="http://s21.sitemeter.com/meter.asp?site=s52keepvid" alt="Site Meter" border="0"/></a>
+	</noscript>
+	<img src="http://c.statcounter.com/9158202/0/e2cf0918/1/" style="border:none;"/>
+	<img src="http://api.stathat.com/c?ukey=NzIxMiBR1SOBbpEy8cWbFp0_rsJ2&key=E1RVsMowWqkKLm21uQgx9SBXRTVQUA~~&count=1" style="display:none;" width="1" height="1"/>
+	<img src="http://api.stathat.com/c?ukey=NzIxMiBR1SOBbpEy8cWbFp0_rsJ2&key=yLevXmYWmhKFKCVpp8e_jCBJWE1y&count=1" style="display:none;" width="1" height="1">					</div>
+</body>
+</html>

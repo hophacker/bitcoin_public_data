@@ -1,0 +1,175 @@
+http://youtubenaarmp3.nl/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 09:37:52 GMT
+Server: Apache/2
+X-Powered-By: PHP/5.3.17
+Vary: Accept-Encoding,User-Agent
+Content-Encoding: gzip
+Content-Length: 3443
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Convert hier gratis Youtube naar mp3 binnen enkele secondes kan je een Youtube video converten naar mp3, Convert dus nu hier Youtube naar mp3!" />
+    <meta name="author" content="youtubenaarmp3.nl" />
+	<meta name="keywords" content="youtube naar mp3, youtube mp3, youtube download mp3, youtube download" />
+	<meta name="googlebot" content="index, follow" />
+    <meta name="robots" content="index, follow" />
+	<meta name="revisit" content="1 day" />
+	<meta lang="nl" content="YoutubeNaarMp3.nl" />
+	<link rel="apple-touch-icon-precomposed" href="/images/agt_mp3.png">
+    <link rel="shortcut icon" href="/images/agt_mp3.png">
+
+    <title>Youtube naar mp3 - Gratis youtube naar mp3 converter</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/jumbotron-narrow.css" rel="stylesheet">
+	<link href="./css/extra.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		var conversionLogLength = 0;
+
+		function updateVideoDownloadProgress(percentage)
+		{
+			var progress = document.getElementById('progress');
+			progress.style.width = progress.innerHTML = parseInt(percentage) + '%';
+		}
+
+		function updateConversionProgress(songFile)
+		{
+			var progress = document.getElementById('progress');
+			document.getElementById('conversion-status').innerHTML = "Video is aan het converteren...";
+			$.ajax({
+				type : "POST",
+				url : "ffmpeg_progress.php",
+				data : "uniqueId=1406108272_53cf8270165ee3.89586383&logLength=" + conversionLogLength + "&mp3File=" + encodeURI(songFile),
+				success : function(retVal, status, xhr) {
+					var retVals = retVal.split('|');
+					if (retVals[3] == 2)
+					{
+						progress.style.width = progress.innerHTML = parseInt(retVals[1]) + '%';
+						if (parseInt(retVals[1]) < 100)
+						{
+							conversionLogLength = parseInt(retVals[0]);
+							setTimeout(function(){updateConversionProgress(songFile);}, 10);
+						}
+						else
+						{
+							$("#preview").css("display", "none");
+							var convertSuccessMsg = (retVals[2] == 1) ? '<p>Gelukt!</p><p><a href="/index.php?mp3=' + encodeURI(songFile) + '">Klik hier om het MP3 bestand te downloaden</a>.</p>' : '<p>Sorry maar er is een foutmelding ontstaan tijdens het downloaden!</p>';
+							$("#conversionSuccess").html(convertSuccessMsg);
+							$("#conversionForm").css("display", "block");
+						}
+					}
+					else
+					{
+						setTimeout(function(){updateConversionProgress(songFile);}, 1);
+					}
+				},
+				error : function(xhr, status, ex) {
+					setTimeout(function(){updateConversionProgress(songFile);}, 1);
+				}
+			});
+		}
+
+		window.onload = function()
+		{
+			if (!document.getElementById('preview'))
+			{
+				$("#conversionForm").css("display", "block");
+			}
+		};
+	</script>
+	
+		  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-41410443-1', 'youtubenaarmp3.nl');
+  ga('send', 'pageview');
+
+</script>
+	
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="http://youtubenaarmp3.nl/">Home</a></li>
+		  <li><a href="http://youtubenaarmp3.nl/albums">Albums</a></li>
+          <li><a href="http://youtubenaarmp3.nl/zoeken">Zoeken</a></li>
+        </ul>
+        <a href="http://youtubenaarmp3.nl/" title="youtube naar mp3"><h1 class="text-muted">Youtube naar mp3</h1></a>
+      </div>
+
+      <div class="jumbotron">
+	   <form method="post">
+        <h2>Youtube naar mp3</h2>
+        <p class="lead">
+			<form action="/index.php" method="post" id="conversionForm" style="display:none">
+		<div class="input-group input-group-lg">
+        <input type="text" class="form-control" name="youtubeURL" placeholder="http://www.youtube.com/watch?v=URIHiUsKxVs">
+        </div>
+		</p>
+        <p><input type="submit" class="btn btn-lg btn-success" value="Download MP3!" role="button" name="submit"></p>
+	   </form>
+	   <br /><br />
+	   
+      <iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Ffacebook.com%2Fyoutubenaarmp3&amp;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21&amp;appId=461651183896248" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px;" allowTransparency="true"></iframe>
+	  
+	   <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://youtubenaarmp3.nl/" data-text="Youtube naar mp3" data-via="Youtubenaarmp3" data-lang="nl">Tweeten</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script> 
+      </div>
+      <div class="row marketing">
+        <div class="col-lg-12">
+          <div class="text-center">
+		  <object type="application/x-shockwave-flash" data="http://ti.tradetracker.net/?c=1687&amp;m=118872&amp;a=164194&amp;r=&amp;t=html" width="728" height="90">
+	<param name="movie" value="http://ti.tradetracker.net/?c=1687&amp;m=118872&amp;a=164194&amp;r=&amp;t=html" />
+	<param name="quality" value="high" />
+	<param name="wmode" value="transparent" />
+	<param name="menu" value="false" />
+	<param name="loop" value="true" />
+	<param name="flashvars" value="campaignID=1687&amp;materialID=118872&amp;affiliateID=164194&amp;clickTAG=http%3A%2F%2Fwww.bax-shop.nl%2Ftradetracker%2F%3Ftt%3D1687_118872_164194_%2525referenceName%2525%26r%3D&amp;clickTag=http%3A%2F%2Fwww.bax-shop.nl%2Ftradetracker%2F%3Ftt%3D1687_118872_164194_%2525referenceName%2525%26r%3D" />
+	<param name="allowscriptaccess" value="always" />
+</object>
+		 <p><br /><br />Youtube naar mp3 is de grootste dienst die het mogelijk maakt om via Youtube mp3 bestanden te downloaden.
+         Het werkt allemaal erg simpel, je kopieert de Youtube link waar je naar luisterd en vult die hier in daarna begint er een proces die ongeveer 1 tot 3 minuten kan duren nadat proces kan je direct je bestand downloaden in natuurlijk de beste kwaliteit.
+         Maar waarom dan kiezen voor Youtube Naar MP3.nl ? Eigenlijk valt de keus snel op ons omdat deze site in het Nederlands is en omdat wij een erg snelle service aanbieden.
+         Op Youtube kan je filmpjes publiceren en kan je videos van andere bekijken, Youtube werd in Februari 2005 opgericht en is nu een van de grootste sites ter wereld.
+         Nadat Google de video site Youtube had overgenomen werd de site steeds bekender, en nu in 2014 is de site aan de top!
+         Jammer genoeg geeft Youtube haar mp3 bestanden niet vrij maar door een handige methode van Youtube naar mp3.nl is dit wel mogelijk. Probeer het ook eens! 
+         Deze site is 100% veilig, er word namelijk geen data opgeslagen.
+         Je hoeft hier ook geen bestand te downloaden alles werkt via het internet de enige eis die wij wel stellen is een goed functionerende browser.
+         Onze dienst is geheel gratis en kan via alle platformen bekeken worden</p>
+		 <br />
+		 Support ons, stuur een donatie naar dit Bitcoin adres: <a href="bitcoin:1AL93vfy2ueGxgP1rPTwMypRiMb8LgXjVQ">1AL93vfy2ueGxgP1rPTwMypRiMb8LgXjVQ</a>
+		  </div>
+        </div>
+      </div>
+	  
+      <div class="footer">
+        <p>&copy; Youtube naar mp3 - 2014</p>
+      </div>
+
+    </div> <!-- /container -->
+  </body>
+</html>

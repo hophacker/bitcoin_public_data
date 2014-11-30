@@ -1,0 +1,906 @@
+http://www.codeproject.com/Articles/19482/WSE-3-Deployment-MSI-and-ClickOnce?msg=2632875&PageFlow=FixedWidth
+WSE 3 Deployment: MSI and ClickOnce - CodeProject ×
+Sign up for our free weekly Web Developer Newsletter.
+10,721,234 members (69,852 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Development Lifecycle » Installation » General
+ArticleAlternatives
+Comments (44)
+View this article's Workspace
+Fork this Workspace
+WSE 3 Deployment: MSI and ClickOnce Predrag Tomasevic, 4 Oct 2009
+4.91 (60 votes)
+1
+2
+3
+4
+5
+4.91/5 - 60 votes3 removedμ 4.84, σa 1.26 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Overview of deployment techniques using example WSE 3 enabled solutions	Download source - 61.8 Kb Introduction
+Slow day… the kind that makes you think about all those philosophical questions like the meaning of life, your purpose in the whole thing or warm receptions from girls you don't like && rejection from ones you really do like. What's bad about all three subjects is that one can really think over and over on them. So instead of sailing into the world of thoughts, I decided to write down some tricks for installer creation that I've acquired during past few days. I'll get the chance to improve my writing in English, formalize my knowledge and maybe help a few people that run into similar problems… So I guess it is the better way to spend the following hours. "After I wrote it" note
+I hate large articles… and by an odd twist of fate I just wrote one. So here is an index, to ensure easy navigation throughout this piece of writing. You can also consult it to see where solutions for your particular problems can be located. Problem Brief solution description Server installation Roadmap Creating basic MSI setup Orca & custom setup dialogs SQL Server database Options for backing up a database you have Generating script for database Meet Custom Actions Fetching credentials for database and executing script Installing certificates How to generate certificates Cleaning up the mess: Uninstall Removing virtual directories Removing registry entries: Add/Remove programs clean-up Client installation Roadmap Setting up ClickOnce Prerequisites Application update Publishing application Installing certificate and manually checking for update Deploying new versions Deploying to environments that you don't have access to Debugging ClickOnce deployments Conclusion References History Problem
+All of us here on Code Project have written at least several programs. But I bet that almost none of us wrote installers for those same programs. Hell, I'm one of the first that uses xcopy a lot when it comes to deployment. I just copy all I need on USB, go to the client, restore the SQL database, open up the application config, set up up the parameters, and start up whole thing. It's easy; it works; why ask more? Well, a problem comes when you are working on big projects where deployment is done almost daily. If the project is in-house, you can maybe manage it with copying and tweaking, but if everything needs to be deployed out-of-house to some kind of production -- training future users of the application, for example -- you should be either diligent or stupid to use xcopy and manual restoring of the database every time. When it comes to building installers, you have wide array of choices. You can try with scripting, i.e. BAT files || VB scripting. You can try with custom solutions such as this named EasyInstaller, which looks pretty nice. Finally, you can try to fit into standards such as MSI and ClickOnce that are supported in Visual Studio. Being a "don't fix it if it ain't broken" kind of guy, I've taken the "supported by Visual Studio" path and it's the one I'll teach throughout this article. The ultimate goal is to present a way of solving all deployment issues using MSI for server components and ClickOnce for client components.
+Brief solution description
+I've been messing with the Web Services + Win Clients combo quite a bit during past few weeks trying to develop a model for replacing Intranet Web Applications, as I truly hate them. During work, WSE 3 found its way into the story mostly for solving common security issues. The end result was likeable with only one exception: the solution was demanding, from the deployment point of view. If you use WSE 3 and not "plain Web Services" on the server side, you need to juggle with certificates and access to them, along with the always present configuring of SQL Server and IIS when deploying. Because I avoided the ASP.NET application, we can't rely on browsers at the client side. So, auto updating is needed more than anything. Setting certificates on clients for accessing WSE 3 enriched Web Services is a requirement once more.
+In this article I'll use a fully designed and workable primer solution with two Web Services and one Windows Client project. The process of creating a WSE 3 enabled solution is skipped, leaving you to the mercy of Microsoft's "written" articles on the official WSE site. This is because our focus here is on installation, not development. However, if some of you find creating WSE 3 solutions interesting (or troublesome), scream in comments and I'll gladly extend this article.
+Before starting, here is a look at Solution Explorer, showing us the structure on which we will work.
+Server installation
+Roadmap
+When installing server components, we want to perform the following steps:
+Copy Web Services to the designated website on IIS Set up the database and credentials for accessing it Modify the web.config files to enable access to the SQL Server database Install the needed certificates Allow the identity running Web Services to access the certificates Uninstall is pretty important, too! MSI project will take care of removing Web Services, but our custom code is responsible for:
+Dropping the SQL Server database that is created during installation Deleting the certificate placed in storage during installation Creating basic MSI setup
+First, let's add a new setup project. Right click on the Solution root in Solution Explorer. Choose Add -> New Project. We are interested in: Other Project Types -> Setup and Deployment -> Web Setup Project. Give it the name ServerSetup and click OK. The following screen should greet you: Ok, onto the first problem. We have only one Web Application Folder, but two Web Applications. Right click on File System on Target Machine and choose Add Special Folder -> Web Custom Folder. Open up the Properties for a new folder and set FancyWebService for the (Name) and (VirtualDirectory) properties. Also enter FANCYWEBSERVICEPATH for the (Property) property. That sounds weird . We can use Web Application Folder to house a second service, but at this point, because its (Name) can't be changed, I usually choose to create another Web Custom Folder. That's exactly what we'll do in this example for PlainWebService. Create it and then set up the (Name), (VirtualDirectory) and (Property) properties. Weirdness strikes again. Web Application Folder can't be deleted, so I use a little trick to prevent it from participating in the install. I delete the bin child folder from it and leave the (VirtualDirectory) property empty.
+Now when we have structure, let's populate it with content. Right click on FancyWebService in File System of Target Machine and choose Add -> Project Output. Pick content files from FancyWebService. Repeat this for PlainWebService.
+After all this, we are ready to see some results. First, build MSI. Right click on Setup Project in Solution Explorer and choose Build. After it is finished, start the whole thing by right clicking and choosing Install. However, be sure to start installation on a machine that has IIS. If your development machine doesn't have it, like mine, copy MSI to another computer. Don't hope that just disabling IIS Launch Condition (right click -> View -> Launch Condition) will help.
+For a 10 minute job, it doesn't look bad at all. We get a nice welcome page and are eager to click on Next. After we do so, a little disappointment awaits us. In the next dialog we have to choose the website for installation and the name for the virtual directory. The only problem is that we have two virtual directories and only one field for naming. The circumstance that goes to our benefit is that the field is bound to Web Application Folder. So, the entered value doesn't interfere with folders that we manually added and defined, meaning that just hiding this field will do the trick.
+Orca and custom setup dialogs
+Changing the look and feel of dialogs that are part of the MSI package can be done to some extent through the User Interface option shown in the following image. The downside of this option is that you can change only some properties, the ones that are properly exposed by whoever made the dialogs.
+Of course, if you click on the Installation Address dialog in User Interface and press F4 to view Properties, you won't find the "Virtual Directory Name Visible" item. So, how to remove the textbox?
+Luckily, Microsoft provides a simple tool named Orca that can be used to edit WID files, which represent MSI dialogs. Orca officially ships as part of the Microsoft Windows SDK, which is pretty large. So, I guess you'll want to point your browsers to this page -- if the page is down, try Google search -- instead of MSDN for obtaining a copy.
+After you install Orca on your computer, start it and open VsdWebFolderDlg.wid from the %ProgramFiles%\Microsoft Visual Studio 8\Common7\Tools\Deployment\VsdDialogs\1033 folder. This folder contains definitions for all MSI dialogs that ship with Visual Studio .NET. Back it up before changing it. Select Control Table from the left list and all controls of the dialog should be displayed. As we are only interested in hiding the VDirEdit and VDirLabel controls, setting the width and height to 0 for both will do the trick.
+There are numerous better ways to do this; I agree with you. We could try to expose the width and height of controls as properties. We could try to expose the Visible property for both of them. However, dialog definitions are not so greatly documented and it is overkill to go through all the trouble of learning about their tables, relations and design just to hide two controls. If you want to dig deeper into Custom Dialogs, I suggest this article for reading. For password textboxes in your setup dialog, look at this link. If we wanted only to deploy our web application to the server using MSI, this would be it. However, being ambitious and thorough we want to beef up our setup to do at least two more things.
+SQL Server database
+Deploying a database is pretty much an easy process consisting of only two steps:
+Providing credentials for logging onto SQL Server Executing script / restoring backup set / attaching MDF Options for backing-up database you have
+People often ask me about differences between three common options -- i.e. scripts, backup sets, detaching -- for backing up databases. To be honest, I'm not quite sure myself. The list that follows is something I came up with from past experiences. If someone has a more robust list, please post it in the comments section and I'll gladly update article. Here are my guidelines:
+Use scripts when you need a really clean database -- identity keys starting from 1, for example -- and the smallest possible backup set. Also, one great advantage of this option is that you can easily modify your "backup." Just add initialization scripts to change the structure of one table without going through the whole script creation process, etc. All that was previously said makes this option a great choice for database initialization on a new SQL Server instance. Use backup sets when you need to back up a database that can't be taken offline. This is an ideal choice for maintenance. Use detaching when you need to transfer your database to another location and don't need the database running during this operation. DO NOT use backup sets for transferring a database if you can take it offline! For databases less than 500Mb, maybe you won't notice much difference. However, for bigger databases "detach – attach" is way faster than the "backup – restore" mechanism. Scripts are the natural choice for the installer. Don't get me wrong; you won't lose anything spectacular if you choose any other option. However, your final MSI setup file will be quite bigger in size and you will need to produce a new backup set / MDF for even the slightest changes.
+Generating script for database
+So, how do we make scripts for database creation? Well, a nice way to always have an up-to-date version of a script is to have a good database developer on your team. They seem to treasure database creation scripts more than anything else. If you aren't blessed with specialized database developers, don't worry. SQL Server provides nice support for creating them. First, fire up SQL Management Studio and find your database. The generate script option can be accessed by right clicking on the database and choosing the Tasks menu item, as shown in the picture.
+When the wizard is shown, skip the greeting page and on next one choose to script all objects in the selected database. Then proceed to the next window. Checking the "Script all objects..." option sets most options on the "Script Options" screen the way they is needed, i.e. Script Indexes to True, Generate Scripts for Dependent Objects to True and so on. The only option we will change is Script Database Create to True because we are creating a script for the first time and need commands for defining the database.
+After you hit Finish two times, the generated script should greet you in few seconds. I then usually make four modifications that are optional. The first is to change the way the CREATE DATABASE command is executed. Using an existing database that has same name is not something that I want. If it exists, just drop it. We would overwrite it anyway. Also, extra options for database creation -- such as a path to database files, their size increase and so on -- are unnecessary. SQL Administrator probably set those the way they are needed, so why would we override the default? Pre- and post-modification screenshots follow:
+Before:
+After:
+USE [master]
+GO
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'WSEDeployment')
+    DROP DATABASE [WSEDeployment]
+GO
+CREATE DATABASE [WSEDeployment]
+The second modification is to add a user which will be used for accessing this database. The script that is shown on the next screen is pretty much self-explanatory, so I won't go into details. Just insert it after the database creation commands.
+/*----------------------------
+        CREATE DBUser 
+----------------------------*/
+USE [master]
+IF EXISTS (SELECT * FROM sys.server_principals WHERE name = N'wseuser')
+    DROP LOGIN [wseuser]
+    
+CREATE LOGIN [wseuser] WITH PASSWORD=N'wsetest', DEFAULT_DATABASE=[WSEDeployment], 
+DEFAULT_LANGUAGE=[us_english], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
+GO
+USE [{2}]
+GO
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'wseuser')
+    CREATE USER [wseuser] FOR LOGIN [wseuser] WITH DEFAULT_SCHEMA=[dbo]
+    
+EXEC sp_addrolemember 'db_owner', 'wseuser'    
+GO
+/* -----END---- */
+You can take other path at this step. For example, you could use Integrated Security. An NT AUTHORITY\NETWORK SERVICE account runs Web Services by default, so you can grant access to the database and everything will work fine. This is valid for Windows 2003 and IIS 6, but on Windows XP and IIS 5.1, an ASP.NET account is in charge for running ASP.NET sites. Script for this is pretty much the same; just remove the DROP LOGIN and CREATE LOGIN commands and insert the proper name in CREATE USER FOR LOGIN.
+The third modification is related to populating tables with initial data. In our case, Web Services from the primer solution read data from Plain and Fancy tables, so they need to have greetings in them after the install is performed. Because of that, the following is appended to the end of the script.
+Finally, the fourth modification enables us to pass as parameters: the name of the SQL account, the password for it and the name of the database. Just use good old Find and Replace. Instead of wseuser put {0}, instead of wsetest put {1} and instead of WSEDeployment put {2}. After all that work, the script for creating the database is ready. We now just need to access the database and execute it.
+A good approach to obtaining credentials for login and executing prepared SQL script via custom dialogs can be found here. The basic idea is to add a new custom dialog with three textboxes, pass parameters from it to your Custom Action and run the script. However, this approach has one big, bad downfall: validation of the entered data is not mentioned. Because, as shown before, extending MSI dialogs can be pretty troublesome, I'll here use standard Windows Forms instead for obtaining and validating credentials. Meet Custom Actions
+Custom Actions are used when you need to make the installation do something that by default it can't. To employ them, you need to provide a class that inherits from System.Configuration.Install.Installer and overrides some or all of the functions Install, Commit, Rollback and Uninstall. Doing this is pretty straightforward: use the Add New Item option and choose Installer Class for the template. Once in code view, override keyword should help you do the rest and get the result shown in the next picture.
+In order to properly invoke written functions, you'll need to rebuild the project containing the class, reference assembly and point custom actions in the setup to it. You probably know how to rebuild a project ; the other two actions aren't much harder. Activate Add -> Project Output action on your setup project and choose Primary Output from the project containing your class. In our case, it's Web Service Common.
+When the DLL is in the setup project, we need to place it somewhere on the Target File System where it is accessible to be called during installation. The bin folder of either Web Service is an okay candidate as long as the DLLs with our Installer class and Web Service do not BOTH reference some other DLL, say, both Installer and WS use Util.dll. In that case, if you leave everything in the bin folder you'll probably jump into the "not using Invoke when accessing the Form's control on the background thread, .NET 1.1" situation. Sometimes everything will work and sometimes it just won't.
+A win–win solution is to create the Install folder as a subfolder of the bin and place the DLLs there. Why? Well, IIS is configured not to serve the content of a bin when it belongs to ASP.NET's application. As most of the time Installer.dll contains sensitive information, we don't want to make it available for download over HTTP by placing it in, for example, the Web Service root.
+Now that you have a reference in your setup project, head up to Custom Actions (View -> Custom Actions) and Add Custom action on Install, Commit, Rollback and Uninstall, pointing to the DLL containing the Installer that we just added.
+After these actions, the installer will properly fire functions in our WSEDeploymentInstaller class when the time for that comes during the installation process. Be sure to set the passing of Parameters that are needed in custom actions! We will use the TARGETDIR parameter for sure to access web.config files, so it is needed to set CustomActionData on an appropriate custom action to the value: /TARGETDIR="[TARGETDIR]\".
+It is important to use quotes if a Property's value can contain spaces! A folder name can contain spaces, so quotes are necessary then. An exception would be raised if they are absent and the user tries to deploy to d:\New IIS Root.
+Fetching credentials for database and executing script
+All that is left now, to complete database installation, is to show dialog for grabbing the username and password, building the connection string, executing the script and changing the web.config files of Web Services. Not any of these operations should be unknown to someone who is not a total novice to C#.NET, so I won't go into much detail. I'll mostly paste code and comment only on the most interesting aspects. Some of the code is from an earlier mentioned article.
+WSEDeployment.cs
+public override void Install(System.Collections.IDictionary stateSaver)
+{
+    base.Install(stateSaver);
+    
+    // Show dialog and fetch credentials
+    SqlCredetialsForm frmSd = new SqlCredetialsForm(
+        "TYRION\\SQLEXPRESS", "dbmaster", "");
+
+    DialogResult dr = frmSd.ShowDialog();
+
+    if (dr != DialogResult.OK)
+        throw new InstallException("Invalid Sql Credentials, 
+        aborting installation");
+    
+    // Crypt connection string for uninstall
+    RijndaelCryptography rijndael = new RijndaelCryptography();
+
+    rijndael.GenKey();
+    rijndael.Encrypt(SqlScripting.ConnectionString);
+    stateSaver.Add("key", rijndael.Key);
+    stateSaver.Add("IV", rijndael.IV);
+    stateSaver.Add("conStr", rijndael.Encrypted);
+
+    // Perform database creation
+    string dbConnectionString = SqlScripting.InstallDatabase();
+
+    // Set connection strings in config 
+    // It was needed to set /TARGETDIR=[TARGETDIR] in 
+    // CustomDataAction to be able to fetch 
+    // this.Context.Parameters["TARGETDIR"] properly
+    StringDictionary sd = this.Context.Parameters;
+    WriteToConfig(sd["TARGETDIR"], "FancyWebService", dbConnectionString);
+    WriteToConfig(sd["TARGETDIR"], "PlainWebService", dbConnectionString);
+}
+
+private static void WriteToConfig(string root, string virtualFolder, 
+    string connString)
+{
+    string path = string.Format(@"{0}\{1}\web.config", root, virtualFolder);
+    FileInfo fi = new FileInfo(path);
+
+    fi.Attributes = FileAttributes.Normal;
+    XmlDocument doc = new XmlDocument();
+    doc.Load(path);
+
+    XmlNode node = 
+        doc.SelectSingleNode(
+        @"/configuration/connectionStrings/add[@name='WSEDB']");
+    node.Attributes["connectionString"].InnerText = connString;
+
+    doc.Save(path);
+    fi.Attributes = FileAttributes.ReadOnly;
+}
+Everything is pretty clear. We show a form that initializes Connection String in the static SqlScripting class and signalizes whenever the operation was successful as DialogResult. If we didn't get credentials, an exception is thrown and MSI will rollback the changes. We will look in more detail at this later. If everything is okay, Connection String is encrypted and saved in state for uninstall. The script for DB install is fired and when finished, the method fetches web.config XML, searches through it using XPath and modifies the needed value. Here is a look at SqlScripting:
+private const string DB_LOGIN = "wseuser";
+private const string HIV_DB_NAME = "WSEDeployment";
+private static string _connectionStringFormat = 
+    "Data Source={0};Initial Catalog={1};{2}";
+
+private static string _connectionString = null;
+public static string ConnectionString
+{
+    get { return _connectionString; }
+    set { _connectionString = value; }
+}
+        
+public static bool InitConnection(string connectionString)
+{
+    string query = "SELECT TOP 1 * FROM sys.objects";
+
+    SqlCommand cmd = new SqlCommand();
+    cmd.CommandText = query;
+    cmd.CommandType = CommandType.Text;
+    cmd.Connection = new SqlConnection(connectionString);
+
+    try
+    {
+        cmd.Connection.Open();
+        cmd.ExecuteNonQuery();
+
+        ConnectionString = connectionString;
+        return true;
+    }
+    catch (Exception ex)
+    {
+        ConnectionString = null;
+        return false;
+    }
+}
+
+public static string InstallDatabase()
+{
+    string password = new Random().Next(1000000000).ToString();
+    string txtSQL = 
+        string.Format(Resources.SqlInstallScript, 
+        DB_LOGIN, password, HIV_DB_NAME);
+
+    Regex regex = 
+        new Regex("^GO", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    string[] SqlLine = regex.Split(txtSQL);
+
+    SqlCommand cmd = null;
+    try
+    {
+        cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = new SqlConnection(ConnectionString);
+        cmd.Connection.Open();
+
+        foreach (string line in SqlLine)
+        {
+            if (line.Length &gt; 0)
+            {
+                cmd.CommandText = line;
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        string[] connStringParts = ConnectionString.Split(';');
+
+        string databaseConnectionString =
+            string.Format("{0};Initial Catalog={3};UID={1};PWD={2}",
+                connStringParts[0], DB_LOGIN, password, HIV_DB_NAME);
+
+        return databaseConnectionString;
+    }
+    finally
+    {
+        cmd.Connection.Close();
+    }
+}
+The InitConnection method just tries to execute the test command using Connection String passed as a parameter. It stores it if everything is okay and resets it if it is not. InstallDatabase is somewhat more complex. Before anything else, a random password is generated and parameters for the script -- i.e. username, password and database name -- are set and stored to the txtSQL variable. A regular expression is used to split the text into single commands without GO and then one by one they are executed. Finally, the method returns a valid connection string for accessing the newly created database, the one that will be set in the web.config files of Web Services.
+If the script is pretty large, executing it using sqlcmd.exe will be much faster than using our method. However, it is possible that the IIS machine that is the target for our setup isn't one with SQL Server. To cover all cases, we would need to embed sqlcmd.exe in Installer.dll, extract it in a temporary directory when setup is run, write the script in a temporary text file and then run sqlcmd.exe using System.Diagnostics.Process. If someone is interested in this solution, please post comment and I'll add code for it to article.
+Installing certificates
+Certificates require far less work than SQL database, or at least far less describing . We just need to pull the certificate out of a DLL's Resources, put it in the needed store and give appropriate permissions. You can add something to the project's resources in many ways, but the easiest for me is to just drag and drop it in open Resources.resx.
+Once you do that, Visual Studio automatically wraps it, auto generating appropriate code in the Resources class. Those who carefully read the code in the SQL database install section saw that I set the SqlScriptInstall.txt file in resources and read it from there. I'll do same thing for the certificate we use in this section.
+Modified WSEDeploymentInstaller.cs
+public override void Install(System.Collections.IDictionary stateSaver)
+{
+    // ... previous code for installing sql server database ...
+
+    // Certificate, depending on OS give permission:
+    // XP: ASPNET account, WIN2003: NETWORK SERVICE
+    string user =
+        string.Format("{0}\\ASPNET", Environment.MachineName);
+
+    if (OSInfo.GetOSName() == "Windows Server 2003")
+        user = "NETWORK SERVICE";
+
+    // LOAD CERTIFICATE
+    X509Certificate2 cert = 
+        new X509Certificate2(Resources.TestCertificateServer, "123",
+        X509KeyStorageFlags.MachineKeySet|X509KeyStorageFlags.PersistKeySet);
+
+    CertificateInstall.PlaceInStore(cert, StoreName.My,
+        StoreLocation.LocalMachine, user);
+}
+OSInfo is a useful class I borrowed from this article. It detects the version of the operating system, so I can give access to the appropriate account running ASP.NET sites. The certificate is loaded into the X509Certificate2 class by passing byte[] with content, password for the private key and parameters for loading. After this, it is placed in storage.
+CertificateInstall.cs
+public class CertificateInstall
+{
+    public static void PlaceInStore(X509Certificate2 cert,
+        StoreName storeName, StoreLocation storeLocation, string user)
+    {
+        X509Store store = new X509Store(storeName, storeLocation);
+
+        try
+        {
+            store.Open(OpenFlags.ReadWrite);
+
+            if (!store.Certificates.Contains(cert))
+                store.Add(cert);
+
+            int indexOfCert = store.Certificates.IndexOf(cert);
+            X509Certificate2 certInStore = store.Certificates[indexOfCert];
+
+            if (!string.IsNullOrEmpty(user))
+                AddAccessToCertificate(certInStore, user);
+        }
+        finally
+        {
+            store.Close();
+        }
+    }
+
+    public static void AddAccessToCertificate(X509Certificate2 cert, 
+        string user)
+    {
+        RSACryptoServiceProvider rsa = 
+            cert.PrivateKey as RSACryptoServiceProvider;
+
+        if (rsa != null)
+        {
+            string keyfilepath =
+                FindKeyLocation(
+                rsa.CspKeyContainerInfo.UniqueKeyContainerName);
+
+            FileInfo file = new FileInfo(keyfilepath + "\\" +
+                rsa.CspKeyContainerInfo.UniqueKeyContainerName);
+
+            FileSecurity fs = file.GetAccessControl();
+
+            NTAccount account = new NTAccount(user);
+
+            fs.AddAccessRule(new FileSystemAccessRule(account,
+                FileSystemRights.FullControl, AccessControlType.Allow));
+
+            file.SetAccessControl(fs);
+        }
+    }
+
+    private static string FindKeyLocation(string keyFileName)
+    {
+        string text1 =
+            Environment.GetFolderPath(
+            Environment.SpecialFolder.CommonApplicationData);
+        string text2 = text1 + @"\Microsoft\Crypto\RSA\MachineKeys";
+        string[] textArray1 = Directory.GetFiles(text2, keyFileName);
+        if (textArray1.Length &gt; 0)
+        {
+            return text2;
+        }
+        string text3 =
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string text4 = text3 + @"\Microsoft\Crypto\RSA\";
+        textArray1 = Directory.GetDirectories(text4);
+        if (textArray1.Length &gt; 0)
+        {
+            foreach (string text5 in textArray1)
+            {
+                textArray1 = Directory.GetFiles(text5, keyFileName);
+                if (textArray1.Length != 0)
+                {
+                    return text5;
+                }
+            }
+        }
+        return "Private key exists but is not accessible";
+    }
+}
+I am somewhat unhappy with this code because permissions are granted using File System and not methods exposed by the X509Certificate2 class. I've tried with this code, but it simply won't work.
+using (RSACryptoServiceProvider csp = 
+    cert.PrivateKey as RSACryptoServiceProvider)
+{
+    CspKeyContainerInfo kci = csp.CspKeyContainerInfo;
+    CryptoKeySecurity cks = kci.CryptoKeySecurity;
+    cks.AddAccessRule(
+        new CryptoKeyAccessRule("NT Authority\\Network Service", 
+        CryptoKeyRights.GenericRead, AccessControlType.Allow));
+}
+So, if anyone has ideas about how to grant access in this way, please post it in the comments section.
+How to generate certificates
+I provide test certificates in this primer solution, but you'll probably want to make your own when developing. To do this, you need to execute the following in Visual Studio Command Prompt: makecert.exe -sr LocalMachine -ss MY -a sha1 -n CN=
+    YourCertificate -sky exchange –pe
+This will make YourCertificate in the LocalMachine/Personal store. To view the store, you need to activate Certificate Snap-in. Go to Start -> Run, type mmc and then use File -> Add/Remove Snap-In option, choosing Certificates from the list. Once there, you can easily export the certificate to PFX or CER and use it in your solution.
+Cleaning up the mess: Uninstall
+It's always far easier to destroy than to make something. Installers aren't exceptions from that rule. When cleaning up, we need to:
+Execute the script for dropping the database using saved Connection String Remove the certificate from the store Clean-up is called not only from Uninstall, but Rollback also. This is because we can't say for sure that something won't go wrong during installation. We are responsible for custom content added via the Install method, so we must clean it up in any case.
+WSEDeploymentInstaller.cs
+public override void Rollback(System.Collections.IDictionary savedState)
+{
+    CleanUp(savedState);
+    base.Rollback(savedState);
+}
+
+public override void Uninstall(System.Collections.IDictionary savedState)
+{
+    CleanUp(savedState);
+    base.Uninstall(savedState);
+}
+
+private void CleanUp(System.Collections.IDictionary savedState)
+{
+    // Remove database
+    if (savedState.Contains("key"))
+    {
+        RijndaelCryptography rijndael = new RijndaelCryptography();
+
+        rijndael.Key = (byte[])savedState["key"];
+        rijndael.IV = (byte[])savedState["IV"];
+        string connectionString = 
+            rijndael.Decrypt((byte[])savedState["conStr"]);
+
+        SqlScripting.InitConnection(connectionString);
+        SqlScripting.UninstallDatabase();
+    }
+
+    // Remove Certificate
+    try
+    {
+        X509Certificate2 cert = 
+            new X509Certificate2(Resources.haisysKey, "123",
+            X509KeyStorageFlags.MachineKeySet | 
+            X509KeyStorageFlags.PersistKeySet);
+
+        CertificateInstall.RemoveFromStore(cert, StoreName.My,
+            StoreLocation.LocalMachine);
+    }
+    catch
+    { }
+}
+Script for dropping the database:
+USE [master]
+
+ALTER DATABASE [{1}] set SINGLE_USER with ROLLBACK IMMEDIATE 
+
+IF  EXISTS (SELECT name FROM sys.databases WHERE name = N'{1}')
+    DROP DATABASE [{1}]
+    
+IF EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}')
+    DROP LOGIN [{0}]
+    
+GO
+The method belonging to the SqlScript class executes the previous script after populating the parameters:
+public static void UninstallDatabase()
+{
+    string query = string.Format(
+        Resources.SqlScriptUninstall, DB_LOGIN, HIV_DB_NAME);
+
+    try
+    {
+        SqlCommand cmd = dp.PrepareCommand(query, CommandType.Text);
+        dp.ExecuteNonQuery(cmd);
+    }
+    catch (Exception ex)
+    {
+        // DB Already dropped
+        Console.Write(ex);
+    }
+}
+
+Certificate removing method from CertificateInstall class:
+public static void RemoveFromStore(X509Certificate2 cert,
+    StoreName storeName, StoreLocation storeLocation)
+{
+    X509Store store = new X509Store(storeName, storeLocation);
+
+    try
+    {
+        store.Open(OpenFlags.ReadWrite);
+
+        if (store.Certificates.Contains(cert))
+            store.Remove(cert);
+    }
+    finally
+    {
+        store.Close();
+    }
+}
+Removing virtual directories
+Before closing this section, I want to point out one not-so-nasty bug that occurs when you uninstall your Web Application from IIS. That is, virtual directories remain registered. So, we need to manually delete the registration of virtual directories.
+WSEDeploymentInstaller.cs
+public override void Install(System.Collections.IDictionary stateSaver)
+{
+    // ... previous Install actions ...
+
+    // Save TargetSite variable
+    stateSaver.Add("targetSite",
+        sd["TARGETSITE"].Substring(sd["TARGETSITE"].LastIndexOf('/') + 1));
+}
+
+private void CleanUp(System.Collections.IDictionary savedState)
+{
+    // ... previous Cleaning actions ...
+
+    // Remove Virutal Directories if needed 
+    DeleteVirtualDirectory((string)savedState["targetSite"],"FancyWebService");
+    DeleteVirtualDirectory((string)savedState["targetSite"],"PlainWebService");
+}
+
+private void DeleteVirtualDirectory(string webSiteId, string virtualDirName)
+{
+    string path = string.Format(@"IIS://localhost/W3SVC/{0}/Root/{1}",
+        webSiteId, virtualDirName);
+
+    bool b = System.DirectoryServices.DirectoryEntry.Exists(path);
+    if (b)
+        new System.DirectoryServices.DirectoryEntry(path).DeleteTree();
+}
+As you can see, the TARGETSITE variable is first saved during installation -- the user can choose not to install to default web site -- and then used when uninstall is triggered. Deleting a virtual directory is easy once you know what you are looking fo: the DirectoryEntry class. Again, be sure to set Custom Action properly!
+Removing registry entries: Add/Remove programs clean-up
+Ah, one more thing. In case you run into problems with uninstalling -- i.e. you deploy with buggy Uninstall custom actions -- be sure to check the Windows Installer CleanUp Utility. It saved me a few times by removing registry entries, enabling me to start a fresh installation.
+Client installation
+ClickOnce is one of the things that really influenced my way of deploying an application lately. The boys that developed it have done an outstanding job. Not only is it easy to use, but once you get to know its API you'll see how simple it is to extend and customize to your own needs.
+Roadmap
+There are a few things that we want from our ClickOnce setup.
+Any prerequisites for the application must be installed on the client machine before ClickOnce setup proceeds A check for a new version of the application should occur during application start, as well while the application is running When installation is performed, the client certificate should be installed Setting up ClickOnce
+You'll find ClickOnce settings if you open project properties and go to Publish item.
+Prerequisites
+Clicking on the Prerequisites button, we get a list with all available packages. As you can see, you just need to choose what is needed and from where it will be fetched.
+Packages you see in the list can be found at %ProgramFiles%\Microsoft Visual Studio 8\SDK\v2.0\BootStrapper\Packages\. If you follow this path on your hard drive, you'll see that there is a nice structure in each of the child folders: beside mail MSI or EXE, there is a product.xml meta-file and usually a folder that contains localized resources for installing the prerequisite. Just to note: Prerequisites can be set same way for MSI setup projects. Simply use the Prerequisites button on the setup project's Properties form.
+Creating your own prerequisite is a piece of cake. You need an MSI setup that does something you want -- it installs DLLs in GAC, for example -- and a manifest file such as product.xml. You just learned how to make MSI, assuming that you read the server installation part of this article. For manifests, you have two choices. Either you manually create or change an existing one by studying this link or you use the application called Bootstrap Manifest Generator. Of course, my vote goes to BMG. When you have both MSI and manifest, placing them in their own folder within the previously stated path -- which BMG does automatically -- and restarting Visual Studio .NET will do the trick. You'll see your own prerequisite in the list.
+Application update
+Application update is the second option that needs to be set.
+Checking "The application should check for updates" is a requirement for all other related options. It also has an influence on the ApplicationDeployment class, as we will see later. "Specify a minimum required version for this application" is a nice option when you want to force your users to update. For example, if you publish three versions of your application -- i.e. get to 1.0.0.3 -- and leave minimum version unchecked, each update from 1.0.0.0 will be optional. Upon starting the application, the user will get a dialog where he can choose the option to Skip, which will totally ignore new application versions. Consecutive starts of same version won't show the update dialog again, in this case. There are cases when this is desired behavior, but in most situations you want up-to-date client applications, so beware.
+Publishing application
+After we set options, clicking on the Publish Wizard takes us to the main job. First, we need to specify the publish location, the one where the install files will be placed. Next we specify the install location, the one from which setup.exe will be started. Most of the time, publish and install are the same location, but there are situations when they are different. An example would be when you use FTP to upload files and HTTP to access them.
+Next, you need to choose whether your application can work online only or if it is also available offline. "Offline mode" is the one I use almost always, as it gives you a large amount of freedom by placing assemblies on the client hard-disk. It also registers applications on the machine (Add/Remove) and sets a shortcut in the Start menu, giving the user a really nice Windows Application experience. "Online mode" starts everything directly from the install location, not leaving shortcuts in the Start menu or anything like that on the client machine. It is similar to Web Applications; you just go to the URL and the application is started. A good use of this mode is to provide better user experience or access resources on the client machine. If you don't have enough knowledge to do something in JavaScript or ActiveX, then just provide a link in your Web Application to the ClickOnce manifest of the Windows Application that implements the needed functionality. You can, for example, start a report viewer that needs to use the client printer in this way. That's it! After three short steps, you are ready to deploy. Just click on Finish.
+Installing certificate and manually checking for update
+Programmatically extending ClickOnce deployment is possible to some extent by using the methods and properties of the ApplicationDeployment class. For full reference on it, go to MSDN. I'll focus on practical usage.
+Program.cs
+[STAThread]
+static void Main()
+{
+    ClickOnceFunctions.CheckForCertificate();
+    ClickOnceFunctions.StartListeningForUpdates();
+
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+    Application.Run(new MainForm());
+
+    ClickOnceFunctions.StopListeningForUpdates();
+}
+ClickOnceFunctions.cs
+class ClickOnceFunctions
+{
+    public static void CheckForCertificate()
+    {
+        if (ApplicationDeployment.IsNetworkDeployed)
+        {
+            if (ApplicationDeployment.CurrentDeployment.IsFirstRun)
+            {
+                X509Certificate2 cert = 
+                    new X509Certificate2(Resources.TestCertificateClient);
+
+                CertificateInstall.PlaceInStore(
+                    cert, StoreName.AddressBook, 
+                    StoreLocation.CurrentUser, null);
+            }
+        }
+    }
+
+    private static System.Timers.Timer _updateTimer = null;
+    public static void StartListeningForUpdates()
+    {
+        if (ApplicationDeployment.IsNetworkDeployed)
+        {
+            _updateTimer = new System.Timers.Timer();
+            _updateTimer.Interval = 10000;
+            _updateTimer.Elapsed += 
+                new System.Timers.ElapsedEventHandler(_updateTimer_Elapsed);
+            _updateTimer.Start();
+        }
+    }
+
+    public static void StopListeningForUpdates()
+    {
+        if (ApplicationDeployment.IsNetworkDeployed)
+        {
+            _updateTimer.Stop();
+            _updateTimer.Dispose();
+        }
+    }
+
+    private static bool _updating;
+    static void _updateTimer_Elapsed(object sender, 
+        System.Timers.ElapsedEventArgs e)
+    {
+        if (ApplicationDeployment.IsNetworkDeployed)
+        {
+            ApplicationDeployment current = 
+                ApplicationDeployment.CurrentDeployment;
+
+            if (!_updating)
+            {
+                try
+                {
+                    if (current.CheckForUpdate())
+                    {
+                        //MessageBox.Show("Test");
+                        _updating = true;
+                        current.Update();
+
+                        DialogResult dr = MessageBox.Show(
+                        "Update downloaded, restart application?",
+                        "Application Update", MessageBoxButtons.YesNo);
+
+                        if (dr == DialogResult.Yes)
+                            Application.Restart();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _updating = false;
+                    Console.WriteLine("Clickonce connection failed: " + 
+                        ex.ToString());
+                }
+            }
+        }
+    }
+}
+When Windows Application is started after being deployed to the client, the CheckForCertificate function is called. It employs the ApplicationDeployment API to check whenever the application is deployed using ClickOnce (IsNetworkDeployed property). If it is, the property IsFirstRun -- which is True whenever a new version of the application is started for the first time, else False -- is evaluated and for the true case the certificate is installed. Be sure that the PlaceInStore method doesn't duplicate the certificate if it exists in store.
+The next call, StartListeningForUpdate, is somewhat more complex. It starts a timer which, on the Elapsed event and executes the CheckForUpdate method of ApplicationDeployment.CurrentDeployment. If a new version is found, it is downloaded using the Update method. Because System.Timers.Timer runs Elapsed on the background thread by default, we can use Update instead of UpdateAsync. The GUI won't be blocked by update downloading.
+Deploying new versions
+Now that every option is set, deploying new versions requires from you to just click on the Publish Now button in the Publish menu. Add new features, correct bugs and click Publish Now. End users will get one of the two shown dialogs, depending on whether they are starting an application or are in the middle of using it.
+Deploying to environments that you don't have access to
+It is often a requirement that your ClickOnce files be given along with ServerSetup.msi to the main administrator who has sole authority over the production environment, meaning that you can't use Visual Studio .NET and the Publish Now option to deploy directly to folders from which users will install. This means that Install Location is unknown to you and that your ClickOnce deployment won't work until the correct location is specified in the application manifest file.
+In this situation, you need to provide your administrator with four things:
+A complete copy of the ClickOnce folder that you published to your test environment, along with instructions to the administrator on how to place it in production as a Network share, as a location on IIS or as something else ClickOnceKey.pfx, the key used to sign assemblies, which he will reuse to change the application manifest file mage.exe, the utility for signing manifests that is part of teh .NET Framework SDK; it can be found at %ProgramFiles%\Microsoft Visual Studio 8\SDK\v2.0\Bin\ The BAT file that executes mage.exe, which the administrator can easily modify to suit his purpose I often give BAT file with the following command:
+mage.exe 
+-update &lt;path to application manifest we update, 
+    e.g.: \\productionServer\ClickOnce\WSEDeployment.application /&gt; 
+-providerurl &lt;location of application manifest on production servers, 
+    e.g.: \\productionServer\ClickOnce\WSEDeployment.application /&gt; 
+-certfile Clickoncekey.pfx 
+-password &lt;your password, in our case it is test /&gt;
+For updates, you need to send your administrator the files that changed, a copy of the new version's folder -- for example, WSEDeployment_1_0_0_2 -- and an application manifest file such as WSEDeployment.application. The application manifest file needs to be signed using mage.exe when it is set on the production server, of course.
+Debugging ClickOnce deployments
+If for any reason you want to debug a ClickOnce deployed application, using "Attach to process" from the Tools menu in Visual Studio .NET will do fine.
+However, you need to be sure to deploy PDB files, as well as those included by default. You want to attach to the process properly. To include PDBs, use the Application Files option from the Publish item in Project properties. Once the dialog is shown, just choose the files you wish to deploy along with those Auto Included.
+While we are at this option, let me clear up one more thing that people often ask. That is, "What conditions need to be satisfied for a file to appear as Auto Included in this list?" Well, it is simple. For References, the condition that needs to be satisfied is that the Copy Local property is set to True. For Project items, the condition that needs to be satisfied is that the Copy to Output Directory is set to Copy always.
+Conclusion
+I hope that this article gave you a really good and deep overview of two totally different deployment techniques. I tried to present a solution for all common scenarios when it comes to making installations, so my trust goes in that you are now equipped with enough knowledge to tackle almost any problem that can arise in this field.
+From my point of view, this article can be further extended in some ways. More can be said about custom dialogs. More can be said about extending the ServerSetup installer to set the ClickOnce deployment of clients. More can be said about manipulating IIS on a target server. However, what I can't say from my point of view is whether people are interested in these topics. The article is already quite large in this way.
+So, instead of trying to guess and adding unneeded content, I look forward to reading your suggestions in the comments section on how to further improve this article about making installers with .NET. In any case, I hope that you enjoyed reading and that you'll take the time to rate this article.
+References
+In no particular order…
+Articles:
+OS Name, Version & Product Type Creating Custom Installer Dialogs Deploy SQL Server databases with Installer class Passing Command Line Arguments to MSI Installer Custom Actions Password textbox for VS.NET Setup projects Installer CleanUp Utility Books:
+Brian Noyes, Smart Client Deployment with ClickOnce (2006)
+History
+June 26, 2007 – Initial version of article July 17, 2007 - Article content updated
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+First PrevNext
+Fail with BootStrapper and Update Application Isse All Time Programming8-Jun-11 0:50 Hello, Firstly Thanks for this application. I have a C# application and I have developed a MSI installer for it. I have 2 issues with it :
+1) I am trying to install another application as a Prerequisite. I tried alot using your and other sites as guidance but somehow my prerequisite doesn't installs only. I tried creating xml files manually and using BMG. You can find my xml files codes at XML Files for BootStrapper[^]. Can you help me know what's the problem and where am I making mistake.
+2) Once the user has installed the application, in future I will have updates for the application. How can I provide the setup for updates that will detect auto where the app is installed and copy respective files and thus update the application. I see articles for WIX, Install.. etc but how to handle this in my scenario as am using Setup & Deployment project.
+I am using Setup & Deployment project for setup and working on Visual Studio 2008.
+Any help is highly appreciated. Kindly help me out am stuck since last 2-3 days trying to figure the Custom-Prerequisites.
+Thanks
+Thanks & Regards, Greate Article! Ernest Poletaev4-Nov-10 1:08 thanx SQLCMD Route to deploying large Database changes Member 345539810-Apr-10 9:35 Hello Pedrag,
+This article has been very helpful for me.
+I have been trying to get DataBase scripts deployed with my MSI package.
+My application is an MFC app.
+I have been able to create the MSI, and I have been able to create the embedded resource txt files.
+I have had a little issue with trying to determine which SQL Server instance that the Client has installed my software.
+I suppose I could enumerate all of the SQL instances and look for my database. I am still considering which way to go.
+In any event, I plan to go with the SQLCMD approach you have mentioned.
+I am not sure how to go about creating the temporary file for the SQL Scripts.
+Is this a temp file, only in the sense that I create it myself and then delete it at the end of the process?
+Anyway, thank for the start, and please post anything you may have followed up with, relating to the SQLCMD approach.
+.......Cameron
+Great One!! arun codes9-Dec-09 0:17 You are such a gifted writter. Thank you so much. Keep writing !!
+Adding some Fonts using ClickOnce installer to use them in the application followmeyaar20-Nov-09 4:08 Hi Predrag,
+First of all thanks for such nice article, can you please brief that how if someone wants to add some fonts in clickonce deployment. How fonts can be added through clickonce deployment to use in clickonce application?
+Thanks,	followmeyaar
+Regarding installation package Member 470098411-Oct-09 23:10 I have done once c# application.
+The application having crystal report. I have to include crystal report runtime with the software for the report.
+Actually what i want is:
+1. The installer should automatically install the software exe(applcation exe),crystal report runtime.exe, .net framework 2.0 one after the other, while installing the application.
+2. The application contains MS-ACCESS DATABASE FOLDER,Images folder. It should be automatically placed in the respective folder while installing the application.
+Can you tell me which installer will satisfy my needs
+Advance thanks
+Deploment from Customer's Server kosturdur17-Jun-09 0:10 Hi Predag thx for your article,
+I have a question;
+As you told at the deployment part of your article;
+"For updates, you need to send your administrator the files that changed, a copy of the new version's folder -- for example, WSEDeployment_1_0_0_2 -- and an application manifest file such as WSEDeployment.application."
+and
+if we want our customer to deploy the ClickOnce Application on their server (netshare) do we really have to send new version's folder. Or could we just send a file (for exp: an updated dll file) and by mage.exe let customer's administrator make the new version available to update? Kosturdur
+AddAccessRule with X509Certificate2 tienus29-May-09 11:30 Thank you for sharing your code on how to install certificates with permission for NETWORK SERVICE. It was very helpful. Hopefully I can (still?) do you a favor with this snippet I made up to change accessrules without accessing the filesystem. It got me puzzled for a few days, but here's the result:
+
+/// &lt;summary&gt;
+/// This will grant access to NETWORK SERVICE on the MyServerCert certificate
+/// in the LocalMachine.
+/// Change it to fit your needs.
+///
+/// Info combined from the following resources:
+/// - http://devblog.antongochev.net/2008/09/23/how-to-create-a-key-container-which-is-accessible-for-many-users/
+/// - http://blogs.msdn.com/cagatay/archive/2009/02/08/removing-acls-from-csp-key-containers.aspx
+/// - http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=95755
+///
+/// &lt;/summary&gt;
+private void GrantAccessToCertificate()
+{
+    string usernameToGrantAccess = "NETWORK SERVICE";
+    string strSubjectOfTheCertificate = "MyServerCert";
+ 
+    NTAccount accNetworkService = new NTAccount(usernameToGrantAccess);
+ 
+    X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+    store.Open(OpenFlags.ReadWrite);
+ 
+    // Get the certificate
+    X509Certificate2Collection col = store.Certificates.Find(X509FindType.FindBySubjectName, strSubjectOfTheCertificate, true);
+    X509Certificate2 cert = col[0];
+    RSACryptoServiceProvider csp = cert.PrivateKey as RSACryptoServiceProvider;
+ 
+    // Get the security (which is read-only!)
+    CspKeyContainerInfo kci = csp.CspKeyContainerInfo; // &lt;- this is for information and therefor read-only!
+    CryptoKeySecurity cks = kci.CryptoKeySecurity; // so this is read-only too
+ 
+    // Create new security rules and add them to the security
+    CryptoKeyAccessRule ruleNetworkService = new CryptoKeyAccessRule(accNetworkService, CryptoKeyRights.FullControl, AccessControlType.Allow);
+    CryptoKeyAccessRule ruleMyself = new CryptoKeyAccessRule(WindowsIdentity.GetCurrent().Name, CryptoKeyRights.FullControl, AccessControlType.Allow);
+    cks.AddAccessRule(ruleNetworkService);
+    cks.AddAccessRule(ruleMyself);
+ 
+    // This object will be used to store the new security later
+    // on in the c'tor of the crypto service provider
+    CspParameters cspParms = new CspParameters();
+    cspParms.KeyContainerName = csp.CspKeyContainerInfo.KeyContainerName;
+    cspParms.Flags = CspProviderFlags.UseMachineKeyStore;
+    // assign it the security we modified earlier
+    cspParms.CryptoKeySecurity = cks;
+ 
+    // The provider notices the new security and stores it
+    RSACryptoServiceProvider serviceprovider = new RSACryptoServiceProvider(cspParms);
+ 
+    store.Close();
+ 
+}
+Re: AddAccessRule with X509Certificate2 Predrag Tomasevic2-Jun-09 0:18 Yeah, you can definitely count it as a favor Thanks man!
+Run MSI only as Admin yatishk17-Feb-09 23:38 Hi,
+I have created a MSI installer using visual studio 2008 for my C# program.
+I need users to run my MSI only when they have admin rights on the machine (as I am making some machine level changes in the installation).
+However, when I run the MSI as non admin user, it runs successfully as a 'per-user' installation (I mean starts running.. later it will fail obviously).
+I want somehow the MSi should detect that current user is non-admin and stop in the beginning itself.
+One example is 'advertisement'. If I run the same MSI with /j option as non-admin user, it will stop in the beginning itself throwing an error that I do not have privileges.
+I want the same effect even when I run the MSI without the /j option.
+Any help appreciated. {Lets talk about WinXP SP2 behavior, I know Vista behavior is different with UAC and all that, but let me sort out this issue on XP first, then I'll come to Vista}
+Regards,
+Yatish.
+Thank you Lagziyan27-Jan-09 23:21 Hi there,I Thank you for your Usefull articl,it was exactly what I wanted.Thanks Thanks Thanks Indeed.
+With regards
+Congratulations alhambra-eidos7-Oct-08 1:26 It's marvellous !! great, fantastic !!!
+Your are my idol !! you are the Champion !!! AE
+Re: Congratulations Predrag Tomasevic10-Oct-08 23:03 Your words are way too kind Tnx!
+Thanks for the helpful article MattsterP10-Jul-08 9:36 I was looking for a solution to get the target site through to the uninstall process, your use of the stateSaver object was exactly the pointer I needed, thanks!
+Re: Thanks for the helpful article Predrag Tomasevic10-Oct-08 23:02 Glad that some part of my code proved useful as reference Authentication? Sachin Palewar2-Jul-08 1:55 Thanks for sharing this exhaustive article. I did my bit with ratings I wanted to ask you, do you have some work around which forces user to authenticate before being able to install ClickOnce? I read Julie Lerman's article, she mentions about forms authentication and says it semi-secures the application.
+I am not sure how application is able to update itself after tweaking those IIS settings?
+Is there really a way to fully secure the clickonce so that only authorised users are able to install and update the application? Thanks for your time. This seems to be biggest concern to me with ClickOnce, I am not sure why MS is not doing anything about it.
+Another concern is with pre-requisites. You really simplified the custom pre-requisites inclusion problem. What I want to do is know if I add a new pre-requisite, will it be installed automatically when installed application updates next time? I think answer is no, so what's the solution?
+I would like to push Framework Service Pack, and Patches and BugFixes for the Sybase DB we are using for our application using clickonce. Do you have any suggestion about it?
+Thanks a lot for your time and you continue enjoying your skydiving, alas we don't have much of adventure sports in India Regards,
+Sachin Palewar Palewar Techno Solutions
+(Mobile Solutions for Your Business)
+http://www.palewar.com
+http://palewar.blogspot.com/
+Re: Authentication? Predrag Tomasevic2-Jul-08 2:31 Authentication is real pain when it comes to ClickOnce. I already discussed it in this post[^], take a look and hopefully you'll find appropriate solution for yourself.
+On prerequisite packages question - I'm 99% sure that when you add new prerequisite in new version, all clients will download and install prerequisite when they get new version. Creating your own prerequisites is pretty easy; if my text in Prerequisites section[^] was not enough, take a look at this nice article[^]... it has pictures for every step. Just don't follow first step from it, BMG is moved to this link[^] (ClickOnce version from here[^]).
+Write if you have additional problems.
+Best regards! Question / Concern sagitario3412-Jun-08 4:33 I've been searching and have been unable to find an answer to a question. Your article was great but still left my question unanswered. During the Installation of a Web Application or Web service; if the Default Web Site is configured to run under .Net 1.1 but your new application requires the 2.0 framework, how can you change the version of .Net configured for that Virtual Directory as part of the installation?
+My installer currently deploys the application to the selected Web Site to the user specified virtual directory and to the user specified folder path, but the application errors out because the virtual directory is configured as the default web site to run .net 1.1. A prerequisite is that .net 2.0 is installed on the server.
+My Sincere thanks in advance. Re: Question / Concern Predrag Tomasevic12-Jun-08 9:24 There are number of good links on this subject - many people tried to solve this problem. I recommend:
+Nice forum thread with solution[^]
+Article on switching .NET versions[^]
+I found these by using this Google search[^]
+Post again if you still have problems Regards! MSI installer for the initial deployment and then ClickOnce for updates Sandeep kanawade24-Mar-08 21:03 Hi Predrag,
+Can you tell me in brief about using an MSI installer for the initial deployment and then ClickOnce for updates?
+I need to modify my installer project to publish application after install to a location, so is there any APIs /SDKs available for implementing click once and then publishing application? Can I do this using code? ~Sandeep. Re: MSI installer for the initial deployment and then ClickOnce for updates Predrag Tomasevic26-Mar-08 8:44 Are you trying to acomplish same thing as the guy in this post[^]? Re: MSI installer for the initial deployment and then ClickOnce for updates Sandeep kanawade27-Mar-08 0:46 No,
+I want to publish my application after install i.e. ".exe", I do not have my complete project with me at the time of install. So can u tell me how do i publish the application without "csproj" file programatically.
+~Sandeep. Re: MSI installer for the initial deployment and then ClickOnce for updates Predrag Tomasevic27-Mar-08 1:09 Correct me if I do not understand you correctly.
+You wish to create MSI installation that user will run. After installation is complete... you wish to execute some code which will enable client updates using ClickOnce mechanism? Re: MSI installer for the initial deployment and then ClickOnce for updates Sandeep kanawade27-Mar-08 1:12 Yes,
+During my installation I would like to accept publish URL and then want to publish my application to that url. How do I do this?
+~Sandeep. Re: MSI installer for the initial deployment and then ClickOnce for updates Predrag Tomasevic27-Mar-08 3:56 I guess you want to create deployment and application manifest by scripts... my suggestion is that you do ClickOnce publishing by Visual Studio and then include that generated files in MSI. You can easily update manifests once they are in place by using scripts (this MSDN thread has good explaination how[^])
+In any case I created script that generates ClickOnce publish from directory included. Download zip from here[^] unpack it and run createDeployment.bat. I tried and it works (I do not generate unique ClickOnceApp name in script so you can use this app from just one location), but I guess for more advanced options -> you'll have to dig yourself through mage switches (or MSDN page for manually deploying ClickOnce app[^]) if you do not want to use Visual Studio's publish option.
+Still this doesn't gives you automatic updates using ClickOnce because you need to publish updates on your own to location that user chooses during installation (or to give MSI to user to do that by himself). Last Visit: 31-Dec-99 18:00 Last Update: 9-Jul-14 12:17Refresh12 Next »
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 5 Jul 2007
+Views 134,889
+Downloads 605
+Bookmarked 216 times
+.NET2.0 SQL-server-2005 IIS5.1 IIS6 VS2005 C#2.0 ASP.NET Windows DBA Dev , + Related Articles
+ClickOnce - Quick steps to Deploy, Install and Update Windows Based Client Applications
+SoapNULL Transport for WSE 3.0
+ClickOnce Licensing HTTPHandler
+ClickOnce application autostart and clean uninstall or the way to customize ClickOnce installation
+Why you should not use Clickonce deployment as your enterprise application's deployment methodology
+"Avalon" Application Type (By Deployment)
+Deploying MFC applications via ClickOnce
+Problem: ClickOnce Deployment via Internet May Not Always Upgrade an Application
+WS-Security: Secure Web services through SOAP Message Level Security
+Running a ClickOnce Application from Another Program
+Wix# (WixSharp) - managed interface for WiX
+Make ClickOnce Work With ASP.NET Forms Authentication
+Deploying CAB Files Using ClickOnce Deployment
+Adding automatic updates to your program - Part 1
+TFS2010 Team Build with ClickOnce Applications
+How to build, sign, and deploy a ClickOnce application to be delivered over the internet without using the IDE
+ClickOnce deployment vs. requestedExecutionLevel = requireAdministrator
+Using the MSI installer wizard for deploying applications created in BizTalk Server 2006
+Deployer
+Add your own (custom) prerequisite to "ClickOnce" application
+Related Research
+Toad Oracle: Discover the Top 10 Most Useful Toad Features
+How to Apply Changes to Your DB2 Database with Minimal Risk
+Toad Oracle: Tips to Simplify Database Administration and Development
+Data Modeling for Effective Data Warehousing and Business Intelligence
+Permalink | Advertise |
+Privacy |
+Mobile
+Web02 |
+2.8.140709.1 |
+Last Updated 4 Oct 2009	Article Copyright 2007 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

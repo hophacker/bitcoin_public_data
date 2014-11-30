@@ -1,0 +1,163 @@
+http://www.hackthissite.org/forums/viewtopic.php?p=76156
+Hack This Site Forum • View topic - Powerful Python md5 Decrypter I Made
+Skip to content
+[Advertise With HackThisSite.org]
+Hack This Site - Forums Index
+Board index ‹ Computers ‹ Programming ‹ Interpreted Languages
+Print view	FAQ
+Search
+Members	Login
+Powerful Python md5 Decrypter I Made For the discussion of Perl, Python, Ruby, and PHP and other interpreted languages.
+Post a reply
+16 posts	• Page 1 of 2 • 1, 2	Powerful Python md5 Decrypter I Made
+by Th3_M4d_H4tt3r on Tue Jun 18, 2013 10:12 pm	([msg=76156]see Powerful Python md5 Decrypter I Made[/msg])
+This python base MD5 Decrypter tool I made is rather quick but cannot crack passwords with numbers or special chars.it can crack a 4 letter long password in 5 minutes, it generates its own rainbow table to use for decrypting.you easily modify it to decrypt SHA1 or SHA2.the maximum length for a password to be cracked is 8, then again you can modify the rainbow table generator.here is the code:Code: Select allimport hashlibimport sysimport stringimport timecrackfile = sys.argv[1] #read hash file#start of our rainbow table generator codedef rainbow(): x=1 for x in range(x): for i in range(52): a=string.letters[i+x] for i in range(52): b=string.letters[i+x] for i in range(52): c=string.letters[i+x] for i in range(52): d=string.letters[i+x] for i in range(52): e=string.letters[i+x] for i in range(52): f=string.letters[i+x] for i in range(52): g=string.letters[i+x] for i in range(52): h=string.letters[i+x] yield h+g+f+e+d+c+b+a yield h+g+f+e+d+c+b yield h+g+f+e+d+c yield h+g+f+e+d yield h+g+f+e yield h+g+f yield h+g yield h#end of our rainbow table generator codedef Crack(passwd,HPS,alreadycracked=''): with open(crackfile, "r") as f: for h4sh in f: h4sh = h4sh.translate(None, "\n") h4sh2 = hashlib.md5(passwd).hexdigest() if h4sh in h4sh2: if passwd in alreadycracked: pass else: print "[ "+str(time.clock())+" ] "+""+h4sh+" is: '"+passwd+"'" return passwd elapsed=time.clock() print "Guessed Hashes: "+str(HPS) print "Total time elapsed: "+str(elapsed) print "\033[3A"print "PyCracker - By Th3 M4d H4tt3r"cracked=''HPS=0for rain in rainbow(): HPS=HPS+1 if cracked: Crack(rain,HPS,cracked) else: cracked=Crack(rain,HPS)Hope you guys like it - Th3_M4d_H4tt3rhere are some test hashes you can use:e2fc714c4727ee9395f324cd2e7f331f900150983cd24fb0d6963f7d28e17f721a1dc91c907325c69271ddf0c944bc7201fd38eaba0338571d10d5b2d36dfa6chave fun -- Moved to Programming section of the forums. ~Cent -- Th3_M4d_H4tt3r	Experienced User
+Posts: 54Joined: Tue Jun 18, 2013 8:25 am	Blog: View Blog (0)
+E-mail	Re: Powerful Python md5 Decrypter I Made
+by -Ninjex- on Tue Jun 18, 2013 10:46 pm	([msg=76157]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Great post, the title is a bit misleading. You don't decrypt md5, since it is a hash. You can run a dictionary, rainbow, or bruteforce attack on the hash.This seems to be a bruteforcer for md5?Also, I wouldn't say that it creates it's own rainbow table to use, because that's still like running a dictionary attack if it has to first convert to md5 and then compare, opposed to just comparing pre-configured md5 hash values.Also, to make it faster, program it in something like C. Python works great (and I have done similar in php) but using an interpreted language opposed to a compiled will make it much faster.
+If you're not willing to learn, no one can help you. If you're determined to learn, no one can stop you.⠠⠵The absence of evidence is not evidence of absence.I can explain it for you, but I can't understand it for you.
+-Ninjex-	Addict
+Posts: 1162Joined: Sun Sep 02, 2012 8:02 pm	Blog: View Blog (0)
+Re: Powerful Python md5 Decrypter I Made
+by Th3_M4d_H4tt3r on Tue Jun 18, 2013 10:49 pm	([msg=76158]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Although it uses a dictionary like attack, it does generate its own table for cracking although not a rainbow table, it still uses the same method It could use numbers in the attack though. I am now working on one that can crack passwords with numbersEDIT; the only problem is I don't know very much C or C++
+Tip me if I helped you!BTC Address: 15wu8gxFAemZH3jC4km3Z8gMYtKHLxpnEv
+Th3_M4d_H4tt3r	Experienced User
+Posts: 54Joined: Tue Jun 18, 2013 8:25 am	Blog: View Blog (0)
+E-mail	Re: Powerful Python md5 Decrypter I Made
+by -Ninjex- on Tue Jun 18, 2013 10:53 pm	([msg=76159]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Th3_M4d_H4tt3r wrote:Although it uses a dictionary like attack, it does generate its own table for cracking.It could use numbers in the attack though. I am now working on one that can crack passwords with numbersEDIT; the only problem is I don't know very much C or C++hrmm, I was going to make a post explaining all of these soon and posting some of my source code, but I will post the dictionary attack I made in php here, as it seems to fit.Code: Select all<?php//************************************************************************************************************************************/*************************************************************************************************************************************/*********************************************** Made by: Ninjex **************************************************************** This tool is used to crack md5 using a dictionary attack. All you have to do is specify the hash ******************************** and the tool should then run the attack on that hash, and tell you if it was located or not. ***********************///**********************************************************************************************************************************//************************************************************************************************************************************fwrite(STDOUT, "Please enter in the hash to decrypt: "); // asking for the hash$hash = trim(fgets(STDIN)); // grab the hash with STDINfwrite(STDOUT, "Please enter the full path to your dictionary: "); // asking for dictionary$dict = trim(fgets(STDIN));//------------------------------------------------------------------------------------------------------------------------------------if(!file_exists($dict)){ // if the file dictionary is invalid echo "The dictionary path you entered was invalid, please try again!\n"; // printing invalid path exit; // close the program}//------------------------------------------------------------------------------------------------------------------------------------$dictionary = fopen($dict, "r"); // declaring our dictionary file with read privileges.$hashed = NULL; // setting a variable hashed which will be used to hash words to NULL for the while loop.//------------------------------------------------------------------------------------------------------------------------------------while(!feof($dictionary) && $hashed != $hash) { // while the hashed word != the hash and we are not at the end of the file. $word = fgets($dictionary); // grab the current word on the current line $word = rtrim($word); // remove trailing whitespace from the word on the line (\n) $hashed = md5($word); // convert the word into md5 and store it into $hashed} // closing while//------------------------------------------------------------------------------------------------------------------------------------if($hashed == $hash) { // if the hash is found, print out the word that was converted and matched echo "The value of the hash is: $word\n"; // echo the original value of the hash} // closing if//------------------------------------------------------------------------------------------------------------------------------------if($hashed != $hash) { // If the hashed words and the hash never found a match echo "The value of the hash is not in this dictionary!\n"; // echo that the value was not inside our dictionary } // closing if//------------------------------------------------------------------------------------------------------------------------------------fclose($dictionary); // close our dictionary file//------------------------------------------------------------------------------------------------------------------------------------?>Note that the art for the title looks 100x better in nano / gedit
+Last edited by -Ninjex- on Tue Jun 18, 2013 11:32 pm, edited 6 times in total.	If you're not willing to learn, no one can help you. If you're determined to learn, no one can stop you.⠠⠵The absence of evidence is not evidence of absence.I can explain it for you, but I can't understand it for you.
+-Ninjex-	Addict
+Posts: 1162Joined: Sun Sep 02, 2012 8:02 pm	Blog: View Blog (0)
+Re: Powerful Python md5 Decrypter I Made
+by Th3_M4d_H4tt3r on Tue Jun 18, 2013 10:56 pm	([msg=76160]see Re: Powerful Python md5 Decrypter I Made[/msg])
+-Ninjex- wrote:Th3_M4d_H4tt3r wrote:Although it uses a dictionary like attack, it does generate its own table for cracking.It could use numbers in the attack though. I am now working on one that can crack passwords with numbersEDIT; the only problem is I don't know very much C or C++hrmm, I was going to make a post explaining all of these soon and posting some of my source code, but I will post the dictionary attack I made in php here, as it seems to fit.Code: Select all<?php//************************************************************************************************************************************/*************************************************************************************************************************************/*********************************************** Made by: Ninjex **************************************************************** This tool is used to crack md5 using a dictionary attack. All you have to do is specify the hash ******************************** and the tool should then run the attack on that hash, and tell you if it was located or not. ***********************///**********************************************************************************************************************************//************************************************************************************************************************************fwrite(STDOUT, "Please enter in the hash to decrypt: "); // asking for the hash$hash = trim(fgets(STDIN)); // grab the hash with STDIN$dictionary = fopen("/home/ninjex/words.lst", "r"); // declaring our dictionary file with read privileges.$hashed = NULL; // setting a variable hashed which will be used to hash words to NULL for the while loop.//------------------------------------------------------------------------------------------------------------------------------------while(!feof($dictionary) && $hashed != $hash) { // while the hashed word != the hash and we are not at the end of the file. $word = fgets($dictionary); // grab the current word on the current line $word = rtrim($word); // remove trailing whitespace from the word on the line (\n) $hashed = md5($word); // convert the word into md5 and store it into $hashed//------------------------------------------------------------------------------------------------------------------------------------if($hashed == $hash) { // if the hash is found, end the while loop, and print out the word that was converted and matched echo "The value of the hash is: $word\n"; // echo the original value of the hash } // closing if} // closing while//------------------------------------------------------------------------------------------------------------------------------------if($hashed != $hash) { // out of the while loop to save performance time. If the hashed words and the hash never found a match echo "The value of the hash is not in this dictionary!\n"; // echo that the value was not inside our dictionary } // closing if//------------------------------------------------------------------------------------------------------------------------------------fclose($dictionary); // close our dictionary file//------------------------------------------------------------------------------------------------------------------------------------?>Note that the art for the title looks 100x better in nano / geditthats pretty cool, I never thought about using PHP XD
+Tip me if I helped you!BTC Address: 15wu8gxFAemZH3jC4km3Z8gMYtKHLxpnEv
+Th3_M4d_H4tt3r	Experienced User
+Posts: 54Joined: Tue Jun 18, 2013 8:25 am	Blog: View Blog (0)
+E-mail	Re: Powerful Python md5 Decrypter I Made
+by -Ninjex- on Tue Jun 18, 2013 10:59 pm	([msg=76161]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Yeah, I just tweaked the code to allow stdin to grab the dictionary file instead of having it hard coded into a variable :pAnyways, I plan on posting these soon to explain each step of the way. Even converting dictionaries into rainbow tables.
+If you're not willing to learn, no one can help you. If you're determined to learn, no one can stop you.⠠⠵The absence of evidence is not evidence of absence.I can explain it for you, but I can't understand it for you.
+-Ninjex-	Addict
+Posts: 1162Joined: Sun Sep 02, 2012 8:02 pm	Blog: View Blog (0)
+Re: Powerful Python md5 Decrypter I Made
+by hellow533 on Wed Jun 19, 2013 1:57 am	([msg=76163]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Without numbers or special chars a 4 character password shouldn't take a full five minutes. That being said, it's a nice code, impressive for python and is more than I'm willing to do. Good job.
+“Teach me how to hack!”"What, like, with an axe?"
+hellow533	Contributor
+Posts: 506Joined: Thu Jan 29, 2009 3:27 pm	Blog: View Blog (0)
+E-mail	Re: Powerful Python md5 Decrypter I Made
+by -Ninjex- on Wed Jun 19, 2013 8:27 am	([msg=76168]see Re: Powerful Python md5 Decrypter I Made[/msg])
+hellow533 wrote:Without numbers or special chars a 4 character password shouldn't take a full five minutes. That being said, it's a nice code, impressive for python and is more than I'm willing to do. Good job.Yeah, another reason the title is misleading. I wouldn't say it is powerful, but it is a nice contribution and can be used for a great learning experience.
+If you're not willing to learn, no one can help you. If you're determined to learn, no one can stop you.⠠⠵The absence of evidence is not evidence of absence.I can explain it for you, but I can't understand it for you.
+-Ninjex-	Addict
+Posts: 1162Joined: Sun Sep 02, 2012 8:02 pm	Blog: View Blog (0)
+Re: Powerful Python md5 Decrypter I Made
+by Th3_M4d_H4tt3r on Wed Jun 19, 2013 2:11 pm	([msg=76172]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Well, I would say it is quite powerful for what python can do; thats what I meant. Tip me if I helped you!BTC Address: 15wu8gxFAemZH3jC4km3Z8gMYtKHLxpnEv
+Th3_M4d_H4tt3r	Experienced User
+Posts: 54Joined: Tue Jun 18, 2013 8:25 am	Blog: View Blog (0)
+E-mail	Re: Powerful Python md5 Decrypter I Made
+by centip3de on Wed Jun 19, 2013 3:43 pm	([msg=76175]see Re: Powerful Python md5 Decrypter I Made[/msg])
+Th3_M4d_H4tt3r wrote:Well, I would say it is quite powerful for what python can do; thats what I meant. For what Python can do? Python can do anything any other language can do (although things closer to the metal become slightly more difficult). You can fairly easily write a debugger/disassembler in Python, you can write a video game, you can write an operating system (but that's a bit more tricky. You'd most likely have to write a byte-code converter until you can fully port Python itself, but I digress.). You can literally do anything you want in it.
+Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the Universe trying to produce bigger and better idiots. So far, the Universe is winning. -Rick Cook
+centip3de	Moderator
+Posts: 1412Joined: Fri Aug 20, 2010 5:46 pm	Blog: View Blog (0)
+E-mail	Next	Display posts from previous: All posts1 day7 days2 weeks1 month3 months6 months1 year
+Sort by AuthorPost timeSubject AscendingDescending Post a reply
+16 posts	• Page 1 of 2 • 1, 2	Return to Interpreted Languages
+Jump to:
+Select a forum
+------------------	Forum Guidelines
+Terms of Service & Additional Information
+HackThisSite
+News
+Comments & Suggestions
+General Discussion
+General
+Networking
+Telecommunications
+Hardware
+Books
+Off-Topic
+LULZ
+Idiots' Corner
+Gaming
+PDF's and Articles
+NZone
+Graveyard
+HTS Subprojects
+Store
+IRC
+Lectures
+Audio/IRC Downloads
+OFFICIAL Lecture Approvals
+Radio
+HTS Missions
+Basic
+Realistic
+(Real 1) Uncle Arnold's Local Band Review
+(Real 2) Chicago American Nazi Party
+(Real 3) Peace Poetry: HACKED
+(Real 4) Fischer's Animal Products
+(Real 5) Damn Telemarketers!
+(Real 6) ToxiCo Industrial Chemicals
+(Real 7) What's Right For America
+(Real 8) United Banks Of America
+(Real 9) CrappySoft
+(Real 10) Holy Word High School
+(Real 11) BudgetServ Web Hosting
+(Real 12) Heartland School District
+(Real 13) Elbonian Republican Party
+(Real 14) Yuppers Internet Solutions
+(Real 15) seculas Ltd.
+(Real 16) Simple Mail
+Hack This Site
+Application
+Programming
+Extended Basics
+Javascript
+Steganography
+IRC Missions
+Forensic
+User Submitted
+Computers
+Operating Systems
+Microsoft Windows
+*nix
+Mac
+Networking
+Crypto
+Malware
+Telecommunications
+Android
+iOS
+Windows
+Blackberry
+Programming
+C and C++
+Interpreted Languages
+Custom Code
+Web
+Social Engineering
+Philosophy
+Politics
+Ethics
+General
+Religion
+Math & Science
+Graphic Design & Web Design
+General design
+Web Design
+Modeling and Animation
+Who is online
+Users browsing this forum: No registered users and 0 guests
+Disclaimer : HackThisSite does not support illegal activities.The management of this board is not responsible for the content of any external internet sites.
+Board index
+The team • Delete all board cookies • All times are UTC - 5 hours Powered by phpBB © 2000-2009 phpBB Group
+Carbon Style By Echo -=Designs By Echo=- © 2007 Echo
+Administration Control Panel
+

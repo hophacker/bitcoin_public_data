@@ -1,0 +1,754 @@
+http://preshing.com/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 15:16:01 GMT
+Server: Apache
+Last-Modified: Sun, 13 Jul 2014 18:45:15 GMT
+Accept-Ranges: bytes
+Content-Length: 27576
+Keep-Alive: timeout=10, max=200
+Content-Type: text/html
+Connection: close
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Preshing on Programming</title>
+  <meta name="author" content="Jeff Preshing">
+
+  
+  <meta name="description" content="In the C++11 standard atomic library, most functions accept a memory_order argument: enum memory_order { memory_order_relaxed, memory_order_consume, &hellip;">
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://preshing.com">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/feed" rel="alternate" title="Preshing on Programming" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-44017752-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src="/images/header.png" alt="Preshing on Programming"/></a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://twitter.com/preshing" rel="follow-twitter" title="Follow on Twitter">Twitter</a></li>
+  <li><a href="/feed" rel="subscribe-rss" title="Subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="stripe1"></div>
+  <div id="stripe2"></div>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-09T06:40:00-04:00" pubdate data-updated="true">Jul 09, 2014</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20140709/the-purpose-of-memory_order_consume-in-cpp11">The Purpose of memory_order_consume in C++11</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the C++11 standard atomic library, most functions accept a <code>memory_order</code> argument:</p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">enum</span> memory_order {
+    memory_order_relaxed,
+    memory_order_consume,
+    memory_order_acquire,
+    memory_order_release,
+    memory_order_acq_rel,
+    memory_order_seq_cst
+};
+</pre></div>
+</div>
+</div>
+
+<p>The above values are referred to as <strong>memory ordering constraints</strong>. Each of them has its intended purpose. Among them, <code>memory_order_consume</code> is probably the least well-understood. It&rsquo;s the most complicated ordering constraint, and it offers the least reward for using it correctly. Nonetheless, there it is, tempting the curious programmer to make sense of it &ndash; if only to unlock its dark, mysterious secrets. That&rsquo;s exactly what this post aims to do.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20140709/the-purpose-of-memory_order_consume-in-cpp11">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-27T07:40:00-05:00" pubdate data-updated="true">Jan 27, 2014</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20140127/what-is-a-bitcoin-really">What Is a Bitcoin, Really?</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I first started learning about Bitcoin, I found plenty of information, but nothing that directly answered the most burning question:</p>
+
+<p class="standout-text">When you buy bitcoins&#8230; what is it that you own, exactly?</p>
+
+<p>That&rsquo;s the question I&rsquo;ll answer in this post. Along the way, I&rsquo;ll introduce several key Bitcoin concepts. You&rsquo;ll see for yourself how bitcoins are secured and how they&rsquo;re transferred.</p>
+
+<p><img class="right" src="/images/bitcoin-symbol.png" />First and foremost, a bitcoin is a <strong>unit of account</strong>, in the same sense that a gallon is a unit of volume, or a gram is a unit of mass. You can&rsquo;t pick up a bitcoin and hold it in your hand like you can a dollar bill. But that&rsquo;s OK, because that&rsquo;s not what&rsquo;s important. What&rsquo;s important is that:</p>
+
+<ul>
+  <li>Bitcoins can be possessed.</li>
+  <li>Bitcoins can be transferred.</li>
+  <li>Bitcoins are impossible to copy.</li>
+</ul>
+
+<p>These three properties, combined, allow bitcoins to function effectively as a system of distribution of wealth. And fundamentally, that&rsquo;s what makes bitcoins useful.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20140127/what-is-a-bitcoin-really">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-19T06:30:00-05:00" pubdate data-updated="true">Dec 19, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20131219/bitcoin-address-generator-in-obfuscated-python">Bitcoin Address Generator in Obfuscated Python</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently, I became interested in the inner workings of <a href="http://bitcoin.org/">Bitcoin</a> &ndash; specifically, the way it uses elliptic curve cryptography to generate Bitcoin addresses such as <span class="btc-address">1PreshX6QrHmsWbSs8pHpz6kLRcj9kdPy6</span>. It inspired me to write another <a href="http://preshing.com/20110822/penrose-tiling-in-obfuscated-python">obfuscated</a> <a href="http://preshing.com/20110926/high-resolution-mandelbrot-in-obfuscated-python">Python</a> script. The following is valid Python code:</p>
+
+<pre class="bluecode">
+_                   =r"""A(W/2,*M(3*G
+               *G*V(2*J%P),G,J,G)+((M((J-T
+            )*V((G-S)%P),S,T,G)if(S@(G,J))if(
+         W%2@(S,T)))if(W@(S,T);H=2**256;import&amp;h
+       ashlib&amp;as&amp;h,os,re,bi    nascii&amp;as&k;J$:int(
+     k.b2a_hex(W),16);C$:C    (W/    58)+[W%58]if(W@
+    [];X=h.new("rip           em    d160");Y$:h.sha25
+   6(W).digest();I$                 d=32:I(W/256,d-1)+
+  chr(W%256)if(d&gt;0@"";                  U$:J(k.a2b_base
+ 64(W));f=J(os.urando       m(64))        %(H-U("AUVRIxl
+Qt1/EQC2hcy/JvsA="))+      1;M$Q,R,G       :((W*W-Q-G)%P,
+(W*(G+2*Q-W*W)-R)%P)       ;P=H-2**       32-977;V$Q=P,L=
+1,O=0:V(Q%W,W,O-Q/W*                      L,L)if(W@O%P;S,
+T=A(f,U("eb5mfvncu6                    xVoGKVzocLBwKb/Nst
+zijZWfKBWxb4F5g="),      U("SDra         dyajxGVdpPv8DhEI
+qP0XtEimhVQZnEfQj/       sQ1Lg="),        0,0);F$:"1"+F(W
+ [1:])if(W[:1           ]=="\0"@""        .join(map(B,C(
+  J(W))));K$:               F(W          +Y(Y(W))[:4]);
+   X.update(Y("\4"+                     I(S)+I(T)));B$
+    :re.sub("[0OIl    _]|            [^\\w]","","".jo
+     in(map(chr,ra    nge    (123))))[W];print"Addre
+       ss:",K("\0"+X.dig    est())+"\nPrivkey:",K(
+         "\x80"+I(f))""";exec(reduce(lambda W,X:
+            W.replace(*X),zip(" \n&amp;$@",["","",
+               " ","=lambda W,",")else "])
+                    ,"A$G,J,S,T:"+_))
+</pre>
+
+<p>Python 2.5 &ndash; 2.7 is required. Each time you run this script, it generates a Bitcoin address with a matching private key.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20131219/bitcoin-address-generator-in-obfuscated-python">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-25T06:49:00-05:00" pubdate data-updated="true">Nov 25, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20131125/acquire-and-release-fences-dont-work-the-way-youd-expect">Acquire and Release Fences Don&#8217;t Work the Way You&#8217;d Expect</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Raymond Chen <a href="http://blogs.msdn.com/b/oldnewthing/archive/2008/10/03/8969397.aspx">defined acquire and release semantics</a> as follows, back in 2008:</p>
+
+<blockquote>
+  <p>An operation with <strong>acquire semantics</strong> is one which does not permit subsequent memory operations to be advanced before it. Conversely, an operation with <strong>release semantics</strong> is one which does not permit preceding memory operations to be delayed past it.</p>
+</blockquote>
+
+<p>Raymond&rsquo;s definition applies perfectly well to Win32 functions like <code>InterlockedIncrementRelease</code>, which he was writing about at the time. It also applies perfectly well to <a href="http://preshing.com/20130618/atomic-vs-non-atomic-operations">atomic operations</a> in C++11, such as <code>store(1, std::memory_order_release)</code>.</p>
+
+<p>It&rsquo;s perhaps surprising, then, that this definition does <em>not</em> apply to standalone <a href="http://preshing.com/20130922/acquire-and-release-fences">acquire and release fences</a> in C++11! Those are a whole other ball of wax.</p>
+
+<p>To see what I mean, consider the following two code listings. They&rsquo;re both taken from my post about the <a href="http://preshing.com/20130930/double-checked-locking-is-fixed-in-cpp11">double-checked locking pattern</a> in C++11. The code on the left performs a release operation directly on <code>m_instance</code>, while the code on the right uses a release fence instead.</p>
+
+<p><img class="center" src="/images/operation-vs-fence.png" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20131125/acquire-and-release-fences-dont-work-the-way-youd-expect">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-30T08:49:00-04:00" pubdate data-updated="true">Sep 30, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130930/double-checked-locking-is-fixed-in-cpp11">Double-Checked Locking Is Fixed In C++11</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The <strong>double-checked locking pattern</strong> (DCLP) is a bit of a notorious case study in <a href="http://preshing.com/20120612/an-introduction-to-lock-free-programming/">lock-free programming</a>. Up until 2004, there was no safe way to implement it in Java. Before C++11, there was no safe way to implement it in portable C++.</p>
+
+<p>As the pattern gained attention for the shortcomings it exposed in those languages, people began to write about it. In 2000, a group of high-profile Java developers got together and signed a declaration entitled <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">&ldquo;Double-Checked Locking Is Broken&rdquo;</a>. In 2004, Scott Meyers and Andrei Alexandrescu published an article entitled <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf">&ldquo;C++ and the Perils of Double-Checked Locking&rdquo;</a>. Both papers are great primers on what DCLP is, and why, at the time, those languages were inadequate for implementing it.</p>
+
+<p>All of that&rsquo;s in the past. Java now has a revised memory model, with new semantics for the <code>volatile</code> keyword, which makes it possible to implement DCLP safely. Likewise, C++11 has a shiny new memory model and atomic library which enable a wide variety of portable DCLP implementations. C++11, in turn, inspired <a href="http://mintomic.github.io/">Mintomic</a>, a small library I released earlier this year which makes it possible to implement DCLP on some older C/C++ compilers as well.</p>
+
+<p>In this post, I&rsquo;ll focus on the C++ implementations of DCLP.
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130930/double-checked-locking-is-fixed-in-cpp11">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-22T17:50:00-04:00" pubdate data-updated="true">Sep 22, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130922/acquire-and-release-fences">Acquire and Release Fences</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/fence.png" />Acquire and release fences, in my opinion, are rather misunderstood on the web right now. That&rsquo;s too bad, because the C++11 Standards Committee did a great job specifying the meaning of these memory fences. They enable robust algorithms which scale well across multiple cores, and map nicely onto today&rsquo;s most common CPU architectures.</p>
+
+<p>First things first: Acquire and release fences are considered <em>low-level</em> lock-free operations. If you stick with higher-level, <a href="http://preshing.com/20120612/an-introduction-to-lock-free-programming#sequential-consistency">sequentially consistent</a> atomic types, such as <code>volatile</code> variables in Java 5+, or default atomics in C++11, you don&rsquo;t need acquire and release fences. The tradeoff is that sequentially consistent types are slightly less scalable or performant for some algorithms.</p>
+
+<p>On the other hand, if you&rsquo;ve developed for multicore devices in the days before C++11, you might feel an affinity for acquire and release fences. Perhaps, like me, you remember struggling with the placement of some <code>lwsync</code> intrinsics while synchronizing threads on Xbox 360. What&rsquo;s cool is that once you understand acquire and release fences, you actually see what we were trying to accomplish using those platform-specific fences all along.</p>
+
+<p>Acquire and release fences, as you might imagine, are standalone memory fences, which means that they aren&rsquo;t coupled with any particular memory operation. So, how do they work?</p>
+
+<blockquote>
+  <p>An <strong>acquire fence</strong> prevents the memory reordering of any <strong>read</strong> which precedes it in program order with any <strong>read or write</strong> which follows it in program order.</p>
+</blockquote>
+
+<blockquote>
+  <p>A <strong>release fence</strong> prevents the memory reordering of any <strong>read or write</strong> which precedes it in program order with any <strong>write</strong> which follows it in program order.</p>
+</blockquote>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130922/acquire-and-release-fences">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-23T11:19:47-04:00" pubdate data-updated="true">Aug 23, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130823/the-synchronizes-with-relation">The Synchronizes-With Relation</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/mini-cones.png" />In an earlier post, I explained how <a href="http://preshing.com/20130618/atomic-vs-non-atomic-operations">atomic operations</a> let you manipulate shared variables concurrently without any torn reads or torn writes. Quite often, though, a thread only modifies a shared variable when there are no concurrent readers or writers. In such cases, atomic operations are unnecessary. We just need a way to safely propagate modifications from one thread to another once they&rsquo;re complete. That&rsquo;s where the <em><strong>synchronizes-with</strong></em> relation comes in.</p>
+
+<p>&rdquo;<em>Synchronizes-with</em>&rdquo; is a term invented by language designers to describe ways in which the memory effects of source-level operations &ndash; even non-atomic operations &ndash; are guaranteed to become visible to other threads. This is a desirable guarantee when writing lock-free code, since you can use it to avoid <a href="http://preshing.com/20121019/this-is-why-they-call-it-a-weakly-ordered-cpu">unwelcome surprises</a> caused by memory reordering.</p>
+
+<p>&rdquo;<em>Synchronizes-with</em>&rdquo; is a fairly modern computer science term. You&rsquo;ll find it in the specifications of C++11, Java 5+ and LLVM, all of which were published within the last 10 years. Each specification defines this term, then uses it to make formal guarantees to the programmer. One thing they have in common is that whenever there&rsquo;s a <em>synchronizes-with</em> relationship between two operations, typically on different threads, there&rsquo;s a <a href="http://preshing.com/20130702/the-happens-before-relation"><em>happens-before</em> relationship</a> between those operations as well.</p>
+
+<p><img class="center" src="/images/implies.png" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130823/the-synchronizes-with-relation">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-02T07:37:41-04:00" pubdate data-updated="true">Jul 02, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130702/the-happens-before-relation">The Happens-Before Relation</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>Happens-before</em> is a modern computer science term which is instrumental in describing the <a href="http://preshing.com/20120930/weak-vs-strong-memory-models">software memory models</a> behind C++11, Java, Go and even LLVM.</p>
+
+<p>You&rsquo;ll find a definition of the <em>happens-before</em> relation in the specifications of each of the above languages. Conveniently, the definitions given in those specifications are basically the same, though each specification has a different way of saying it. Roughly speaking, the common definition can be stated as follows:</p>
+
+<blockquote>
+  <p>Let A and B represent operations performed by a multithreaded process. If A <em><strong>happens-before</strong></em> B, then the memory effects of A effectively become visible to the thread performing B before B is performed.</p>
+</blockquote>
+
+<p>When you consider the various ways in which memory reordering <a href="http://preshing.com/20120515/memory-reordering-caught-in-the-act">can complicate</a> lock-free programming, the guarantee that A <em>happens-before</em> B is a desirable one. There are several ways to obtain this guarantee, differing slightly from one programming language to next &ndash; though obviously, all languages must rely on the same mechanisms at the processor level.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130702/the-happens-before-relation">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T05:42:20-04:00" pubdate data-updated="true">Jun 18, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130618/atomic-vs-non-atomic-operations">Atomic vs. Non-Atomic Operations</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Much has already been written about atomic operations on the web, usually with a focus on atomic read-modify-write (RMW) operations. However, those aren&rsquo;t the only kinds of atomic operations. There are also atomic loads and stores, which are equally important. In this post, I&rsquo;ll compare atomic loads and stores to their non-atomic counterparts at both the processor level and the C/C++ language level. Along the way, we&rsquo;ll clarify the C++11 concept of a &ldquo;data race&rdquo;.</p>
+
+<p><img class="center" src="/images/nonatomic.png" /></p>
+
+<p>An operation acting on shared memory is <strong>atomic</strong> if it completes in a single step relative to other threads. When an atomic store is performed on a shared variable, no other thread can observe the modification half-complete. When an atomic load is performed on a shared variable, it reads the entire value as it appeared at a single moment in time. Non-atomic loads and stores do not make those guarantees.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130618/atomic-vs-non-atomic-operations">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T07:10:21-04:00" pubdate data-updated="true">Jun 05, 2013</time>
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/20130605/the-worlds-simplest-lock-free-hash-table">The World&#8217;s Simplest Lock-Free Hash Table</a></h1>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A lock-free hash table is a double-edged sword. There are applications where it can provide a performance improvement that would be impossible to achieve otherwise. The downside is that it&rsquo;s complicated.</p>
+
+<p>The first working lock-free hash table I heard about was written in Java by Dr. Cliff Click. He <a href="http://www.azulsystems.com/blog/cliff/2007-04-23-nonblocking-hashtable-source-code">released the source code</a> back in 2007 and <a href="http://www.youtube.com/watch?v=HJ-719EGIts">gave a presentation</a> about it at Google that same year. When I first watched that presentation, I&rsquo;ll admit, I didn&rsquo;t understand most of it. The main conclusion I took away from it was that Dr. Cliff Click must be some kind of wizard.</p>
+
+<p><a href="http://www.youtube.com/watch?v=HJ-719EGIts"><img class="center" src="/images/cliff-click.jpg" /></a></p>
+
+<p>Luckily, six years has given me enough time to (mostly) catch up to Cliff on this subject. It turns out that you don&rsquo;t have to be a wizard to understand and implement a very basic, but perfectly functional, lock-free hash table. I&rsquo;ll share the source code for one here. I&rsquo;m pretty sure that anyone with experience writing multithreaded C++, and a willingness to comb through previous information on this blog, can fully understand it.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/20130605/the-worlds-simplest-lock-free-hash-table">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    
+    <a href="/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section class="centered">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Preshing.com square -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:200px;height:200px"
+     data-ad-client="ca-pub-4405337903919609"
+     data-ad-slot="8868121895"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/20140709/the-purpose-of-memory_order_consume-in-cpp11">The Purpose of memory_order_consume in C++11</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20140127/what-is-a-bitcoin-really">What Is a Bitcoin, Really?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20131219/bitcoin-address-generator-in-obfuscated-python">Bitcoin Address Generator in Obfuscated Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20131125/acquire-and-release-fences-dont-work-the-way-youd-expect">Acquire and Release Fences Don&#8217;t Work the Way You&#8217;d Expect</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130930/double-checked-locking-is-fixed-in-cpp11">Double-Checked Locking Is Fixed In C++11</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130922/acquire-and-release-fences">Acquire and Release Fences</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130823/the-synchronizes-with-relation">The Synchronizes-With Relation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130702/the-happens-before-relation">The Happens-Before Relation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130618/atomic-vs-non-atomic-operations">Atomic vs. Non-Atomic Operations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130605/the-worlds-simplest-lock-free-hash-table">The World&#8217;s Simplest Lock-Free Hash Table</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130529/a-lock-free-linear-search">A Lock-Free&#8230; Linear Search?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130505/introducing-mintomic-a-small-portable-lock-free-api">Introducing Mintomic: A Small, Portable Lock-Free API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130115/view-your-filesystem-history-using-python">View Your Filesystem History Using Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20130107/this-hash-table-is-faster-than-a-judy-array">This Hash Table Is Faster Than a Judy Array</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121224/how-to-generate-a-sequence-of-unique-random-integers">How to Generate a Sequence of Unique Random Integers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121105/arithmetic-encoding-using-fixed-point-math">Arithmetic Encoding Using Fixed-Point Math</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121105/arithmetic-coding-and-the-1mb-sorting-problem">Arithmetic Coding and the 1MB Sorting Problem</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121026/1mb-sorting-explained">1MB Sorting Explained</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121025/heres-some-working-code-to-sort-one-million-8-digit-numbers-in-1mb-of-ram">Here&#8217;s Some Working Code to Sort One Million 8-Digit Numbers in 1MB of RAM</a>
+      </li>
+    
+      <li class="post">
+        <a href="/20121019/this-is-why-they-call-it-a-weakly-ordered-cpu">This Is Why They Call It a Weakly-Ordered CPU</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tip Jar</h1>
+
+  <p class="tip-hint">If you like this blog, and you&#8217;ve found the posts valuable to you in some way, consider <a href="/tip-jar">leaving a tip!</a></p>
+  <a href="/tip-jar"><div id="tipjar-div"><img id="tip-hand" src="/images/tip-hand.png" width="76" height="54"/><img src="/images/tip-jar.png" width="83" height="104"/></div></a>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 Jeff Preshing -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+

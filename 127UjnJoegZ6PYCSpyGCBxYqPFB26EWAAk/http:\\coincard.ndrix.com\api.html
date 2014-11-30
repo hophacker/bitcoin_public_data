@@ -1,0 +1,210 @@
+http://coincard.ndrix.com/api.html
+HTTP/1.0 200 OK
+Expires: Wed, 23 Jul 2014 07:03:33 GMT
+Date: Wed, 23 Jul 2014 06:03:33 GMT
+Cache-Control: public, max-age=3600
+Last-Modified: Tue, 04 Sep 2012 19:03:49 GMT
+ETag: "17f906765741329e9af7f391849f57ec"
+x-goog-generation: 1346784061659003
+x-goog-metageneration: 1
+x-goog-stored-content-encoding: gzip
+x-goog-stored-content-length: 2245
+Content-Type: text/html
+Content-Encoding: gzip
+Content-Language: en
+x-goog-hash: crc32c=bXFAow==
+x-goog-hash: md5=F/kGdldBMp6a9/ORhJ9X7A==
+x-goog-storage-class: STANDARD
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Length: 2245
+Server: HTTP Upload Server Built on Jul 9 2014 18:16:44 (1404955004)
+Alternate-Protocol: 80:quic
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0034)http://coincard.ndrix.com/page/api -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>CoinCard - Sell Bitcoin for Gift Cards</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="http://coincard.ndrix.com/static/images/favicon.ico">
+</head>
+<body class=" hasGoogleVoiceExt">
+    <div id="topbar">
+      <div class="barcenter">
+        <div id="barlogo">CardCoin</div>
+        
+        <div class="barlinks">
+            <a href="index.html" class="barlink">Start an Order</a> |
+            <a href="how-it-works.html" class="barlink">How it Works</a> |
+            <a href="prices.html" class="barlink">Prices</a> |
+            <a href="faq.html" class="barlink">FAQ</a> |
+            <a href="api.html" class="barlink">API</a>
+          </div>
+      </div>
+    </div>
+    <div id="pagebox">
+        
+
+<h1>API</h1>
+
+<p>
+    You can convert Bitcoins into gift cards
+    by sending an HTTP <code>POST</code> request to
+    <code>http://coincard.ndrix.com/api</code> with the following body parameters.
+</p>
+
+<table>
+    <tbody><tr>
+        <th>card_type</th>
+        <td>
+            <code>amazon</code>,
+            <code>bestbuy</code>,
+            <code>dominos</code>,
+            <code>papajohns</code>,
+            etc.  See
+            the <em>Gift Card</em> drop down on the
+            <a href="http://coincard.ndrix.com/">order form</a> for a complete list
+        </td>
+    </tr>
+    <tr>
+        <th>card_amount</th>
+        <td>The USD or BTC amount to be placed on the gift card</td>
+    </tr>
+    <tr>
+        <th>currency</th>
+        <td>
+            The currency of the <code>card_amount</code> value.
+            One of <code>btc</code> or <code>usd</code>
+        </td>
+    </tr>
+    <tr>
+        <th>email</th>
+        <td>
+            Email address where the payment or gift card is sent.
+            Optional if <code>dry_run</code> is specified
+        </td>
+    </tr>
+    <tr>
+        <th>dry_run</th>
+        <td>
+            Set to <code>1</code> if you want to see the order totals
+            but have no intention of completing the order
+        </td>
+    </tr>
+</tbody></table>
+
+<h2>Success Response</h2>
+
+<p>
+    On <strong>success</strong>, you get a JSON response
+    with a Bitcoin address and both USD and BTC amounts.
+    Send BTC
+    payment to the address specified within <strong>2 minutes</strong> to
+    complete the order.
+</p>
+
+<pre>    {"btc":20.12, "usd":16.91, "btc_address":"127UjnJoegZ6PYCSpyGCBxYqPFB26EWAAk"}
+</pre>
+
+<h2>Error Response</h2>
+
+<p>
+  If there's an <strong>error</strong>,
+  you get a response something like this:
+</p>
+
+<pre>    {"error":{"general":{"code":1,"message":"CoinCard is temporarily closed"}}}
+</pre>
+
+<p>
+    It's also possible to get errors about specific API fields.  These errors
+    only happen when you have a malformed request.  Since they shouldn't
+    happen once your code is in production, error codes are not included.
+</p>
+
+<pre>    {"error":{"card_type":"Unknown card type","email":"Required"}}
+</pre>
+
+<h3>Error Codes</h3>
+
+<table>
+    <tbody>
+        <tr>
+            <th>1</th>
+            <td>
+                CoinCard is currently down for maintenance
+            </td>
+        </tr>
+        <tr>
+            <th>2</th>
+            <td>
+                You sent a <code>GET</code> request but a <code>POST</code>
+                request is needed
+            </td>
+        </tr>
+        <tr>
+            <th>3</th>
+            <td>
+                You tried placing an order lower than $1
+            </td>
+        </tr>
+        <tr>
+            <th>4</th>
+            <td>
+                Insufficient funds.  You can try a smaller amount or
+                wait a few hours for funds to become available before
+                trying the request again.
+            </td>
+        </tr>
+        <tr>
+            <th>5</th>
+            <td>
+                You placed an order smaller than <code>card_type</code>
+                allows.  For instance, Domino's has a minimum order of
+                $5.
+            </td>
+        </tr>
+        <tr>
+            <th>6</th>
+            <td>
+                You placed an order larger than <code>card_type</code>
+                allows.  For instance, Domino's has a maximum order of
+                $100.
+            </td>
+        </tr>
+        <tr>
+            <th>999</th>
+            <td>
+                CoinCard internal error.  If you encounter this code,
+                please email us the request details so that we can
+                fix the problem.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+    </div>
+    <div class="footer">
+        <div class="footercenter">
+            © Copyright <a href="https://wyobiz.wy.gov/Business/FilingDetails.aspx?FilingNum=2010-000589336">Hendricks Reserve</a>, LLC
+            <br>
+            <a href="mailto:coincard@ndrix.com">coincard@ndrix.com</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-519809-5']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
+
+
+</body><link rel="stylesheet" type="text/css" href="data:text/css,"></html>
+

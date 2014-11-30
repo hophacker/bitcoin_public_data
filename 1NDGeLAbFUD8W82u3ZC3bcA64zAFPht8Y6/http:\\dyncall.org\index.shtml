@@ -1,0 +1,231 @@
+http://dyncall.org/index.shtml
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 03:35:08 GMT
+Server: Apache
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3534
+Connection: close
+Content-Type: text/html
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" >
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <meta name="resource-type" content="document"/>
+        <meta name="keywords"      content="C, function, dynamic, call, calling, convention, VM, abstraction, closure"/>
+        <meta name="distribution"  content="global"/>
+        <link rel="stylesheet" id="dyn-fonts-css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;subset=latin,latin-ext" type="text/css" media="all"/>
+        <link rel="stylesheet" href="data/main.css" type="text/css" media="all"/>
+        <title>dyncall.org - calling C functions dynamically</title>
+
+        <script type="text/javascript">
+                /* <![CDATA[ */
+                (function() {
+                        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+                        s.type = 'text/javascript';
+                        s.async = true;
+                        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+                        t.parentNode.insertBefore(s, t);
+                })();
+                /* ]]> */
+        </script>
+</head>
+<body>
+
+<table>
+        <tr>
+                <td align="left" valign="top" nowrap="nowrap"><a href="./index.shtml"><img src="data/dyncall_s.png" align="left" border="0" alt="dyncall library - C foreign function interface"/></a></td>
+
+<td align="left" valign="middle" width="100%" nowrap="nowrap">
+
+<b>dyncall library: </b>
+<a href="index.shtml">home</a>
+- <a href="news.shtml">news</a>
+- <a href="download.shtml">download</a>
+- <a href="bindings.shtml">bindings</a>
+- <a href="documentation.shtml">documentation</a>
+- <a href="license.shtml">license</a>
+- <a href="developers.shtml">developers</a>
+- <a href="credits.shtml">credits</a>
+- <a href="showcase.shtml">showcase/users</a>
+- <a href="contact.shtml">contact</a>
+- <a href="blog">blog</a>
+</td>
+
+<td align="right" valign="bottom" nowrap="nowrap"><a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://www.dyncall.org"></a></td>
+<td align="right" valign="top" nowrap="nowrap"><a href="http://www.uni-goettingen.de/"                                                            ><img src="data/ugoe_s.png"    align="right" border="0" alt="University of G&ouml;ttingen"                                                 /></a></td>
+<td align="right" valign="top" nowrap="nowrap"><a href="http://www.statoek.wiso.uni-goettingen.de/cms/user/index.php?lang=en&amp;section=institut"><img src="data/isoe_s.png"    align="right" border="0" alt="Institute for Statistics and Econometrics at the University of G&ouml;ttingen"/></a></td>
+<td align="right" valign="top" nowrap="nowrap"><a href="http://www.potion-studios.com/"                                                           ><img src="data/potion_s.png"  align="right" border="0" alt="3ds Max, Maya Plugin Development - Potion Studios"                            /></a></td>
+</tr>
+</table>
+
+<hr/>
+<div class="mainDiv">
+
+
+<h1>Introduction</h1>
+
+<div id="subscribe">
+<form action="https://lists.dynware-hq.org/mailman/subscribe/dyncall-news">
+<h2 style="text-align: center;" >NEW: Join our news letter and mailing list</h2>
+<br/>
+<small>
+Receive announcements of dyncall releases, critical bug-fixes and porting news
+by subscribing to the dyncall-news mailing list.
+</small>
+<br/>
+<center>
+  Subscribe with your e-mail address 
+  <input type="text" name="email" value=""/>
+  <input type="submit" value="subscribe me"/><br/>  
+  <hr/>
+  <small>In addition you may want to join the<br/><a href="https://lists.dynware-hq.org/mailman/listinfo/dyncall-talk">dyncall-talk mailing list</a><br/>for general discussion.</small>
+</center>
+</form>
+</div>
+
+<p><img src="data/dyncall_b.png" align="left"  border="0" alt="dyncall library"/>
+The <b>dyncall</b> library encapsulates architecture-, OS- and compiler-specific
+function call semantics in a virtual "bind argument parameters from left to
+right and then call" interface allowing programmers to call C functions in a
+completely dynamic manner. In other words, instead of calling a function
+directly, the <b>dyncall</b> library provides a mechanism to push the function
+parameters manually and to issue the call afterwards.<br/>
+This means, that a program can determine at runtime what function to call,
+and what parameters to pass to it. The library is written in C and assembly
+and provides a very simple C interface to program against.
+</p>
+
+<p>
+The library comes in very handy to power flexible message systems, dynamic
+function call dispatch mechanisms, closure implementations, to bridge
+different programming languages, or to simply wrap a &quot;vararg&quot;
+function.<br/>
+When it comes to language bindings, the <b>dyncall</b> library provides a clean
+and portable C interface to dynamically issue calls to foreign code using
+small call kernels written in assembly. Instead of providing code for every
+bridged function call, which unnecessarily results in code bloat, only a
+couple of instructions are used to invoke every possible call.
+</p>
+<br/>
+
+
+<h2>Example</h2>
+
+<p>
+Let's say, we want to make a call to the function:
+</p>
+
+<div class="ttDiv">
+<tt>
+double sqrt(double x);
+</tt>
+</div>
+
+
+<p>
+Using the <b>dyncall</b> library, this function would be called as follows:
+</p>
+
+<div class="ttDiv">
+<tt>
+double r;<br/>
+DCCallVM* vm = dcNewCallVM(4096);<br/>
+dcMode(vm, DC_CALL_C_DEFAULT);<br/>
+dcReset(vm);<br/>
+dcArgDouble(vm, 4.2373);<br/>
+r = dcCallDouble(vm, (DCpointer)&amp;sqrt);<br/>
+dcFree(vm);<br/>
+</tt>
+</div>
+
+<p>
+If you already have a DCCallVM object (e.g. for followup calls), this simply boils down to:
+</p>
+
+<div class="ttDiv">
+<tt>
+dcReset(vm);                                  // Init/flush arguments.<br/>
+dcArgDouble(vm, 5.2);                         // Push/bind argument(s).<br/>
+r = dcCallDouble(vm, (DCpointer)&amp;sqrt);   // Call.<br/>
+</tt>
+</div>
+
+<p>
+Note that, by exposing this functionality to a dynamic scripting environment,
+the latter can gain system programming status to a certain degree. It is easy
+to see the power one can get by calling a C function directly from within
+a scripting language. Demonstrative bindings and examples for several
+different scripting languages are provided with the library.
+</p>
+<br/>
+
+
+<h2>Rough overview of platforms and features</h2>
+
+<p>
+The <b>dyncall</b> library runs on many different platforms and operating
+systems (including Windows, Linux, OpenBSD, FreeBSD, MacOS X, DragonFlyBSD,
+NetBSD, Plan9, iOS, Haiku, Nintendo DS, Playstation Portable, Solaris, Minix,
+Raspberry Pi, ReactOS, etc.) and processors (x86, x64, arm (arm and thumb mode), mips, mips64,
+ppc32, sparc, sparc64, etc.).
+</p>
+<p>
+Most of the platforms' C-calling conventions are supported - including
+&quot;vararg&quot; functions, as well es C++-&quot;thiscalls&quot; (on some
+platforms), syscalls (on some platforms), and the multitude of calling
+conventions on Windows (&quot;fastcall&quot;, &quot;stdcall&quot;, etc.).<br/>
+Most of C99's types are supported for setting up a call, however, structure
+and union support is still missing (we are working on it, though).
+</p>
+<p>
+Additionally, <b>dyncall</b> comes with <b>dyncallback</b>, a library for
+callback support (missing on some platforms), and <b>dynload</b>, to facilitate
+portable dynamic library symbol loading and access (only for platforms with
+dynamic library support).
+</p>
+<p>
+For details, refer to the <b>dyncall</b>
+<a href="documentation.shtml">manual/documentation</a>.
+</p>
+
+<p>
+For information about how we test and build a majority of the supported
+platforms, check out 
+<a href="dynos">dynOS</a>.
+</p>
+
+<br/>
+
+<h2>Donations</h2>
+
+<p>
+The library's development doesn't depend on funds, but obviously benefits from
+donations - if you feel like giving, please donate using<!-- <b>bitcoin</b> address
+<b>1NDGeLAbFUD8W82u3ZC3bcA64zAFPht8Y6</b> or -->the <b>flattr</b>-button in the
+top-right corner. Thanks!
+</p>
+
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=3345580; 
+var sc_invisible=0; 
+var sc_partition=36; 
+var sc_security="2f14c920"; 
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+<!-- <noscript><div class="statcounter"><a class="statcounter" href="http://www.statcounter.com/"><img class="statcounter" src="http://c37.statcounter.com/3345580/0/2f14c920/0/" alt="web analytics"></a></div></noscript> -->
+<!-- End of StatCounter Code -->
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,349 @@
+http://www.codeproject.com/Articles/24852/Deployer?fid=1168911&df=90&mpp=10&sort=Position&spc=None&tid=4208666
+Deployer - CodeProject 10,722,345 members (79,687 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Development Lifecycle » Installation » General
+ArticleAlternatives
+Comments (10)
+View this article's Workspace
+Fork this Workspace
+Deployer Predrag Tomasevic, 30 Mar 2012
+4.43 (16 votes)
+1
+2
+3
+4
+5
+4.43/5 - 16 votes1 removedμ 4.30, σa 1.97 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Automate deployment of Windows Services, ClickOnce, and other .NET applications.	Download source - 269 KB
+Download latest source from CodePlex
+Deployer's CodePlex project Home page
+Introduction
+There are many things about software engineering today that stun me. Even when you just scratch the surface of most software development projects, serious flaws become obvious. Teams often daily repeat some obscure rituals (like backing-up and restoring database from development to testing environment) to keep the development effort going... and what surprises most is that when you talk with developers, many will tell you that they are aware of problems, but do not have the time or will to create something that will be used to fix them. Every time I stumble upon this situation, I think to myself:
+A good workman is known by his tools.
+Nowhere is this proverb better applied than in software engineering. Because, our tools (unlike tools of, for example, blacksmiths) do not require any physical material to be crafted. Or as Frederick P. Brooks would put it in his legendary “Mythical Man-Month”
+:
+The programmer, like the poet, works only slightly removed from pure thought-stuff. He builds his castles in the air, from air, creating by exertion of the imagination.
+Developers that lack knowledge or initiative will surrender to the flow of software projects and do daily repetitive tasks by hand. Good developers, on the other hand, will identify certain patterns and use their skills to build tools that automate them. I would go further to say that – ability to pinpoint areas in which they, as tools of their thoughts, are lacking is what separates those who are programmers by chance and those who should be programmers. Because, after performing mundane tasks everyday for a week, any real programmer will ask himself “Why am I doing this? Can’t the computer do this for me?” (you can identify the managerial type in yourself if your second question is “Can’t someone else do this for me?”).
+Another big advantage of our profession is that we can easily obtain tools. Sites like CodeProject are great just because they empower us to give and take. They enable us to use ourselves as coding tools only for things someone else haven’t implemented. By giving away my code, I hope I’ll save someone else’s time he’ll spend on making tools that I may find useful.
+Index
+Problem
+Solution
+XML definition
+Deployment types
+Service
+ClickOnce
+DatabaseScript
+Setting up Deployer
+Writing your own deployer.xml
+Security considerations
+Words of thanks
+Conclusion
+Problem
+I’m just off a project where the testing and production location is 400 Km away from the place where the developers are stationed. Initially, every change in code required manual copying of the DLLs built. The developer would connect to an FTP server and upload files. Then, he would use Remote Desktop to connect to a machine (in most cases, using another Remote Desktop as a proxy) and perform the appropriate set of actions depending on the deployment type. If he is deploying Windows Service, he would go to Administrative Tools -> Services, and stop/start the service during deployment. If he is deploying a ClickOnce application, he would need to resign manifests after placing the files in the appropriate location. And, in any case, he would have to manually update the config file, by merging the missing sections, or updating the ones that need it. Because of licensing constraints (two Remote Desktop connections per machine), developers would often have to wait for their colleagues to finish.
+I guess that anyone who has deployed to a remote machine has been in a similar situation. The problem with the previously laid out process is its human driven nature – requiring constant attention and thinking. After being forced to run a couple of previously mentioned laps and getting bored, I started thinking on how to optimize the whole process.
+Solution
+It is obvious that there are several types of deployments. Sometimes, just copying files is enough; sometimes, the service must be stopped; and sometimes, a manifest signed. In every case, the flow is as follows:
+Upload files to server
+Perform specific pre-processing tasks
+Copy files to location
+Change the config file
+Perform specific post-processing tasks
+Specifics of each deployment require some kind of metadata that will explain what needs to be done in order to achieve successful deployment. So, I’ve decided to create an XML based specification that I would pack along with the application files in a zip file. After creating the zip file, I would upload it to the server using FTP, and leave everything to the Windows service (that I developed to understand the specification and named Deployer) which will process everything for me.
+XML definition
+Here is an example manifest that tells how the deployment will occur on machines named tyrion and otherTestMachine:
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;deployer&gt;
+  &lt;deployInfo type="xcopy" machineName="tyrion" lookFurther="false"&gt;
+    &lt;targetPath clear="false" backup="false"&gt;c:\deployer-xcopy&lt;/targetPath&gt;
+    &lt;configReplaces&gt;
+      &lt;entry&gt;
+        &lt;find&gt;Blah&lt;/find&gt;
+        &lt;replace&gt;Eh1&lt;/replace&gt;
+      &lt;/entry&gt;
+    &lt;/configReplaces&gt;
+    &lt;configReplaces searchExpression="*.xml"&gt;
+      &lt;entry&gt;
+        &lt;find&gt;Change Xml Entry&lt;/find&gt;
+        &lt;replace&gt;New value&lt;/replace&gt;
+      &lt;/entry&gt;
+    &lt;/configReplaces&gt;
+  &lt;/deployInfo&gt; 
+
+  &lt;deployInfo type="xcopy" machineName="otherTestMachine"&gt;
+    &lt;targetPath&gt;d:\deployer-xcopy&lt;/targetPath&gt;
+  &lt;/deployInfo&gt; 
+&lt;/deployer&gt;
+Well named elements in XML enable self-documentation; I’ve hopefully succeeded in picking the right names so that you can understand most of the specification. To be sure, here is a quick explanation – when a zip file with the application DLLs and this XML comes to the server, my Windows service will unpack everything to a temporary folder and search for deployer.xml (standardized name for specification).
+When the file is found, it will be loaded to memory and searched for the deployerInfo element that either contains the machine name of the machine on which the service runs or no machine name at all (<deployerInfo type="xcopy"> will perform the specified deployment, no matter what the machine’s name is).
+When the appropriate deployerInfo tag is found, the type of deployment is evaluated. We have XCopy type of deployment in our example, so the service will just copy the files from the zip to the c:\deployer-xcopy folder. Because the clear and backup attributes are set to false, the service will not clear or backup the target folder.
+Finally, the c:\deployer-xcopy directory will be searched for *.config files (default search expression if it is not specified) in which it will replace every Blah occurrence with Eh1. The same thing will be done for *.xml files (<configReplaces searchExpression="*.xml">) in which Change Xml Entry will be replaced with New value.
+The biggest strength of Deployer is that it can easily define deployment of one application to different machines/environments. If you deploy a zip with this XML to otherTestMachine, it’ll just copy the contents to d:\deployer-xcopy, not touching *.config and *.xml files (opposite to tyrion deployment).
+Using the lookFuther attribute, you can easily tweak multiple deployments of one package. By default, this attribute is true - if you specify two <deployerinfo machinename="tyrion"> elements, Deployer will perform double deployment, which is useful if you have a cluster of servers. In the example deployer.xml that follows, the Deployer service on machine named cluster will perform three XCopy deployments, to server1, server2, and server3; not getting to server4 because of the false lookFurther attribute.
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;deployer&gt;
+  &lt;deployInfo type="xcopy" machineName="cluster"&gt;
+    &lt;targetPath&gt;\\server1\deployer-xcopy&lt;/targetPath&gt;
+  &lt;/deployInfo&gt; 
+
+  &lt;deployInfo type="xcopy" machineName="cluster"&gt;
+    &lt;targetPath&gt;\\server2\deployer-xcopy&lt;/targetPath&gt;
+  &lt;/deployInfo&gt; 
+
+  &lt;deployInfo type="xcopy" machineName="cluster" lookFurther="false"&gt;
+    &lt;targetPath&gt;\\server3\deployer-xcopy&lt;/targetPath&gt;
+  &lt;/deployInfo&gt; 
+
+  &lt;deployInfo type="xcopy" machineName="cluster"&gt;
+    &lt;targetPath&gt;\\server4\deployer-xcopy&lt;/targetPath&gt;
+  &lt;/deployInfo&gt; 
+&lt;/deployer&gt;
+Deployment types
+Along with the already shown XCopy type of deployment, I’ve developed three other: Service, ClickOnce, and DatabaseScript. You can see the inheritance tree on the picture that follows:
+Figure 1 – Deployment types
+Basically, Service deployment is XCopy with stopping/starting of the Windows service when appropriate; ClickOnce is XCopy with manifest signing after the files are in place; DatabaseScript inherits directly from the abstract BaseDeployType as it doesn’t need copying of files, it just connects to a database and executes scripts the user packs along in the zip file.
+Let’s look into the specifics of each deployment type.
+Service
+Here is an example service deployment definition specification:
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;deployer&gt;
+  &lt;deployInfo type="service" machineName="test9"&gt;
+    &lt;targetPath clear="false" backup="true"&gt;c:\deployed&lt;/targetPath&gt;
+    &lt;backupInfo&gt;
+      &lt;exclude path="~\someFiles" /&gt;
+    &lt;/backupInfo&gt;
+    &lt;serviceMachine&gt;test9&lt;/serviceMachine&gt;
+    &lt;serviceName&gt;SomeUniqueName&lt;/serviceName&gt;
+  &lt;/deployInfo&gt; 
+&lt;/deployer&gt;
+The missing configReplaces section does not mean that you can’t apply it here. By using this example, I just wanted to emphasize that it is optional (as some other sections we will see in the following examples).
+The ServiceMachine is an optional element that specifies the machine name on which the service resides (default value is . which stands for the local machine). This enables deployment on remote machines if you run the Deployer service under the domain administrator account (more on this at the end of article). ServiceName is a unique string under which you register the service. It’ll be used to find a service in a machine’s Service collection in order to control it.
+By using the backupInfo element you can exclude some folders/files from the backup process. This is especially useful when your application auto generates folders full of temporary files which you do not need when it comes to application functionality. The backupInfo element is available for all XCopy deployments.
+ClickOnce
+Most of the questions I’ve got on my previous deployment article were related to ClickOnce. It is not without reason – Microsoft’s development team made it extremely easy to use ClickOnce with default settings. But, if you want to change anything... well then, good luck to you: start swooping through badly written MSDN pages hoping you’ll not hit dead end.
+Two of the mostly repeated questions are:
+Can I deploy my ClickOnce application to a custom path (c:\Program Files\MyApp)?
+How can I change the config or move the installation folder to a new path without invalidating manifest values and signatures?
+Unfortunately, I can’t help you with the first, as ClickOnce forces deployment to c:\Documents and Settings\%User%\.... However, Deployer easily answers the second question as it automates the process of signing manifests.
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;deployer&gt;
+  &lt;deployInfo type="clickOnce" machineName="tyrion"&gt;
+    &lt;targetPath&gt;c:\deployer-clickOnce&lt;/targetPath&gt;
+    &lt;usePackedKey keyPassword="123"&gt;true&lt;/usePackedKey&gt;
+    &lt;providerUrl&gt;\\tyrion\oblik\&lt;/providerUrl&gt;
+    &lt;configReplaces&gt;
+      &lt;entry&gt;
+        &lt;find&gt;Šmeker&lt;/find&gt;
+        &lt;replace&gt;Milorad Cavic&lt;/replace&gt;
+      &lt;/entry&gt;
+    &lt;/configReplaces&gt;
+    &lt;dllCache&gt;
+      &lt;dll name="stdole.dll" copyTo="{manifestDirectory}" /&gt;
+      &lt;dll name="Interop.VSFlex7L.dll" copyTo="{manifestDirectory}" /&gt;
+    &lt;/dllCache&gt;
+  &lt;/deployInfo&gt;
+&lt;/deployer&gt;
+Apart from the already seen targetPath and configReplaces elements, the first new element is usePackedKey. It enables you to sign manifests with the PFX key you pack along with deployer.xml and the application files in the zip. If you omit this element, Deployer will sign manifests with the default key I provided along with the source code (clickOnceKey.pfx in the Deployer project, it expires in year 2040).
+ProviderUrl specifies the URL on which your ClickOnce installation will be visible after deployment, giving you an opportunity to easily move your ClickOnce installation through different testing environments.
+Finally, dllCache helps you shrink the zip archive size. Deployer has a special dllcache folder in which you can place all the DLLs you reuse, and then those DLLs can just be referenced in deployer.xml... This way, you’ll not need to include them in the zip every time you upload a new version of the application – Deployer will copy the DLLs from the cache during the deployment process.
+Special values in the copyTo attribute are evaluated and replaced at runtime. Currently, two are supported:
+{manifestDirectory} – is replaced with the path to folder that contains the application manifest (clickOnceApp.manifest). It is supported only for ClickOnce deployments.
+{targetDirectory} – is replaced with the path to the target folder (the one specified in targetPath). It is supported for all XCopy deployments.
+Of course, dllCache is available for all XCopy deployments.
+DatabaseScript
+When you have a prepared SQL script, connecting to a Remote Desktop and executing it in the SQL Management Studio isn’t a big pain, but still it’s nice to have an option to finish everything over FTP. Especially, if you’ll create deployment packages that set the whole Windows service up and running on your behalf (create database, install service, and start it up).
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;deployer&gt;
+  &lt;deployInfo type="databaseScript" machineName="psimr"&gt;
+    &lt;connectionString&gt;Data Source=psimr;Initial Catalog=
+          PsiClient;Integrated Security=True&lt;/connectionString&gt;
+    &lt;isolationLevel&gt;ReadCommitted&lt;/isolationLevel&gt;
+  &lt;/deployInfo&gt;
+&lt;/deployer&gt;
+In deployer.xml, you just need to specify a valid connectionString; isolationLevel is optional (it defaults to ReadCommitted), and accepts any valid item of the System.Data.IsolationLevel enum.
+Setting up Deployer
+If you want to test Deployer on your local machine, just download the source, rebuild all, and fire up the Debug mode with F5. Then, create zip with files from, for example, TestApp/bin/Debug and copy it over to Deployer’s drop path (by default, c:\!deployer\drop).
+After processing the zip, Deployer will create a log file in the logs directory (by default, c:\!deployer\logs) that’ll tell you how the deployment went.
+When you want to setup Deployer on a remote machine, use the Release configuration to build the Windows service. After you finish compiling, upload everything from the bin/Release directory to the remote computer, and install the service (as you would install any Windows service) by typing the following in the command prompt:
+set path=c:\windows\Microsoft.NET\Framework\v2.0.50727
+installutil -i %pathToYourServiceEXE%
+(For uninstall, you would specify –u instead of the –i flag).
+Now, all you need to do is to setup FTP access to your drop and logs paths. A good article on setting up an FTP service on a Windows Server can be found here.
+Writing your own deployer.xml
+When you download the source code, look for the deployer-full.xml and deployer-full.xsd files in the Deployer project. The XML file contains examples for every type of deployment, and you can easily create your own deployer.xml by copy-pasting blocks you need.
+Apart from being able to validate Deployer XMLs, deployer-full.xsd can be used to provide intellisense in Visual Studio. I prepared a package that you need to unpack to your Visual Studio’s xml\schemas path – its on %ProgramFiles%\Microsoft Visual Studio 8\Xml\Schemas\, by default, for VS2005; and on %ProgramFiles%\Microsoft Visual Studio 9.0\Xml\Schemas\ for VS2008. After you do that, just restart the IDE, and the next time you edit the XML file, you’ll get a nice intellisense as shown on the picture:
+Figure 2 - Intellisense when typing Deployer manifests
+If you are interested on how XSD intellisense works in Visual Studio, check this link.
+Security considerations
+I run Deployer under the domain administrator account which enables me to easily access every needed resource on the network, keeping Deployer XMLs clean from access passwords. Of course, this opens up a big security hole if someone obtains credentials for logging onto FTP. I advise using FTP over SSL to prevent sending credentials in plain text format.
+A somewhat better alternative is to run Deployer under a specific domain account and grant access to resources as needed. I didn’t use this option just because of administrative overhaul.
+Finally, if you won’t use databaseScript and service deployments, you can run Deployer under some low privilege User account. In case you need databaseScript deployments, put the user ID and password in the connection string, but do not share your deployer.xml files, and restrict access to the archive and backup folders of Deployer. This way, you’ll only be left without service deployments that need to connect to a remote machine in order to be performed.
+None of the above options fully solves security problems. The point of these paragraphs is to make you think about how you’ll use Deployer – you must understand the associated risks. The FTP credentials for my Deployer site are in fact credentials of my Windows account on a remote system... so, if anyone steals that, he will use the Remote Desktop to play with the system; he will not be making Deployer packages to perform operations he wants (unless he is some kind of _likes to play with automation_ type of hacker .
+Words of thanks
+I would like to thank my colleague Aleksandar Mirilovic who tested Deployer’s real-life usage by writing Deployer XMLs for various services, and gave many good ideas. Mirilo, Mirilo... šta bi tebe smirilo...
+Special thanks goes to Vladimir Ilic (Vlajko, Vlajko... kuku majko...), to whom I promise that I’ll implement support for RAR archives as soon as I find a good C# RAR library/wrapper.
+Conclusion
+As with any piece of code that I enjoyed writing, I have many ideas for this one that could improve usability. Like, a Visual Studio add-in that reads deployer.xml, prepares the zip, and uploads it over FTP, as my previously mentioned colleague Mirilo and I envisioned in one discussion, would make deployment to remote locations incredibly easy (you wouldn’t need to leave the VS IDE window). Also, an IIS type of deployment that registers and configures a Virtual Directory or Web Site would be a nice addition.
+Unfortunately, as I’m lacking free time (I just got contingent of Dilbert comics , I've made a CodePlex Deployer site, and will leave the source code to your mercy. Of course, if you just need a quick help on some feature – I’m available.
+As ever, I hope for your good marks. If you found the article particularly useful or particularly useless, please take time to post comments; I’ll gladly respond.
+History
+April 1st, 2008 - Initial version of the article (interesting date to post an article License
+This article, along with any associated source code and files, is licensed under The Apache License, Version 2.0
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+View All ThreadsFirst Prev Next
+My vote of 5 Wooters30-Mar-12 13:55 Great Job!
+Last Visit: 31-Dec-99 18:00 Last Update: 9-Jul-14 21:59Refresh1
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence Apache
+First Posted 1 Apr 2008
+Views 41,608
+Downloads 363
+Bookmarked 84 times
+.NET2.0 VS2005 C#2.0 C# XML .NET Win32 Visual-Studio Dev Intermediate , + Related Articles
+Deployment
+Best Strategy for deploying ASP.NET application and application Pool
+Add an uninstall start menu item to your .NET deployment project
+VS2010 Web Deployment Gem: Publishing Profiles
+Why you should not use Clickonce deployment as your enterprise application's deployment methodology
+Hosting ISPs
+How to deploy ASP.NET Web Application on server
+VS2010 1-Click Publishing
+Deploying SSIS Package
+Silverlight Web Part sandboxed Deployment in SharePoint 2010 using VS2010
+ClickOnce - Quick steps to Deploy, Install and Update Windows Based Client Applications
+Deploying a .NET Application with Crystal Reports
+Deploying MFC applications via ClickOnce
+(Default) registry key in Deployment Project
+Click Once Deployment Technique
+Creating Reports with SQL Reporting Service and Visual Studio .NET
+Deployment made simple using Powershell
+Exclude folders while building in web deployment projects
+Building with MSBUILD
+Flash Movie Field for WSS 3.0
+Related Research
+Toad Oracle: Discover the Top 10 Most Useful Toad Features
+IDC: The Intelligent Integrated Enterprise Is an Open Source BPM Solution Right For You?
+Expanding active decision-making: The power of integrating business rules and events
+Permalink | Advertise |
+Privacy |
+Mobile
+Web01 |
+2.8.140709.1 |
+Last Updated 30 Mar 2012	Article Copyright 2008 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

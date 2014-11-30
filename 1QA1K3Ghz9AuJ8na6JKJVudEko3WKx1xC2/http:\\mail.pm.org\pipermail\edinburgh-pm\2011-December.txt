@@ -1,0 +1,757 @@
+http://mail.pm.org/pipermail/edinburgh-pm/2011-December.txt
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 07:27:18 GMT
+Server: Apache/2.2.14 (Unix) mod_ssl/2.2.14 OpenSSL/0.9.8e-fips-rhel5
+Last-Modified: Thu, 29 Dec 2011 21:38:18 GMT
+ETag: "238e70-7761-4b541ef3b8680"
+Accept-Ranges: bytes
+Content-Length: 30561
+Connection: close
+Content-Type: text/plain
+
+From perl at aaroncrane.co.uk  Tue Dec  6 16:15:53 2011
+From: perl at aaroncrane.co.uk (Aaron Crane)
+Date: Wed, 7 Dec 2011 00:15:53 +0000
+Subject: [Edinburgh-pm] Domain name
+Message-ID: <CACmk_ts33xTFg_rh+Smdesu0NtybKD6aG=Tue8=9yZ6Ab4jSeQ@mail.gmail.com>
+
+I've just registered the domain edinburgh.pm on behalf of the group.
+For now I've set the URL http://edinburgh.pm/ to redirect to the
+existing site, but I'm open to suggestions for something more
+interesting we could do with it.
+
+-- 
+Aaron Crane ** http://aaroncrane.co.uk/
+
+From miles at assyrian.org.uk  Tue Dec 20 12:31:06 2011
+From: miles at assyrian.org.uk (Miles Gould)
+Date: Tue, 20 Dec 2011 20:31:06 +0000
+Subject: [Edinburgh-pm] CPAN upload
+Message-ID: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+
+Hey all,
+
+I've just made my first-ever upload to the CPAN (woo! yeah!) in the
+form of a bugfix release for List::Priority. You can see it at
+
+https://pause.perl.org/pub/PAUSE/authors/id/M/MG/MGOULD/List-Priority-0.03rc1.tar.gz
+
+Now, I realise belatedly that I screwed up, and that developer
+releases are meant to contain underscores rather than "rc". Will I get
+feedback from cpantesters anyway, or should I re-upload?
+
+I'm afraid I won't be able to make it to Ed.pm this month, as I'll be
+down south with the family. However, I should be back in time for
+Heretics on the 29th.
+
+Miles
+
+From perl at minty.org  Tue Dec 20 12:49:09 2011
+From: perl at minty.org (Murray)
+Date: Tue, 20 Dec 2011 20:49:09 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+Message-ID: <20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+
+On Tue, Dec 20, 2011 at 08:31:06PM +0000, Miles Gould wrote:
+> I'm afraid I won't be able to make it to Ed.pm this month, as I'll be
+> down south with the family. However, I should be back in time for
+> Heretics on the 29th.
+
+Sorry, can't help with cpan & can't make thursday ... but heretics is looking
+promising!
+
+From miles at assyrian.org.uk  Tue Dec 20 16:57:43 2011
+From: miles at assyrian.org.uk (Miles Gould)
+Date: Wed, 21 Dec 2011 00:57:43 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+	<20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+Message-ID: <CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+
+On Tue, Dec 20, 2011 at 8:49 PM, Murray <perl at minty.org> wrote:
+> On Tue, Dec 20, 2011 at 08:31:06PM +0000, Miles Gould wrote:
+>> I'm afraid I won't be able to make it to Ed.pm this month, as I'll be
+>> down south with the family. However, I should be back in time for
+>> Heretics on the 29th.
+>
+> Sorry, can't help with cpan & can't make thursday ... but heretics is looking
+> promising!
+
+It looks like everything went OK, because this is now the first hit
+for List::Priority on search.cpan.org:
+
+search.cpan.org/~mgould/List-Priority-0.03rc1/Priority.pm
+
+Accordingly, I've closed the "shift does the same thing as pop!" bug
+that led me to fork the module in the first place.
+
+Anyway, now that I've verified that the upload process works, I'd like
+to ask for some more help on design. My current roadmap looks like
+this:
+
+v0.03
+
+- basically, what's there now: the code now does what the
+documentation says it does, which is all that's really required in a
+module which has apparently been sitting around largely unloved for
+nine years.
+- rewrite some of the docs to (a) be less ugly, (b) be more
+grammatical, (c) make the useful options{SIZE} feature more apparent.
+- MOAR TESTS
+
+v0.04
+
+- replace the current horrible "return an error string when given the
+wrong number of arguments" design with calls to croak(). (I'm thinking
+an API-breaking change deserves to be separated from a bugfix
+release).
+- give some guidance in the docs as to what, if any, reason there is
+to use this module over the other eleventy bajillion priority queues
+on CPAN.
+
+Questions:
+
+1. Does this sound sane?
+2. There's the potential for confusion between the recently-added
+size() method (number of elements currently in the list) and
+options{SIZE} (*maximum* number of elements the list will hold).
+Should I rename one? What to?
+3. What would you suggest doing in the other cases where functions
+return error strings, namely "you tried to add an element to a list
+that's already full of higher-priority things" and "you tried to add
+something that's already in the list, and we don't support that for
+reasons best known to the original author". croak()ing seems excessive
+in this situation, but returning error strings doesn't seem very
+sensible either.
+
+I'd like to maintain the current low-dependency nature of the module,
+if possible.
+
+TIA,
+Miles
+
+From perl at aaroncrane.co.uk  Wed Dec 21 03:08:08 2011
+From: perl at aaroncrane.co.uk (Aaron Crane)
+Date: Wed, 21 Dec 2011 11:08:08 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+	<20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+	<CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+Message-ID: <CACmk_tvJjpw_-TwFpAj4_=bGcpH5WBg6tXmod6s4Vp7yvd2a1w@mail.gmail.com>
+
+Miles Gould <miles at assyrian.org.uk> wrote:
+> It looks like everything went OK, because this is now the first hit
+> for List::Priority on search.cpan.org:
+>
+> http://search.cpan.org/~mgould/List-Priority-0.03rc1/Priority.pm
+
+It's also on Metacpan, although you get the 0.02 version by default:
+
+https://metacpan.org/release/MGOULD/List-Priority-0.03rc1
+
+I think that's the expected result for a dev release (and it looks
+like *something* is treating "0.03rc1" as a dev-release version).
+
+> Accordingly, I've closed the "shift does the same thing as pop!" bug
+> that led me to fork the module in the first place.
+
+Huzzah!
+
+> v0.03
+> - basically, what's there now: the code now does what the
+> documentation says it does, which is all that's really required in a
+> module which has apparently been sitting around largely unloved for
+> nine years.
+> - rewrite some of the docs to (a) be less ugly, (b) be more
+> grammatical, (c) make the useful options{SIZE} feature more apparent.
+> - MOAR TESTS
+
+If you wanted to do any whitespace cleanups (convert from DOS format
+to Unix, delete line-final spaces, adjust indentation, etc), this
+would probably be a reasonable place to do them.
+
+I suggest also looking at Makefile.PL.  The current version claims
+that the author is one A. U. Thor <a.u.thor at a.galaxy.far.away>, which
+seems moderately unlikely.  It also fails to declare your new code's
+implicit test-time dependency on Test::More 0.88 (which is the first
+version to provide done_testing()).  The simple way to do that is to
+add it to PREREQ_PM:
+
+    WriteMakefile(
+        ?
+        PREREQ_PM => {
+            'Test::More' => 0.88,
+        },
+        ?
+    );
+
+> v0.04
+> - replace the current horrible "return an error string when given the
+> wrong number of arguments" design with calls to croak(). (I'm thinking
+> an API-breaking change deserves to be separated from a bugfix
+> release).
+> - give some guidance in the docs as to what, if any, reason there is
+> to use this module over the other eleventy bajillion priority queues
+> on CPAN.
+
+Both of these sound very useful.
+
+> 1. Does this sound sane?
+
+Yes, with one caveat.  Given the existence of 0.03rc1, I'm not
+completely sure whether 0.03 would be considered older or newer than
+it.  One could in theory find out, but if I were in your situation,
+I'd probably just call my next release 0.04 and be done with it ?
+rather easier.
+
+Also, the "return an error string" thing strikes me as something that
+noone could possibly be relying on, and it's clearly not a good
+design.  If you chose to do a single release with both sets of changes
+you describe, I don't think that would be unreasonable.
+
+> 2. There's the potential for confusion between the recently-added
+> size() method (number of elements currently in the list) and
+> options{SIZE} (*maximum* number of elements the list will hold).
+> Should I rename one? What to?
+
+Hmm, that's annoying ? I think the natural names are `size` for the
+new method, and `capacity` for the constructor option; but adopting
+that convention means that the thing to be renamed is the one that's
+been around longest.  One possible approach to dealing with that is to
+document a `capacity` option, and use that name in the `insert`
+method, but support a `SIZE` option on construction so old callers
+don't break.  Concretely, the constructor would look something like
+this:
+
+    sub new {
+        my ($class, %options) = @_;
+        $options{capacity} = delete $options{SIZE}
+            if exists $options{SIZE} && !exists $options{capacity};
+        return bless { size => 0, options => \%options }, $class;
+    }
+
+> 3. What would you suggest doing in the other cases where functions
+> return error strings, namely "you tried to add an element to a list
+> that's already full of higher-priority things" and "you tried to add
+> something that's already in the list, and we don't support that for
+> reasons best known to the original author". croak()ing seems excessive
+> in this situation, but returning error strings doesn't seem very
+> sensible either.
+
+I'd say the options are:
+
+- remove the limitations that cause those to be error conditions,
+where reasonable
+- use croak(); this doesn't add a dependency because Carp has been in
+core since 5.000
+- use die instead of croak()
+
+For me, that's the order of preference (best first).
+
+-- 
+Aaron Crane ** http://aaroncrane.co.uk/
+
+From oinksocket at letterboxes.org  Wed Dec 21 03:26:43 2011
+From: oinksocket at letterboxes.org (Nick)
+Date: Wed, 21 Dec 2011 11:26:43 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+Message-ID: <4EF1C273.20500@letterboxes.org>
+
+On 20/12/11 20:31, Miles Gould wrote:
+> I've just made my first-ever upload to the CPAN (woo! yeah!) in the
+> form of a bugfix release for List::Priority. You can see it at
+
+Congrats.  What do you use it for?
+
+> Now, I realise belatedly that I screwed up, and that developer
+> releases are meant to contain underscores rather than "rc". Will I get
+> feedback from cpantesters anyway, or should I re-upload?
+
+I'd have suspected it'll screw up some check or assumption somewhere, but that
+PAUSE should email you to says so...
+
+However, as you say, there it is, on CPAN.  I'm a bit surprised.
+
+On the other hand, I expect the version will break various other things
+downstream in undefined ways, however, not least dependency checking in modules
+using yours.
+
+Your plan looks sane, btw.  Although your API-breaking release should bump the
+major version number shouldn't it?
+
+Returning integer ids instead of strings, with the integers being mapped to a
+more people-friendly string via a function might be saner, unless you want 'true
+is success' semantics, in which case the ice gets thinner.    Croaking is more
+normal and may be a better idea - although Perl's default exceptions and the the
+existence of a gazillion alternatives are one of my least favourite parts of it.
+
+I might suggest using some sort of release helper.  Module::Release is what I
+currently use, because it's simple to use, however I have been attempting to fix
+it so that it correctly parses PBP-recommended three digit versions.  (Currently
+it assumes traditional Perl integer versions and does the Wrong Thing if they
+aren't - certainly yours would fail to parse.)
+
+The cool kids seem to use Dist::Zilla, which looks interesting, although expect
+to install the kitchen sink and one or two large herbivores first.  local::lib
+(and App::PerlLocalEnv/cpaninus) will probably help out if you decide to go
+there - there's a gazillion plug-ins and it seems to be one of those fast-moving
+targets distros can't keep up with.
+
+N
+
+From miles at assyrian.org.uk  Wed Dec 21 03:55:39 2011
+From: miles at assyrian.org.uk (Miles Gould)
+Date: Wed, 21 Dec 2011 11:55:39 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CACmk_tvJjpw_-TwFpAj4_=bGcpH5WBg6tXmod6s4Vp7yvd2a1w@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+	<20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+	<CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+	<CACmk_tvJjpw_-TwFpAj4_=bGcpH5WBg6tXmod6s4Vp7yvd2a1w@mail.gmail.com>
+Message-ID: <CAKFNCm36792Os2RV4H4jZx9TSqUmijr58+GNP6nvjU--s+n_ng@mail.gmail.com>
+
+On Wed, Dec 21, 2011 at 11:08 AM, Aaron Crane <perl at aaroncrane.co.uk> wrote:
+> If you wanted to do any whitespace cleanups (convert from DOS format
+> to Unix, delete line-final spaces, adjust indentation, etc), this
+> would probably be a reasonable place to do them.
+
+Good plan.
+
+> I suggest also looking at Makefile.PL. ?The current version claims
+> that the author is one A. U. Thor <a.u.thor at a.galaxy.far.away>, which
+> seems moderately unlikely.
+
+Good spot! Should I change that to be my name or the original
+author's? He's still listed as a co-maintainer, but apparently hasn't
+touched Perl for some years.
+
+> ?It also fails to declare your new code's
+> implicit test-time dependency on Test::More 0.88 (which is the first
+> version to provide done_testing()). ?The simple way to do that is to
+> add it to PREREQ_PM:
+>
+> ? ?WriteMakefile(
+> ? ? ? ??
+> ? ? ? ?PREREQ_PM => {
+> ? ? ? ? ? ?'Test::More' => 0.88,
+> ? ? ? ?},
+> ? ? ? ??
+> ? ?);
+
+Done.
+
+> Yes, with one caveat. ?Given the existence of 0.03rc1, I'm not
+> completely sure whether 0.03 would be considered older or newer than
+> it. ?One could in theory find out, but if I were in your situation,
+> I'd probably just call my next release 0.04 and be done with it ?
+> rather easier.
+
+Makes sense.
+
+> Hmm, that's annoying ? I think the natural names are `size` for the
+> new method, and `capacity` for the constructor option; but adopting
+> that convention means that the thing to be renamed is the one that's
+> been around longest. ?One possible approach to dealing with that is to
+> document a `capacity` option, and use that name in the `insert`
+> method, but support a `SIZE` option on construction so old callers
+> don't break. ?Concretely, the constructor would look something like
+> this:
+
+Good idea.
+
+[string-on-error]
+> I'd say the options are:
+>
+> - remove the limitations that cause those to be error conditions,
+> where reasonable
+
+"Not added because it's a dup" feels like something that shouldn't be
+an error at all, but "not added because capacity() has been exceeded
+and we're already full of higher-priority stuff" feels like correct
+behaviour that you might want to know about as a caller. So I think
+the Right Thing is to remove the restriction on duplicates and return
+0 on "insert failed because you're over capacity".
+
+I have no idea how hard it will be to remove the restriction on duplicates :-)
+
+Miles
+
+From wim.vanderbauwhede at gmail.com  Wed Dec 21 09:20:15 2011
+From: wim.vanderbauwhede at gmail.com (Wim Vanderbauwhede)
+Date: Wed, 21 Dec 2011 17:20:15 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+Message-ID: <CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+
+Hi folks,
+
+Tomorrow is the regular monthly meeting, I'll be finally able to make it.
+Anyone else coming along?
+
+Wim
+
+
+-- 
+If it's pointless, what's the point?
+If there is a point to it, what's the point?
+(Tibor Fischer, "The Thought Gang")
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.pm.org/pipermail/edinburgh-pm/attachments/20111221/9cce269d/attachment.html>
+
+From perl at aaroncrane.co.uk  Wed Dec 21 09:29:57 2011
+From: perl at aaroncrane.co.uk (Aaron Crane)
+Date: Wed, 21 Dec 2011 17:29:57 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CAKFNCm36792Os2RV4H4jZx9TSqUmijr58+GNP6nvjU--s+n_ng@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+	<20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+	<CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+	<CACmk_tvJjpw_-TwFpAj4_=bGcpH5WBg6tXmod6s4Vp7yvd2a1w@mail.gmail.com>
+	<CAKFNCm36792Os2RV4H4jZx9TSqUmijr58+GNP6nvjU--s+n_ng@mail.gmail.com>
+Message-ID: <CACmk_ttM4FVGNefgwj97NJZ+ka1a8d+r1+u4MJvWLfPAp0T_hw@mail.gmail.com>
+
+Miles Gould <miles at assyrian.org.uk> wrote:
+> On Wed, Dec 21, 2011 at 11:08 AM, Aaron Crane <perl at aaroncrane.co.uk> wrote:
+>> I suggest also looking at Makefile.PL. ?The current version claims
+>> that the author is one A. U. Thor <a.u.thor at a.galaxy.far.away>, which
+>> seems moderately unlikely.
+>
+> Good spot! Should I change that to be my name or the original
+> author's? He's still listed as a co-maintainer, but apparently hasn't
+> touched Perl for some years.
+
+Good question.  I've stuck with the original author's name when I've
+been in that situation, but I don't know whether that's expected
+practice.  Nor, for that matter, whether it makes any difference if
+the original author no longer does any Perl.
+
+> [string-on-error]
+>> - remove the limitations that cause those to be error conditions,
+>> where reasonable
+>
+> "Not added because it's a dup" feels like something that shouldn't be
+> an error at all,
+
+That sounds reasonable to me, on the face of it.  One question,
+though: might callers *ever* want to know about the detail of which
+inserts are (or would be) ignored?  If so, perhaps a `contains` method
+would be a useful addition; die-on-duplicate-insert behaviour can then
+be implemented by callers.
+
+> but "not added because capacity() has been exceeded
+> and we're already full of higher-priority stuff" feels like correct
+> behaviour that you might want to know about as a caller. So I think
+> the Right Thing is to [?] return 0 on "insert failed because you're
+> over capacity".
+
+My naive reaction (without having thought much about how
+List::Priority might be used) is to disagree: I'd want an exception if
+`$container->insert($thing)` didn't leave $container with a $thing,
+regardless of the sort of container.  Perhaps extend the API with a
+`maybe_insert` method, which inserts only if there's enough spare
+capacity?  Though I'm aware this would be another API change, so you
+might decide to favour API stability even if you agree with me.
+
+What are the use cases for the capacity-limit feature?
+
+> I have no idea how hard it will be to remove the restriction on duplicates :-)
+
+Now that I've actually looked at the code in more than the most
+superficial way, I think I can tell you that it's trivial ? it's the
+chunk of code starting here:
+
+https://github.com/pozorvlak/List-Priority/blob/ade2a6b1d8c620d4bc9bc69de0859b43a7d1db06/Priority.pm#L41
+
+-- 
+Aaron Crane ** http://aaroncrane.co.uk/
+
+From perl at aaroncrane.co.uk  Wed Dec 21 09:31:30 2011
+From: perl at aaroncrane.co.uk (Aaron Crane)
+Date: Wed, 21 Dec 2011 17:31:30 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+	<CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+Message-ID: <CACmk_tvfmB+C0UvLoHxneXRPyC=8cXgbLi1Z8QjFohUxtt8K7A@mail.gmail.com>
+
+Wim Vanderbauwhede <wim.vanderbauwhede at gmail.com> wrote:
+> Tomorrow is the regular monthly meeting, I'll be finally able to make it.
+> Anyone else coming along?
+
+I'm afraid it's not looking likely that I can make it tomorrow, and
+I'm not sure about heretics next week either.  But if there are other
+people getting together, I'll see if I can at least pop in briefly.
+
+-- 
+Aaron Crane ** http://aaroncrane.co.uk/
+
+From miles at assyrian.org.uk  Wed Dec 21 12:39:48 2011
+From: miles at assyrian.org.uk (Miles Gould)
+Date: Wed, 21 Dec 2011 20:39:48 +0000
+Subject: [Edinburgh-pm] CPAN upload
+In-Reply-To: <CACmk_ttM4FVGNefgwj97NJZ+ka1a8d+r1+u4MJvWLfPAp0T_hw@mail.gmail.com>
+References: <CAKFNCm0_VPpvG9Q5ZdOyvZv=ABgXO0yxh7jAurn4nBMJdfhMog@mail.gmail.com>
+	<20111220204906.GT25632@mooker.vm.bytemark.co.uk>
+	<CAKFNCm0jhqY0i=PoZqnvWo87C4He9ucAm3k8L7_nbMgv5zS1kQ@mail.gmail.com>
+	<CACmk_tvJjpw_-TwFpAj4_=bGcpH5WBg6tXmod6s4Vp7yvd2a1w@mail.gmail.com>
+	<CAKFNCm36792Os2RV4H4jZx9TSqUmijr58+GNP6nvjU--s+n_ng@mail.gmail.com>
+	<CACmk_ttM4FVGNefgwj97NJZ+ka1a8d+r1+u4MJvWLfPAp0T_hw@mail.gmail.com>
+Message-ID: <CAKFNCm2OUJCcw531JKP4PBJY7S1c34pR8GhKBx08Mpk099H+rw@mail.gmail.com>
+
+On Wed, Dec 21, 2011 at 5:29 PM, Aaron Crane <perl at aaroncrane.co.uk> wrote:
+> Miles Gould <miles at assyrian.org.uk> wrote:
+>> On Wed, Dec 21, 2011 at 11:08 AM, Aaron Crane <perl at aaroncrane.co.uk> wrote:
+>>> I suggest also looking at Makefile.PL. ?The current version claims
+>>> that the author is one A. U. Thor <a.u.thor at a.galaxy.far.away>, which
+>>> seems moderately unlikely.
+
+I changed it to my name, to reduce the number of frustrated users
+trying to email a dead address. The POD gives clear credit to Eyal.
+
+>> but "not added because capacity() has been exceeded
+>> and we're already full of higher-priority stuff" feels like correct
+>> behaviour that you might want to know about as a caller. So I think
+>> the Right Thing is to [?] return 0 on "insert failed because you're
+>> over capacity".
+>
+> My naive reaction (without having thought much about how
+> List::Priority might be used) is to disagree: I'd want an exception if
+> `$container->insert($thing)` didn't leave $container with a $thing,
+> regardless of the sort of container. ?Perhaps extend the API with a
+> `maybe_insert` method, which inserts only if there's enough spare
+> capacity? ?Though I'm aware this would be another API change, so you
+> might decide to favour API stability even if you agree with me.
+
+There are *checks* precisely zero modules on CPAN which depend on
+List::Priority right now. Wow. Everyone seems to use POE::Queue::Array
+(https://metacpan.org/module/POE::Queue::Array) instead. Which does
+some things that List::Priority doesn't, but doesn't do some things
+that List::Priority does - including the features that I chose L::P
+for for my aiclass program :-)
+
+> What are the use cases for the capacity-limit feature?
+
+Here's mine: I was exploring a 19!-point space (about 10^17 points)
+using A* tree-search. I was using a priority queue to store my
+"frontier", ie the next points to explore, in order of how promising
+they looked. But the frontier grew very quickly to the point where I
+started to thrash my hard drive, causing Slowness, and eventually it
+grew to the point where the OOM killer killed my program at 3am. So I
+limited the capacity of the frontier to 1000, which was small enough
+to keep the whole thing in RAM and make it go nice and fast. And I
+didn't care too much about low-scoring points anyway.
+
+> https://github.com/pozorvlak/List-Priority/blob/ade2a6b1d8c620d4bc9bc69de0859b43a7d1db06/Priority.pm#L41
+
+Yes - I just wonder why the hell he put it in there! It seems a very
+strange restriction to add. I'll knock it out and see how many tests
+fail.
+
+[Oh yes - we have tests now. Yay!]
+
+Miles
+
+From cyocum at gmail.com  Thu Dec 22 02:13:53 2011
+From: cyocum at gmail.com (Chris Yocum)
+Date: Thu, 22 Dec 2011 10:13:53 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <CACmk_tvfmB+C0UvLoHxneXRPyC=8cXgbLi1Z8QjFohUxtt8K7A@mail.gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+	<CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+	<CACmk_tvfmB+C0UvLoHxneXRPyC=8cXgbLi1Z8QjFohUxtt8K7A@mail.gmail.com>
+Message-ID: <4EF302E1.5090404@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Hi Guys,
+
+I will not be able to make it.  I am a bit socialed out at the moment
+and I think I need a night to recuperate.  However, I should be around
+for Heretics on the 29th.
+
+Chris
+
+On 21/12/11 17:31, Aaron Crane wrote:
+> Wim Vanderbauwhede <wim.vanderbauwhede at gmail.com> wrote:
+>> Tomorrow is the regular monthly meeting, I'll be finally able to
+>> make it. Anyone else coming along?
+> 
+> I'm afraid it's not looking likely that I can make it tomorrow,
+> and I'm not sure about heretics next week either.  But if there are
+> other people getting together, I'll see if I can at least pop in
+> briefly.
+> 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iF4EAREIAAYFAk7zAuEACgkQDjE+CSbP7Ho2jQD5AQ36ITyE1j/mGyY4RHG9hvvg
+aeKGTh1mCcfL9FBKAtsA/iCCBu9C7Z8lTONfcp1oTuEC8nGYGTHEzDagxeZv4RS3
+=JGTh
+-----END PGP SIGNATURE-----
+
+From fontani at gmail.com  Thu Dec 22 02:16:05 2011
+From: fontani at gmail.com (Marco Fontani)
+Date: Thu, 22 Dec 2011 10:16:05 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <4EF302E1.5090404@gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+	<CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+	<CACmk_tvfmB+C0UvLoHxneXRPyC=8cXgbLi1Z8QjFohUxtt8K7A@mail.gmail.com>
+	<4EF302E1.5090404@gmail.com>
+Message-ID: <A9C6137B-82A2-4932-A393-842E8D89C16C@gmail.com>
+
+>>> Tomorrow is the regular monthly meeting, I'll be finally able to
+>>> make it. Anyone else coming along?
+
+Sorry guys, away from Edinburgh tonight and will be in Italy till next year
+
+(hehe, next year)
+
+See you soon!
+-marco-
+
+---
+Marco Fontani
+Glasgow Perl Mongers - http://glasgow.pm.org/
+Bitcoin: 1QA1K3Ghz9AuJ8na6JKJVudEko3WKx1xC2
+Join the RackSpace Cloud at: http://www.rackspacecloud.com/277.html
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: PGP.sig
+Type: application/pgp-signature
+Size: 243 bytes
+Desc: This is a digitally signed message part
+URL: <http://mail.pm.org/pipermail/edinburgh-pm/attachments/20111222/c98e2821/attachment.bin>
+
+From robrwo at gmail.com  Thu Dec 22 02:44:29 2011
+From: robrwo at gmail.com (Robert Rothenberg)
+Date: Thu, 22 Dec 2011 10:44:29 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+	<CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+Message-ID: <4EF30A0D.7050701@gmail.com>
+
+On 21/12/11 17:20 Wim Vanderbauwhede wrote:
+
+> Tomorrow is the regular monthly meeting, I'll be finally able to make it.
+> Anyone else coming along?
+
+Hi. Can't make it tonight, have a friend visiting in town.
+
+From wim.vanderbauwhede at gmail.com  Thu Dec 22 03:03:14 2011
+From: wim.vanderbauwhede at gmail.com (Wim Vanderbauwhede)
+Date: Thu, 22 Dec 2011 11:03:14 +0000
+Subject: [Edinburgh-pm] Meeting time
+In-Reply-To: <4EF30A0D.7050701@gmail.com>
+References: <CACmk_tuuNrOyU7JbQ+5xY6j44ma3LC-TnLP3NVA1=m+Em6_9Ag@mail.gmail.com>
+	<CAKpBWUNkTGPPaz_qx3teWHRYxpeJn3L_4GrTzPFis+pr7X3sUA@mail.gmail.com>
+	<4EF30A0D.7050701@gmail.com>
+Message-ID: <CAKpBWUMeNAuSJKkCt0F6cU00cGdCnwo8sjBOkNCJ_PUX_0zayg@mail.gmail.com>
+
+I'll try to make it to the Heretics next week then
+
+Cheers,
+
+Wim
+
+-- 
+If it's pointless, what's the point?
+If there is a point to it, what's the point?
+(Tibor Fischer, "The Thought Gang")
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.pm.org/pipermail/edinburgh-pm/attachments/20111222/b71d3d32/attachment.html>
+
+From miles at assyrian.org.uk  Thu Dec 29 06:12:59 2011
+From: miles at assyrian.org.uk (Miles Gould)
+Date: Thu, 29 Dec 2011 14:12:59 +0000
+Subject: [Edinburgh-pm] Heretics meetup TONIGHT, Cloisters Bar, 1900 onwards.
+Message-ID: <CAKFNCm1K8e5Ed14d5FWxKvnMVtfbcZL_ow0FXrB=cBFQnhiQ6g@mail.gmail.com>
+
+Brethren and sistren of the True Faith!
+
+Tonight is the sacred Last Thursday of the Month! Therefore we must
+gather, in defiance of the Craneite oppressors, to make our libation
+to the Holy Camel, and to pay homage to the visiting scholar
+O'Sfameron, from the fabled land of Li Ve R'Pool.
+
+Said ceremony shall be held in Cloisters (appropriately enough), from
+7pm onwards, though please do not hesitate to turn up early. I myself
+will probably be late, owing to buses and Tesco deliveries and things.
+Should I attempt to book a table? Is that even possible?
+
+Until tonight!
+
+Miles
+
+From asmith9983 at gmail.com  Thu Dec 29 10:29:53 2011
+From: asmith9983 at gmail.com (A Smith)
+Date: Thu, 29 Dec 2011 18:29:53 +0000
+Subject: [Edinburgh-pm] Anyone going to Cumberland tonight ?
+Message-ID: <CAD1LUeq+P=5UOiwKrfN1t3X9=OLJ=FD8RA51FU8AyyJ8Go0pMg@mail.gmail.com>
+
+If so,
+I walk down.
+--
+Andrew
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.pm.org/pipermail/edinburgh-pm/attachments/20111229/3c43c49f/attachment.html>
+
+From perl at aaroncrane.co.uk  Thu Dec 29 10:38:03 2011
+From: perl at aaroncrane.co.uk (Aaron Crane)
+Date: Thu, 29 Dec 2011 18:38:03 +0000
+Subject: [Edinburgh-pm] Anyone going to Cumberland tonight ?
+In-Reply-To: <CAD1LUeq+P=5UOiwKrfN1t3X9=OLJ=FD8RA51FU8AyyJ8Go0pMg@mail.gmail.com>
+References: <CAD1LUeq+P=5UOiwKrfN1t3X9=OLJ=FD8RA51FU8AyyJ8Go0pMg@mail.gmail.com>
+Message-ID: <CACmk_tv_UaSSX8nua4RknBawrWcqDLEtQ8a6uSdtDQQbfbyO=g@mail.gmail.com>
+
+A Smith <asmith9983 at gmail.com> wrote:
+> If so, I walk down.
+
+Not at the Cumberland, but some people will be at Cloisters near
+Tollcross from about 7pm.  Address and map here:
+
+http://www.list.co.uk/place/102899-the-cloisters/
+
+I'll be there, but I won't be able to stay long.
+
+-- 
+Aaron Crane ** http://aaroncrane.co.uk/
+
+From robrwo at gmail.com  Thu Dec 29 13:38:10 2011
+From: robrwo at gmail.com (Robert Rothenberg)
+Date: Thu, 29 Dec 2011 21:38:10 +0000
+Subject: [Edinburgh-pm] Anyone going to Cumberland tonight ?
+In-Reply-To: <CACmk_tv_UaSSX8nua4RknBawrWcqDLEtQ8a6uSdtDQQbfbyO=g@mail.gmail.com>
+References: <CAD1LUeq+P=5UOiwKrfN1t3X9=OLJ=FD8RA51FU8AyyJ8Go0pMg@mail.gmail.com>
+	<CACmk_tv_UaSSX8nua4RknBawrWcqDLEtQ8a6uSdtDQQbfbyO=g@mail.gmail.com>
+Message-ID: <4EFCDDC2.3090503@gmail.com>
+
+On 29/12/11 18:38 Aaron Crane wrote:
+> A Smith <asmith9983 at gmail.com> wrote:
+>> If so, I walk down.
+> 
+> Not at the Cumberland, but some people will be at Cloisters near
+> Tollcross from about 7pm.  Address and map here:
+> 
+> http://www.list.co.uk/place/102899-the-cloisters/
+> 
+> I'll be there, but I won't be able to stay long.
+> 
+
+Can't make it tonight. Regards.
+
+

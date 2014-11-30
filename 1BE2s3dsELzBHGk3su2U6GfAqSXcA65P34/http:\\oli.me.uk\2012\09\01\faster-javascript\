@@ -1,0 +1,219 @@
+http://oli.me.uk/2012/09/01/faster-javascript/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 15:25:06 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d2024b51d170446857683ce3aec88af2f1406042706656; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.oli.me.uk; HttpOnly
+Last-Modified: Sat, 26 Apr 2014 13:24:40 GMT
+Cache-Control: max-age=86400
+Expires: Wed, 23 Jul 2014 15:25:15 GMT
+Vary: Accept-Encoding
+CF-RAY: 14e0a6249ee70f03-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Faster JavaScript - Oliver.prototype.blog</title>
+<meta name="author" content="Oliver Caldwell">
+<meta name="description" content="I have been working on my EventEmitter class for about a year so far. I have rewritten it roughly every three months to put all of the techniques I &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://oli.me.uk/2012/09/01/faster-javascript">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Oliver.prototype.blog" type="application/atom+xml">
+ 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29131116-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<h1><a href="/">Oliver.prototype.blog</a></h1>
+<h2>A place to share my knowledge and escapades in the world of web development.</h2>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:oli.me.uk"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archives/">Archives</a></li>
+<li><a href="/about-me/">About me</a></li>
+<li><a href="https://github.com/Wolfy87/oli.me.uk">Source</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Faster JavaScript</h1>
+<p class="meta">
+<time datetime="2012-09-01T14:10:00+01:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
+| <a href="#disqus_thread">Comments</a>
+</p>
+</header>
+<div class="entry-content"><p>I have been working on <a href="https://github.com/Wolfy87/EventEmitter">my EventEmitter class</a> for about a year so far. I have rewritten it roughly every three months to put all of the techniques I have learned into practice. Now I have finished version 4 and it is the fastest yet by a long way. This <a href="http://jsperf.com/eventemitter-3-vs-4/4">jsPerf test</a> between version 3 and 4 proves my point nicely.</p>
+<p>In this post I will point out the main things I changed to get this kind of speed increase with the same functionality as the original. Well, roughly the same, I actually dropped some of the scoping stuff which can be achieved easily anyway. The old class was just getting a little bloated with settings and arguments.</p>
+ 
+<h2>Simplification</h2>
+<p>Version 3 used a class to manage the attributes of an event called <a href="https://github.com/Wolfy87/EventEmitter/blob/v3.1.7/src/EventEmitter.js#L27-70"><code>Event</code></a>. This gave me a huge amount of power but also a huge overhead. In version 4 I have completely removed this middle class and just pointed directly to a function for each listener.</p>
+<p>Having everything in classes is useful for some situations, such as managing shapes on a canvas, but it is slower than more stringy methods that may also do the job just fine. So try not to overcomplicate your scripts, just do what works and abstract if you <strong>really</strong> need to. Don&rsquo;t do it for the sake of OOP.</p>
+<h2>Loop directly and correctly</h2>
+<p>You know those each functions that libraries such as MooTools and jQuery provide? Yeah, don&rsquo;t ever use them.</p>
+<p>Think about it, instead of just looping directly, you are initialising an anonymous function which is executed every time the loop is run. That loop is having to pass arguments around and perform checks you might not need. The unnecessary overhead is huge. In version 3 I used my own each function to make my code a little more <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a>. Just look at all the code that goes on in <a href="https://github.com/Wolfy87/EventEmitter/blob/v3.1.7/src/EventEmitter.js#L72-103">that function</a>.</p>
+<p>And now compare that to <a href="https://github.com/Wolfy87/EventEmitter/blob/v4.0.0/EventEmitter.js#L242-249">the way I loop over listeners</a> in version 4. I am using a reverse loop which uses less characters and less logic. It is a trick I learnt from writing <a href="http://www.140byt.es/">140byt.es</a> scripts but I now use it wherever possible. Instead of comparing a counter to the current length every time as you would in a normal for loop and then incrementing, it de-increments and checks for a positive value in one swift movement.</p>
+<p>It may not be much faster, but over a large sample size it really makes a difference. It really depends on the circumstances though, you can only use it if order is not important and the counter is not allowed to go into negatives.</p>
+<h2>Use null instead of delete</h2>
+<p>At one point in the development of version 4 I was using the <code>delete</code> keyword to remove values from the storage object, it turns out this is pretty slow. Someone came along into my jsPerf tests and changed all removal to just set the value to null. Sure it now stacks up event names and does not remove completely but it&rsquo;s contents are still removed by GC. The script is now about another 5% faster because of it. Here is <a href="https://github.com/Wolfy87/EventEmitter/blob/v4.0.0/EventEmitter.js#L200-222">the usage of null</a>, and here is <a href="https://github.com/Wolfy87/EventEmitter/blob/ca3104295d8020be936347c76341dba8131aa16b/EventEmitter.js#L196-217">the usage of delete</a>.</p>
+<p>A small change in the code and a small increase in speed.</p>
+<h2>Keep things short</h2>
+<p>The <a href="https://github.com/Wolfy87/EventEmitter/blob/v4.0.0/EventEmitter.js#L53-69"><code>getListeners</code></a> method in version 4 creates the storage objects and arrays as quickly as possible. The old version actually had to <a href="https://github.com/Wolfy87/EventEmitter/blob/v3.1.7/src/EventEmitter.js#L223-243">build a whole array</a> because of the class based architecture.</p>
+<p>Just try to build your functions in a simple and concise way. It will make a huge difference, especially if the function is used a lot.</p>
+<h2>That&rsquo;s about it</h2>
+<p>There are many other small optimisations out there but these should help. And it&rsquo;s nice to see these in use, my examples should hopefully provide nice examples as to how they can be implemented. If you have any questions or suggestions please feel free to leave them in a comment below.</p>
+</div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">Posted by <span class="fn">Oliver Caldwell</span></span>
+<time datetime="2012-09-01T14:10:00+01:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
+<span class="categories">
+<a class='category' href='/categories/javascript/'>javascript</a>
+</span>
+</p>
+<div class="sharing">
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="http://oli.me.uk/2012/09/01/faster-javascript/" data-via="OliverCaldwell" data-counturl="http://oli.me.uk/2012/09/01/faster-javascript/">Tweet</a>
+</div>
+<p class="meta">
+<a class="basic-alignment left" href="/2012/05/21/localizing-times-with-xtz/" title="Previous Post: Localizing times with xtz">&laquo; Localizing times with xtz</a>
+<a class="basic-alignment right" href="/2013/06/01/prototypical-inheritance-done-right/" title="Next Post: Prototypical inheritance done right">Prototypical inheritance done right &raquo;</a>
+</p>
+</footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Bitcoin</h1>
+<p>Like what I do here? Want even more? Spur me on with a small donation, it will probably go towards a coffee that will fuel my next post or project.</p>
+<script type='text/javascript' src='http://coinwidget.com/widget/coin.js'></script>
+<script type='text/javascript'>
+		CoinWidgetCom.go({
+			wallet_address: '1BE2s3dsELzBHGk3su2U6GfAqSXcA65P34',
+			currency: 'bitcoin',
+			counter: 'hide',
+			alignment: 'bl',
+			qrcode: true,
+			auto_show: false,
+			lbl_button: 'Donate',
+			lbl_address: 'My Bitcoin Address:',
+			lbl_count: 'donations',
+			lbl_amount: 'BTC'
+		});
+	</script>
+</section>
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/2014/04/26/installing-vimdeck-on-arch/">Installing Vimdeck on Arch</a>
+</li>
+<li class="post">
+<a href="/2014/03/18/always-remain-a-beginner/">Always remain a beginner</a>
+</li>
+<li class="post">
+<a href="/2013/12/13/test-private-methods/">Test private methods</a>
+</li>
+<li class="post">
+<a href="/2013/12/05/graph-from-scratch/">Graph from scratch</a>
+</li>
+<li class="post">
+<a href="/2013/09/25/grabbing-elements-from-the-dom/">Grabbing elements from the DOM</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>GitHub Repos</h1>
+<ul id="gh_repos">
+<li class="loading">Status updating...</li>
+</ul>
+<a href="https://github.com/Wolfy87">@Wolfy87</a> on GitHub
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/libs/jXHR.js"></script>
+<script type="text/javascript" src="/javascripts/github.js"></script>
+<script type="text/javascript">
+	github.showRepos({
+		user: 'Wolfy87',
+		count: 5,
+		skip_forks: true,
+		target: '#gh_repos'
+	});
+</script>
+<p>
+Copyright &copy; 2014 - Oliver Caldwell -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'olimeuk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://oli.me.uk/2012/09/01/faster-javascript/';
+        var disqus_url = 'http://oli.me.uk/2012/09/01/faster-javascript/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

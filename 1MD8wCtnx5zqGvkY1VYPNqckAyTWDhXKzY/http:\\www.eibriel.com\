@@ -1,0 +1,439 @@
+http://www.eibriel.com/
+HTTP/1.1 200 OK
+Server:  
+Date: Tue, 22 Jul 2014 09:19:55 GMT
+Content-type: text/html
+Last-Modified: Tue, 22 Jul 2014 01:28:19 GMT
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es" dir="ltr" >
+<head>
+    <title>Amorzorzores</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta content="True" name="HandheldFriendly" />
+    
+    <meta content="Los Amorzorzores, un amor disparatado. Ya está online el Episodio 01!" name="description" />
+    <meta content='Kugatsu&Eibriel' name='author' />
+    
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script src="js/FastBlur.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script src="jquery.imgpreload.min.js"></script>
+    
+    <link rel="StyleSheet" href="style/fonts.css" type="text/css">
+    
+    <script src="js/photo.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/novel.js"></script>
+    <link rel="StyleSheet" href="style/photo.css" type="text/css">
+    <link rel="StyleSheet" href="style/video.css" type="text/css">
+    <link rel="StyleSheet" href="style/novel.css" type="text/css">
+    <link rel="StyleSheet" href="style/main.css" type="text/css">
+    
+    <style>
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    
+    font-size: 0.9em;
+    
+    background-color: #ccc;
+}
+
+.floatransition {
+    position: fixed;
+    height:250px;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out, top 0.5s ease-in-out, left 0.5s ease-in-out;
+    overflow: hidden;        
+    background-color:red;
+    background-color: rgb(204, 204, 204);
+}
+
+.floatransitionfin {
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+    </style>
+    <script>
+var novelcode;
+var photocode;
+var videocode;
+var fullcard;
+
+var photocardarr = [];
+var videocardarr = [];
+var novelcardarr = [];
+
+function Novelcard(nuuid, pages, url, title, description, card) {
+    this.uuid = nuuid;
+    this.url = url;
+    this.title = title;
+    this.description = description;
+    this.card = card;
+    this.pages = pages;
+}
+
+function Photocard(fuuid, url, title, description, card) {
+    this.uuid = fuuid;
+    this.url = url;
+    this.title = title;
+    this.description = description;
+    this.card = card;
+}
+
+function Videocard(vuuid, url, vidurl, title, description, card) {
+    this.uuid = vuuid;
+    this.url = url;
+    this.vidurl = vidurl;
+    this.title = title;
+    this.description = description;
+    this.card = card;
+}
+
+function novel2card(novel) {
+    code = novelcode.replace(/nuuid/g,novel.uuid);
+    code = code.replace(/##TITLE##/g,novel.title);
+    code = code.replace(/##DESCRIPTION##/g,novel.description);
+    $('#'+novel.card).html(code);
+    novel_setImage(novel.uuid, novel.url);
+    novel_addSmallClass(novel.uuid);
+    novel_initPhoto(novel.uuid, novel.pages);
+    novel_initTouch(novel.uuid);
+    novel_initPreload(novel.uuid);
+}
+
+function photo2card(photo) {
+    code = photocode.replace(/fuuid/g,photo.uuid);
+    code = code.replace(/##TITLE##/g,photo.title);
+    code = code.replace(/##DESCRIPTION##/g,photo.description);
+    $('#'+photo.card).html(code);
+    photo_setImage(photo.uuid, photo.url);
+    photo_addSmallClass(photo.uuid);
+    photo_initPhoto(photo.uuid);
+}
+
+function video2card(video) {
+    code = videocode.replace(/vuuid/g,video.uuid);
+    code = code.replace(/##TITLE##/g,video.title);
+    code = code.replace(/##DESCRIPTION##/g,video.description);
+    code = code.replace(/##URL##/g,video.url);
+    code = code.replace(/##URL1##/g,video.vidurl[0]);
+    code = code.replace(/##URL2##/g,video.vidurl[1]);
+    $('#'+video.card).html(code);
+    video_setImage(video.uuid, video.url);
+    video_addSmallClass(video.uuid);
+    video_initPhoto(video.uuid);
+}
+
+function Novelpage (number, titulo, texto, image) {
+    this.number = number;
+    this.titulo = titulo;
+    this.texto = texto;
+    this.image = image;
+    this.ready = false;
+}
+
+function loadCards() {
+
+    novelpages = []
+    novelpages.push( new Novelpage( 1, 'CC BY-ND-NC - Kugatsu&Eibriel', 'Es un hermoso día como tantos otros aquí en Hannakalay.', 'SRC/0001_llegada/0001_001_intro.svg') );
+    novelpages.push( new Novelpage( 2, '', 'Ah! pero no es un día cualquiera, no no! pues una joven pareja de zorzores se muda a nuestro vecindario.', 'SRC/0001_llegada/0001_0015_intro_b.svg') );
+    novelpages.push( new Novelpage( 3, '', 'Son Los Amorzorzores, acerquémonos para ver.', 'SRC/0001_llegada/0001_002_zzres_kodak.svg') );
+    novelpages.push( new Novelpage( 4, '', 'Es el momento de ingresar a su nuevo hogar...', 'SRC/0001_llegada/0001_003_frente_casa.svg') );
+    novelpages.push( new Novelpage( 5, '', 'a su nueva vida, a su nueva...', 'SRC/0001_llegada/0001_004_zzr_susto.svg') );
+    novelpages.push( new Novelpage( 6, '', 'Parece que el joven señor Amorzorzor no encuentra la llave.', 'SRC/0001_llegada/0001_005_busca_llave.svg') );
+    novelpages.push( new Novelpage( 7, '', 'Ah! Ahí esta...', 'SRC/0001_llegada/0001_006_zzr_encuentra_llave.svg') );
+    novelpages.push( new Novelpage( 8, '', 'Al parecer la llave no funciona ¿Será la correcta? Habrá que probar en otra cerradura', 'SRC/0001_llegada/0001_007_zzr_vs_llave.svg') );
+    novelpages.push( new Novelpage( 9, '', 'Mientras el joven Amorzorzor sigue intentando presurosamente,\nla joven señora Amorzorzora se sienta pesadamente sobre las valijas.', 'SRC/0001_llegada/0001_008_zzr_puertas.svg') );
+    novelpages.push( new Novelpage( 10, '', 'Vaya! el joven señor Amorzorzor no puede remediar el problema,\npero ha decidido treparse al muro para ingresar e intentar abrir desde adentro...', 'SRC/0001_llegada/0001_010_zzr_trepando.svg') );
+    novelpages.push( new Novelpage( 11, '', 'mmm... sin embargo no ha sido una buena idea, la policía se ha hecho presente y\nel joven señor Amorzorzor deberá acompañar a los agentes y dar sus explicaciones en la comisaria.', 'SRC/0001_llegada/0001_011_policia.svg') );
+    novelpages.push( new Novelpage( 12, '', 'La joven señora Amorzorzora no lo puede creer a juzgar por su expresión de perplejidad.', 'SRC/0001_llegada/0001_011_policia.svg') );
+    novelpages.push( new Novelpage( 13, 'Sr. Amorzorzor:', 'Es cosa de nada. Vuelvo en unos minutos, no hace falta que me acompañes querida.', 'SRC/0001_llegada/0001_012_patrullero.svg') );
+    novelpages.push( new Novelpage( 14, '', 'Continuará...', 'SRC/0001_llegada/0001_013_continuara_es.svg') );
+    novelpages.push( new Novelpage( 15, 'Bitcoin', '1MD8wCtnx5zqGvkY1VYPNqckAyTWDhXKzY', 'SRC/0001_llegada/0001_014_aportes_es.svg') );
+    
+    novelcardarr.push ( new Novelcard('1111', novelpages, 'SRC/0001_llegada/0001_001_intro.jpg', 'Los Amorzorzores S01E01', 'Los Amorzorzores S01E01', 'card1') );
+    
+    novelpages = []
+    novelpages.push( new Novelpage( 1, 'CC BY-ND-NC - Kugatsu&Eibriel', 'It is a beautiful day like many others here at Hannakalay.', 'SRC/0001_llegada/0001_001_intro_en.svg') );
+    novelpages.push( new Novelpage( 2, '', 'Oh! but is not just another day, no no! because a young couple of zorzores is moving to our neighborhood.', 'SRC/0001_llegada/0001_0015_intro_b.svg') );
+    novelpages.push( new Novelpage( 3, '', 'They are The Amorzorzores, let us draw near to see.', 'SRC/0001_llegada/0001_002_zzres_kodak.svg') );
+    novelpages.push( new Novelpage( 4, '', 'Is time to step into their new home...', 'SRC/0001_llegada/0001_003_frente_casa.svg') );
+    novelpages.push( new Novelpage( 5, '', 'new life, new...', 'SRC/0001_llegada/0001_004_zzr_susto.svg') );
+    novelpages.push( new Novelpage( 6, '', 'Looks like the young Mr. Amorzorzor cannot find the key.', 'SRC/0001_llegada/0001_005_busca_llave.svg') );
+    novelpages.push( new Novelpage( 7, '', 'Oh! There it is...', 'SRC/0001_llegada/0001_006_zzr_encuentra_llave.svg') );
+    novelpages.push( new Novelpage( 8, '', 'Apparently the key did not work ¿It is the right one? Will have to try another door lock', 'SRC/0001_llegada/0001_007_zzr_vs_llave.svg') );
+    novelpages.push( new Novelpage( 9, '', 'While the young Mr. Amorzorzor keep trying,\nthe young Mrs. Amorzorzora sit heavily on the baggage.', 'SRC/0001_llegada/0001_008_zzr_puertas.svg') );
+    novelpages.push( new Novelpage( 10, '', 'Well! the young Mr. Amorzorzor cannot solve the problem,\nbut he had decided to climb the wall to try from inside...', 'SRC/0001_llegada/0001_010_zzr_trepando.svg') );
+    novelpages.push( new Novelpage( 11, '', 'hmmm... however it has not been a good idea, the police moved in and\nthe young Mr. Amorzorzor shall go with the agents to give explanations at the police station.', 'SRC/0001_llegada/0001_011_policia.svg') );
+    novelpages.push( new Novelpage( 12, '', 'The young Mrs. Amorzorzora cannot believe it judging his perplexed expression.', 'SRC/0001_llegada/0001_011_policia.svg') );
+    novelpages.push( new Novelpage( 13, 'Mr. Amorzorzor:', 'It is nothing. I will be right back in a few minutes, there is not need to come with me my dear.', 'SRC/0001_llegada/0001_012_patrullero.svg') );
+    novelpages.push( new Novelpage( 14, '', 'To be continued...', 'SRC/0001_llegada/0001_013_continuara_es.svg') );
+    novelpages.push( new Novelpage( 15, 'Bitcoin', '1MD8wCtnx5zqGvkY1VYPNqckAyTWDhXKzY', 'SRC/0001_llegada/0001_014_aportes_en.svg') );
+    
+    novelcardarr.push ( new Novelcard('2222', novelpages, 'SRC/0001_llegada/0001_001_intro.jpg', 'The Amorzorzores S01E01 [English]', 'The Amorzorzores S01E01 [English]', 'card2') );
+    
+    //novelpages.push( new Novelpage( 13, '', 'El Sr. Amorzorzor se encuentra en la comisaria haciéndose de nuevos amigos en una celda.', 'SRC/0002_casa/0002_020_celda.jpg') );
+    //novelpages.push( new Novelpage( 14, '', 'Mientras, la joven y guapa Señora Amorzorzora se las ingenia con un pasador (hebilla del cabello) para ingresar a la propiedad.\nAl parecer todo está a su gusto.', 'SRC/0002_casa/0002_030_zza_cerradura.jpg') );
+    //novelpages.push( new Novelpage( 15, '', 'Lindos rosales, un gran patio y una linda piscina.', 'SRC/0002_casa/0002_040_rosa.jpg') );
+    //novelpages.push( new Novelpage( 16, '', 'Se detiene ante la puerta de entrada de su nueva casa y decide no entrar pues desea que el joven señor Amorzorzor la cargue como corresponde al marido antes de entrar al nuevo hogar, así que se sienta nuevamente sobres sus valijas a esperar.', 'SRC/0002_casa/0002_050_puerta_casa.jpg') );
+    // //novelpages.push( new Novelpage( 17, '', 'Mas tarde...', 'SRC/0002_casa/0002_060_tiempo_pasa.jpg') );
+    //novelpages.push( new Novelpage( 17, '', 'Muchas horas después, aparece sonriente el joven Sr. Amorzorzor, como si no hubiera pasado nada.', 'SRC/0002_casa/0002_070_zzr_vuelve.jpg') );
+    //novelpages.push( new Novelpage( 18, 'Amorzorzor', 'Querida! Tengo para contarte una larga y fascinante historia', 'SRC/0002_casa/0002_070_zzr_vuelve.jpg') );
+    //novelpages.push( new Novelpage( 19, '', 'La joven señora Amorzorzora lo mira amenazante.', 'SRC/0002_casa/0002_080_zza_enojada.jpg') );
+    //novelpages.push( new Novelpage( 20, 'Amorzorzor', 'Pero prefiero ahorrarte los detalles para otro momento así ya disfrutamos de nuestra casa!!!', 'SRC/0002_casa/0002_090_zzr_mejor_no.jpg') );
+    //novelpages.push( new Novelpage( 21, '', 'Con algo de dificultad pero con gran disimulo el joven sr. Amorzorzor logra cargar a la joven señora Amorzorzora e ingresan triunfantes a su nuevo hogar.', 'SRC/0002_casa/0002_100_zzr_caga_zzra.jpg') );
+    //novelpages.push( new Novelpage( 22, '', ' La joven señora Amorzorzora, aún en brazos del joven sr. Amorzorzor, estira el brazo y enciende la luz la cual parpadea unos escasos segundos, hasta que ...', 'SRC/0002_casa/0002_100_zzr_caga_zzra.jpg') );
+    //novelpages.push( new Novelpage( 23, '', 'el foco estalla y la casa queda en penumbras.', 'SRC/0002_casa/0002_110_corte_luz.jpg') );
+    //novelpages.push( new Novelpage( 24, 'Amorzorzor', 'Vaya, así es como inician todas las películas de terror', 'SRC/0002_casa/0002_110_corte_luz.jpg') );
+    //novelpages.push( new Novelpage( 25, '', 'será este el inicio de una pesadilla para la joven pareja de Amorzorzores?\nNo se pierdan el próximo episodio!', 'SRC/0002_casa/0002_110_corte_luz.jpg') );
+    
+    
+    
+    //novelpages = []
+    //novelpages.push( new Novelpage( 1, 'Amorzorzor', 'Es cosa de nada. Vuelvo en unos minutos, no hace falta que me acompañes querida', 'SRC/0001_llegada/0001_012_patrullero.jpg') );
+    
+    //novelcardarr.push ( new Novelcard('2222', novelpages, 'SRC/0001_llegada/0001_001_intro.jpg', 'The Amorzorzores S01E01', 'The Amorzorzores S01E01', 'card2') );
+
+    /*photocardarr.push ( new Photocard('1111', 'SRC/vrayblender.png', 'Invisible Man', 'Blender + VRay', 'card1') );
+    photocardarr.push ( new Photocard('2222', 'SRC/monk.jpg', 'Monk', 'Blender + Cycles (no Hair and no SSS) + Gimp', 'card2') );
+    photocardarr.push ( new Photocard('3333', 'SRC/orangesky.jpg', 'Orange Sky', 'Blender + Cycles + Compositor', 'card3') );
+    photocardarr.push ( new Photocard('4444', 'SRC/pepperkiss.jpg', 'Pepper Kiss', 'Blender + Cycles', 'card4') );
+    
+    videofiles = ['SRC/trinity_island_360.webm', 'SRC/trinity_island_360.mp4'];
+    videocardarr.push ( new Videocard('5555', 'SRC/IslaTrinidad_Plaza.jpg', videofiles, 'Trinity Island', 'Post Cyberpunk short film about the Future, Tecnology and Capitalism.', 'card5') );
+    videofiles = ['SRC/eibriel_reel_360.webm', 'SRC/eibriel_reel_360.mp4'];
+    videocardarr.push ( new Videocard('6666', 'SRC/eibriel_reel.png', videofiles, 'Compositing Reel 2012', 'Compositing Reel: Blender, Cycles, After Effects, Nuke.', 'card6') );
+    
+    photocardarr.push ( new Photocard('7777', 'SRC/zzrs_06-15.jpg', 'Amorzorzores Poster 1', 'Amorzorzores Poster 1', 'card7') );
+    photocardarr.push ( new Photocard('8888', 'SRC/zzrs_06-22.jpg', 'Amorzorzores Poster 2', 'Amorzorzores Poster 2', 'card8') );
+    photocardarr.push ( new Photocard('9999', 'SRC/0000_002_poster03_animado_en_gif.gif', 'Amorzorzores Poster 3', 'Amorzorzores Poster 3', 'card9') );
+    photocardarr.push ( new Photocard('10101010', 'SRC/0000_004_amorzorzora_polaroid_en.gif', 'Mrs. Amorzorzora', 'Mrs. Amorzorzora', 'card10') );*/
+    
+    var loadcard = function (x, idx) {
+        $('#main').prepend('<div class="tarjeta" id="'+x.card+'" onclick="openCard(this);"></div>');
+    }
+    photocardarr.forEach(loadcard);
+    novelcardarr.forEach(loadcard);
+    videocardarr.forEach(loadcard);
+    
+    $.ajax({
+        type: "GET",
+        url: 'novel.code',
+        dataType: "text"
+    }).done( getNovelCards ).fail(function(jqXHR, textStatus) {}) ;
+    $.ajax({
+        type: "GET",
+        url: 'photo.code',
+        dataType: "text"
+    }).done( getPhotoCards ).fail(function(jqXHR, textStatus) {}) ;
+    $.ajax({
+        type: "GET",
+        url: 'video.code',
+        dataType: "text"
+    }).done( getVideoCards ).fail(function(jqXHR, textStatus) {}) ;
+}
+
+function getNovelCards(code) {
+    novelcode = code;
+    
+    var loadnovel = function (x, idx) {
+        novel2card(x);
+    }
+    novelcardarr.forEach(loadnovel);
+}
+
+function getPhotoCards(code) {
+    photocode = code;
+    
+    var loadphoto = function (x, idx) {
+        photo2card(x);
+    }
+    photocardarr.forEach(loadphoto);
+}
+
+function getVideoCards(code) {
+    videocode = code;
+    
+    var loadvideo = function (x, idx) {
+        video2card(x);
+    }
+    videocardarr.forEach(loadvideo);
+}
+
+function loadMain() {
+    $.ajax({
+        type: "GET",
+        url: 'main.code',
+        dataType: "text"
+    }).done( getMain ).fail(function(jqXHR, textStatus) {}) ;
+}
+
+function getMain(code) {
+    $('body').html(code+'<div id="floater"></div>');
+    loadCards();
+}
+
+$(function() {
+    loadMain();
+});
+
+window.onkeydown = function(e){
+    //alert(e.keyCode );
+    //37: <-
+    if (e.keyCode===49 || e.keyCode===27 || e.keyCode===8 || e.keyCode===81){
+        closeCard();
+    }
+    
+    if (fullcard == null) {
+        return;
+    }
+    
+    xuuid = card2uuid(fullcard);
+    
+    if (e.keyCode===32 || e.keyCode===39){
+        //closeCard();
+        novel_nexPage(xuuid, 1);
+    } else if (e.keyCode===37){
+        novel_nexPage(xuuid, -1);
+    }
+    
+}
+
+function card2uuid(card) {
+    totalarr = videocardarr.concat( photocardarr, novelcardarr );
+    ret = null;
+    var getuuid = function (x, idx) {
+        if (card == x.card) {
+            ret = x.uuid;
+        }
+    }
+    totalarr.forEach(getuuid);
+    return ret;
+}
+
+function card2type(card) {
+    ret = null;
+    var gettypev = function (x, idx) {
+        if (card == x.card) {
+            ret = 'video';
+        }
+    }
+    
+    var gettypep = function (x, idx) {
+        if (card == x.card) {
+            ret = 'photo';
+        }
+    }
+    
+    var gettypen = function (x, idx) {
+        if (card == x.card) {
+            ret = 'novel';
+        }
+    }
+    
+    videocardarr.forEach(gettypev);
+    photocardarr.forEach(gettypep);
+    novelcardarr.forEach(gettypen);
+    
+    return ret;
+
+    /*
+    if (oid=='card5' || oid=='card6') {
+        return 'video';
+    } else {
+        return 'photo';
+    }*/
+}
+
+var fotourl;
+var fotobin;
+
+function openCard(obj) {
+    if ( obj==undefined ) return;
+    oid = obj.id;
+    fullcard = oid;
+    obj = $("#"+oid);
+    left = obj.offset().left;
+    top_ = obj.offset().top;
+    width = obj.width();
+    msg = obj.html();
+    obj.html('');
+    $('#floater').css('display', 'block');
+    $('#floater').html('<div  class="floatransition" id="floaterfloater" >'+msg+'</div>');
+    $('#floaterfloater').offset( {top: top_, left: left} );
+    $('#floaterfloater').width(width);
+
+    setTimeout( "$('#floaterfloater').offset( {top: '0', left: '0'}); $('#floaterfloater').width('100%'); $('#floaterfloater').height( '100%');",50);
+    
+    xuuid = card2uuid(oid);
+    if (card2type(oid) == 'photo') {
+        setTimeout( "photo_removeAllClasses('"+xuuid+"');", 100);
+    } else if (card2type(oid) == 'novel') {
+        setTimeout( "novel_removeAllClasses('"+xuuid+"');", 100);
+        //novel_initPreload(xuuid);
+    } else {
+        setTimeout( "video_removeAllClasses('"+xuuid+"');", 100);
+        fotourl = $('#'+xuuid+'-video-foto').css('background-image');
+        fotobin = $('#'+xuuid+'-video-video-div').css('background-image');
+        $('#'+xuuid+'-video-foto').css('background-image', 'none');
+        $('#'+xuuid+'-video-video-div').css('background-image', 'none');
+    }
+}
+
+function closeCard() {
+    //obj = $("#"+obj.id);
+    if (fullcard == null) {
+        return;
+    }
+    
+    cf = fullcard;
+    
+    fullcard = null;
+
+    obj = $("#"+cf);
+    left = obj.offset().left;
+    top_ = obj.offset().top;
+    width = obj.width();
+    height = obj.height();
+    
+    $('#floaterfloater').offset( {top: top_, left: left} );
+    $('#floaterfloater').width(width);
+    $('#floaterfloater').height(height);
+    
+    msg = $('#floaterfloater').html();
+    
+    setTimeout( "msg = $('#floaterfloater').html(); $('#floater').css('display', 'none'); $('#floaterfloater').html(''); obj.html(msg);",1000);
+    
+    xuuid = card2uuid(cf);
+    if (card2type(oid) == 'photo') {
+        photo_addSmallClass(xuuid);
+    } else if (card2type(oid) == 'novel') {
+        novel_addSmallClass(xuuid);
+    } else {
+        video_addSmallClass(xuuid);
+        $('#'+xuuid+'-video-foto').css('background-image', fotourl);
+        $('#'+xuuid+'-video-video-div').css('background-image', fotobin);
+    }
+    
+}
+
+    </script>
+</head>
+<body>
+
+</body>
+<script>
+/* Desactivar eveto iOS */
+document.body.addEventListener('touchmove', function(event) {
+  event.preventDefault();
+}, false); 
+</script>
+</html>
+

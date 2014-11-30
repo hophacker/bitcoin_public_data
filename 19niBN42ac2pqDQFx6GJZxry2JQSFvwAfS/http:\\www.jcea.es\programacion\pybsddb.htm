@@ -1,0 +1,1262 @@
+http://www.jcea.es/programacion/pybsddb.htm
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 01:29:14 GMT
+Server: Zope/(2.13.22, python 2.7.7, sunos5) ZServer/1.1
+Expires: Wed, 23 Jul 2014 02:29:14 GMT
+Last-Modified: Wed, 23 Jul 2014 01:29:14 GMT
+Cache-Control: max-age=3600
+Content-Type: text/html; charset=utf-8
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 16953
+Connection: close
+
+<html>
+
+<head>
+<title>Python "bindings" for Oracle Berkeley DB</title>
+<link rel="alternate" type="application/rss+xml" title="Últimos cambios en mi página web" href="/ultimos_cambios.xml">
+
+<linkOLD rel="openid.server" href="http://server.myid.net/server" />
+<linkOLD rel="openid.delegate" href="http://jcea.myid.net/" />
+<metaOLD http-equiv="X-XRDS-Location" content="http://jcea.myid.net/xrds" />
+
+<linkOLD rel="openid.server" href="http://www.myopenid.com/server" />       <!-- For delegating OpenID v1.x-->
+<linkOLD rel="openid.delegate" href="http://jcea.myopenid.com/" />       <!-- For delegating OpenID v1.x-->
+<linkOLD rel="openid2.local_id" href="http://jcea.myopenid.com" />
+<linkOLD rel="openid2.provider" href="http://www.myopenid.com/server" />
+<metaOULD http-equiv="X-XRDS-Location" content="http://www.myopenid.com/xrds?username=jcea.myopenid.com" />        <!-- For delegating OpenID v2.x-->
+
+<link href="http://certifi.ca/_serve" rel="openid.server" />
+<link href="http://certifi.ca/jcea" rel="openid.delegate" />
+</head>
+
+<body>
+
+<!-- ESTO ES EL BANNER DE LA INTERNET DEFENSE LEAGUE -->
+<script type="text/javascript">
+    window._idl = {};
+    _idl.variant = "banner";
+    (function() {
+        var idl = document.createElement('script');
+        idl.type = 'text/javascript';
+        idl.async = true;
+        idl.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'members.internetdefenseleague.org/include/?url=' + (_idl.url || '') + '&campaign=' + (_idl.campaign || '') + '&variant=' + (_idl.variant || 'banner');
+        document.getElementsByTagName('body')[0].appendChild(idl);
+    })();
+</script>
+
+<table valign="top" align="center" border="0" width="100%">
+<tr>
+<td width="160" rowspan="2" align="center" valign="top"><a href="http://getfirefox.com/"
+title="Get Firefox - Take Back the Web"><img
+src="http://sfx-images.mozilla.org/affiliates/Buttons/firefox3/110x32_get_ffx.png"
+width="110" height="32" border="0" alt="Get Firefox"></a>
+
+<p/><a href="http://internetdefenseleague.org"><img src="http://internetdefenseleague.org/images/badges/final/side_bar_badge.png" alt="Member of The Internet Defense League" /></a>
+</td>
+<td align="center">
+<!--<a href="http://swpat.ffii.org/index.es.html"><img src="http://proinnova.hispalinux.es/imagenes/banners/nopatentessw.png" border=0 alt="Di NO a las patentes de Software" title="Di NO a las patentes de Software"></a>-->
+<!--<a href="http://stopsoftwarepatents.org/"><img src="http://stopsoftwarepatents.wdfiles.com/local--files/logo/logo2.png" border=0 alt="Di NO a las patentes de Software" title="Di NO a las patentes de Software"></a>-->
+<a href="http://petition.stopsoftwarepatents.eu/551003580597/"><img src="http://petition.stopsoftwarepatents.eu/banner/551003580597/ssp-468-96.gif" alt="stopsoftwarepatents.eu petition banner" width="468" height="96" /></a>
+</td>
+<td align="center">
+<a href="http://culturalibre.org/"><img src="http://www.republicainternet.com/img/manifiesto.gif" border=0 alt="Manifiesto por la liberación de la cultura" title="Manifiesto por la liberación de la cultura"></a>&nbsp;<br><a href="http://www.ciberpunk.info/no-a-la-traza-privada"><img src="http://www.ciberpunk.info/desvan/boton_traza_88x31.png" border=0 alt="No a la traza privada" title="No a la traza privada"></a>
+</td>
+<td width="125" align="center">
+<a href="/ultimos_cambios.xml">
+<img src="/feed-icon-28x28.png" border="0" alt="Últimos cambios" title="Últimos Cambios"></a>
+<br><b><i>Últimos Cambios</i></b></td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://rejectinspire.publicgeodata.org/"><img src="http://blog.pedrocustodio.com/wp-content/uploads/2006/03/publicgeodata.png" border=0 alt="Vote for Public Maps - Reject INSPIRE!" title="Vote for Public Maps - Reject INSPIRE!"></a>
+</td>
+<td align="center" colspan="2">
+<a href="http://es.wikipedia.org/wiki/Geocaching"><img src="http://img.geocaching.com/stats/img.aspx?uid=6c9b2a99-0c9e-4324-9068-4e2e8921c511&txt=Estad%C3%ADsticas+de+Geocaching" border="0" alt="Geocaching" title="Geocaching"></a>
+</td>
+</tr>
+<tr>
+<td colspan="4" align="center">
+<a href="https://twitter.com/jcea"><img src="http://blog.jcea.es/twitter.png" style="vertical-align:middle"/></a>
+<font size=-1><i><a href="http://blog.jcea.es/">Blog personal: El hilo del laberinto</a></i></font>
+</td></tr>
+</table>
+
+
+
+
+<h1 align=center>Python "bindings" for Oracle Berkeley DB</h1>
+<p align=center> <i>Última Actualización:
+21 de julio de 2014</i>
+
+<p>"pybsddb" are the Python "bindings" for the excellent Oracle Berkeley DB. They are
+included in stardard Python version 2.3 thru 2.7, but here you will find a vastly updated version.
+Python 3.x doesn't include native Berkeley DB support, you need to
+install this library by your own.
+
+<p>I'm the official maintainer since January 2008.
+
+<p>Some resources:
+
+<ul>
+<p><li>PyBSDDB Documentation
+
+<p>The documentation always references the last supported Berkeley DB library. If you
+link against an older release, some features can not be available, syntax can change, etc.
+
+<ul>
+<p><li><a href="pybsddb_doc/">PyBSDDB Documentation (6.1.0)</a>
+
+<p><li><a href="pybsddb_doc/5.1.2/">PyBSDDB Documentation for version 5.1.2</a>
+<br><font size=-2>After this version, Replication Manager API changed. Also, there is
+a new API for configuring limits, dinamically.</font>
+
+<p><li><a href="pybsddb_doc/4.8.4/">PyBSDDB Documentation for version released with Python 2.7 (4.8.4)</a>
+
+<p><li><a href="pybsddb_doc/4.7.3/">PyBSDDB Documentation for version released with Python 2.6 (4.7.3)</a>
+
+</ul>
+
+<p><li><a href="http://mailman.jcea.es/listinfo/pybsddb">
+Python bindings for Oracle Berkeley DB Mailing List</a>
+
+<p><li><a href="http://mailman.jcea.es/listinfo/pybsddb-commits">
+pybsddb source version commit notifications Mailing List</a>
+</ul>
+
+<font size=-1><p>Old resources. For historic reference only!:
+<ul>
+<p><li><a href="http://pybsddb.sourceforge.net/">
+Python Bindings for BerkeleyDB 3.3 thru 4.5</a> (SourceForge) (Old webpage)
+<br>Here is the (very outdated!) documentation, bug tracker, feature requester, etc.
+
+<p><li><a href="https://sourceforge.net/mailarchive/forum.php?forum_name=pybsddb-users">
+Archives of the old mailing list in SourceForge</a>
+</ul>
+</font>
+
+<h3>Releases</h3>
+
+<p>The numbering schema of pybsddb releases is X.Y.Z. The X.Y combination documents the
+highest Berkeley DB release supported. That is, pybsddb 4.7.2 is the third release
+of the branch that supports Berkeley DB 4.7.x (the first release would be 4.7.0).
+
+<p>You can link pybsddb against older releases, if you
+wish, although the documentation always references the latest supported release.
+Pybsddb always tries to link against the latest supported Berkeley DB release. If you
+want to link to a particular BDB release, you can do "python setup.py --berkeley-db=PATH".
+If you already have pybsddb installed and you want to
+relink it against other Berkeley DB release, you have to reinstall.
+
+<p>When installing pybsddb as a standalone library (that is, you are not using
+the python stardard lib bundled version), you have to import it as "bsddb3". This is
+because the python standard lib version is named "bsddb", and you want the new version.
+For compatibility, you could do "import bsddb3 as bsddb" in your code, if you want.
+
+<p>You can see the pybsddb version writing "bsddb3.__version__". You can see the
+Berkeley DB version the binding is linked against with "bsddb3.db.version()".
+
+<p><a href="http://pypi.python.org/pypi/bsddb3/">Releases are published</a> via
+<a href="http://pypi.python.org/pypi/">Python Package Index</a>, so you can use
+"<kbd>easy_install</kbd>" (<a href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>)
+or "<kbd>pip</kbd>".
+Read-only Mercurial
+repository available at <a href="http://hg.jcea.es/pybsddb/">http://hg.jcea.es/pybsddb/</a>.
+Interested parties can subscribe to the
+<a href="http://mailman.jcea.es/listinfo/pybsddb-commits">commit</a> mailing list.
+
+<ul>
+
+<p><li><a name="bsddb3-6.1.0"><b><a href="http://pypi.python.org/pypi/bsddb3/6.1.0">bsddb3-6.1.0</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.6-2.7 and 3.2-3.4, and Berkeley DB 4.7-6.1. (20140721)
+
+<p><b><i>BEWARE: Oracle Berkeley DB version 6.x is licensed under AGPL3 or have a commercial license.
+If you need the old Berkeley DB license, you can still use BDB version up to (and including) 5.3.</i></b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+<ul>
+<p><li>Support Berkeley DB 6.1.x.
+<p><li>Solve a ResourceWarning when compiling.
+<p><li>Drop support for Python 2.4, 2.5 and 3.1. If you need
+    compatibility with those versions, you can keep using old
+    releases of these bindings.
+<p><li>Drop support for Berkeley DB 4.3, 4.4, 4.5, 4.6. If you need
+    compatibility with those versions, you can keep using old
+    releases of these bindings.
+<p><li>From now, on our support reference is Red Had Enterprise Linux 6.
+<p><li>Drop modules attributes "cvsid".
+<p><li>Drop (hidden) $Id$ keyword in the documentation.
+
+</ul>
+
+<p><li><a name="bsddb3-6.0.1"><b><a href="http://pypi.python.org/pypi/bsddb3/6.0.1">bsddb3-6.0.1</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.4-2.7 and 3.1-3.4b1, and Berkeley DB 4.3-6.0. (20131205)
+
+<p><b><i>BEWARE: Oracle Berkeley DB version 6.0.x is licensed under AGPL3 or have a commercial license.</i></b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+<ul>
+<p><li>Clarification of license. Thanks to
+    <a href="mailto:jstanek@redhat.com">Jan Stan&#283;k</a> for bringing this issue up.
+    This work is now explicitly licensed under
+    <a href="http://opensource.org/licenses/BSD-3-Clause">3-clause BSD license</a>.
+<p><li>Fixed a long standing bug (August 2008,
+    <a href="http://hg.jcea.es/pybsddb/rev/9fd52748fa59#l1.238">rev 9fd52748fa59</a>) 
+    on "dbtables.py". Notified by Maxime Labelle.
+<p><li>If you want to link with Oracle Berkeley DB 6.0, you will
+    need to create the environment variable 
+    '<kbd>YES_I_HAVE_THE_RIGHT_TO_USE_THIS_BERKELEY_DB_VERSION</kbd>'
+    to signal to the pybsddb that you are legal. To be legal,
+    your code MUST be AGPL3 *OR* you have to buy a commercial
+    license from Oracle.
+
+<p>If you are not legally entitled to use Berkeley DB 6.0 and
+    you have previous versions of Berkeley DB on your system,
+    you can a) delete Berkeley DB 6.0 and try again, OR
+    b) instruct pybsddb to use a previous Berkeley DB version,
+    using environment variables or command line options.
+
+<p>Sorry for the inconvenience. I am trying to protect you.
+
+<p>Some details:
+
+<ul>
+<p><li><a href="https://forums.oracle.com/message/11184885">Oracle forums</a>
+
+<p><li><a href="http://lists.debian.org/debian-legal/2013/07/">Debian legal</a>
+</ul>
+
+</ul>
+
+<p><li><a name="bsddb3-6.0.0"><b><a href="http://pypi.python.org/pypi/bsddb3/6.0.0">bsddb3-6.0.0</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.4-2.7 and 3.1-3.3, and Berkeley DB 4.3-6.0. (20130621)
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+<ul>
+<p><li>Support Berkeley DB 6.0.x.
+
+<p><li>HEADS UP: If you are using "bsddb3._bsddb" in your code,
+    for example for exceptions, change it to "bsddb3._db".
+
+<p><li>Print test working directory when running the testsuite.
+    You can control it using "TMPDIR" environment variable.
+    Defaults to "/tmp/z-Berkeley_DB/".
+
+<p><li>Support for "DB_EVENT_REP_AUTOTAKEOVER_FAILED" event.
+
+<p><li>Support for "DB_REPMGR_ISVIEW", "DB_DBT_BLOB", "DB_LOG_BLOB",
+    "DB_STREAM_READ", "DB_STREAM_WRITE" and "DB_STREAM_SYNC_WRITE" flags.
+
+<p><li>Some DB_SEQUENCE function signatures changed in Berkeley DB 6.0.x.
+
+<p><li>Erratic behaviour of "DBEnv->rep_elect()" because a typo.
+
+<p><li>The testsuite prints Python bitness (32/64).
+
+<p><li>Tests compatible with hash randomization, default
+    in Python 3.3. See <a href="http://bugs.python.org/issue13703">http://bugs.python.org/issue13703</a> .
+
+<p><li>Errors when trying to calculate the length of a DB were
+    masked, and an unuseful and unrelated exception was raised.
+
+<p><li>Code cleanup since pybsddb is not in the Python 3.x stdlib
+    anymore, and the version in Python 2.6/2.7 is being
+    maintained separately.
+</ul>
+
+<p><li><a name="bsddb3-5.3.0"><b><a href="http://pypi.python.org/pypi/bsddb3/5.3.0">bsddb3-5.3.0</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.4-2.7 and 3.1-3.2, and Berkeley DB 4.3-5.3. (20120116)
+
+<p><b>This release DROPS support for Python 2.3 and Berkeley DB 4.2.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+<ul>
+<p><li>Support Berkeley DB 5.3.x.
+<p><li>Drop support for Berkeley DB 4.2 and Python 2.3. Our reference
+    is Red Had Enterprise Linux 5, until march 2014.
+    After that, RHEL6 has Python 2.6 and BDB 4.7.
+<p><li>According to <a href="http://superuser.com/questions/189931/python-and-berkeley-db-versions-in-redhat-enterprise-linux-3-4-5-and-upcoming-6">http://superuser.com/questions/189931/python-and-berkeley-db-versions-in-redhat-enterprise-linux-3-4-5-and-upcoming-6</a> :
+<ul>
+<li>RHEL3: Python 2.2.3, BDB 4.1.25
+<li>RHEL4: Python 2.3.4, BDB 4.2.52
+<li>RHEL5: Python 2.4.3, BDB 4.3.29
+<li>RHEL6: Python 2.6.2, BDB 4.7.25
+</ul>
+<p><li>Support for "DBEnv->set_intermediate_dir()", available in
+    Berkeley DB 4.3-4.6.  Patch by Garret Cooper.
+<p><li>Support for "DB->set_dup_compare()".  Original patches by
+    Nikita M. Kozlovsky and Ben Schmeckpeper.
+<p><li>Fixed a testsuite compatibility problem with BDB 5.2.
+<p><li>If we are running Solaris or derivatives, and 64bit python,
+    try to find the library under "/usr/local/Berkeley.*.*/64/".
+<p><li>Solaris 10 Update 10 exposes a very old race condition in the replication
+    master election tests. Some details in 
+    <a href="https://forums.oracle.com/forums/thread.jspa?messageID=9902860">https://forums.oracle.com/forums/thread.jspa?messageID=9902860</a> .
+    Workaround proposed in a private email from Paula Bingham (Oracle),
+    in 20110929.
+<p><li>When doing the full matrix test for a release, stop the verification
+    if any test failed.
+</ul>
+
+<p><li><a name="bsddb3-5.2.0"><b><a href="http://pypi.python.org/pypi/bsddb3/5.2.0">bsddb3-5.2.0</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.3-2.7 and 3.1-3.2, and Berkeley DB 4.2-5.2. (20110712)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>In Berkeley DB 5.2, the Replication Manager API has been changed completelly. PyBSDDB 5.2.0 is compatible
+with both the old and the new API. The API compiled is decided according to the Berkeley DB version available when
+compiling the bindings.</i></b>
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p><i>When compiling against Berkeley DB 5.2.x, "test_tx_max" test in the testsuite fails. This is a spurious failure, not real,
+and it will be solved in 5.2.1</i>.
+
+<p>Changes:
+<ul>
+<p><li>Support for Berkeley DB 5.2.
+
+<p><li>Support for the newly available replication manager events:
+    DB_EVENT_REP_SITE_ADDED, DB_EVENT_REP_SITE_REMOVED,
+    DB_EVENT_REP_LOCAL_SITE_REMOVED, DB_EVENT_REP_CONNECT_BROKEN,
+    DB_EVENT_REP_CONNECT_ESTD, DB_EVENT_REP_CONNECT_TRY_FAILED,
+    DB_EVENT_REP_INIT_DONE.
+
+<p><li>New Object: "DB_SITE". Support for all its methods.
+
+<p><li>Parameters for "DB_SITE->set_config()": DB_BOOTSTRAP_HELPER,
+    DB_GROUP_CREATOR, DB_LEGACY, DB_LOCAL_SITE, DB_REPMGR_PEER.
+
+<p><li>Support for some stuff in the new "Dynamic Environment Configuration":
+    DB_MEM_LOCK, DB_MEM_LOCKOBJECT, DB_MEM_LOCKER, DB_MEM_LOGID,
+    DB_MEM_TRANSACTION, DB_MEM_THREAD.
+
+<p><li>Add "bytes" to "DBEnv_memp_stat()". Original patch from Garrett Cooper.
+</ul>
+
+<p><li><a name="bsddb3-5.1.2"><b><a href="http://pypi.python.org/pypi/bsddb3/5.1.2">bsddb3-5.1.2</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.3-2.7 and 3.1-3.2, and Berkeley DB 4.2-5.1. (20110308)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+<ul>
+<p><li>5.1.1 install fails if the bsddb in the standard library is not installed,
+    under Python 2.7. Reported by Arfrever Frehtes Taifersar Arahesis.
+<p><li>Since 5.0.0, we can't find 4.x libraries unless we specify a
+    "--berkeley-db=/path/to/bsddb" option. Reported by Wen Heping.
+<p><li>Support "DB_ENV->get_open_flags()", "DB_ENV->set_intermediate_dir_mode()",
+    "DB_ENV->get_intermediate_dir_mode()".
+<p><li>Support "DB->get_dbname()", "DB->get_open_flags()".
+<p><li>Support "db_full_version()".
+<p><li>Document "version()". This top-level function has been supported forever.
+<p><li>Bugfix when calling "DB->get_size()" on a zero length record.
+    Reported by Austin Bingham.
+<p><li>'assertEquals()' is deprecated in Python 3.2.
+<p><li>'assert_()' is deprecated in Python 3.2.
+<p><li>Solved 'ResourceWarning' under Python 3.2.
+</ul>
+
+<p><li><a name="bsddb3-5.1.1"><b><a href="http://pypi.python.org/pypi/bsddb3/5.1.1">bsddb3-5.1.1</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.3-2.7 and 3.1-3.2r86170, and Berkeley DB 4.2-5.1. (20101108)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+
+<ul>
+<p><li>Recent pre-releases of Python 3.2 issue ResourceWarnings about
+    fileshandles deallocated without being closed first. Fix testsuite.
+<p><li>Current "*.pyc" and "*.pyo" cleaning is not working in a PEP 3147
+    world ("__pycache__"). I don't think this code is actually
+    necessary anymore. Deleted.
+<p><li>Python 2.7.0 deprecates CObject incorrectly. See Python issue #9675.
+<p><li>Testsuite for "DB->get_transactional()" should not create databases
+    outside the TMP directory, neither leave the files behind.
+<p><li>If something happens while creating the CObject/Capsule object,
+    keep going, even without exporting the C API, instead of crashing.
+<p><li>Support for "DB_FORCESYNC", "DB_FAILCHK", "DB_SET_REG_TIMEOUT",
+    "DB_TXN_BULK", "DB_HOTBACKUP_IN_PROGRESS".
+<p><li>Support "DB_EVENT_REG_ALIVE", "DB_EVENT_REG_PANIC",
+    "DB_EVENT_REP_DUPMASTER", "DB_REPMGR_CONF_ELECTIONS",
+    "DB_EVENT_REP_ELECTION_FAILED", "DB_EVENT_REP_MASTER_FAILURE".
+<p><li>Support for "DB_VERB_REP_ELECT", "DB_VERB_REP_LEASE", "DB_VERB_REP_MISC",
+    "DB_VERB_REP_MSGS", "DB_VERB_REP_SYNC", "DB_VERB_REP_SYSTEM",
+    "DB_VERB_REPMGR_CONNFAIL", "DB_VERB_REPMGR_MISC".
+<p><li>Support for "DB_STAT_LOCK_CONF", "DB_STAT_LOCK_LOCKERS",
+    "DB_STAT_LOCK_OBJECTS", "DB_STAT_LOCK_PARAMS".
+<p><li>Support for "DB_REP_CONF_INMEM".
+<p><li>Support for "DB_TIMEOUT ".
+<p><li>Support for "DB_CURSOR_BULK".
+</ul>
+
+<p><li><a name="bsddb3-5.1.0"><b><a href="http://pypi.python.org/pypi/bsddb3/5.1.0">bsddb3-5.1.0</a>:</b></a>
+Testsuite verified with Unix 32 bit Python 2.3-2.7 and 3.1-3.2r86170, and Berkeley DB 4.2-5.1. (20101104)
+
+<p><b><i>This release drops support for Berkeley DB 4.1, and adds support for Berkeley DB version 5.1, brand new.
+If you need Berkeley DB 4.1 support, keep using pybsddb 5.0.0.
+If you want support for Berkeley DB 5.1, remember to install the BDB library before installing these bindings.</i></b>
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 5.1 or up.</i></b> 
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+
+<ul>
+<p><li>Support for Berkeley DB 5.1.
+<p><li>Drop support for Berkeley DB 4.1.
+
+<p>Our reference
+    is Red Had Enterprise Linux 4, until February 2012.
+    
+<p>After that, RHEL5 has Python 2.4 and BDB 4.3.
+
+<p>According to http://superuser.com/questions/189931/python-and-berkeley-db-versions-in-redhat-enterprise-linux-3-4-5-and-upcoming-6 :
+<ul>
+<p><li>RHEL3: Python 2.2.3, BDB 4.1.25
+<p><li>RHEL4: Python 2.3.4, BDB 4.2.52
+<p><li>RHEL5: Python 2.4.3, BDB 4.3.29
+<p><li>RHEL6: Python 2.6.2, BDB 4.7.25 (Currently in BETA)
+</ul>
+<p><li>Include documentation source (*.rst) in the EGG.
+<p><li>Include processed HTML documentation in the EGG.
+<p><li>Update the external links in documentation, since Oracle changed its web
+    structure.
+<p><li>Some link fixes for external documentation.
+<p><li>Links added in the documentation to Oracle Berkeley DB programmer
+    reference.
+<p><li>Support for "DB->get_transactional()".
+<p><li>Support for "DB_REPMGR_ACKS_ALL_AVAILABLE".
+</ul>
+
+<p><li><a name="bsddb3-5.0.0"><b><a href="http://pypi.python.org/pypi/bsddb3/5.0.0">bsddb3-5.0.0</a>:</b></a>
+Testsuite verified in Unix 32 bit Python 2.3-2.7a4r79822 and 3.1-3.2r79860, and Berkeley DB 4.1-5.0. (20100407)
+
+<p><b><i>This release drops support for Python 3.0, and adds support for Oracle Berkeley DB version 5.0, brand new.
+If you need Python 3.0 support, keep using pybsddb 4.8.4.
+If you want support for Berkeley DB 5.0, remember to install the BDB library before installing these bindings.</i></b>
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p><b><i>The minimum recommended version for advanced use is Berkeley DB 4.8.30.</i></b>
+
+<p>Changes:
+
+<ul>
+<p><li>Support for Berkeley DB 5.0.
+<p><li>Drop support for Python 3.0.
+<p><li>Now you can use TMPDIR env variable to override default
+    test directory ("/tmp").
+<p><li>Versioning of C API. If you use the code from C, please
+    check the bsddb_api->api_version number against
+    PYBSDDB_API_VERSION macro.
+<p><li>In C code, the bsddb_api->dbsequence_type component is always available,
+    even if the Berkeley DB version used doesn't support sequences. In that
+    case, the component will be NULL.
+<p><li>In C code, "DBSequenceObject_Check()" macro always exists, even if the
+    Berkeley DB version used doesn't suport sequences. In that case, the test
+    macro always returns "false".
+<p><li>For a long time, the API has been accesible via C using "_bsddb.api" or
+    "_pybsddb.api". If you are using Python >=2.7, you acquire access to that
+    API via the new Capsule protocol (see "bsddb.h").  If you use the C API and
+    upgrade to Python 2.7 and up, you must update the access code (see
+    "bsddb.h"). The Capsule protocol is not supported in Python 3.0, but
+    pybsddb 5.0.x doesn't support Python 3.0 anymore.
+<p><li>Capsule support was buggy. The string passed in to PyCapsule_New() must
+    outlive the capsule.  (Larry Hastings)
+<p><li>Solve an "Overflow" warning in the testsuite running under python 2.3.
+<p><li>When doing a complete full-matrix test, any warning will be considered
+    an error.
+</ul>
+
+<p><li><a name="bsddb3-4.8.4"><b>bsddb3-4.8.4:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.7a4 and 3.0-3.2r76123, and Berkeley DB 4.1-4.8. (20100322)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Changes:
+
+<ul>
+<p><li>When doing the full matrix testing with python >=2.6, we
+    activate the deprecation warnings (py3k).
+<p><li>Split dependencies in the Replication testsuite.
+<p><li>Help the Gargabe Collection freeing resources when the
+    replication testsuite is completed.
+<p><li>Import warning when used as stdlib "bsddb" instead of
+    pybsddb project as "bsddb3", when using python >=2.6 and
+    py3k warnings are active.
+<p><li>Old regression: dbshelve objects are iterable again. The bug was
+    introduced in pybsddb 4.7.2. Added relevant testcases.
+<p><li>Patches ported from Python developers:
+<ul>
+<p><li>Memory leaks: #7808 - http://bugs.python.org/issue7808 - Florent Xicluna
+<p><li>Floating point rounding in testcases:
+      #5073 - http://bugs.python.org/issue5073 - Mark Dickinson
+<p><li>Orthograpy: #5341 - http://bugs.python.org/issue5341
+<p><li>Py3k warnings in Python >=2.6: #7092 - http://bugs.python.org/issue7092
+<p><li>Correct path for tests:
+      #7269 - http://bugs.python.org/issue7269 - Florent Xicluna
+<p><li>Shebang: benjamin.peterson
+<p><li>Use new Python 2.7 assert()'s: Florent Xicluna
+</ul>
+<p><li>Solve a spurious stdlib warning in python >=2.6 with -3 flags.
+<p><li>Remove "DBIncompleteError", for sure this time. There were traces
+    in "dbtables", in some tests and in the docs.
+<p><li>The DBKeyEmptyError exception raised by the library is not the same
+    DBKeyEmptyError available in the lib. So the raised exception was
+    uncatchable unless you catch DBError. And you can not identify it.
+<p><li>Solved last point, document that DBKeyEmptyError exception derives also
+    from KeyError, just like DBNotFoundError exception.
+<p><li>Update documentation to describe all exceptions provided by this module.
+</ul>
+
+<p><li><a name="bsddb3-4.8.3"><b>bsddb3-4.8.3:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.7a3 and 3.0-3.2r76123, and Berkeley DB 4.1-4.8. (20100222)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Changes:
+
+<ul>
+<p><li>"bsddb.h" inclusion in PYPI is inconsistent. Solved.
+<p><li>Support for "DB_ENV->mutex_stat()" and "DB_ENV->mutex_stat_print()",
+    "DB->stat_print()", "DB_ENV->lock_stat_print()",
+    "DB_ENV->log_stat_print()", "DB_ENV->stat_print()",
+    "DB_ENV->memp_stat()", "DB_ENV->memp_stat_print()".
+<p><li>Support for "DB_ENV->get_tmp_dir()".
+<p><li>Support for "DB_STAT_SUBSYSTEM", "DB_STAT_MEMP_HASH" flags.
+<p><li>Support for "DB_ENV->set_mp_max_openfd()", "DB_ENV->get_mp_max_openfd()",
+    "DB_ENV->set_mp_max_write()", "DB_ENV->get_mp_max_write()",
+    "DB_ENV->get_mp_mmapsize()".
+<p><li>New DataType: DBLogCursor. If you are using the C api, you could need
+    to recompile your code because the changes in the api interface
+    structure.
+<p><li>Support for "DB_ENV->log_file()", "DB_ENV->log_printf()".
+<p><li>Solve a core dump if something bad happens while trying to create a
+    transaction object.
+<p><li>We protect ourselves of failures in creation of Locks and Sequences
+    objects.
+<p><li>EGG file is a ZIP file again, not a directory. This requires that
+    any program importing the module can write in the ".python-eggs"
+    of its user.
+<p><li>Keeping a cached copy of the database stats is a bad idea if we have
+    several processes working together. We drop all this code. So "len()"
+    will require a database scanning always, not only when there is any
+    write. If you need an accurate and fast "len()", the application must
+    keep that information manually in a database register.
+</ul>
+
+<p><li><a name="bsddb3-4.8.2"><b>bsddb3-4.8.2:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.7a1 and 3.0-3.2r76123, and Berkeley DB 4.1-4.8. (20091229)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Changes:
+
+<ul>
+<p><li>Support for "DB_OVERWRITE_DUP", "DB_FOREIGN_ABORT",
+    "DB_FOREIGN_CASCADE", "DB_FOREIGN_NULLIFY", "DB_PRINTABLE", "DB_INORDER"
+    flags.
+<p><li>Support for "DB_FOREIGN_CONFLICT" exception.
+<p><li>Support for "DB_ENV->memp_trickle()", "DB_ENV->memp_sync()",
+    "DB_ENV->get_lg_bsize()", "DB_ENV->get_lg_dir()",
+    "DB_ENV->get_lg_filemode()", "DB_ENV->set_lg_filemode()",
+    "DB_ENV->get_lk_detect()", "DB_ENV->get_lg_regionmax()",
+    "DB_ENV->get_lk_max_lockers()", "DB_ENV->set_lk_max_locks()",
+    "DB_ENV->get_lk_max_objects()", "DB_ENV->set_lk_partitions()",
+    "DB_ENV->get_lk_partitions()", "DB_ENV->get_flags()",
+    "DB_ENV->set_cache_max()", "DB_ENV->get_cache_max()",
+    "DB_ENV->set_thread_count()", "DB_ENV->get_thread_count()",
+    "DB_ENV->log_set_config()", "DB_ENV->log_get_config()"
+    functions.
+<p><li>Support for "DB->get_h_ffactor()", "DB->set_h_nelem()",
+    "DB->get_h_nelem()", "DB->get_lorder()", "DB->get_pagesize()",
+    "DB->get_re_pad()", "DB->get_re_len()", "DB->get_re_delim()",
+    "DB->get_flags()", "DB->get_bt_minkey()",
+    "DB->set_priority()", "DB->get_priority()",
+    "DB->set_q_extentsize()", "DB->get_q_extentsize()",
+    "DB->set_re_source()", "DB->get_re_source()"
+    functions.
+<p><li>Unlock the Python GIL when doing "DB_ENV->db_home_get()". This is
+    slower, because the function is very fast so we add overhead, but it is
+    called very infrequently and we do the change for consistency.
+</ul>
+
+<p><li><a name="bsddb3-4.8.1"><b>bsddb3-4.8.1:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.7r76123 and 3.0-3.2r76123, and Berkeley DB 4.1-4.8. (20091105)
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Changes:
+
+<ul>
+<p><li>Support for "DB_ENV->mutex_set_align()" and
+"DB_ENV->mutex_get_align()".
+<p><li>Support for "DB_ENV->mutex_set_increment()" and
+"DB_ENV->mutex_get_increment()".
+<p><li>Support for "DB_ENV->mutex_set_tas_spins()" and
+"DB_ENV->mutex_get_tas_spins()".
+<p><li>Support for "DB_ENV->get_encrypt_flags()".
+<p><li>Support for "DB->get_encrypt_flags()".
+<p><li>Support for "DB_ENV->get_shm_key()".
+<p><li>Support for "DB_ENV->get_cachesize()".
+<p><li>Support for "DB->get_cachesize()".
+<p><li>Support for "DB_ENV->get_data_dirs()".
+<p><li>Testsuite compatibility with recent releases of
+Python 3.0 and 3.1, where cPickle has been removed.
+<p><li>Compatibility with development versions of
+Python 2.7 and 3.2 (r76123).
+<p><li>For a long time, the API has been accesible via C
+using "_bsddb.api" or "_pybsddb.api". If you are
+using Python 3.2 or up, you acquire access to
+that API via the new Capsule protocol (see "bsddb.h").
+If you use the C API and upgrade to Python 3.2 and up,
+you must update the access code (see "bsddb.h").
+</ul>
+
+<p><li><a name="bsddb3-4.8.0"><b>bsddb3-4.8.0:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.6 and 3.0-3.1, and Berkeley DB 4.1-4.8. (20090917)
+
+<p><b><i>This release drops support for Berkeley DB 4.0, released in 2001, and adds
+support for version 4.8, brand new. If you need 4.0 support, keep using pybsddb 4.7.6. If you want
+support for Berkeley DB 4.8, remember to install the BDB library before installing these
+bindings.</i></b>
+
+<p><b>This release is compatible with Python 3. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Changes:
+
+<ul>
+<p><li>Support for Berkeley DB 4.8.
+<p><li>Compatibility with Python 3.1.
+<p><li>The "DB_XIDDATASIZE" constant has been renamed
+    to "DB_GID_SIZE". Update your code!. If linked
+    to BDB 4.8, only "DB_GID_SIZE" is defined.
+    If linked to previous BDB versions, we keep
+    "DB_XIDDATASIZE" but define "DB_GID_SIZE" too,
+    to be the same value. So, new code can use
+    the updated constant when used against old
+    BDB releases.
+<p><li>"DB_XA_CREATE" is removed. BDB 4.8 has eliminated
+    XA Resource Manager support.
+<p><li>Drop support for Berkeley DB 4.0. Our reference
+    is Red Had Enterprise Linux 3, until October 2010.
+    After that, RHEL4 has Python 2.3 and BDB 4.2.
+<p><li>Remove "DBIncompleteError" exception. It was only
+    used in BDB 4.0.
+<p><li>Remove "DB_INCOMPLETE", "DB_CHECKPOINT",
+    "DB_CURLSN". They came from BDB 4.0 too.
+<p><li>RPC is dropped in Berkeley DB 4.8. The bindings
+    still keep the API if you link to previous BDB
+    releases.
+<p><li>In recno/queue databases, "set_re_delim()" and "set_re_pad()"
+    require a byte instead of a unicode char, under Python3.
+<p><li>Support for "DB_ENV->mutex_set_max()" and "DB_ENV->mutex_get_max()".
+</ul>
+
+<p><li><a name="bsddb3-4.7.6"><b>bsddb3-4.7.6:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.6 and 3.0, and Berkeley DB 4.0-4.7. (20090428)
+
+<p><b>This release is compatible with Python 3.0. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.6">PYPI</a>. Changes:
+
+<ul>
+<p><li>Compatibility with Python 3.0.1.
+<p><li>Add support for "DB_ENV->stat()" and "DB_ENV->stat_print()".
+<p><li>Add support for "DB_ENV->rep_set_clockskew()" and
+    "DB_ENV->rep_get_clockskew()". The binding support
+    for base replication is now complete.
+<p><li>"DB.has_key()" used to return 0 or 1. Changed to return
+    True or False instead. Check your code!.
+<p><li>As requested by several users, implement "DB.__contains__()",
+    to allow constructions like "if key in DB" without
+    iterating over the entire database. But, BEWARE, this
+    test is not protected by transactions!. This is the same
+    problem we already have with "DB.has_key()".
+<p><li>Change "DBSequence.init_value()" to "DBSequence.initial_value()",
+    for consistence with Berkeley DB real method name. This could
+    require minimal changes in your code. The documentation was
+    right. Noted by "anan".
+<p><li>Implements "DBCursor->prev_dup()".
+<p><li>Add support for "DB_GET_BOTH_RANGE", "DB_PREV_DUP",
+    and "DB_IGNORE_LEASE" flags.
+<p><li>Export exception "DBRepLeaseExpiredError".
+<p><li>Add support for "DB_PRIORITY_VERY_LOW", "DB_PRIORITY_LOW",
+    "DB_PRIORITY_DEFAULT", "DB_PRIORITY_HIGH",
+    "DB_PRIORITY_VERY_HIGH", and "DB_PRIORITY_UNCHANGED" flags.
+<p><li>Add support for "DBCursor->set_priority()" and
+    "DBCursor->get_priority()". The binding support for cursors
+    is now complete.
+</ul>
+
+<p><li><a name="bsddb3-4.7.5"><b>bsddb3-4.7.5:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.6 and 3.0, and Berkeley DB 4.0-4.7. (20090204)
+
+<p><b>This release is compatible with Python 3.0. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.5">PYPI</a>. Changes:
+
+<ul>
+<p><li>Add support for "DB_EID_INVALID" and "DB_EID_BROADCAST" flags.
+<p><li>Add support for "DB_SEQUENCE->stat_print()". <b><i>The binding
+    support for "DB_SEQUENCE" is now complete.</i></b>
+<p><li>Add support for "DB_ENV->txn_stat_print()".
+<p><li>Add support for "DB_ENV->get_timeout()".
+<p><li>Document that "DB_ENV->txn_stat()" accepts a flag.
+<p><li>Unlock the GIL when doing "DB_ENV->set_tx_max()" and
+    "DB_ENV->set_tx_timestamp()".
+<p><li>Add support for "DB_ENV->get_tx_max()".
+<p><li>Add support for "DB_ENV->get_tx_timestamp()".
+<p><li>Add support for "DB_TXN_WAIT" flag.
+<p><li>Add support for "DB_TXN->set_timeout()".
+<p><li>Add support for "DB_TXN->set_name()" and
+    "DB_TXN->get_name()". Under Python 3.0, the name
+    is an Unicode string. <b><i>The binding support for
+    "DB_TXN" is now complete.</i></b>
+<p><li>Add support for "DB_REP_PERMANENT", "DB_REP_CONF_NOAUTOINIT",
+    "DB_REP_CONF_DELAYCLIENT", "DB_REP_CONF_BULK",
+    "DB_REP_CONF_NOWAIT", "DB_REP_LEASE_EXPIRED",
+    "DB_REP_CONF_LEASE", "DB_REPMGR_CONF_2SITE_STRICT",
+    "DB_REP_ANYWHERE", "DB_REP_NOBUFFER" and "DB_REP_REREQUEST"
+    flags.
+</ul>
+
+<p><li><a name="bsddb3-4.7.4"><b>bsddb3-4.7.4:</b></a> Testsuite verified
+in Unix 32 bit Python 2.3-2.6 and 3.0, and Berkeley DB 4.0-4.7. (20090121)
+
+<p><b>This release is compatible with Python 3.0. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.4">PYPI</a>. Changes:
+
+<ul>
+<p><li>Under Python 3.0, "bsddb.db.DB_VERSION_STRING",
+    "bsddb.db.__version__" and "bsddb.db.cvsid" must
+    return (unicode) strings instead of bytes. Solved.
+<p><li>Use the new (20081018) trove classifiers in PyPI
+    to identify Python supported versions.
+<p><li>In "DB_ENV->rep_set_timeout()" and "DB_ENV->rep_get_timeout()",
+    support flags "DB_REP_LEASE_TIMEOUT".
+<p><li>In "DB_ENV->rep_set_timeout()" and "DB_ENV->rep_get_timeout()",
+    support flags "DB_REP_HEARTBEAT_MONITOR" and
+    "DB_REP_HEARTBEAT_SEND". These flags are used in the Replication
+    Manager framework, ignored if using Base Replication.
+<p><li>Implements "DB->exists()".
+<p><li>Add support for "DB_IMMUTABLE_KEY" flag.
+<p><li>Add support for "DB_REP_LOCKOUT" exception.
+<p><li>Support returning a list of strings in "associate()"
+    callback.  (Kung Phu)
+<p><li>Testsuite and Python 3.0 compatibility for "associate()"
+    returning a list. In particular, in Python 3.0 the list
+    must contain bytes.
+<p><li>Implements "DBEnv->fileid_reset()".  (Duncan Findlay)
+<p><li>Implements "DB->compact()".  (Gregory P. Smith)
+<br>Berkeley DB 4.6 implementation is buggy, so we only
+    support this function from Berkeley DB 4.7 and newer.
+    We also support related flags "DB_FREELIST_ONLY"
+    and "DB_FREE_SPACE".
+</ul>
+
+<p><li><a name="bsddb3-4.7.3"><b>bsddb3-4.7.3:</b></a> Integrated with Python 2.6.
+Testsuite verified in Unix 32 bit Python 2.3-2.6 and 3.0rc1, and Berkeley DB 4.0-4.7. (20081003)
+
+<ul>
+<p><li>Email about the
+<a href="http://mailman.argo.es/pipermail/pybsddb/2008-August/000067.html">bsddb3-4.7.3pre1 released</a>.
+</ul>
+
+<p>This release is integrated in Python 2.6.
+
+<p><b>This release is compatible with Python 3.0rc1. But, beware, the API can change in the future,
+specially in the unicode/bytes interface.</b>
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.3">PYPI</a>. Changes:
+
+<ul>
+<p><li>"private" is a keyword in C++.  (Duncan Grisby)
+<p><li>setup.py should install "bsddb.h".  (Duncan Grisby)
+<p><li>"DB_remove" memory corruption & crash.  (Duncan Grisby)
+<p><li>Under Python 3.0, you can't use string keys/values, but
+    bytes ones. Print the right error message.
+<p><li>"DB.has_key()" allowed transactions as a positional parameter.
+    We allow, now, transactions as a keyword parameter also, as
+    documented.
+<p><li>Correct "DB.associate()" parameter order in the documentation.
+<p><li>"DB.append()" recognizes "txn" both as a positional and a
+    keyword parameter.
+<p><li>Small fix in "dbshelve" for compatibility with Python 3.0.
+<p><li>A lot of changes in "dbtables" for compatibility with Python 3.0.
+<p><li>Huge work making the testsuite compatible with Python 3.0.
+<p><li>In some cases the C module returned Unicode strings under
+    Python 3.0. It should return "bytes", ALWAYS. Solved.
+<p><li>Remove a dict.has_key() use to silence a warning raised under
+    Python2.6 -3 parameter. Python SVN r65391, Brett Cannon.
+<p><li>Solve some memory leaks - Neal Norwitz
+<p><li>If DBEnv creation fails, library can crash.  (Victor Stinner)
+<p><li>Raising exceptions while doing a garbage collection
+    will kill the interpreter.  (Victor Stinner)
+<p><li>Crash in "DB.verify()". Noted by solsTiCe d'Hiver.
+</ul>
+
+<p><li><a name="bsddb3-4.7.2"><b>bsddb3-4.7.2:</b></a> RELEASED. (20080807).
+Testsuite verified in Unix 32 bit Python 2.3-2.6b2 and Berkeley DB 4.0-4.7.
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.2">PYPI</a>. Changes:
+
+<ul>
+<p><li>Solved a race condition in Replication Manager testcode.
+<p><li>Changing any python code, automatically regenerates the
+    Python3 version. The master version is Python2.
+<p><li>Compatibility with Python 3.0.
+<p><li>Solved a crash when DB handle creation fails.
+    STINNER Victor - <a href="http://bugs.python.org/issue3307">http://bugs.python.org/issue3307</a>
+<p><li>Improve internal error checking, as suggested by Neal Norwitz
+    when reviewing commit 63207 in Python SVN.
+<p><li>Routines without parameters should be defined so, as
+    suggested by Neal Norwitz when reviewing commit 63207 in Python SVN.
+    The resulting code is (marginally) faster, smaller and clearer.
+<p><li>Routines with a simple object parameter are defines so, as
+    suggested by Neal Norwitz when reviewing commit 63207 in Python SVN.
+    The resulting code is (marginally) faster, smaller and clearer.
+<p><li>Routines taking objects as arguments can parse them better, as
+    suggested by Neal Norwitz when reviewing commit 63207 in Python SVN.
+    The resulting code is (marginally) faster, smaller and clearer.
+<p><li>Improve testsuite behaviour under MS Windows.
+<p><li>Use ABC (Abstract Base Classes) under Python 2.6 and 3.0.
+<p><li>Support for "relative imports".
+<p><li>Replication testcode behaves better in heavily loaded machines.
+</ul>
+
+<p><li><a name="bsddb3-4.7.1"><b>bsddb3-4.7.1:</b></a> RELEASED. (20080702).
+Testsuite verified in Unix 32 bit Python 2.3-2.6b1 and Berkeley DB 4.0-4.7.
+
+<p><b><i>If you are going to use replication (Replication Manager or Base Replication),
+you should use Berkeley DB 4.6 or up.</i></b> Previous Berkeley DB versions are
+unsupported, when using these functionalities.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.1">PYPI</a>. Changes:
+
+<ul>
+<p><li>Workaround a problem with un-initialized threads with the
+    replication callback.
+<p><li>Export "DBRepUnavailError" exception.
+<p><li>Get rid of Berkeley DB 3.3 support. Rationale:
+    <a href="http://mailman.jcea.es/pipermail/pybsddb/2008-March/000019.html">http://mailman.jcea.es/pipermail/pybsddb/2008-March/000019.html</a>
+<p><li>Better integration between Python test framework and bsddb3.
+<p><li>Improved Python 3.0 support in the C code.
+<p><li>Iteration over the database, using the legacy interface, now
+    raises a RuntimeError if the database changes while iterating.
+    <a href="http://bugs.python.org/issue2669">http://bugs.python.org/issue2669</a> - gregory.p.smith
+<p><li>Create "set_private()" and "get_private()" methods for DB and DBEnv
+    objects, to allow applications to link an arbitrary object to
+    a DB/DBEnv. Useful for callbacks.
+<p><li>Support some more base replication calls: "DB_ENV->rep_start",
+    "DB_ENV->rep_sync", "DB_ENV->rep_set_config", "DB_ENV->rep_get_config",
+    "DB_ENV->rep_set_limit", "DB_ENV->rep_get_limit",
+    "DB_ENV->rep_set_request", "DB_ENV->rep_get_request".
+<p><li>Support more base replication calls:  "DB_ENV->rep_elect",
+    "DB_ENV->rep_set_transport" and "DB_ENV->rep_process_message".
+    Support also related flags.
+</ul>
+
+<p><li><a name="bsddb3-4.7.0"><b>bsddb3-4.7.0:</b></a> RELEASED. (20080522).
+Testsuite verified in Unix 32 bit Python 2.3-2.6a3 and Berkeley DB 4.0-4.7.
+ 
+<p><b><i>bsddb3 4.7.0 compiles against Berkeley DB 4.0-4.7. If you are upgrading your
+Berkeley DB environment at the same time, be sure
+<a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/upgrade.4.7/toc.html">
+to read the BDB upgrade notes carefully</a>.</i></b>
+
+<p><b><i>From this release, the only supported Berkeley DB versions are 4.x.
+Support for Berkeley DB 3.3 is deprecated and will be deleted.</i></b>
+<a href="http://mailman.jcea.es/pipermail/pybsddb/2008-March/000019.html">
+Mailing list thread discussing this</a>.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.7.0">PYPI</a>. Changes:
+
+<ul>
+<p><li>Support for Berkeley DB 4.7.
+<p><li>Support "DB_ENV->log_set_config", and related flags.
+<p><li>Complete the Berkeley DB Replication Manager support:
+    "DB_ENV->repmgr_site_list" and related flags.
+    "DB_ENV->repmgr_stat", "DB_ENV->repmgr_stat_print" and related flags.
+<p><li>Solved an old crash when building with debug python. (Neal Norwitz)
+<p><li>Extend the testsuite driver to check also against Python 2.6 (a3).
+<p><li>Support for RPC client service.
+</ul>
+
+<p><li><a name="bsddb3-4.6.5"><b>bsddb3-4.6.5:</b></a> The work on
+this release is transfered to 4.7.0, since Oracle just published
+Berkeley DB 4.7.25. (20080521)
+
+<p><li><a name="bsddb3-4.6.4"><b>bsddb3-4.6.4:</b></a> RELEASED. (20080426).
+Testsuite verified in Unix 32 bit Python 2.3-2.5 and Berkeley DB 4.0-4.6.
+
+<p><b><i>If you are going to use the Replication Manager, you should use
+Berkeley DB 4.6 or up.</i></b>
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.6.4">PYPI</a>. Changes:
+
+<ul>
+<p><li>Basic support for Berkeley DB Replication Manager.
+<p><li>Support for a few replication calls, for benefice of Berkeley DB
+    Replication Manager: "DB_ENV->rep_set_priority",
+    "DB_ENV->rep_get_priority", "DB_ENV->rep_set_nsites",
+    "DB_ENV->rep_get_nsites", "DB_ENV->rep_set_timeout",
+    "DB_ENV->rep_get_timeout".
+<p><li>Implemented "DB_ENV->set_event_notify" and related flags.
+<p><li>Export flags related to replication timeouts.
+<p><li>Export "DBRepHandleDeadError" exception.
+<p><li>Implemented "DB_ENV->set_verbose", "DB_ENV->get_verbose"
+    and related flags.
+<p><li>Implemented "DB_ENV->get_lg_max".
+<p><li>Improved performance and coverage of following tests: lock,
+    threaded ConcurrentDataStore, threaded simple locks, threaded
+    transactions.
+<p><li>New exported flags: "DB_LOCK_EXPIRE" and "DB_LOCK_MAXWRITE".
+</ul>
+
+<p><li><a name="bsddb3-4.6.3"><b>bsddb3-4.6.3:</b></a> RELEASED. (20080403).
+Testsuite verified in Unix 32 bit Python 2.3-2.5 and Berkeley DB 4.0-4.6.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.6.3">PYPI</a>. Changes:
+
+<ul>
+<p><li>Be sure all DBEnv/DB paths in the TestSuite are generated in a
+    way compatible with launching the tests in multiple
+    threads/processes.
+<p><li>Move all the "assert" in the TestSuite to the version in the
+    framework. This is very convenient, for example, to generate the
+    final report, or better automation.
+<p><li>Implements "dbenv.log_flush()".
+<p><li>Regression: bug when creating a transaction and its
+    parent is explicitly set to 'None'.
+<p><li>Regression: bug when duplicationg cursors. Solved.
+<p><li>Provide "dbenv.txn_recover()" and "txn.discard()", for fully
+    support recovery of distributed transactions. Any user of this
+    service should use Berkeley DB 4.5 or up.
+<p><li>If a transaction is in "prepare" or "recover" state, we MUST NOT
+    abort it implicitly if the transaction goes out of scope, it is
+    garbaged collected, etc. Better to leak than sorry.
+<p><li>In the previous case, we don't show any warning either.
+<p><li>Export "DB_XIDDATASIZE", for GID of distributed transactions.
+<p><li>If "db_seq_t" and PY_LONG_LONG are not compatible, compiler
+    should show a warning while compiling, and the generated code
+    would be incorrect but safe to use. No crash. Added sanity
+    check in the testunit to verify this is not the case, and
+    the datatypes are 64 bit width in fact.
+<p><li>Solve a compilation warning when including "bsddb.h"
+    in other projects. (George Feinberg)
+</ul>
+
+<p><li><a name="bsddb3-4.6.2"><b>bsddb3-4.6.2:</b></a> RELEASED. (20080325).
+Testsuite verified in Unix 32 bit Python 2.3-2.5 and Berkeley DB 4.0-4.6.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.6.2">PYPI</a>. Changes:
+
+<ul>
+<p><li>Support for MVCC (MultiVersion Concurrency Control).
+<p><li>Support for DB_DSYNC_LOG, DB_DSYNC_DB and DB_OVERWRITE flags.
+<p><li>Move old documentation to ReST format. This is important for several
+    reasons, notably to be able to integrate the documentation "as is"
+    in python official docs (from Python 2.6).
+<p><li>Don't include Berkeley DB documentation. Link to the online version.
+<p><li>DBSequence objects documented.
+<p><li>DBSequence.get_key() didn't check for parameters. Fixed.
+<p><li>If a DB is closed, its children DBSequences will be
+    closed also.
+<p><li>To be consistent with other close methods, you can call
+    "DBSequence.close()" several times without error.
+<p><li>If a Sequence is opened inside a transaction, it will be
+    automatically closed if the transaction is aborted. If the
+    transaction is committed and it is actually a subtransaction, the
+    sequence will be inherited by the parent transaction.
+<p><li>Be sure "db_seq_t" and "long long" are compatible.
+<i><b>Disabled because MS Windows issues to be investigated.</b></i>
+<p><li>Documented the already available DBEnv methods: "dbremove",
+    "dbrename", "set_encrypt", "set_timeout", "set_shm_key",
+    "lock_id_free", "set_tx_timestamp", "lsn_reset" and "log_stat".
+<p><li>Completed and documented "DBEnv.txn_stat()".
+<p><li>Completed and documented "DBEnv.lock_stat()".
+<p><li>Documented the already available DB methods: "set_encrypt", "pget".
+<p><li>Completed documentation of DB methods: "associate", "open".
+<p><li>Completed and documented "DB.stat()".
+<p><li>Documented the already available DBCursor methods: "pget" (several
+    flavours).
+<p><li>Completed documentation of DBCursor methods: "consume", "join_item".
+</ul>
+
+<p><li><a name="bsddb3-4.6.1"><b>bsddb3-4.6.1:</b> RELEASED (20080310)</a>.
+Testsuite verified in 32 bit Python 2.3-2.5 and Berkeley DB 4.0-4.6.
+
+<p>Available in <a href="http://pypi.python.org/pypi/bsddb3/4.6.1">PYPI</a>. Changes:
+
+<ul>
+<p><li>'egg' (<a href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>) support.
+<p><li>Environments, database handles and cursors are
+    maintained in a logical tree. Closing any element
+    of the tree, implicitly closes its children.
+<p><li>Transactions are managed in a logical tree. When
+    aborting transactions, enclosed db handles, cursors
+    and transactions, are closed. If transaction commits,
+    the enclosed db handles are "inherited" by the parent
+    transaction/environment.
+<p><li>Solved a bug when a DBEnv goes out of scope
+    without closing first.
+<p><li>Add transactions to the management of closing
+    of nested objects. (not completed yet!)
+<p><li>Fix memory leaks.
+<p><li>Previous versions were inconsistent when key or
+    value were "" (the null string), according to
+    opening the database in thread safe mode or not.
+    In one case the lib gives "" and in the other
+    it gives None.
+</ul>
+
+</ul>
+
+<h3>Release procedure</h3>
+
+<p>This section documents the release procedure, fundamentally to serve as a checklist
+to myself. Suggestions welcomed.
+
+<ul>
+<p><li>Delete directory "<kbd>Lib3</kbd>" and regenerate it with "<kbd>python make3.py</kbd>".
+
+<p><li>Do a full matrix check running "<kbd>test-full_prerelease.py</kbd>". This program runs all
+tests with all combination of supported Python and Berkeley DB versions.
+
+<p><li>Install the new bindings with "<kbd>python setup.py build -f</kbd>" followed by
+"<kbd>python setup.py install</kbd>". The "<kbd>-f</kbd>" is useful to be sure to install the right
+compilation, since the test could have left undesirable versions behind.
+
+<p><li>Restart services using Berkeley DB, in my own servers. Verify right behaviour
+for a couple of days.
+
+<p><li>Review and update "ChangeLog".
+
+<p><li>Review and update documentation. Beware if we are supporting a new Berkeley DB
+release, or deprecating old versions.
+
+<p><li>Create the documentation in HTML, that is going to be included in the release.
+
+<p><li>Create a new "tag" in the mercurial repository .
+
+<p><li>Pay attention to changes to BitCoin donation address.
+
+<p><li>Update this webpage. Update online documentation.
+
+<p><li>Prepare a source release: "<kbd>python setup.py sdist</kbd>".
+Verify that everything is right.
+
+<p><li>Push the signed release to <a href="http://pypi.python.org/pypi/">pypi</a>:
+"<kbd>python setup.py sdist upload --sign --show-response</kbd>". If that fails,
+I must publish the files manually.
+
+<p><li>Upgrade all my machines.
+
+<p><li>Publish an announcement to the
+<a href="https://mailman.jcea.es/pybsddb/listinfo">mailing list</a>,
+update <a href="http://www.jcea.es/ultimos_cambios.xml">my RSS</a>,
+announce in <a href="http://freshmeat.net/projects/bsddb3">Freshmeat</a>,
+<a href="https://twitter.com/#!/jcea">Twitter</a>,
+<a href="https://www.facebook.com/jceajcea">Facebook</a> and
+<a href="https://plus.google.com/111762523070732924160">Google+</a>.
+
+<p><li>Consider if this version should be pushed to Python SVN.
+</ul>
+
+<h3>Python SVN update procedure</h3>
+
+<p>This section documents the procedure used to update Python SVN repository
+with current pybsddb code, fundamentally to serve as a checklist
+to myself. Suggestions welcomed.
+
+<ul>
+<p><li>Update local python working copy.
+
+<p><li>Locate any patch in python code and merge it with current pybsddb release.
+BE SURE I don't overwrite any patch there!. The relevant files and directories are:
+
+<ul>
+<p><li>Files: <kbd>Modules/bsddb.h</kbd> and <kbd>Modules/_bsddb.c</kbd>.
+
+<p><li>Directories: <kbd>Lib/bsddb/*</kbd> and <kbd>Lib/bsddb/test/*</kbd>.
+
+</ul>
+
+<p>File <kbd>Lib/bsddb/test_support.py</kbd> is already in Python 2.6 and 3.0, so
+we don't need to copy it.
+
+<p><li>File <kbd>setup.py</kbd> sets the maximum and minimum Berkeley DB supported version.
+
+<p><li>File <kbd>Lib/test/test_bsddb3.py</kbd> has the tests that must be checked.
+This file needs to be updated if we add/delete test files. This needs to be automated.
+
+<p><li>It is a good idea <a href="http://bugs.python.org/issue7808">to check for leaks and so</a>. Remember to link
+to the right Python main library, possibly using <kbd>LD_LIBRARY_PATH</kbd>.
+
+<p><li>Do not forget to update <kbd>Misc/NEWS</kbd>.
+
+<p><li>Review Python "buildbot" report.
+</ul>
+
+<p><hr>
+<h3>Historia</h3>
+<ul>
+<p><li>22/mar/10: Publicación de la versión 4.8.4, que se va a integrar en Python 2.7.
+
+<p><li>03/oct/08: Publicación de la versión 4.7.3, integrada en Python 2.6. Esta versión
+es compatible también con Python 3.0.
+
+<p><li>13/may/08: Documento los pasos necesarios para actualizar el SVN de Python con
+la versión actual de pybsddb.
+
+<p><li>18/mar/08: Publicación de la documentación en ReST y puesta al día.
+
+<p><li>10/mar/08: Primera versión de pybssdb publicada por mí.
+
+<p><li>21/feb/08: Primera versión de esta página.
+</ul>
+
+<p>
+<hr>
+<ul>
+<li><a href="http://www.oracle.com/technology/products/berkeley-db/index.html">
+<b>Oracle Berkeley DB Family</b></a> (external link)
+<li><a href="http://www.oracle.com/technology/products/berkeley-db/db/index.html">
+<b>Oracle Berkeley DB</b></a> (external link)
+<li><a href="http://www.oracle.com/technology/documentation/berkeley-db/db/index.html">
+<b>Oracle Berkeley DB Documentation</b></a> (external link)
+<li><a href="http://forums.oracle.com/forums/forum.jspa?forumID=271">
+<b>Forum: Berkeley DB</b></a> (external link)
+<li><a href="http://forums.oracle.com/forums/forum.jspa?forumID=272">
+<b>Forum: Berkeley DB High Availability (Replication)</b></a> (external link)
+<li><a href="http://forums.oracle.com/forums/forum.jspa?forumID=274">
+<b>Forum: Berkeley DB XML</b></a> (external link)
+<lI><a href="http://forums.oracle.com/forums/forum.jspa?forumID=273">
+<b>Forum: Berkeley DB Java Edition</b></a> (external link)
+
+<p><li><a href="index.htm"> 
+<b>Programacion</b></a>
+<li><a href="../artic/index.htm">
+<b>Artículos</b></a>
+<li><a href="../index.htm">
+<b>La Página de Jesús Cea Avión</b></a>
+</ul>
+
+<hr>
+<p align="center"><font size=-1>Donación BitCoin: 19niBN42ac2pqDQFx6GJZxry2JQSFvwAfS</font>
+<br><img src="/bitcoin_qr.png" width="128" height="128" /></p>
+
+<p><a href="https://affiliates.mozilla.org/link/banner/42333"><img src="https://affiliates.mozilla.org/media/uploads/banners/db77c71cfb37d0d70d1cb90aaf411db07ad2d20f.png" alt="Actualizar" align="right" border="0"/></a>
+
+<a href="http://www.python.org/" title="Python">
+<img src="http://www.python.org/images/python-logo.gif"
+width="211" height="71" border=0 alt="Python" align="right"></a>
+
+<a href="http://www.zope.org/" title="Zope">
+<img src="/zpowered.jpg"
+width="115" height="50" border=0 alt="Zope" align="right"></a>
+
+<i><a href="mailto:jcea@jcea.es">&#169;2008-2014
+jcea@jcea.es</a></i>
+
+</body>
+</html>
+

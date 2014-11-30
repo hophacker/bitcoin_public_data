@@ -1,0 +1,382 @@
+http://www.gimp.org/tutorials/Blending_Exposures/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 08:24:54 GMT
+Server: Apache/2.2.15 (Red Hat)
+Accept-Ranges: bytes
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<!-- $Id$ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>GIMP - Blending Exposures</title>
+<!-- $Id$ -->
+<!-- $Id$ -->
+<!-- placeholder for page layout definitions -->
+
+<!-- $Id$ -->
+<style type="text/css">
+@import url("/style/wgo.css");
+</style>
+<!--[if lt IE 8]>
+<link rel="stylesheet" type="text/css" href="/style/ie-nastiness.css" />
+<![endif]-->
+<link rel="icon" href="/images/wilber16.png" type="image/png" />
+
+<!-- $Id: wgo-scripts.xhtml 795 2007-07-04 11:01:43Z jimmac $ -->
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<!--[if lt IE 8]>
+<script type="text/javascript" src="/includes/excanvas.pack.js"></script>
+<![endif]-->
+<script type="text/javascript" src="/includes/jquery.corner.js"></script>
+<script type="text/javascript" src="/includes/jqbrowser.js"></script>
+<script type="text/javascript" src="/includes/wgo.js"></script>
+
+<!-- code for the flattr button counter -->
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */</script>
+
+
+<!-- placeholder for site navigation -->
+
+
+<!-- $Id$ -->
+</head>
+<body id="wwwgimporg">
+<div id="header">
+  <div id="title"><a href="/" style="display: block; height: 60px; text-decoration: none; color: white;"><span style="display: block; padding: 15px;">GNU Image Manipulation Program</span></a></div>
+</div>
+
+<div id="maincontainer">
+
+<div id="menu">
+  <p><a href="#main">Skip to page contents</a></p>
+  <span>[</span>
+  <a href="/">News</a><span> | </span>
+  <a href="/screenshots/">Screenshots</a><span> | </span>
+  <a href="/features/">Features</a><span> | </span>
+  <a href="/downloads/">Downloads</a><span> | </span>
+  <a href="/docs/">Documentation</a><span> | </span>
+  <a href="/develop/">Get Involved</a>
+  <span>]</span><br /><span>[</span>
+  <a href="http://registry.gimp.org">Plug-in Registry</a><span> | </span>
+  <a href="http://wiki.gimp.org">GIMP Development</a>
+  <span>]</span><br />
+
+  <span>[</span>
+  <a href="/donating/">Donations</a>
+  <span>]</span><br />
+  
+  <span>[</span>
+  <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://www.gimp.org/"></a>
+  <noscript><a href="http://flattr.com/thing/707850/GIMP-is-the-GNU-Image-Manipulation-Program" target="_blank">
+  <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript><span> | </span>
+  <a href="bitcoin:1NVMCeoBfTAJQ1qwX2Dx1C8zkcRCQWwHBq?label=GIMP%20Donation"><img src="/donating/bitcoin-button.png" alt="Donate with Bitcoin" title="Donate with Bitcoin" border="0" /></a>
+  <span>]</span>
+</div>
+
+<div id="main">
+
+<h1>Blending Exposures</h1>
+<p>
+  Text and images Copyright (C) 2002 <a href="mailto:ericNOSPAM@redskiesatnight.com">Eric R. Jeschke</a> and may not be used without permission of the author.
+</p>
+
+<h2>Intention</h2>
+<p class="images">
+  <img alt="" src="before-light.jpg" />
+  <img alt="" src="before-dark.jpg" />
+  <img alt="" src="after.jpg" />
+</p>
+<p>
+  In this tutorial I'll show you how to do blend two different exposures of 
+  the same scene that you would like to combine to get the best parts of both images. 
+  This procedure works best if you have:
+</p>
+<ol>
+  <li>(obviously) have shot two different exposures that would be pleasing to combine,</li>
+  <li>had the camera mounted on a tripod (not strictly necessary, but helps greatly in aligning the images),</li>
+  <li>the scenes are not too different at the boundaries of the blend. 
+  If the scene has changed too much (trees blowing, waves, people or cars moving, etc. 
+  between the images), especially at or near the "seams" of the blend, it will make the blend more difficult.</li>
+</ol>
+<p>
+  If you have only one image that needs exposure adjustment, you might look at using the "digital" 
+  neutral density filter or the contrast masking technique.
+</p>
+<p>
+  Giving credit where credit is due: I did not come up with this method. 
+  I adapted it for GIMP from a Photoshop tutorial on the luminous-landscape.com 
+  photography web site (great web site BTW, I recommend it).
+</p>
+
+<h2>The Procedure</h2>
+<p>
+  The basic technique is to create a layer above the image that contains 
+  the other exposure of the same scene. Finally, we apply a layer mask to the this 
+  layer which makes parts of the image transparent that we want to show through from below.
+</p>
+
+<h2>Step 1</h2>
+<p class="images">
+  <img alt="" src="image-original-light.jpg" />
+  <img alt="" src="image-original-dark.jpg" />
+</p>
+<p>
+  Here are the two exposures, loaded into GIMP. I am going to sandwich these 
+  on different layers and then combine them with a layer mask.
+</p>
+
+<h2>Step 2</h2>
+<p class="images">
+  <img alt="" src="layers1.jpg" />
+  <img alt="" src="newlayeroptions.jpg" />
+  <img alt="" src="layers2.jpg" />
+</p>
+<p>
+  The first decision is which one goes on top. In this case I have decided to put the lighter image on top and the darker one on the bottom. 
+  The reason is because I hand-held the shots, and they are far from aligned. I'm going to have to move the bottom image until the arch is 
+  aligned as best I can get it. Also, the top image is the composition I want anyway, and I'll have less painting to do that way.
+</p>
+<p>
+  Go the image that is going to be on the bottom. Open the Layers dialog (<kbd>Ctrl+L</kbd>) and 
+  click on the new layer button (<img alt="" src="newlayer.jpg" />) to create a new layer.
+</p>
+
+<h2>Step 3</h2>
+<p class="images">
+  <img alt="" src="layers3.jpg" />
+  <img alt="" src="layers4.jpg" />
+</p>
+<p>
+  Go to the image that is going to be on top. Select all and copy (<kbd>Ctrl+A</kbd> then 
+  <kbd>Ctrl+C</kbd>). In the Layers dialog, make sure the new layer is selected, 
+  then go to the bottom image window and paste (<kbd>Ctrl+V</kbd>). In the Layers dialog, 
+  click on the anchor button (<img alt="" src="anchor.jpg" />) to anchor the floating image.
+</p>
+
+<h2>Step 4</h2>
+<p class="images">
+  <img alt="" src="layers5.jpg" />
+  <img alt="" src="image-composite-paste.jpg" />
+</p>
+<p>
+  Crank down the opacity of the upper layer so that you can see both images.
+</p>
+<p>
+  If they are perfectly aligned you can skip the next step. Unless you used a digital capture on a tripod, the images probably need to be aligned. 
+  (Even if you had a film camera on a tripod, it is difficult to get two successive scans to feed through in perfect alignment.)
+</p>
+
+<h2>Step 5</h2>
+<p class="images">
+  <img alt="" src="layers6.jpg" />
+</p>
+<p class="images">
+  <img alt="" src="image-composite-move.jpg" />
+  <img alt="" src="image-composite-align.jpg" />
+</p>
+<p>
+  In the Layers dialog, select the layer you need to move or rotate. In this case it is the lower layer.
+</p>
+<p>
+  Using the arrow keys, nudge the image into alignment. You may need to rotate the image slightly too. 
+</p>
+<p>
+  When you get close to alignment, zoom in to get a good close-up view and get the best possible fit.
+</p>
+
+<h2>Step 6</h2>
+<p class="images">
+  <img alt="" src="addmaskoptions.jpg" />
+  <img alt="" src="layers7.jpg" />
+</p>
+<p>
+  In the Layers dialog, right-click on the upper layer and select Add Layer Mask. 
+  In the Add Mask Options dialog, select White (Full Opacity) and click OK.
+</p>
+
+<h2>Step 7</h2>
+<p class="images">
+  <img alt="" src="image-select1.jpg" />
+  <img alt="" src="image-fill.jpg" />
+</p>
+<p>
+  Now I want to paint black (transparency) onto the layer mask wherever I want the lower image to show through.
+</p>
+<p>
+  To minimize painting time, use the hand-select ("lasso"<img alt="" src="lasso.jpg" /> ) tool to select a large, hand-drawn region just 
+  inside all the borders of the area you want to paint, as shown at right. 
+  Then using the fill tool (<img alt="" src="fill.jpg" />) fill the selection with black.
+</p>
+
+<h2>Step 8</h2>
+<p class="images">
+  <img alt="" src="brushes1.jpg" />
+  <img alt="" src="image-paint1.jpg" />
+</p>
+<p>
+  Next, I select a large opaque brush from the Brushes dialog (Dialogs/Brushes), 
+  select the Paint tool (<img alt="" src="paint.jpg" />) and begin painting into 
+  the mask close to the boundaries of the blend.
+</p>
+<p>
+  Notice that I still have the opacity cranked down on the upper layer so that I can see both layers.
+</p>
+
+<h2>Step 9</h2>
+<p class="images">
+  <img alt="" src="brushes2.jpg" />
+</p>
+<p class="images">
+  <img alt="" src="image-paint2.jpg" />
+  <img alt="" src="image-donepainting.jpg" />
+</p>
+<p>
+  For the very edges, I switch to a small, feathered brush and very carefully paint the edges.
+</p>
+<p>
+  While I'm painting, I'll zoom in and out frequently ("=" key to zoom in, "-" key to zoom out) to inspect the work. 
+  Don't worry too much about the borders, since we'll probably have to touch those up anyway.
+</p>
+
+<h2>Step 10</h2>
+<p class="images">
+  <img alt="" src="image-preclone.jpg" />
+  <img alt="" src="image-postclone.jpg" />
+</p>
+<p>
+  Now the most painstaking part: blending the seams. This is a little tricky due to the different tonalities of the two exposures.
+</p>
+<p>
+  For blending work, 
+  the Clone (<img alt="" src="clone.jpg" />), 
+  Smudge (<img alt="" src="smudge.jpg" />), 
+  Airbrush (<img alt="" src="airbrush.jpg" />) 
+  and Blur (<img alt="" src="convolve.jpg" />) are my tools of choice.
+</p>
+<p>
+  Since I'm not sure if these tools have the ability to work across layers 
+  (as they do in Photoshop), I duplicate the image (<kbd>Ctrl+D</kbd>) and flatten the duplicate 
+  (<span class="filter">&lt;Image&gt; Layers -&gt; Flatten Image</span>) and work on it. 
+  This has the additional benefit that if I ever mess up the blending job too badly I can 
+  always easily start over at this step.
+</p>
+<p>
+  <b>Note:</b> see <a href="/tutorials/Photo_Edit/Blown_Out_Highlights/">this tutorial on correcting blown out highlights</a> for 
+  another example of using these tools for blending and some useful tips on their use.
+</p>
+<p>
+  Here I've used primarily clone and a touch of smudge to blend the seams of the two exposures. I didn't do a very thorough job with this image, 
+  since it is more of an example and not something I'm planning to display at any significant size.
+</p>
+<p>
+  <b>Note:</b> notice the chromatic aberration of the lens in the form of purple fringing at the edge of the arch. 
+  These tools are great for dealing with that even if I were not blending two exposures.
+</p>
+
+<h2>Final Step</h2>
+<p class="images">
+  <img alt="" src="image-finished.jpg" />
+</p>
+<p>
+  Finished. The image still has some problems with blown out highlights in the sunlight of the rock face. 
+  It is also a little too dark in the foreground shadow.
+</p>
+
+<h2>Further Reading on Blending Exposures</h2>
+<ul>
+  <li><a href="http://www.digitalsecrets.net/secrets/DynamicRanger.html">Dynamic Ranger.</a></li>
+  <li><a href="http://www.vincentbockaert.com/Tutorials/ImagesFramePST_08_PS.htm">Vincent Bockaert's method of blending in Photoshop</a></li>
+  <li><a href="http://www.cliffshade.com/dpfwiw/">Digital Photography For What it's Worth.</a></li>
+</ul>
+
+<p>
+  The original tutorial (possibly with updated information) may be found <a href="http://www.gimpguru.org/">here</a>.
+</p>
+<!-- $Id$ -->
+</div><!-- main -->
+</div><!-- maincontainer -->
+
+<div id="bottommenu">
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/features/">Features</a></li>
+	  <li><a href="/release-notes/">Release Notes</a></li>
+	  <li><a href="http://wiki.gimp.org/index.php/Main_Page">Wiki</a></li>
+	  <li><a href="https://plus.google.com/u/0/b/116634837115748851709/+gimp/">Google+ page</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/screenshots/">Screenshots</a></li>
+	  <li class="mainlink"><a href="/downloads/">Downloads</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/docs/">Documentation</a></li>
+	  <li><a href="/docs/userfaq.html">FAQ</a></li>
+	  <li><a href="/books/">Books</a></li>
+	  <li><a href="/tutorials/">Tutorials</a></li>
+	  <li><a href="/mail_lists.html">Mailing Lists</a></li>
+	  <li><a href="/irc.html">IRC</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/about/">About GIMP</a></li>
+	  <li><a href="/about/splash/">Splash Archive</a></li>
+	  <li><a href="/links/">Links</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/develop/">Get Involved</a></li>
+	  <li><a href="/donating/">Donating</a></li>
+	  <li><a href="/bugs/">Bug Reports</a></li>
+	  <li><a href="/about/merchandise.html">GIMP Goods</a></li>
+	</ul>
+  </div>
+  <br style="clear: both; display: block; height: 200px;" />
+</div>
+
+<div id="linkbar">
+  <div>
+    <div>&copy; 2001-2013 <a href="/team.html">The GIMP Team</a> <span style="padding: 0px 10px;">&nbsp;</span>
+    <a href="http://gimp.org/news.rdf">GIMP News Feed</a> | 
+    <a href="/webmasters.html">Contacting Us</a>
+    </div>
+  </div>
+</div>
+
+
+    <div>
+      <span id="footerleft">
+        Tutorial &copy; 2002 <a href="http://redskiesatnight.com/">Eric R. Jeschke</a>
+      </span>
+      <span id="footerright">
+        <a href="mailto:ericNOSPAM@redskiesatnight.com">eric@redskiesatnight.com</a>
+      </span>
+    </div>
+<!-- $Id$ -->
+<div style="clear: both; margin: 0; width: 100%; "></div>
+<!-- div>
+  <a style="clear: both; font-size: xx-small;" href="http://validator.w3.org/check/referer">Validate XHTML</a>
+</div -->
+</body>
+</html>
+
+

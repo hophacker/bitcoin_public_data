@@ -1,0 +1,189 @@
+http://www.sakana.fr/blog/2011/01/09/asterisk-101-ghetto-googlevoice-signing-up-for-using-gv-even-if-youre-not-in-the-usa-using-asterisk/
+Sakana.fr – A sysadmin's blog » Blog Archiv » Asterisk 101 – Ghetto GoogleVoice : Signing up for / using GV even if you’re not in the USA using Asterisk
+On the fly saving of few useful (?) tech tips
+Sakana.fr – A sysadmin's blog
+Home
+Licence	This work by Stephane KATTOOR is licensed under a Creative Commons Attribution 3.0 Unported License.
+Feeling like tipping ?	If you find this blog useful, you might consider sending a few bitcoins to support it : 1BTtsC3beGJ6ysd8DhrXjdo6jVw5WD9mvY
+RSS	Follow me !	Tech@Sakana on Facebook Search this site	Newsletter	Get latest posts by email (No spam, only posts):
+Enter your email address:Delivered by FeedBurner
+Categories	Books (2)
+Dev (23)
+IT (1)
+ITIL (2)
+Misc (1)
+Movies (1)
+Networks (10)
+Security (5)
+Software (26)
+Systems (76)
+ThisBlog (9)
+Uncategorized (2)
+Web (19)
+Tagsasterisk
+cell phone
+cfengine
+cluster
+command line
+facebook
+gentoo
+gsm
+hal
+home automation
+internet
+IT
+linux
+mobile
+networking
+openbsd
+opensolaris
+openssh
+performance
+perl
+phonebook
+rsync
+scripts
+Security
+shell
+sms
+Solaris
+ssh
+symlinks
+sysadmin
+Systems
+tip
+tips
+tutorial
+ubuntu
+unix
+VirtualBox
+virtualization
+Web
+windows
+wordpress
+Xen
+xorg
+xss
+zfs
+Meta	Log in
+Entries RSS
+Comments RSS
+WordPress.org
+Monthly archives
+January 2011
+M
+T
+W
+T
+F
+S
+S
+« Dec
+Apr »
+12
+3456789
+10111213141516
+17181920212223
+24252627282930
+31
+Asterisk 101 – Ghetto GoogleVoice : Signing up for / using GV even if you’re not in the USA using Asterisk
+GoogleVoice (GV for short) is a great service (I won’t go into the details, but you can read up about it here), but it is unfortunately accessible only if you are in the USA.
+Granted there is already plenty of documentation about how to circumvent this, but I’m not aware of any of those using Asterisk.
+So this post will document how to sign up for a GV account as well as how to use it with Asterisk afterwards, in the prospect of using it if you are not in the USA.
+In order to be able to sign up for GV, you need to meet 2 prerequisites :
+You need to have a US IP address
+You need to have a US phone number, which will be used to validate your GV account
+Step 1 is left as an exercise to the reader (“Good luck ! I’m behind 7 proxies !” ).
+Step 2 is the one we’re going to describe here, as an example of what you can pull with simple Asterisk configurations.
+1. Getting a US phone number
+What you really need to find is a DID (Direct Inward Dialing aka DDI : Direct Dial-In) provider. It will provide you with a US phone number and will patch that call either to another phone number or to a SIP address.
+GV will only forward calls to US phone numbers, so you need one of those. IPKall is such a free provider. They will provide you an American phone number and will forward it to any SIP or IAX2 address. Creating an account only takes a minute.
+Nothing fancy here : Simply fill the SIP account into the SIP phone number field, and the SIP servername or IP into the SIP proxy field.
+2. Setting up Asterisk
+Now IPKall will gladly forward the calls to your SIP account. You can setup this SIP account as simply as below :
+IPKall has a specificity we need to take care of : calls can originate from 2 different servers. We need to have calls coming from both servers to get into the same context. To avoid repeating twice the same configuration block (with just the IP address being different), we’ll use a template.
+We’ll also define a SIP account for a SIP phone (or for a softphone).
+?Download sip.conf1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+[phone1]
+type=friend
+username=phone1
+secret=SecretPassword
+host=dynamic
+context=myhouse
+nat=yes ; if you need to connect from behind a nat
+&nbsp;
+[ipkall](!) ; This section is only a template
+type=peer
+username=ipkall
+context=ipkall-in
+insecure=invite
+&nbsp;
+[ipkall-01](ipkall) ; We import the previous template to setup calls from
+host=66.54.140.46       ; the first IPKall server
+&nbsp;
+[ipkall-02](ipkall) ; We import the previous template to setup calls from
+host=66.54.140.47       ; the second IPKall server
+I’ve setup an SIP “number” I’ve instructed IPKall to forward the calls to is “ipkall”. The configuration below must reflect this. Here, phone calls to the “ipkall” extension will be routed to the “phone1″ SIP phone.
+?Download extensions.conf1
+2
+3
+[ipkall-in]
+exten =&gt; ipkall,1,Dial(SIP/phone1)
+exten =&gt; ipkall,n,Hangup()
+3.Setup a softphone and finally your GV account
+Now all you need is a softphone (I like sflphone for that purpose) or a SIP phone to be configured as “phone1″ (check your favorite softphone instructions to do so) and head back to GV to create your account.
+GV will assign you a phone number and will ask you to which phone number to route the phone calls. That’s where you’ll specify your IPKall phone number.
+GV will then ask you to validate this phone call by giving you a 2 digit number and calling you on your IPKall phone number. You’ll have to pick up the call on your softphone and dial the 2 digit number. Voila, the account is created and validated !
+Any call to your GV phone number will be routed to IPKall which will send it to your Asterisk installation, which will then ring your softphone or SIP phone.
+Pretty nifty, heh ? January 9, 2011 at 1:10 pm by Stephane Kattoor Category: SoftwareTags: asterisk, googlevoice, tutorial 2 Comments - “Asterisk 101 – Ghetto GoogleVoice : Signing up for / using GV even if you’re not in the USA using Asterisk”
+Les tweets qui mentionnent Asterisk 101 – Ghetto GoogleVoice : Signing up for / using GV even if you’re not in the USA using Asterisk - Tech@Sakana – A sysadmin’s blog -- Topsy.com
+wrote on January 9, 2011 at 11:29 pm [...] Ce billet était mentionné sur Twitter par VoIP Monks. VoIP Monks a dit: Asterisk 101 – Ghetto GoogleVoice : Signing up for / using GV even … http://bit.ly/e99jsO [...]
+Asterisk and Google Voice for the rest of us « 0ddn1x: tricks with *nix
+wrote on January 11, 2011 at 6:30 pm [...] http://www.sakana.fr/blog/2011/01/09/asterisk-101-ghetto-googlevoice-signing-up-for-using-gv-even-if… Leave a Comment TrackBack URI [...]
+Write a Comment
+Name (required)
+eMail (required) (will not be displayed)
+Website
+Who am I ?	Ads	blogroll
+It's write now
+Lifehacker
+Pearsonified
+Slacker Manager
+Terminally Incoherent
+Fellow sysadmins
+My SysAd Blog — UNIX
+Standalone Sysadmin
+friends
+Aashiyana – Santanu & Pamela
+Another Home Page Blog
+Les Carottes sont crues !
+man women
+Schyzophrenia !
+Links
+cfengine
+MisterHouse
+OpenBSD
+OpenSolaris
+SubVersioN
+Unix Tutorials
+Zsh home page
+Based on Wordpress - Design by Schalkie
+

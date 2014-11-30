@@ -1,0 +1,749 @@
+http://www.btcpanel.com/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 07:37:42 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Server: gunicorn/18.0
+Vary: Cookie
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        
+<title></title>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/cerulean/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <!--<link href="/static/app.css" rel="stylesheet">-->
+        <link href="http://a8a9d0052bba9d385bd8-3715ed4325bf305d0c8d7ca8266c73cc.r4.cf2.rackcdn.com/app.css" rel="stylesheet">
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.js"></script>
+        <link rel="shortcut icon" href="http://a8a9d0052bba9d385bd8-3715ed4325bf305d0c8d7ca8266c73cc.r4.cf2.rackcdn.com/favicon2.ico" />
+        <style>
+            .divider-vertical {
+                height: 30px;
+                margin: 10px 9px;
+                border-left: 1px solid #CCCCCC;
+                border-right: 1px solid #CCCCCC;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-45910807-1']);
+            _gaq.push(['_trackPageview']);
+
+                (function() {
+                    var ga = document.createElement('script'); ga.type =
+                    'text/javascript'; ga.async = true;
+                        //ga.src = ('https:' == document.location.protocol ?  'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                        ga.src = ('https:' == document.location.protocol ?  'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+
+                            var s = document.getElementsByTagName('script')[0];
+                            s.parentNode.insertBefore(ga, s);
+                            })();
+        </script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+            Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-45910807-1', 'btcpanel.com');
+            ga('send', 'pageview');
+        </script>
+        <style>
+        #footer {
+            width: 100%;
+            height: 95px;
+            border-top: 1px solid #E0E0E0;
+            position: absolute;
+            bottom: 0px; 
+            left: 0px; 
+            text-align: center; 
+        }
+        </style>
+        
+    <style>
+    #wrapper {
+        width: 100%;
+        overflow: auto;
+    }
+    #wrapper:after{
+        content:"";
+        position:absolute;
+        height: 500px;
+        top:5%; bottom:0; left:50%; width:0; 
+        border:1px solid black;
+    }
+    #coinbase_div {
+        width: 50%;
+        float: left;
+    }
+    #coinbaseChartContainer {
+        width: 100%;
+        float: left;
+    }
+    #bitstampChartContainer {
+        width: 50%;
+        overflow: hidden;
+    }
+    #coinbase_calc {
+        display: none;
+        margin: 0 auto;
+    }
+    #bitstamp_calc {
+        display: none;
+        margin: 0 auto;
+    }
+    select {
+        font-size: 20px;
+    }
+    </style>
+
+        
+<!--<script src="/static/socket.io.js"></script>-->
+<script src="http://a8a9d0052bba9d385bd8-3715ed4325bf305d0c8d7ca8266c73cc.r4.cf2.rackcdn.com/socket.io.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+<script type="text/javascript">
+var last_coinbase_input = "coinbase_btc";
+var last_bitstamp_input = "bitstamp_btc";
+
+var last_cb_feed;
+var last_bs_feed;
+
+function get_coinbase_option(){
+    var cb_buy_subtotal = Number(last_cb_feed['coinbase']['buy_subtotal_amount'])
+    var cb_sell_subtotal = Number(last_cb_feed['coinbase']['sell_subtotal_amount'])
+
+    var e = document.getElementById("coinbase_calc_option");
+    var option = e.options[e.selectedIndex].value;
+    
+    if (option == "buy") {
+        var result = cb_buy_subtotal
+        return result
+    }
+    else if(option == "sell"){
+        var result = cb_sell_subtotal
+        return result
+    }
+}
+
+function get_bitstamp_option(){
+    var bs_bid = Number(last_bs_feed['bitstamp']['bid']).toFixed(2)
+    var bs_ask = Number(last_bs_feed['bitstamp']['ask']).toFixed(2)
+
+    var e = document.getElementById("bitstamp_calc_option");
+    var option = e.options[e.selectedIndex].value;
+    
+    if (option == "bid") {
+        var result = bs_bid
+        return result
+    }
+    else if(option == "ask"){
+        var result = bs_ask
+        return result
+    }
+}
+
+function update_coinbase_calc(){
+    if ( (!($("#coinbase_btc").is(":focus")))  &&
+        ((($("#coinbase_usd").is(":focus"))) ||
+            last_coinbase_input == "coinbase_usd" ) ){
+        var cb_value = get_coinbase_option()
+        coinbase_btc.value = (coinbase_usd.value / cb_value).toFixed(8)
+    }
+    else if ( (!($("#coinbase_usd").is(":focus"))) &&
+        ((($("#coinbase_btc").is(":focus"))) ||
+            last_coinbase_input == "coinbase_btc" ) ){
+        var cb_value = get_coinbase_option()
+        coinbase_usd.value = (coinbase_btc.value * cb_value).toFixed(2)
+    }
+    else if ( (!($("#coinbase_usd").is(":focus"))) &&
+        (!($("#coinbase_btc").is(":focus"))) &&
+        !(last_coinbase_input)){
+        coinbase_btc.value = Number(1).toFixed(8)
+        var cb_value = get_coinbase_option()
+        coinbase_usd.value = (coinbase_btc.value * cb_value).toFixed(2)
+    }
+}
+
+function update_bitstamp_calc(){
+    if ( (!($("#bitstamp_btc").is(":focus")))  &&
+        ((($("#bitstamp_usd").is(":focus"))) ||
+            last_bitstamp_input == "bitstamp_usd" ) ){
+        var cb_value = get_bitstamp_option()
+        bitstamp_btc.value = (bitstamp_usd.value / cb_value).toFixed(8)
+    }
+    else if ( (!($("#bitstamp_usd").is(":focus"))) &&
+        ((($("#bitstamp_btc").is(":focus"))) ||
+            last_bitstamp_input == "bitstamp_btc" ) ){
+        var cb_value = get_bitstamp_option()
+        bitstamp_usd.value = (bitstamp_btc.value * cb_value).toFixed(2)
+    }
+    else if ( (!($("#bitstamp_usd").is(":focus"))) &&
+        (!($("#bitstamp_btc").is(":focus"))) &&
+        !(last_bitstamp_input)){
+        bitstamp_btc.value = Number(1).toFixed(8)
+        var cb_value = get_bitstamp_option()
+        bitstamp_usd.value = (bitstamp_btc.value * cb_value).toFixed(2)
+    }
+}
+
+$(document).ready(function() {
+
+    $('#coinbase_btc').on('input',function(e){
+        var coinbase_btc = document.getElementById('coinbase_btc');
+        var cb_value = get_coinbase_option()
+        coinbase_usd.value = (coinbase_btc.value * cb_value).toFixed(2)
+        last_coinbase_input = "coinbase_btc"
+    });
+    $('#coinbase_usd').on('input',function(e){
+        var coinbase_usd = document.getElementById('coinbase_usd');
+        var cb_value = get_coinbase_option()
+        coinbase_btc.value = (coinbase_usd.value / cb_value).toFixed(8)
+        last_coinbase_input = "coinbase_usd"
+    });
+
+    $('#bitstamp_btc').on('input',function(e){
+        var bitstamp_btc = document.getElementById('bitstamp_btc');
+        var bs_value = get_bitstamp_option()
+        bitstamp_usd.value = (bitstamp_btc.value * bs_value).toFixed(2)
+        last_bitstamp_input = "bitstamp_btc"
+    });
+
+    $('#bitstamp_usd').on('input',function(e){
+        var bitstamp_usd = document.getElementById('bitstamp_usd');
+        var bs_value = get_bitstamp_option()
+        bitstamp_btc.value = (bitstamp_usd.value / bs_value).toFixed(8)
+        last_bitstamp_input = "bitstamp_usd"
+    });
+
+    $('#coinbase_calc').delay(1700).fadeIn(300);
+    $('#bitstamp_calc').delay(1700).fadeIn(300);
+})
+window.onload = function () {
+    function numberWithCommas(n) {
+        var parts=n.toString().split(".");
+        return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ?  "." + parts[1] : "");
+    }
+
+    var socket = io.connect('http://23.253.21.95' + ":8080", 
+            {'connect timeout': 500});
+    var prev_bs_last = 0;
+    var prev_cb_buy_subtotal = 0;
+    var prev_cb_sell_subtotal = 0;
+    //==========================================================================
+    function updateTitle(feed) {
+        var cb_buy_subtotal = feed['coinbase']['buy_subtotal_amount']
+        var bs_last = feed['bitstamp']['last']
+
+        var title = "C:" + cb_buy_subtotal + " | " + "B:" + bs_last
+        document.title = title
+    }
+    //==========================================================================
+    function updateCoinbase(feed) {
+        last_cb_feed = feed
+        var cb_buy_subtotal = Number(feed['coinbase']['buy_subtotal_amount'])
+        var cb_buy_total = Number(feed['coinbase']['buy_total_amount'])
+        var cb_sell_subtotal = Number(feed['coinbase']['sell_subtotal_amount'])
+        var cb_sell_total = Number(feed['coinbase']['sell_total_amount'])
+
+        cb_subtotal_data = [cb_buy_subtotal, cb_sell_subtotal]
+        cb_total_data = [cb_buy_total, cb_sell_total]
+
+        var bs_high = Number(feed['bitstamp']['high'])
+        var chart_interval = Math.round((Math.round(bs_high/50) * 2)/10)*10
+
+        $('#coinbaseChartContainer').highcharts({
+            chart: {
+                renderTo: "coinbaseChartContainer",
+                type: 'bar',
+                },
+            title: {
+                    text: '',
+                    style: {
+                        fontSize: '25px'
+                    }
+                },
+            subtitle: {
+                text: '',
+                useHTML: true
+            },
+            xAxis: {
+            categories: ['Buy', 'Sell'],
+                        title: {
+            text: null
+                        }
+                },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: "",
+                    align: "high"
+                },
+                tickInterval: chart_interval,
+                labels: {
+                    overflow: 'justify',
+                    format: '${value}'
+                    }
+            },
+            tooltip: {
+            valueSuffix: '',
+            valuePrefix: '$'
+                    },
+            plotOptions: {
+                bar: {
+                    animation: false,
+                    dataLabels: {
+                        enabled: true,
+                        format: '${y:.2f}',
+                        style: { 
+                            fontFamily: '\'Lato\', sans-serif',
+                            fontSize: '14px',
+                            fontWeight:'bold',
+                            color:'black'
+                        }
+                    }
+                },
+                series: {
+                    animation : false
+                    }
+            },
+            legend: {
+                floating: false,
+                borderWidth: 2,
+                backgroundColor: '#FFFFFF',
+                shadow: true
+            },
+            exporting: {
+                enabled: false
+            },
+            credits: {
+            enabled: false
+                    },
+            series: [
+                        {
+                            name: 'Subtotal',
+                            color: "#A3C1D7",
+                            pointWidth: 30,
+                            data: cb_subtotal_data
+                        }, 
+                        {
+                            name: 'Total',
+                            color: "#1276CE",
+                            pointWidth: 30,
+                            data: cb_total_data
+                        }, 
+                    ]
+            } , function(chart) {
+
+                chart.animation = false
+
+                // Fix decimals places for labels
+                cb_buy_subtotal = cb_buy_subtotal.toFixed(2)
+                cb_buy_total = cb_buy_total.toFixed(2)
+                cb_sell_subtotal = cb_sell_subtotal.toFixed(2)
+                cb_sell_total = cb_sell_total.toFixed(2)
+
+                var cb_created_at = feed['coinbase_created_at']
+
+                var green = "#17FC6F"
+                var red = "#FF4040"
+
+                function buy_changed(color) {
+                    var text =
+                        "<span style='background-color: " + color + "'>" + 
+                        "Buy: $" + cb_buy_subtotal + 
+                        "</span>" +
+                        " | "
+                    prev_cb_buy_subtotal = cb_buy_subtotal
+                    return text
+                }
+                function sell_changed(color) {
+                    var text =
+                        "<span style='background-color: " + color + "'>" + 
+                        "Sell: $" + cb_sell_subtotal +
+                        "</span>"
+                    prev_cb_sell_subtotal = cb_sell_subtotal
+                    return text
+                }
+
+                
+                var buy_text = "Buy: $" + cb_buy_subtotal + " | "
+                if (prev_cb_buy_subtotal == 0) {
+                    prev_cb_buy_subtotal = cb_buy_subtotal
+                }
+                else if (cb_buy_subtotal > prev_cb_buy_subtotal) {
+                    //console.log("Buy-Red -- New: " + cb_buy_subtotal + " | Prev: " + prev_cb_buy_subtotal)
+                    buy_text = buy_changed(red)
+                }
+                else if (cb_buy_subtotal < prev_cb_buy_subtotal) {
+                    //console.log("Buy-Green -- New: " + cb_buy_subtotal + " | Prev: " + prev_cb_buy_subtotal)
+                    buy_text = buy_changed(green)
+                }
+
+                var sell_text = "Sell: $" + cb_sell_subtotal
+                if (prev_cb_sell_subtotal == 0) {
+                    prev_cb_sell_subtotal = cb_sell_subtotal
+                }
+                else if (cb_sell_subtotal > prev_cb_sell_subtotal) {
+                    //console.log("Sell-Green -- New: " + cb_sell_subtotal + " | Prev: " + prev_cb_sell_subtotal)
+                    sell_text = sell_changed(green)
+                }
+                else if (cb_sell_subtotal < prev_cb_sell_subtotal) {
+                    //console.log("Sell-Red -- New: " + cb_sell_subtotal + " | Prev: " + prev_cb_sell_subtotal)
+                    sell_text = sell_changed(red)
+                }
+
+                var subtitle = "<font size='4' color='black'>" + 
+                    buy_text + sell_text +
+                    "</font>"
+
+                chart.setTitle({text: "Coinbase"}, {text: subtitle})
+                if (cb_created_at < 0) {
+                    cb_created_at = "0.01"
+                }
+                chart.yAxis[0].setTitle({text: 
+                    "Price (USD)" +
+                    "<br>" +
+                    "<span style='color: red'>" +
+                    "Updated: " + cb_created_at + " seconds ago" + "</span>"
+                    })
+            });
+
+            update_coinbase_calc()
+    }    
+    //==========================================================================
+    function updateBitstamp(feed) {
+        last_bs_feed = feed
+        var bs_last = Number(feed['bitstamp']['last'])
+        var bs_high = Number(feed['bitstamp']['high'])
+        var bs_low = Number(feed['bitstamp']['low'])
+        var bs_bid = Number(feed['bitstamp']['bid']).toFixed(2)
+        var bs_ask = Number(feed['bitstamp']['ask']).toFixed(2)
+        var bs_volume = Number(feed['bitstamp']['volume']).toFixed(2)
+
+        var chart_interval = Math.round((Math.round(bs_high/50) * 2)/10)*10
+
+        $('#bitstampChartContainer').highcharts({
+            chart: {
+                renderTo: "bitstampChartContainer",
+                type: 'bar',
+                },
+            title: {
+                    text: '',
+                    style: {
+                        fontSize: '25px'
+                    }
+                },
+            subtitle: {
+                text: '',
+                useHTML: true
+            },
+            xAxis: {
+            categories: ['High'],
+                    title: {
+                        text: null
+                    }
+                },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: "",
+                    align: "high"
+                },
+                tickInterval: chart_interval,
+                labels: {
+                    overflow: 'justify',
+                    format: '${value}'
+                    }
+            },
+            tooltip: {
+            valueSuffix: '',
+            valuePrefix: '$'
+                    },
+            plotOptions: {
+                bar: {
+                    animation: false,
+                    dataLabels: {
+                        enabled: true,
+                        format: '${y:.2f}',
+                        style: { 
+                            fontFamily: '\'Lato\', sans-serif',
+                            fontSize: '14px',
+                            fontWeight:'bold',
+                            color: 'black'
+                        }
+                    }
+                },
+                series: {
+                    animation : false
+                    }
+            },
+            legend: {
+                    floating: false,
+                    borderWidth: 2,
+                    backgroundColor: '#FFFFFF',
+                    shadow: true
+                    },
+            exporting: {
+                    enabled: false
+            },
+            credits: {
+            enabled: false
+                    },
+            series: [
+                        {
+                            name: 'High',
+                            pointWidth: 30,
+                            color: "#8BDD30",
+                            data: [bs_high]
+                        }, 
+                        {
+                            name: 'Low',
+                            showInLegend: false,               
+                            visible: false,
+                            data: [bs_low]
+                        }, 
+                        {
+                            name: 'Last',
+                            showInLegend: false,               
+                            visible: false,
+                            data: [bs_last]
+                        }
+                    ]
+        } , function(chart) {
+
+            chart.animation = false
+            var bs_created_at = feed['bitstamp_created_at']
+
+            bs_last_fixed = bs_last.toFixed(2)
+            bs_low_fixed = bs_low.toFixed(2)
+
+            var green = "#17FC6F"
+            var red = "#FF4040"
+
+            function last_changed(color) {
+                var text =
+                    "<span style='background-color: " + color + "'>" + 
+                    "Last: $" + bs_last_fixed + 
+                    "</span>"
+                    prev_bs_last = bs_last
+                    return text
+            }
+
+            var last_text = "Last: $" + bs_last_fixed
+            if (prev_bs_last == 0) {
+                prev_bs_last = bs_last
+            }
+            else if (bs_last < prev_bs_last) {
+                //console.log("Last-Red: " + "Prev: " + prev_bs_last + " | Last: " + bs_last)
+                last_text = last_changed(red)
+            }
+            else if (bs_last > prev_bs_last) {
+                //console.log("Last-Green: " + "Prev: " + prev_bs_last + " | Last: " + bs_last)
+                last_text = last_changed(green)
+            }
+
+            var subtitle1 = "<center><font size='4' color='black'>" + 
+                last_text +
+                "</font></center>"
+            var subtitle2 = "<font size='2' color='black'>" + 
+                "<br>" + 
+                "<b>Bid:</b> $" + bs_bid + " | <b>Volume:</b> " + bs_volume + 
+                " BTC | <b>Ask:</b> $" + bs_ask
+                "</font>"
+
+            var subtitle = subtitle1 + subtitle2
+            chart.setTitle({text: "Bitstamp"}, {text: subtitle})
+
+            if (bs_created_at < 0) {
+                bs_created_at = "0.01"
+            }
+            chart.yAxis[0].setTitle({text: 
+                "Price (USD)" +
+                "<br>" +
+                "<span style='color: red'>" +
+                "Updated: " + bs_created_at + " seconds ago" + "</span>"
+            })
+
+            var margin = 5,
+                xPadding = 10,
+                yPadding = 5,
+                xSplit = xPadding/2,
+                ySplit = yPadding/2,
+                text,
+                box;
+                
+            var point = chart.series[0].data[0];
+
+            var label_text = 'Low: $' + bs_low_fixed 
+            text = chart.renderer.text(
+                    label_text,
+                    chart.series[1].data[0].shapeArgs['height'] + 2,
+                    chart.series[1].data[0].shapeArgs['width'] + 84
+                ).attr({
+                    zIndex: 7
+                }).add();
+            
+            var box = text.getBBox();
+            chart.renderer.path(["M", box.x-xSplit, box.y-ySplit, 
+                                "l", (box.width/2)+xSplit-margin, 0, 
+                                margin, -margin, 
+                                margin, margin, 
+                                (box.width/2)+xSplit-margin, 0,
+                                0, box.height+yPadding, 
+                                -(box.width+xPadding), 0,
+                                0, -(box.height+yPadding)])
+                                .attr({
+                                    'stroke-width': 2,
+                                    stroke: "#cccccc",
+                                    fill: "#A5CC99",
+                                    zIndex: 6
+            }).add();
+
+            text = chart.renderer.text(
+                    'Last: $' + bs_last_fixed, 
+                    chart.series[2].data[0].shapeArgs['height'] - 2,
+                    chart.series[2].data[0].shapeArgs['width'] + 22
+                ).attr({
+                    zIndex: 7
+                }).add();
+            
+            var box = text.getBBox();
+            chart.renderer.path(["M", 
+                    box.x-xSplit, box.y-ySplit,
+                    "l", 
+                    0, (box.height + margin),
+                    (box.width/2 + margin), 0,
+                    margin, margin,
+                    margin, -margin,
+                    (box.width/2 + 5), 0,
+                    0, (box.height/2 - 7),
+                    0, -(box.height + 5.5)])
+                    .attr({
+                        'stroke-width': 2,
+                        stroke: "#cccccc",
+                        fill: "#329972",
+                        zIndex: 6
+            }).add();
+        });
+
+        update_bitstamp_calc()
+    }
+    //==========================================================================
+
+    socket.on('feed', function(data){
+        if (socket.socket.connected) {
+            feed = data.feed
+            updateCoinbase(feed)
+            updateTitle(feed)
+            updateBitstamp(feed)
+        }
+        else {
+            socket.socket.connect()
+        }
+    });
+    //==========================================================================
+}
+</script>
+
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <a class="navbar-brand" href="/">BTC Panel</a>
+            <ul class="nav navbar-nav">
+                <li class=""><a href="/xpm/">Primecoin</a></li>
+                
+                <li class="divider-vertical"></li>
+
+                <li class=""><a href="http://blog.btcpanel.com">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+                
+                <!--<li><a href="">Register</a></li>-->
+                    <li><a href="/sign_in/">Sign In</a></li>
+                
+            </ul>
+        </div>
+        <div id="footer">
+            <p>
+            Developed by: <a href="http://www.metralpolis.com/about.html">Mike Metral</a>
+            <br>
+            BTC: 1BeKNDWKRgrWEPvXRY6e1sYwnSBFZ41gtF
+            <br>
+            XPM: Ab1g4SX5PhCAfkF6BJyvNjVyZgKtCxyybc
+            <br>
+            <a href="https://twitter.com/btcpanel"
+                class="twitter-follow-button" data-show-count="false"
+                data-size="large" data-lang="en">Follow @btcpanel</a>
+            <script>!function(d,s,id){var
+js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </div>
+        </p>
+        
+
+<!--Update: <a href="/register">Register</a> to setup personalized <a
+    href="http://www.blog.btcpanel.com/02/05/2014/new-feature-added-price-notifications-via-email/">Price
+    Notifications via Email</a>-->
+<div id="wrapper">
+    </br>
+    <div id="coinbase_div">
+        <div id="coinbaseChartContainer"> </div>
+        <div id="coinbase_calc" align="center">
+            <div class="control-group input-prepend">
+                <div class="control-group">
+                    <input id="coinbase_btc" name="coinbase_btc" type="text" onClick="this.select();" size="12" class="text" style="height:33px; font-size:14pt; text-align:center;" value="1.00000000"/>
+                    <label style="font-size:14pt">BTC</label>
+                    <label style="font-size:12pt">=</label>
+                    <input id="coinbase_usd" name="coinbase_usd" type="text" onClick="this.select();" size="12" class="text" style="height:33px; font-size:14pt; text-align:center" value=""/>
+                    <label style="font-size:14pt">USD</label>
+                </div>
+                <br>
+                <div class="controls">
+                    <select onchange="update_coinbase_calc()" id="coinbase_calc_option" class="cb_calc_option input-medium">
+                        <option class="calc_option" value="buy">Buy</option>
+                        <option class="calc_option" value="sell">Sell</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="divider"></div>
+
+    <div id="bitstamp_div">
+        <div id="bitstampChartContainer"> </div>
+        <div id="bitstamp_calc" align="center">
+            <div class="control-group input-prepend">
+                <div class="control-group">
+                    <input id="bitstamp_btc" name="bitstamp_btc" type="text" onClick="this.select();" size="12" class="text" style="height:33px; font-size:14pt; text-align:center;" value="1.00000000"/>
+                    <label style="font-size:14pt">BTC</label>
+                    <label style="font-size:12pt">=</label>
+                    <input id="bitstamp_usd" name="bitstamp_usd" type="text" onClick="this.select();" size="12" class="text" style="height:33px; font-size:14pt; text-align:center" value=""/>
+                    <label style="font-size:14pt">USD</label>
+                </div>
+                <br>
+                <div class="controls">
+                    <select onchange="update_bitstamp_calc()" id="bitstamp_calc_option" class="bs_calc_option input-medium">
+                        <option class="calc_option" value="bid">Bid</option>
+                        <option class="calc_option" value="ask">Ask</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+    </div>
+    </body>
+    </html>
+

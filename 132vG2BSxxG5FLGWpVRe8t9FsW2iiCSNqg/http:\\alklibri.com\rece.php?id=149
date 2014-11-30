@@ -1,0 +1,1672 @@
+http://alklibri.com/rece.php?id=149
+HTTP/1.0 200 OK
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Date: Thu, 24 Jul 2014 02:17:40 GMT
+Server: LiteSpeed
+Connection: close
+X-Powered-By: PHP/5.4.30
+Set-Cookie: PHPSESSID=n4j1nk0lbc96jvlsi1gdnvs1m5; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/html
+Vary: User-Agent
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
+<head>
+<meta name="Description" content="Questa pagina di ALK Libri contiene la recensione del libro Storia di una capinera scritto da Giovanni Verga" />
+<meta name="Keywords" content="Christian, Michelini, Racconti, racconti, libri, Libri, audiolibri, audio, vocale, Recensioni, recensioni, romanzi, saggi, testi, alk, ALK" /><link href="./images/favicon.ico" rel="SHORTCUT ICON">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="Distribution" content="Global" />
+<meta name="Author" content="Christian Michelini - christian@alklibri.com" />
+<meta name="Robots" content="index,follow" />
+<link rel="stylesheet" href="images/BluePigment.css" type="text/css" /><link rel="stylesheet" href="images/slideout.css" type="text/css" />
+<link rel="stylesheet" href="images/alk.css" type="text/css" />
+<link rel="stylesheet" href="css/zebra_tooltips.css" type="text/css" />
+<script type="text/javascript" src="ins_js/slideout.js"></script>
+<script type="text/javascript" src="ins_js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="ins_js/zebra_tooltips.js"></script>
+<script>
+	$(document).ready(function() {
+    new $.Zebra_Tooltips($('.zebra_tips1'));
+});
+</script>
+<script>
+
+/***********************
+*
+*	alk_rece.js
+*	Script per la parte ajax delle recensioni (file rece.php)
+*
+*	Questo script si appoggia su JQuery
+*
+/***********************/
+
+var arraydomande = {"1":"Quante dita ha una mano? (Rispondere per esteso, in lettere, non numeri)", "2":"Quante braccia ha un uomo? (Rispondere per esteso, in lettere, non numeri)", "3":"Quante braccia ha una donna? (Rispondere per esteso, in lettere, non numeri)", "4":"Di che nazionalità era Dante?", "5":"Scrivi uno dopo l\'altro le seguenti lettere: o, v, v, i, o.", "6":"Scrivi uno dopo l\'altro le seguenti lettere, al contrario: m, o, p.", "7":"Scrivi uno dopo l\'altro le seguenti lettere, partendo dall\'ultima: n, a, t.", "8":"Scrivi quante \"a\" contiene la parola \"tavola\", in lettere.", "9":"Quanto fa due più due? (Scrivi il numero in lettere)", "10":"Scrivi 100 in lettere.", "11":"Scrivi 1000 in lettere.", "12":"Qual è la protagonista omonima di \"Madame Bovary\"?", "13":"Quante facce ha un cubo?", "14":"Quanti lati ha un triangolo?", "15":"Quanti angoli ha un triangolo?", "16":"Scrivi \"arzigogolato\".", "17":"Scrivi \"dentro\".", "18":"Scrivi \"deretano\".", "19":"Scrivi \"immantinente\".", "20":"Scrivi \"solipsismo\"."};
+//messaggi di aggiornamento campo
+var risultato_mod_rece2 = "<p><span style=\"color:lime\"><b>Recensione aggiornata.</b></span></p>";
+var risultato_mod_rece3 = "<p><span style=\"color:lime\"><b>Recensione aggiornata, sar&agrave; pubblicata dopo moderazione.</b></span></p>";
+var risultato_mod_rece4 = "<p><span style=\"color:lime\"><b>Recensione aggiornata, sar&agrave; pubblicata dopo moderazione.</b></span></p>";
+var risultato_mod_rece10 = "<p><span style=\"color:CRIMSON\"><b>Campo vuoto! Recensione non salvata.</b></span></p>";
+var risultato_mod_rece11 = "<p><span style=\"color:CRIMSON\"><b>Errore nell'aggiornamento.</b></span></p>";
+var risultato_mod_rece12 = "<p><span style=\"color:CRIMSON\"><b>Risposta errata alla domanda di convalida</b></span></p>";
+var risultato_mod_rece20 = "<p><span style=\"color:lime\"><b>Nessuna modifica effettuata.</b></span></p>";
+
+//funzione che assegna il testo con risultato dell'aggiornamento
+function assegna_testo (funz_codice_mod, funz_tag_aggiorna) {
+	switch (funz_codice_mod) {
+		case 2:
+			$(funz_tag_aggiorna).html(risultato_mod_rece2);
+			break;
+		case 3:
+			$(funz_tag_aggiorna).html(risultato_mod_rece3);
+			break;
+		case 4:
+			$(funz_tag_aggiorna).html(risultato_mod_rece4);
+			break;
+		case 10:
+			$(funz_tag_aggiorna).html(risultato_mod_rece10);
+			break;
+		case 11:
+			$(funz_tag_aggiorna).html(risultato_mod_rece11);
+			break;
+		case 12:
+			$(funz_tag_aggiorna).html(risultato_mod_rece12);
+			break;
+	}
+}
+
+//inizializzazione array dei tags per i moduli di modifica
+var tag_rece = new Array ("#salva_rece", "#receagg", "#cmp_rece", "#modi_rece", "#rece", "javscr_mod_rece", "lib_rece", "#box_autore", "#testo_recensione");
+var tag_cons = new Array ("#salva_lib_consigliato_a", "#lib_consigliato_a_agg", "#cmp_lib_consigliato_a", "#modi_lib_consigliato_a", "#lib_consigliato_a", "javscr_lib_consigliato_a", "lib_consigliato_a", "#pagella", "#testo_lib_consigliato_a");
+var tag_tab_titolo = new Array ("#salva_titolo", "#titoloagg", "#cmp_titolo", "#modi_titolo", "#titolo", "javscr_t", "lib_titolo", "", "#testo_titolo");
+//////////////////////////////////////////////oppure Array ("#salva_titolo", etc...
+var tag_tab_tit_orig = new Array ("#salva_titolo_orig", "#titolo_orig_agg", "#cmp_titolo_orig", "#modi_titolo_orig", "#titolo_orig", "javscr_tit_orig", "lib_titolo_originale", "", "#testo_titolo_orig");
+var tag_tab_tit_alt = new Array ("#salva_tit_alt", "#tit_alt_agg", "#cmp_titoli_alt", "#modi_titoli_alt", "#titoli_alt", "javscr_tit_alt", "lib_titoli_alternativi", "", "#testo_titolo_alt");
+var tag_tab_tit_orig_alt = new Array ("#salva_tit_orig_alt", "#tit_orig_alt_agg", "#cmp_titoli_orig_alt", "#modi_titoli_orig_alt", "#titoli_orig_alt", "javscr_tit_orig_alt", "lib_tit_originali_alt", "", "#testo_tit_orig_alt");
+var tag_tab_collana = new Array ("#salva_collana", "#collana_agg", "#cmp_collana", "#modi_collana", "#collana", "javscr_collana", "lib_collana", "", "#testo_collana");
+var tag_tab_anno = new Array ("#salva_anno", "#anno_agg", "#cmp_anno", "#modi_anno", "#anno", "javscr_anno", "lib_anno", "", "#testo_anno");
+var tag_tab_lib_anno_it = new Array ("#salva_lib_anno_it", "#lib_anno_it_agg", "#cmp_lib_anno_it", "#modi_lib_anno_it", "#lib_anno_it", "javscr_lib_anno_it", "lib_anno_it", "", "#testo_lib_anno_it");
+var tag_tab_pagine = new Array ("#salva_pagine", "#pagine_agg", "#cmp_pagine", "#modi_pagine", "#pagine", "javscr_pagine", "lib_pagine", "", "#testo_pagine");
+var tag_tab_lib_drm = new Array ("#salva_lib_drm", "#lib_drm_agg", "#cmp_lib_drm", "#modi_lib_drm", "#lib_drm", "javscr_lib_drm", "lib_drm", "", "#testo_lib_drm");
+var tag_tab_lib_id_lingua = new Array ("#salva_lib_id_lingua", "#lib_id_lingua_agg", "#cmp_lib_id_lingua", "#modi_lib_id_lingua", "#lib_id_lingua", "javscr_lib_id_lingua", "lib_id_lingua", "", "#testo_lib_id_lingua");
+var tag_tab_lib_id_lingua_orig = new Array ("#salva_lib_id_lingua_orig", "#lib_id_lingua_orig_agg", "#cmp_lib_id_lingua_orig", "#modi_lib_id_lingua_orig", "#lib_id_lingua_orig", "javscr_lib_id_lingua_orig", "lib_id_lingua_orig", "", "#testo_lib_id_lingua_orig");
+var tag_tab_arg = new Array ("#salva_arg", "#arg_agg", "#cmp_argomento", "#modi_argomento", "#argomento", "javscr_arg", "lib_argomento", "", "#testo_argomento");
+var tag_tab_tradut = new Array ("#salva_tradut", "#tradut_agg", "#cmp_traduttore", "#modi_traduttore", "#traduttore", "javscr_tradut", "lib_traduttore", "", "#testo_traduttore");
+var tag_tab_curat = new Array ("#salva_curat", "#curat_agg", "#cmp_curatore", "#modi_curatore", "#curatore", "javscr_curat", "lib_curatore", "", "#testo_curatore");
+var tag_tab_prezzo = new Array ("#salva_prezzo", "#prezzo_agg", "#cmp_prezzo", "#modi_prezzo", "#prezzo", "javscr_prezzo", "lib_prezzo", "", "#testo_prezzo");
+var tag_tab_isbn = new Array ("#salva_isbn", "#isbn_agg", "#cmp_isbn", "#modi_isbn", "#isbn", "javscr_isbn", "lib_isbn", "", "#testo_isbn");
+var tag_nuova_rece = new Array ("#salva_nuova_rece", "#nuova_rece_agg", "#cmp_nuova_rece", "#modi_nuova_rece", "#nuova_rece", "javscr_nuova_rece", "lib_rece", "#box_autore", "#testo_nuova_rece");
+var tag_trama = new Array ("#salva_lib_trama", "#lib_trama_agg", "#cmp_lib_trama", "#modi_lib_trama", "#lib_trama", "javscr_lib_trama", "lib_trama", "#pagella", "#testo_lib_trama");
+var tag_inc_incipit = new Array ("#salva_inc_incipit", "#inc_incipit_agg", "#cmp_inc_incipit", "#modi_inc_incipit", "#inc_incipit", "javscr_inc_incipit", "inc_incipit", "", "#testo_inc_incipit");
+var tag_expl_explicit = new Array ("#salva_expl_explicit", "#expl_explicit_agg", "#cmp_expl_explicit", "#modi_expl_explicit", "#expl_explicit", "javscr_expl_explicit", "expl_explicit", "", "#testo_expl_explicit");
+
+var tags_tutti = new Array (tag_cons, tag_tab_tit_alt, tag_tab_tit_orig_alt,
+							tag_tab_collana, tag_tab_anno, tag_tab_pagine, tag_tab_arg, tag_tab_tradut, tag_tab_curat, tag_tab_prezzo,
+							tag_tab_isbn);
+
+//
+//Blocco convalida textarea recensione
+//
+$(document).ready(function(){
+	$(tag_rece[0]).click(function() {
+		if (sessionStorage.javscr_mod_rece == 2) {
+			sessionStorage.javscr_mod_rece = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			//testo_domanda = escapeHtmlEntities(testo_domanda);
+			var risposta = prompt(testo_domanda);
+
+			$(tag_rece[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_rece[2]).val(), id_rece: "149", campo_modifica: tag_rece[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo = parseInt(sessionStorage.javscr_mod_lib_rece);
+					assegna_testo(codice_mod_campo, tag_rece[1]);
+					sessionStorage.javscr_mod_lib_rece = 0;
+				}
+			);
+		} else {
+			$(tag_rece[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_rece[3]).hide(1);
+		$(tag_rece[4]).show(1);
+		$(tag_rece[0]).hide(1);
+		$(tag_rece[7]).fadeIn(3000);
+		$(tag_rece[1]).fadeIn(1000);
+		$(tag_rece[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida textarea nuova recensione utente
+//
+$(document).ready(function(){
+	$(tag_nuova_rece[0]).click(function() {
+		if (sessionStorage.javscr_nuova_rece == 2) {
+			sessionStorage.javscr_nuova_rece = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_nuova_rece[8]).load("ins_ajax/ajax_nuova_rece_utente.php", {recenew: $(tag_nuova_rece[2]).val(), id_rece: "149", campo_modifica: tag_nuova_rece[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_nuova_rece = parseInt(sessionStorage.javscr_nuovo_lib_rece);
+					assegna_testo(codice_mod_campo_nuova_rece, tag_nuova_rece[1]);
+					sessionStorage.javscr_nuovo_lib_rece = 0;
+				}
+			);
+		} else {
+			$(tag_nuova_rece[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_nuova_rece[3]).hide(1);
+		$(tag_nuova_rece[4]).show(1);
+		$(tag_nuova_rece[0]).hide(1);
+		$(tag_nuova_rece[7]).fadeIn(3000);
+		$(tag_nuova_rece[1]).fadeIn(1000);
+		$(tag_nuova_rece[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella titolo
+//
+$(document).ready(function(){
+	$(tag_tab_titolo[0]).click(function() {
+		if (sessionStorage.javscr_t == 2) {
+			sessionStorage.javscr_t = 0;
+			
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+			
+			$(tag_tab_titolo[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_titolo[2]).val(), id_rece: "149", campo_modifica: tag_tab_titolo[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_tit = parseInt(sessionStorage.javscr_mod_lib_titolo);
+					assegna_testo(codice_mod_campo_tit, tag_tab_titolo[1]);
+					sessionStorage.javscr_mod_lib_titolo = 0;
+				}
+			);
+		} else {
+			$(tag_tab_titolo[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_titolo[3]).hide(1);
+		$(tag_tab_titolo[4]).show(1);
+		$(tag_tab_titolo[0]).hide(1);
+		$(tag_tab_titolo[1]).fadeIn(1000);
+		$(tag_tab_titolo[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella titolo originale
+//
+$(document).ready(function(){
+	$(tag_tab_tit_orig[0]).click(function() {
+		if (sessionStorage.javscr_tit_orig == 2) {
+			sessionStorage.javscr_tit_orig = 0;
+			
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+			
+			$(tag_tab_tit_orig[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_tit_orig[2]).val(), id_rece: "149", campo_modifica: tag_tab_tit_orig[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_tit_orig = parseInt(sessionStorage.javscr_mod_lib_titolo_originale);
+					assegna_testo(codice_mod_campo_tit_orig, tag_tab_tit_orig[1]);
+					sessionStorage.javscr_mod_lib_titolo_originale = 0;
+				}
+			);
+		} else {
+			$(tag_tab_tit_orig[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_tit_orig[3]).hide(1);
+		$(tag_tab_tit_orig[4]).show(1);
+		$(tag_tab_tit_orig[0]).hide(1);
+		$(tag_tab_tit_orig[1]).fadeIn(1000);
+		$(tag_tab_tit_orig[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella titoli alternativi
+//
+$(document).ready(function(){
+	$(tag_tab_tit_alt[0]).click(function() {
+		if (sessionStorage.javscr_tit_alt == 2) {
+			sessionStorage.javscr_tit_alt = 0;
+			
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+			
+			$(tag_tab_tit_alt[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_tit_alt[2]).val(), id_rece: "149", campo_modifica: tag_tab_tit_alt[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_tit_alt = parseInt(sessionStorage.javscr_mod_lib_titoli_alternativi);
+					assegna_testo(codice_mod_campo_tit_alt, tag_tab_tit_alt[1]);
+					sessionStorage.javscr_mod_lib_titoli_alternativi = 0;
+				}
+			);
+		} else {
+			$(tag_tab_tit_alt[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_tit_alt[3]).hide(1);
+		$(tag_tab_tit_alt[4]).show(1);
+		$(tag_tab_tit_alt[0]).hide(1);
+		$(tag_tab_tit_alt[1]).fadeIn(1000);
+		$(tag_tab_tit_alt[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella titoli originali alternativi
+//
+$(document).ready(function(){
+	$(tag_tab_tit_orig_alt[0]).click(function() {
+		if (sessionStorage.javscr_tit_orig_alt == 2) {
+			sessionStorage.javscr_tit_orig_alt = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_tit_orig_alt[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_tit_orig_alt[2]).val(), id_rece: "149", campo_modifica: tag_tab_tit_orig_alt[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_tit_orig_alt = parseInt(sessionStorage.javscr_mod_lib_tit_originali_alt);
+					assegna_testo(codice_mod_campo_tit_orig_alt, tag_tab_tit_orig_alt[1]);
+					sessionStorage.javscr_mod_lib_tit_originali_alt = 0;
+				}
+			);
+		} else {
+			$(tag_tab_tit_orig_alt[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_tit_orig_alt[3]).hide(1);
+		$(tag_tab_tit_orig_alt[4]).show(1);
+		$(tag_tab_tit_orig_alt[0]).hide(1);
+		$(tag_tab_tit_orig_alt[1]).fadeIn(1000);
+		$(tag_tab_tit_orig_alt[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella collana
+//
+$(document).ready(function(){
+	$(tag_tab_collana[0]).click(function() {
+		if (sessionStorage.javscr_collana == 2) {
+			sessionStorage.javscr_collana = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_collana[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_collana[2]).val(), id_rece: "149", campo_modifica: tag_tab_collana[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_collana = parseInt(sessionStorage.javscr_mod_lib_collana);
+					assegna_testo(codice_mod_campo_collana, tag_tab_collana[1]);
+					sessionStorage.javscr_mod_lib_collana = 0;
+				}
+			);
+		} else {
+			$(tag_tab_collana[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_collana[3]).hide(1);
+		$(tag_tab_collana[4]).show(1);
+		$(tag_tab_collana[0]).hide(1);
+		$(tag_tab_collana[1]).fadeIn(1000);
+		$(tag_tab_collana[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella lib_id_lingua
+//
+$(document).ready(function(){
+	$(tag_tab_lib_id_lingua[0]).click(function() {
+		if (sessionStorage.javscr_lib_id_lingua == 2) {
+			sessionStorage.javscr_lib_id_lingua = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_lib_id_lingua[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_lib_id_lingua[2]).val(), id_rece: "149", campo_modifica: tag_tab_lib_id_lingua[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_id_lingua = parseInt(sessionStorage.javscr_mod_lib_id_lingua);
+					assegna_testo(codice_mod_campo_lib_id_lingua, tag_tab_lib_id_lingua[1]);
+					sessionStorage.javscr_mod_lib_id_lingua = 0;
+				}
+			);
+		} else {
+			$(tag_tab_lib_id_lingua[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_lib_id_lingua[3]).hide(1);
+		$(tag_tab_lib_id_lingua[4]).show(1);
+		$(tag_tab_lib_id_lingua[0]).hide(1);
+		$(tag_tab_lib_id_lingua[1]).fadeIn(1000);
+		$(tag_tab_lib_id_lingua[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella lib_id_lingua_orig
+//
+$(document).ready(function(){
+	$(tag_tab_lib_id_lingua_orig[0]).click(function() {
+		if (sessionStorage.javscr_lib_id_lingua_orig == 2) {
+			sessionStorage.javscr_lib_id_lingua_orig = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_lib_id_lingua_orig[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_lib_id_lingua_orig[2]).val(), id_rece: "149", campo_modifica: tag_tab_lib_id_lingua_orig[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_id_lingua_orig = parseInt(sessionStorage.javscr_mod_lib_id_lingua_orig);
+					assegna_testo(codice_mod_campo_lib_id_lingua_orig, tag_tab_lib_id_lingua_orig[1]);
+					sessionStorage.javscr_mod_lib_id_lingua_orig = 0;
+				}
+			);
+		} else {
+			$(tag_tab_lib_id_lingua_orig[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_lib_id_lingua_orig[3]).hide(1);
+		$(tag_tab_lib_id_lingua_orig[4]).show(1);
+		$(tag_tab_lib_id_lingua_orig[0]).hide(1);
+		$(tag_tab_lib_id_lingua_orig[1]).fadeIn(1000);
+		$(tag_tab_lib_id_lingua_orig[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella anno
+//
+$(document).ready(function(){
+	$(tag_tab_anno[0]).click(function() {
+		if (sessionStorage.javscr_anno == 2) {
+			sessionStorage.javscr_anno = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_anno[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_anno[2]).val(), id_rece: "149", campo_modifica: tag_tab_anno[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_anno = parseInt(sessionStorage.javscr_mod_lib_anno);
+					assegna_testo(codice_mod_campo_anno, tag_tab_anno[1]);
+					sessionStorage.javscr_mod_lib_anno = 0;
+				}
+			);
+		} else {
+			$(tag_tab_anno[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_anno[3]).hide(1);
+		$(tag_tab_anno[4]).show(1);
+		$(tag_tab_anno[0]).hide(1);
+		$(tag_tab_anno[1]).fadeIn(1000);
+		$(tag_tab_anno[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella tag_tab_lib_anno_it
+//
+$(document).ready(function(){
+	$(tag_tab_lib_anno_it[0]).click(function() {
+		if (sessionStorage.javscr_lib_anno_it == 2) {
+			sessionStorage.javscr_lib_anno_it = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_lib_anno_it[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_lib_anno_it[2]).val(), id_rece: "149", campo_modifica: tag_tab_lib_anno_it[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_anno_it = parseInt(sessionStorage.javscr_mod_lib_anno_it);
+					assegna_testo(codice_mod_campo_lib_anno_it, tag_tab_lib_anno_it[1]);
+					sessionStorage.javscr_mod_lib_anno_it = 0;
+				}
+			);
+		} else {
+			$(tag_tab_lib_anno_it[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_lib_anno_it[3]).hide(1);
+		$(tag_tab_lib_anno_it[4]).show(1);
+		$(tag_tab_lib_anno_it[0]).hide(1);
+		$(tag_tab_lib_anno_it[1]).fadeIn(1000);
+		$(tag_tab_lib_anno_it[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella pagine
+//
+$(document).ready(function(){
+	$(tag_tab_pagine[0]).click(function() {
+		if (sessionStorage.javscr_pagine == 2) {
+			sessionStorage.javscr_pagine = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_pagine[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_pagine[2]).val(), id_rece: "149", campo_modifica: tag_tab_pagine[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_pagine = parseInt(sessionStorage.javscr_mod_lib_pagine);
+					assegna_testo(codice_mod_campo_pagine, tag_tab_pagine[1]);
+					sessionStorage.javscr_mod_lib_pagine = 0;
+				}
+			);
+		} else {
+			$(tag_tab_pagine[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_pagine[3]).hide(1);
+		$(tag_tab_pagine[4]).show(1);
+		$(tag_tab_pagine[0]).hide(1);
+		$(tag_tab_pagine[1]).fadeIn(1000);
+		$(tag_tab_pagine[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella DRM
+//
+$(document).ready(function(){
+	$(tag_tab_lib_drm[0]).click(function() {
+		if (sessionStorage.javscr_lib_drm == 2) {
+			sessionStorage.javscr_lib_drm = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_lib_drm[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_lib_drm[2]).val(), id_rece: "149", campo_modifica: tag_tab_lib_drm[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_drm = parseInt(sessionStorage.javscr_mod_lib_drm);
+					assegna_testo(codice_mod_campo_lib_drm, tag_tab_lib_drm[1]);
+					sessionStorage.javscr_mod_lib_drm = 0;
+				}
+			);
+		} else {
+			$(tag_tab_lib_drm[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_lib_drm[3]).hide(1);
+		$(tag_tab_lib_drm[4]).show(1);
+		$(tag_tab_lib_drm[0]).hide(1);
+		$(tag_tab_lib_drm[1]).fadeIn(1000);
+		$(tag_tab_lib_drm[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella argomento
+//
+$(document).ready(function(){
+	$(tag_tab_arg[0]).click(function() {
+		if (sessionStorage.javscr_arg == 2) {
+			sessionStorage.javscr_arg = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_arg[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_arg[2]).val(), id_rece: "149", campo_modifica: tag_tab_arg[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_arg = parseInt(sessionStorage.javscr_mod_lib_argomento);
+					assegna_testo(codice_mod_campo_arg, tag_tab_arg[1]);
+					sessionStorage.javscr_mod_lib_argomento = 0;
+				}
+			);
+		} else {
+			$(tag_tab_arg[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_arg[3]).hide(1);
+		$(tag_tab_arg[4]).show(1);
+		$(tag_tab_arg[0]).hide(1);
+		$(tag_tab_arg[1]).fadeIn(1000);
+		$(tag_tab_arg[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella traduttore
+//
+$(document).ready(function(){
+	$(tag_tab_tradut[0]).click(function() {
+		if (sessionStorage.javscr_tradut == 2) {
+			sessionStorage.javscr_tradut = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_tradut[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_tradut[2]).val(), id_rece: "149", campo_modifica: tag_tab_tradut[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_tradut = parseInt(sessionStorage.javscr_mod_lib_traduttore);
+					assegna_testo(codice_mod_campo_tradut, tag_tab_tradut[1]);
+					sessionStorage.javscr_mod_lib_traduttore = 0;
+				}
+			);
+		} else {
+			$(tag_tab_tradut[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_tradut[3]).hide(1);
+		$(tag_tab_tradut[4]).show(1);
+		$(tag_tab_tradut[0]).hide(1);
+		$(tag_tab_tradut[1]).fadeIn(1000);
+		$(tag_tab_tradut[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella curatore
+//
+$(document).ready(function(){
+	$(tag_tab_curat[0]).click(function() {
+		if (sessionStorage.javscr_curat == 2) {
+			sessionStorage.javscr_curat = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_curat[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_curat[2]).val(), id_rece: "149", campo_modifica: tag_tab_curat[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_curat = parseInt(sessionStorage.javscr_mod_lib_curatore);
+					assegna_testo(codice_mod_campo_curat, tag_tab_curat[1]);
+					sessionStorage.javscr_mod_lib_curatore = 0;
+				}
+			);
+		} else {
+			$(tag_tab_curat[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_curat[3]).hide(1);
+		$(tag_tab_curat[4]).show(1);
+		$(tag_tab_curat[0]).hide(1);
+		$(tag_tab_curat[1]).fadeIn(1000);
+		$(tag_tab_curat[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella prezzo
+//
+$(document).ready(function(){
+	$(tag_tab_prezzo[0]).click(function() {
+		if (sessionStorage.javscr_prezzo == 2) {
+			sessionStorage.javscr_prezzo = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_prezzo[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_prezzo[2]).val(), id_rece: "149", campo_modifica: tag_tab_prezzo[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_prezzo = parseInt(sessionStorage.javscr_mod_lib_prezzo);
+					assegna_testo(codice_mod_campo_prezzo, tag_tab_prezzo[1]);
+					sessionStorage.javscr_mod_lib_prezzo = 0;
+				}
+			);
+		} else {
+			$(tag_tab_prezzo[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_prezzo[3]).hide(1);
+		$(tag_tab_prezzo[4]).show(1);
+		$(tag_tab_prezzo[0]).hide(1);
+		$(tag_tab_prezzo[1]).fadeIn(1000);
+		$(tag_tab_prezzo[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida campo tabella isbn
+//
+$(document).ready(function(){
+	$(tag_tab_isbn[0]).click(function() {
+		if (sessionStorage.javscr_isbn == 2) {
+			sessionStorage.javscr_isbn = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_tab_isbn[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_tab_isbn[2]).val(), id_rece: "149", campo_modifica: tag_tab_isbn[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_isbn = parseInt(sessionStorage.javscr_mod_lib_isbn);
+					assegna_testo(codice_mod_campo_isbn, tag_tab_isbn[1]);
+					sessionStorage.javscr_mod_lib_isbn = 0;
+				}
+			);
+		} else {
+			$(tag_tab_isbn[1]).html(risultato_mod_rece20);
+		}
+		
+		$(tag_tab_isbn[3]).hide(1);
+		$(tag_tab_isbn[4]).show(1);
+		$(tag_tab_isbn[0]).hide(1);
+		$(tag_tab_isbn[1]).fadeIn(1000);
+		$(tag_tab_isbn[1]).fadeOut(4000);
+	});
+});
+
+
+//
+//Blocco convalida textarea consigliato_a
+//
+$(document).ready(function(){
+	$(tag_cons[0]).click(function() {
+		if (sessionStorage.javscr_lib_consigliato_a == 2) {
+			sessionStorage.javscr_lib_consigliato_a = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_cons[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_cons[2]).val(), id_rece: "149", campo_modifica: tag_cons[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_consigliato_a = parseInt(sessionStorage.javscr_mod_lib_consigliato_a);
+					assegna_testo(codice_mod_campo_lib_consigliato_a, tag_cons[1]);
+					sessionStorage.javscr_mod_lib_consigliato_a = 0;
+				}
+			);
+		} else {
+			$(tag_cons[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_cons[3]).hide(1);
+		$(tag_cons[4]).show(1);
+		$(tag_cons[0]).hide(1);
+		$(tag_cons[7]).fadeIn(3000);
+		$(tag_cons[1]).fadeIn(1000);
+		$(tag_cons[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida textarea trama
+//
+$(document).ready(function(){
+	$(tag_trama[0]).click(function() {
+		if (sessionStorage.javscr_lib_trama == 2) {
+			sessionStorage.javscr_lib_trama = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_trama[8]).load("ins_ajax/ajax_agg_rece_rece.php", {recenew: $(tag_trama[2]).val(), id_rece: "149", campo_modifica: tag_trama[6], id_conv: id_domanda_scelta, risp: risposta}, function()
+				{
+					var codice_mod_campo_lib_trama = parseInt(sessionStorage.javscr_mod_lib_trama);
+					assegna_testo(codice_mod_campo_lib_trama, tag_trama[1]);
+					sessionStorage.javscr_mod_lib_trama = 0;
+				}
+			);
+		} else {
+			$(tag_trama[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_trama[3]).hide(1);
+		$(tag_trama[4]).show(1);
+		$(tag_trama[0]).hide(1);
+		$(tag_trama[7]).fadeIn(3000);
+		$(tag_trama[1]).fadeIn(1000);
+		$(tag_trama[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida textarea tag_inc_incipit
+//Questa funzione è leggermente diversa perché chiama un aiax diverso (ajax_agg_rece_incipit.php) e invia un id diverso (lib_id_incipit)
+//
+$(document).ready(function(){
+	$(tag_inc_incipit[0]).click(function() {
+		if (sessionStorage.javscr_inc_incipit == 2) {
+			sessionStorage.javscr_inc_incipit = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_inc_incipit[8]).load("ins_ajax/ajax_agg_rece_incipit.php", {recenew: $(tag_inc_incipit[2]).val(), id_rece: "44", campo_modifica: tag_inc_incipit[6], id_conv: id_domanda_scelta, risp: risposta, libro_id_per_incipit: "149"}, function()
+				{
+					var codice_mod_campo_inc_incipit = parseInt(sessionStorage.javscr_mod_inc_incipit);
+					assegna_testo(codice_mod_campo_inc_incipit, tag_inc_incipit[1]);
+					sessionStorage.javscr_mod_inc_incipit = 0;
+				}
+			);
+		} else {
+			$(tag_inc_incipit[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_inc_incipit[3]).hide(1);
+		$(tag_inc_incipit[4]).show(1);
+		$(tag_inc_incipit[0]).hide(1);
+		$(tag_inc_incipit[1]).fadeIn(1000);
+		$(tag_inc_incipit[1]).fadeOut(4000);
+	});
+});
+
+//
+//Blocco convalida textarea tag_expl_explicit
+//Questa funzione è leggermente diversa perché chiama un aiax diverso (ajax_agg_rece_explicit.php) e invia un id diverso (lib_id_incipit)
+//
+$(document).ready(function(){
+	$(tag_expl_explicit[0]).click(function() {
+		if (sessionStorage.javscr_expl_explicit == 2) {
+			sessionStorage.javscr_expl_explicit = 0;
+
+			//domanda di convalida
+			id_domanda_scelta = Math.floor(Math.random() * 20 + 1);
+			testo_domanda = arraydomande[id_domanda_scelta];
+			var risposta = prompt(testo_domanda);
+
+			$(tag_expl_explicit[8]).load("ins_ajax/ajax_agg_rece_explicit.php", {recenew: $(tag_expl_explicit[2]).val(), id_rece: "191", campo_modifica: tag_expl_explicit[6], id_conv: id_domanda_scelta, risp: risposta, libro_id_per_incipit: "149"}, function()
+				{
+					var codice_mod_campo_expl_explicit = parseInt(sessionStorage.javscr_mod_expl_explicit);
+					assegna_testo(codice_mod_campo_expl_explicit, tag_expl_explicit[1]);
+					sessionStorage.javscr_mod_expl_explicit = 0;
+				}
+			);
+		} else {
+			$(tag_expl_explicit[1]).html(risultato_mod_rece20);				
+		}
+		
+		$(tag_expl_explicit[3]).hide(1);
+		$(tag_expl_explicit[4]).show(1);
+		$(tag_expl_explicit[0]).hide(1);
+		$(tag_expl_explicit[1]).fadeIn(1000);
+		$(tag_expl_explicit[1]).fadeOut(4000);
+	});
+});
+
+</script>
+
+<title>
+ALK Libri - Recensione di "Storia di una capinera" di Giovanni Verga</title>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://alklibri.com/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "1"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</head>
+<body>
+<!-- Inizio intestazione -->
+<div id="header"><div id="header-content">
+	<h1 id="logo-text"></h1>
+	<a href="./index.php" title="ALK Libri: la risorsa italiana per le vostre letture. Da 14 anni!"><img style="width: 466px; height: 59px;" alt="ALK Libri: la risorsa italiana per le vostre letture. Da 14 anni!" src="./images/logo.gif"></a>
+	<h2 id="slogan">La risorsa online per le vostre letture. Da 14 anni</h2>
+	<p></p><p>
+<a href="http://alklibri.com/rece.php?id=149" title="ALK Libri in italiano - lingua principale" hreflang="it">Italiano</a> | <a href="http://en.alklibri.com/rece.php?id=149" title="ALK Libri in english" hreflang="en">English</a> | <a href="http://pt.alklibri.com/rece.php?id=149" title="ALK Libri em portugu&ecirc;s" hreflang="pt">Portugu&ecirc;s</a></p>  <div id="header-links">
+	<p><a href="index.php" title="Vai alla Homepage">Home</a> | 
+		<a href="staff.php" title="Mostra chi realizza ALK Libri">Staff del sito</a> | 
+		<a href="./staff_membro.php?id=1" title="Contattaci per richieste e suggerimenti">Contatti</a>
+	</p>
+<form method="post" action="ricerca_avanzata.php" />
+		<input type="text" id="stringa_testo" name="stringa_testo" size="14" maxlength="256" /><input class="button" type="submit" value="Cerca" /><br>
+		<input type="hidden" id="nascost" name="nascost" value="nasc12po">
+		<small><input type="radio" id="dove" name="dove" value="1"> Libro | <input type="radio" id="dove" name="dove" value="2"> Scrittore | <input type="radio" id="dove" name="dove" value="3"> Citazione</small><br>
+		</form>	</div>
+</div></div>
+<!-- Barra di navigazione alta -->
+<div id="nav-wrap"><div id="nav">
+	<ul>
+		<li id="current"><a href="./index.php" title="Torna alla pagina principale">Home</a></li>
+		<li><a href="./blog/" title="Blog ALK Libri">Blog</a></li>
+		<li><a href="./forum_idx.php" title="Visita il nostro Forum">Forum</a></li>
+		<li><a href="./files_index.php" title="Visita la sezione files">Files</a></li>
+		<li><a href="./art.php?id=45" title="Guida ai files audio del nostro sito">Supporto</a></li>
+		<li><a href="./old_news_annate.php" title="Consulta gli aggiornamenti precedenti">Vecchie news</a></li>
+		<li><a href="./art.php?id=62" title="La mappa del sito, per orientarsi">Mappa del sito</a></li>
+	</ul>
+</div></div>
+<div id="content-wrap">
+	</div>
+	<!-- content-wrap starts here -->
+	<div id="content-wrap"><div id="content">
+<div id="sidebar" >
+	<div class="sidebox">
+<form name="login" action="http://alklibri.com/rece.php?id=149" method="POST">
+		<a title="Accedi al sito con i tuoi dati per avere accesso ad aree rivervate agli utenti iscritti">Accedi alla tua area personale</a><br>
+		<a title="Il nome utente deve avere minimo 4 caratteri. Caratteri vietati: \ ' &quot;">Utente</a>:<br><input type="text" name="nomeutente" size="15" maxlength="32"/><br><a title="La password deve avere minimo 8 caratteri.">Password</a>:<br><input type="password" name="chiave" size="16" maxlength="16"/><br>
+		<input type="submit" value="Entra o registrati" />
+	</form><br>	</div>
+		
+<div class="sidebox">
+	<h1>Sezioni</h1>
+	<div id="dhtmlgoodies_menu">
+		<ul class="sidemenu">      
+			<li><a href="./rece_index.php?biblio=1" title="La sezione dei libri">Libri</a>
+				<ul>
+					<li><a href="./rece_index.php?biblio=1" title="Le recensioni dei libri archiviate">Recensioni libri</a></li>
+					<li><a href="./rece_index.php?biblio=7" title="Consulta le iper-recensioni">Iper-recensioni</a></li>
+					<li><a href="./rece_index.php?biblio=2" title="Qui potete esplorare tutti i libri catalogati">Biblioteca virtuale</a></li>
+					<li><a href="./rece_index.php?biblio=3" title="Contiene un elenco di libri imperdibili">I libri imperdibili</a></li>
+					<li><a href="./rece_index.php?biblio=6" title="Contiene le prime frasi di molte opere letterarie">Incipit dei libri</a></li>
+					<li><a href="./rece_index.php?biblio=4" title="Potete ascoltare la prima pagina di molti libri">Prime pagine vocali</a></li>
+					<li><a href="./rece_index.php?biblio=5" title="Potete ascoltare le recensioni vocali dei libri">Recensioni vocali</a></li>
+					<li><a href="./ebook_index.php" title="Potete leggere numerosi ebook">eBook</a></li>
+				</ul>
+			</li>
+			<li><a href="./audiolibri_index.php?scelta_audiolibro=1" title="Potete scaricare e ascoltare molti audiolibri">AudioLibri</a>
+				<ul>
+					<li><a href="./audiolibri_index.php?scelta_audiolibro=1" title="Mostra tutti gli audiolibri disponibili">Tutti gli audiolibri</a></li>
+					<li><a href="./audiolibri_index.php?scelta_audiolibro=2" title="Mostra solo gli audiolibri integrali">Solo audiolibri integrali</a></li>
+				</ul>
+			</li>
+			<li><a href="./bio_index.php?scelta_bio=1" title="La sezione degli scrittori">Scrittori</a>
+				<ul>
+					<li><a href="./bio_index.php?scelta_bio=1" title="Contiene molte biografie di scrittori">Biografie scrittori</a></li>
+					<li><a href="./bio_index.php?scelta_bio=3" title="Potete ascoltare le biografie vocali degli scrittori">Biografie vocali di scrittori</a></li>
+					<li><a href="./bio_index.php?scelta_bio=2" title="Mostra tutti gli scrittori indicizzati">Tutti gli scrittori</a></li>
+				</ul>
+			</li>
+			<li><a href="./cit_index.php?scelta_cit=1" title="Contiene migliaia di citazioni">Citazioni</a>
+				<ul>
+					<li><a href="./cit_index.php?scelta_cit=1" title="Contiene migliaia di citazioni">Citazioni ed estratti</a></li>
+					<li><a href="./cit_index.php?scelta_cit=2" title="Potete ascoltare le citazioni vocali">Citazioni vocali</a></li>
+					<li><a href="./rece_index.php?biblio=4" title="Potete ascoltare la prima pagina di molti libri">Prime pagine vocali</a></li>  
+				</ul>
+			</li>
+			<li><a href="./let_index.php" title="Articoli sulle correnti letterarie">Letteratura</a></li>
+			<li><a href="./efn_index.php" title="L'Enciclopedia della Finzione Narrativa informa sui personaggi, luoghi e concetti dei libri">EFN</a></li>
+			<li><a href="./rac_index.php?scelta_rac=1" title="Contiene numerosi racconti e poesie">Racconti</a>
+				<ul>
+					<li><a href="./rac_index.php?scelta_rac=1" title="Mostra tutti i testi archiviati">Tutti i testi</a></li>
+					<li><a href="./rac_index.php?scelta_rac=2" title="Mostra i racconti">Racconti</a></li>
+					<li><a href="./rac_index.php?scelta_rac=3" title="Mostra le poesie">Poesie</a></li>
+					<li><a href="./rac_index.php?scelta_rac=4" title="Ascolta tutti i brani vocali">Tutti i brani vocali</a></li>
+					<li><a href="./rac_index.php?scelta_rac=5" title="Ascolta i racconti vocali">Racconti vocali</a></li>
+					<li><a href="./rac_index.php?scelta_rac=6" title="Ascolta le poesie vocali">Poesie vocali</a></li>
+				</ul>
+			</li>
+			<li><a href="./art_index.php?scelta_art=1" title="Sezione articoli">Articoli</a>
+				<ul>
+					<li><a href="./art_index.php?scelta_art=1" title="Mostra gli articoli di approfondimento">Articoli di approfondimento</a></li>
+					<li><a href="./art_index.php?scelta_art=2" title="Ascolta gli articoli vocali">Articoli vocali</a></li>
+					<li><a href="./art_index.php?scelta_art=3" title="Mostra gli articoli di umorismo">Umorismo</a></li>
+					<li><a href="./art_index.php?scelta_art=4" title="Mostra i comunicati stampa">Comunicati stampa</a></li>
+					<li><a href="./edi_index.php" title="Mostra gli editori indicizzati">Editori</a></li>
+					<li><a href="./art.php?id=25" title="Esplorare in 3D la letteratura tramite un videogioco">Letteratura VR</a></li>
+					<li><a href="./art_index.php?scelta_art=5" title="Mostra tutti gli articoli">Tutti gli articoli</a></li>
+				</ul>
+			</li>
+			<li><a href="./files_index.php" title="Entra nella sezione files">Files</a>
+				<ul>
+					<li><a href="./files_index.php" title="Mostra tutti i files">Tutti i files</a></li>
+					<li><a href="./audiolibri_index.php" title="Vai agli audiolibri">Audiolibri</a></li>
+					<li><a href="./rece_index.php?biblio=5" title="Vai alle recensioni vocali">Recensioni vocali</a></li>
+					<li><a href="./rece_index.php?biblio=4" title="Vai alle prime pagine vocali">Prime pagine vocali</a></li>
+					<li><a href="./bio_index.php?scelta_bio=3" title="Vai alle biografie vocali">Biografie vocali</a></li>
+					<li><a href="./cit_index.php?scelta_cit=2" title="Vai alle citazioni vocali">Citazioni vocali</a></li>
+					<li><a href="./rac_index.php?scelta_rac=4" title="Vai ai racconti e poesie vocali">Racconti e poesie vocali</a></li>
+					<li><a href="./let_index.php" title="Vai alle correnti letterarie vocali">Correnti letterarie vocali</a></li>
+					<li><a href="./art_index.php?scelta_art=2" title="Vai agli articoli vocali">Articoli vocali</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="TDGSHXSS3G28J">
+		<input type="image" src="https://www.paypal.com/it_IT/IT/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - Il sistema di pagamento online pi� facile e sicuro!">
+		<img alt="" border="0" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1">
+		</form></center>
+		<br>
+		<div align="center">Donazioni BitCoin:</div>
+		<div align="center"><a href="bitcoin:132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg?label=Donazioni%20ALK%20libri" title="Aiuta ALK Libri donando Bitcoin">132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg</a></div><br>
+		<div align="center"><a href="bitcoin:132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg?label=Donazioni%20ALK%20libri"><img alt="Aiuta ALK Libri donando Bitcoin" title="Aiuta ALK Libri donando Bitcoin" src="./images/Bitcoin_QR_code_Donazioni_ALK_libri.png" width="82" height="82" /></a></div>
+		
+<div class="sidebox">
+	<h1>Divertimento</h1>
+	<div id="dhtmlgoodies_menu">
+		<ul class="sidemenu">
+			<li><a href="./art_index.php?scelta_art=3" title="Divertitevi in questa sezione">Umorismo</a></li>
+			<li><a href="./foto_index.php" title="Fotografie dal mondo">Fotografie</a></li>
+			<li><a href="./film_index.php?scelta_film=1" title="Mostra le recensioni di film">Film</a></li>
+			<li><a href="./vg_index.php" title="Mostra le recensioni di videogiochi">Videogiochi</a></li>
+		</ul>
+	</div>
+</div>
+
+
+<div class="sidebox">
+	<h1>Noi e voi</h1>
+	 <div id="dhtmlgoodies_menu">
+		<ul class="sidemenu">
+		<li><a href="http://alklibri.com/blog/" target="_blank" title="Tenetevi aggiornati con il Blog di ALK Libri">Il Blog</a></li>
+		<li><a href="http://www.twitter.com/ALKLibri" target="_blank" title="Seguiteci su Twitter">Su Twitter</a></li>
+	    <li><a href="./art.php?id=44" title="Collabora con noi!">Collabora</a></li>
+	    <li><a href="./contatti.php" title="Contattaci per richieste e suggerimenti">Contattaci</a></li>
+	    <li><a href="./links_index.php" title="Raccolta di link a risorse web">Links</a></li>
+	    <li><a href="./old_news_annate.php" title="Mostra le vecchie news">News</a></li>
+	    <li><a href="./staff.php" title="Mostra chi realizza ALK Libri">Staff</a></li>
+	    <li><a href="./art.php?id=62" title="La mappa del sito, per orientarsi">Mappa sito</a></li>
+	    <li><a target="_blank" href="./forum_idx.php" title="Visita il nostro Forum">Forum</a></li>
+		</ul>
+	 </div>
+</div>
+
+<div class="sidebox">
+	<h1>Strumenti promozionali</h1>
+    <ul class="sidemenu">
+		<li><a href="./art_index.php?scelta_art=4" title="Qui trovate i comunicati stampa archiviati">Archivio comunicati stampa</a></li>
+	</ul>
+</div>
+
+
+</div>
+<div id="main">
+  <div class='box'>
+	<a name='TemplateInfo'></a>
+<p><b><a href='./index.php'>Home</a> > <a href='./rece_index.php'>Indice Recensioni</a> > Recensione: <i>Storia di una capinera</i></b> di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a></p>
+		<table>
+			<tr>
+				<th class='first' colspan='3'><center>"<strong>Storia di una capinera" di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a></strong></center></th>
+			</tr>
+			<tr class='row-b'>
+				<td class='first' colspan='2' align='center'></td>
+	<td rowspan='30'></td>
+	</tr>
+<tr class='row-a'><td class='first'>Titolo:</td><td><div id="titolo" style="display:block"><div id="testo_titolo">Storia di una capinera</div><br><small><small><div align="right" onClick="document.getElementById('modi_titolo').style.display='block'; document.getElementById('titolo').style.display='none'; document.getElementById('salva_titolo').style.display='block'; "><u>Modifica</u></div></small></small><div id="titoloagg" style="display:none"></div></div><form class="form_tab" name="mo_titolo" id="modi_titolo" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_titolo" name="campo_titolo" value="Storia di una capinera" size="32" maxlength="256" onchange="sessionStorage.javscr_t = 2; "></label>
+			</form><button id="salva_titolo" style="display:none">Salva</button></td></tr>
+<tr class='row-b'><td class='first'>Titolo originale:</td><td><div id="titolo_orig" style="display:block"><div id="testo_titolo_orig">Storia di una capinera</div><br><small><small><div align="right" onClick="document.getElementById('modi_titolo_orig').style.display='block'; document.getElementById('titolo_orig').style.display='none'; document.getElementById('salva_titolo_orig').style.display='block'; "><u>Modifica</u></div></small></small><div id="titolo_orig_agg" style="display:none"></div></div><form class="form_tab" name="mo_titolo_orig" id="modi_titolo_orig" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_titolo_orig" name="campo_titolo_orig" value="Storia di una capinera" size="32" maxlength="256" onchange="sessionStorage.javscr_tit_orig = 2; "></label>
+			</form><button id="salva_titolo_orig" style="display:none">Salva</button></td></tr>
+<tr class='row-a'><td class='first'>Titoli alternativi:</td><td><div id="titoli_alt" style="display:block"><div id="testo_titolo_alt"></div><br><div align="right" onClick="document.getElementById('modi_titoli_alt').style.display='block'; document.getElementById('titoli_alt').style.display='none'; document.getElementById('salva_tit_alt').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="tit_alt_agg" style="display:none"></div></div><form class="form_tab" name="mo_titoli_alt" id="modi_titoli_alt" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_titoli_alt" name="campo_titoli_alt" value="" size="32" maxlength="512" onchange="sessionStorage.javscr_tit_alt = 2; "></label>
+			</form><button id="salva_tit_alt" style="display:none">Salva</button></td></tr>
+<tr class='row-b'><td class='first'>Titoli originali alternativi:</td><td><div id="titoli_orig_alt" style="display:block"><div id="testo_tit_orig_alt"></div><br><div align="right" onClick="document.getElementById('modi_titoli_orig_alt').style.display='block'; document.getElementById('titoli_orig_alt').style.display='none'; document.getElementById('salva_tit_orig_alt').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="tit_orig_alt_agg" style="display:none"></div></div><form class="form_tab" name="mo_titoli_orig_alt" id="modi_titoli_orig_alt" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_titoli_orig_alt" name="campo_titoli_orig_alt" value="" size="32" maxlength="512" onchange="sessionStorage.javscr_tit_orig_alt = 2; "></label>
+			</form><button id="salva_tit_orig_alt" style="display:none">Salva</button></td></tr>
+<tr class='row-a'>
+					<td class='first'>Autore:</td>
+					<td><a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a></td>
+				</tr>
+<tr class='row-b'>
+					<td class='first'>Editore:</td>
+					<td><a href="./edi.php?id=25" title="Pagina della casa editrice">Newton Compton</a></td>
+				</tr>
+<tr class='row-b'><td class='first'>Collana editoriale:</td><td><div id="collana" style="display:block"><div id="testo_collana">100 pagine 1000 lire</div><br><small><small><div align="right" onClick="document.getElementById('modi_collana').style.display='block'; document.getElementById('collana').style.display='none'; document.getElementById('salva_collana').style.display='block'; "><u>Modifica</u></div></small></small><div id="collana_agg" style="display:none"></div></div><form class="form_tab" name="mo_collana" id="modi_collana" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_collana" name="campo_collana" value="100 pagine 1000 lire" size="48" maxlength="512" onchange="sessionStorage.javscr_collana = 2; "></label>
+			</form><button id="salva_collana" style="display:none">Salva</button></td></tr>
+<tr class='row-b'>
+					<td class='first'>Tipologia del supporto:</td>
+					<td>Cartaceo</td>
+				</tr>
+<tr class='row-a'>
+					<td class='first'>DRM:</td>
+					<td><div id="lib_drm" style="display:block"><div id="testo_lib_drm">Sì</div><br><small><div align="center" onClick="document.getElementById('modi_lib_drm').style.display='block'; document.getElementById('lib_drm').style.display='none'; document.getElementById('salva_lib_drm').style.display='block'; "><u>Modifica drm</u></div></small><div id="lib_drm_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_drm" id="modi_lib_drm" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<select id="cmp_lib_drm" name="campo_lib_drm" onchange="sessionStorage.javscr_lib_drm = 2; ">
+					<option value="Sì">S&igrave;</option>
+					<option value="No">No</option>
+					<option value="Non definito" selected="selected">Non definito</option>
+				</select></label>
+			</form><button id="salva_lib_drm" style="display:none">Salva</button></td>
+				</tr>
+<tr class='row-b'><td class='first'>Anno di pubblicazione:</td><td><div id="anno" style="display:block"><div id="testo_anno">1871</div><br><small><small><div align="right" onClick="document.getElementById('modi_anno').style.display='block'; document.getElementById('anno').style.display='none'; document.getElementById('salva_anno').style.display='block'; "><u>Modifica</u></div></small></small><div id="anno_agg" style="display:none"></div></div><form class="form_tab" name="mo_anno" id="modi_anno" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_anno" name="campo_anno" value="1871" size="32" maxlength="128" onchange="sessionStorage.javscr_anno = 2; "></label>
+			</form><button id="salva_anno" style="display:none">Salva</button></td></tr>
+<tr class='row-a'><td class='first'>Prima edizione italiana:</td><td><div id="lib_anno_it" style="display:block"><div id="testo_lib_anno_it"></div><br><div align="right" onClick="document.getElementById('modi_lib_anno_it').style.display='block'; document.getElementById('lib_anno_it').style.display='none'; document.getElementById('salva_lib_anno_it').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="lib_anno_it_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_anno_it" id="modi_lib_anno_it" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_lib_anno_it" name="campo_lib_anno_it" value="" size="32" maxlength="32" onchange="sessionStorage.javscr_lib_anno_it = 2; "></label>
+			</form><button id="salva_lib_anno_it" style="display:none">Salva</button></td></tr>
+<tr class='row-b'><td class='first'>Pagine:</td><td><div id="pagine" style="display:block"><div id="testo_pagine">93</div><br><small><small><div align="right" onClick="document.getElementById('modi_pagine').style.display='block'; document.getElementById('pagine').style.display='none'; document.getElementById('salva_pagine').style.display='block'; "><u>Modifica</u></div></small></small><div id="pagine_agg" style="display:none"></div></div><form class="form_tab" name="mo_pagine" id="modi_pagine" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_pagine" name="campo_pagine" value="93" size="8" maxlength="128" onchange="sessionStorage.javscr_pagine = 2; "></label>
+			</form><button id="salva_pagine" style="display:none">Salva</button></td></tr>
+<tr class='row-a'>
+					<td class='first'><a name="lingua_opera">Lingua</a>:</td>
+					<td><div id="lib_id_lingua" style="display:block"><div id="testo_lib_id_lingua">Italiano</div><br><small><div align="center" onClick="document.getElementById('modi_lib_id_lingua').style.display='block'; document.getElementById('lib_id_lingua').style.display='none'; document.getElementById('salva_lib_id_lingua').style.display='block'; "><u>Modifica lingua</u></div></small><div id="lib_id_lingua_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_id_lingua" id="modi_lib_id_lingua" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+			<label>
+			<select id="cmp_lib_id_lingua" name="campo_lib_id_lingua" onchange="sessionStorage.javscr_lib_id_lingua = 2; "><option value="1" selected="selected">Italiano</option><option value="2">Portoghese</option><option value="3">Inglese</option><option value="4">Francese</option><option value="5">Tedesco</option><option value="6">Spagnolo</option><option value="7">Russo</option><option value="8">Giapponese</option><option value="9">Cinese</option><option value="10">Arabo</option><option value="11">Latino</option><option value="12">Greco antico</option><option value="13">Danese</option><option value="14">Ebraico moderno</option><option value="15">Olandese</option><option value="16">Norvegese</option><option value="17">Hindi</option><option value="18">Svedese</option><option value="19">Polacco</option><option value="20">Croato</option><option value="21">Armeno</option><option value="22">Turco</option><option value="23">Sanscrito</option><option value="24">Non definita</option><option value="25">Ceco</option><option value="26">Sardo</option></select></label></form><button id="salva_lib_id_lingua" style="display:none">Salva</button></td>
+				</tr>
+<tr class='row-b'>
+					<td class='first'><a name="lingua_originale_opera">Lingua originale dell'opera</a>:</td>
+					<td><div id="lib_id_lingua_orig" style="display:block"><div id="testo_lib_id_lingua_orig">Italiano</div><br><small><div align="center" onClick="document.getElementById('modi_lib_id_lingua_orig').style.display='block'; document.getElementById('lib_id_lingua_orig').style.display='none'; document.getElementById('salva_lib_id_lingua_orig').style.display='block'; "><u>Modifica lingua originale</u></div></small><div id="lib_id_lingua_orig_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_id_lingua_orig" id="modi_lib_id_lingua_orig" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+			<label>
+			<select id="cmp_lib_id_lingua_orig" name="campo_lib_id_lingua_orig" onchange="sessionStorage.javscr_lib_id_lingua_orig = 2; "><option value="1" selected="selected">Italiano</option><option value="2">Portoghese</option><option value="3">Inglese</option><option value="4">Francese</option><option value="5">Tedesco</option><option value="6">Spagnolo</option><option value="7">Russo</option><option value="8">Giapponese</option><option value="9">Cinese</option><option value="10">Arabo</option><option value="11">Latino</option><option value="12">Greco antico</option><option value="13">Danese</option><option value="14">Ebraico moderno</option><option value="15">Olandese</option><option value="16">Norvegese</option><option value="17">Hindi</option><option value="18">Svedese</option><option value="19">Polacco</option><option value="20">Croato</option><option value="21">Armeno</option><option value="22">Turco</option><option value="23">Sanscrito</option><option value="24">Non definita</option><option value="25">Ceco</option><option value="26">Sardo</option></select></label></form><button id="salva_lib_id_lingua_orig" style="display:none">Salva</button></td>
+				</tr>
+<tr class='row-a'>
+					<td class='first'>Genere:</td>
+					<td><a href="./art.php?id=16">Romanzo epistolare</a></td>
+				</tr>
+<tr class='row-b'><td class='first'>Argomento:</td><td><div id="argomento" style="display:block"><div id="testo_argomento">Romanticismo</div><br><small><small><div align="right" onClick="document.getElementById('modi_argomento').style.display='block'; document.getElementById('argomento').style.display='none'; document.getElementById('salva_arg').style.display='block'; "><u>Modifica</u></div></small></small><div id="arg_agg" style="display:none"></div></div><form class="form_tab" name="mo_argomento" id="modi_argomento" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_argomento" name="campo_argomento" value="Romanticismo" size="32" maxlength="256" onchange="sessionStorage.javscr_arg = 2; "></label>
+			</form><button id="salva_arg" style="display:none">Salva</button></td></tr>
+
+
+<tr class='row-a'><td class='first'>Traduttore:</td><td><div id="traduttore" style="display:block"><div id="testo_traduttore"></div><br><div align="right" onClick="document.getElementById('modi_traduttore').style.display='block'; document.getElementById('traduttore').style.display='none'; document.getElementById('salva_tradut').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="tradut_agg" style="display:none"></div></div><form class="form_tab" name="mo_traduttore" id="modi_traduttore" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_traduttore" name="campo_traduttore" value="" size="32" maxlength="256" onchange="sessionStorage.javscr_tradut = 2; "></label>
+			</form><button id="salva_tradut" style="display:none">Salva</button></td></tr>
+<tr class='row-a'><td class='first'>Curatore:</td><td><div id="curatore" style="display:block"><div id="testo_curatore"></div><br><div align="right" onClick="document.getElementById('modi_curatore').style.display='block'; document.getElementById('curatore').style.display='none'; document.getElementById('salva_curat').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="curat_agg" style="display:none"></div></div><form class="form_tab" name="mo_curatore" id="modi_curatore" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_curatore" name="campo_curatore" value="" size="32" maxlength="256" onchange="sessionStorage.javscr_curat = 2; "></label>
+			</form><button id="salva_curat" style="display:none">Salva</button></td></tr>
+<tr class='row-b'><td class='first'>Prezzo <a title="Lira">₤</a>:</td><td><div id="prezzo" style="display:block"><div id="testo_prezzo">1000</div><br><small><small><div align="right" onClick="document.getElementById('modi_prezzo').style.display='block'; document.getElementById('prezzo').style.display='none'; document.getElementById('salva_prezzo').style.display='block'; "><u>Modifica</u></div></small></small><div id="prezzo_agg" style="display:none"></div></div><form class="form_tab" name="mo_prezzo" id="modi_prezzo" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_prezzo" name="campo_prezzo" value="1000" size="16" maxlength="128" onchange="sessionStorage.javscr_prezzo = 2; "></label>
+			</form><button id="salva_prezzo" style="display:none">Salva</button></td></tr>
+<tr class='row-a'><td class='first'>Codice ISBN:</td><td><div id="isbn" style="display:block"><div id="testo_isbn"></div><br><div align="right" onClick="document.getElementById('modi_isbn').style.display='block'; document.getElementById('isbn').style.display='none'; document.getElementById('salva_isbn').style.display='block'; "><img id="imgpiu" title="Informazione mancante. Aggiungila!"></div><div id="isbn_agg" style="display:none"></div></div><form class="form_tab" name="mo_isbn" id="modi_isbn" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<input type="text" id="cmp_isbn" name="campo_isbn" value="" size="16" maxlength="48" onchange="sessionStorage.javscr_isbn = 2; "></label>
+			</form><button id="salva_isbn" style="display:none">Salva</button></td></tr>
+<tr class='row-b'>
+					<td class='first'>Licenza:</td>
+					<td><a title="L&#039;espressione pubblico dominio indica in generale il complesso e la globalità dei beni - ed in particolare delle informazioni - insuscettibili di appropriazione esclusiva da parte di alcun soggetto pubblico o privato, e che sono invece disponibili al libero impossessamento ed uso da parte di chiunque.">Pubblico dominio</a></td>
+				</tr>
+<tr class='row-a'>
+					<td class='first'>Recensione di:</td>
+					<td><a href='./staff_membro.php?id=1' title='Informazioni sul redattore'>Christian Michelini</a></td>
+				</tr>
+
+<tr class='row-b'>
+					<td class='first'>eBook:</td>
+					<td><a href="ebook.php?id=43" title="Leggi l'eBook">Leggi l'eBook</a></td>
+				</tr>
+<tr class='row-a'>
+					<td class='first'>Formati disponibili:</td>
+					<td><a href="./file_ebook.php?id=93"><img style="width:60px; height:25px;" src="./images/PDF.png" title="Il Portable Document Format, comunemente abbreviato PDF, è un formato di file basato su un linguaggio di descrizione di pagina sviluppato da Adobe Systems nel 1993."></a> <a href="./file_ebook.php?id=92"><img style="width:60px; height:25px;" src="./images/EPUB.png" title="ePub, (abbreviazione di electronic publication, &quot;pubblicazione elettronica&quot;, e indicato anche come EPub, epub, o EPUB) è uno standard aperto specifico per la pubblicazione di libri digitali (eBook) e basato su XML."></a> </td>
+				</tr>
+
+<tr class='row-b'><td class='first'>Recensione vocale:</td><td><a href='./file_rece.php?id=362'><img style='border: 0px; width:28px; height:12px;' align='middle' src='./images/mp3.gif' title='Ascolta la recensione vocale'> Storia_di_una_capinera.opus</a>, 67816 bytes<br></td></tr>
+<tr class='row-a'>
+					<td class='first'>Audiolibro:</td>
+					<td><a href='./audiolibro.php?id=56'><img style='border: 0px; width:32px; height:32px;' align='middle' src='./images/audiolibri.gif' title='Ascolta audiolibro!'> Ascolta l'audiolibro</a></td>
+				</tr>
+
+<tr class='row-a'>
+					<td class='first'>:</td>
+					<td><p align="right">Articolo consultato 2013 volte.</p></td>
+				</tr>
+<tr class='row-b'>
+		<td class='first' colspan='2' align='center'><a href="./ebook.php?agg_lib=2&amp;id=43">Aggiungi ebook alla tua biblioteca</a></td>
+		</tr>
+<tr class='row-b'>
+	<td class='first' colspan='2' align='center'></td>
+	</tr>
+</table><table id='box_autore' width='40%' class='float-right' style='display:block'>
+		<tr>
+			<th class='first'><center><b><u><a href="./bio.php?id=40" title="Vai alla biografia">L'autore</a></u></b></center></th>
+		</tr>
+		<tr class='row-a'>
+			<td class='first' align='left'><a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a><b>Giovanni Verga nacque in Italia, a Catania, nel 1840. È morto a Catania, nel 1922. <br><br>In origine, il suo nome era Giovanni Carmelo Verga. <br><br>Si è dedicato principalmente a queste aree: verismo. </b></td>
+		</tr>
+	</table><p><i><strong>Giovanni Verga. Romantico? Sembra impossibile, eppure in questo romanzo epistolare...</strong></i></p><div id="nuova_rece" style="display:block"><div align="right" onClick="document.getElementById('box_autore').style.display='none'; document.getElementById('modi_nuova_rece').style.display='block'; document.getElementById('nuova_rece').style.display='none'; document.getElementById('salva_nuova_rece').style.display='block';"><u><small>Nuova recensione</small></u></div><div id="nuova_rece_agg" style="display:none"></div><p id="testo_nuova_rece"></p></div><form class="form_tab" name="mo_nuova_rece" id="modi_nuova_rece" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+			<label>
+			<textarea id="cmp_nuova_rece" name="campo_nuova_rece" rows="10" cols="80" wrap maxlength="16384" onchange="sessionStorage.javscr_nuova_rece = 2; "></textarea></label>
+		</form><button id="salva_nuova_rece" style="display:none">Salva</button><div id="rece" style="display:block"><div id="testo_recensione"><p>Quest'opera romantica <a href="./bio.php?id=40">del principale autore</a> <a href="./let.php?id=4">verista</a> italiano apparirà certo inusuale per chi non conosca le tappe che hanno preceduto la nascita delle intenzioni <a href="./let.php?id=4">veriste</a> in <a href="./bio.php?id=40">Giovanni Verga</a>. "Storia di una capinera" è stato interpretato come un grido di ribellione della donna nella società, ma è in ogni caso un bell'esempio di <a href="./art.php?id=16">romanzo</a> epistolare che narra delle intime pulsioni di una giovane. È intenso, languido, e accorato, a mio parere una delle migliori opere romantiche di <a href="./bio.php?id=40">Giovanni Verga</a>.<br />
+Se riuscite a trovare questa edizione a 1000 Lire, farete un affare :-)</p></div><br><small><div align="center" onClick="document.getElementById('box_autore').style.display='none'; document.getElementById('modi_rece').style.display='block'; document.getElementById('rece').style.display='none'; document.getElementById('salva_rece').style.display='block'; "><u>Modifica recensione</u></div></small><div id="receagg" style="display:none"></div></div><form class="form_tab" name="mo_rece" id="modi_rece" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<textarea id="cmp_rece" name="campo_rece" rows="10" cols="80" wrap maxlength="16384" onchange="sessionStorage.javscr_mod_rece = 2; "><p>Quest'opera romantica <a href="./bio.php?id=40">del principale autore</a> <a href="./let.php?id=4">verista</a> italiano apparirà certo inusuale per chi non conosca le tappe che hanno preceduto la nascita delle intenzioni <a href="./let.php?id=4">veriste</a> in <a href="./bio.php?id=40">Giovanni Verga</a>. "Storia di una capinera" è stato interpretato come un grido di ribellione della donna nella società, ma è in ogni caso un bell'esempio di <a href="./art.php?id=16">romanzo</a> epistolare che narra delle intime pulsioni di una giovane. È intenso, languido, e accorato, a mio parere una delle migliori opere romantiche di <a href="./bio.php?id=40">Giovanni Verga</a>.<br />
+Se riuscite a trovare questa edizione a 1000 Lire, farete un affare :-)</p></textarea></label>
+			</form><button id="salva_rece" style="display:none">Salva</button><table class='float-right' id='pagella'>
+			<tr>
+				<th class='first' colspan='2'><center><b><u>PAGELLA</u></b></center></th>
+			</tr>
+			<tr class='row-a'>
+				<td class='first' align='right'><b>Scorrevolezza:</b></td>
+				<td align='center'><b>6</b></td>
+			</tr>
+			<tr class='row-b'>
+				<td class='first' align='right'><b>Valore artistico:</b></td>
+				<td align='center'><b>6</b></td>
+			</tr>
+			<tr class='row-a'>
+				<td class='first' align='right'><b>Contenuti:</b></td>
+				<td align='center'><b>7</b></td>
+			</tr>
+			<tr class='row-b'>
+				<td class='first' align='right'><b><u>Globale:</u></b></td>
+				<td align='center'><b><u>7</u></b></td>
+			</tr>
+		</table><p><strong>Consigliato a:</strong><div id="lib_consigliato_a" style="display:block"><div id="testo_lib_consigliato_a"><p>Consiglio questo libro a tutti quelli che vogliono scoprire un <a href="./bio.php?id=40">Giovanni Verga</a> inedito, decisamente sentimentale. Infatti potrete incontrare aspetti che forse non avreste mai ascritto alla narrativa verghiana.<br />
+Per chi invece vuole leggere altri <a href="./art.php?id=16">romanzi</a> romantici, consiglio in particolare due splendidi capolavori delle sorelle Brontë: "<a href="./rece.php?id=186">Cime tempestose</a>" di <a href="./bio.php?id=7">Emily</a> e "<a href="./rece.php?id=179">Jane Eyre</a>" di <a href="./bio.php?id=5">Charlotte</a>.</p></div><br><small><div align="center" onClick="document.getElementById('pagella').style.display='none'; document.getElementById('modi_lib_consigliato_a').style.display='block'; document.getElementById('lib_consigliato_a').style.display='none'; document.getElementById('salva_lib_consigliato_a').style.display='block'; "><u>Modifica consigli</u></div></small><div id="lib_consigliato_a_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_consigliato_a" id="modi_lib_consigliato_a" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<textarea id="cmp_lib_consigliato_a" name="campo_lib_consigliato_a" rows="10" cols="80" wrap maxlength="8192" onchange="sessionStorage.javscr_lib_consigliato_a = 2; "><p>Consiglio questo libro a tutti quelli che vogliono scoprire un <a href="./bio.php?id=40">Giovanni Verga</a> inedito, decisamente sentimentale. Infatti potrete incontrare aspetti che forse non avreste mai ascritto alla narrativa verghiana.<br />
+Per chi invece vuole leggere altri <a href="./art.php?id=16">romanzi</a> romantici, consiglio in particolare due splendidi capolavori delle sorelle Brontë: "<a href="./rece.php?id=186">Cime tempestose</a>" di <a href="./bio.php?id=7">Emily</a> e "<a href="./rece.php?id=179">Jane Eyre</a>" di <a href="./bio.php?id=5">Charlotte</a>.</p></textarea></label>
+			</form><button id="salva_lib_consigliato_a" style="display:none">Salva</button><div id="lib_trama" style="display:block"><div id="testo_lib_trama"></div><br><small><div align="center" onClick="document.getElementById('pagella').style.display='none'; document.getElementById('modi_lib_trama').style.display='block'; document.getElementById('lib_trama').style.display='none'; document.getElementById('salva_lib_trama').style.display='block'; "><img id="imgpiu" title="Aggiungi trama" align="middle"></div></small><div id="lib_trama_agg" style="display:none"></div></div><form class="form_tab" name="mo_lib_trama" id="modi_lib_trama" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<textarea id="cmp_lib_trama" name="campo_lib_trama" rows="10" cols="80" wrap maxlength="16384" onchange="sessionStorage.javscr_lib_trama = 2; "></textarea></label>
+			</form><button id="salva_lib_trama" style="display:none">Salva</button><table><tr class="row-a"><td align="center"><a href="./img.php?id=1913"><img style="width:120px; height:183px;" src="./imgs/lib/piccole/Storia di una capinera_fronte_piccole.jpg" title="Copertina Immagine: Storia di una capinera_fronte_piccole.jpg"></a><a name="imgs_mod"></a><div id="didascalia_lib" style="display:block"></div></td><td align="center"><a href="./img.php?id=1914"><img style="width:120px; height:185px;" src="./imgs/lib/piccole/Storia di una capinera_retro_piccole.jpg" title="Copertina Immagine: Storia di una capinera_retro_piccole.jpg"></a><a name="imgs_mod"></a><div id="didascalia_lib" style="display:block"></div></td></tr></table><table>
+			<tr>
+				<th class='first'><a name='incipit'><img style='border: 0px; width:24px; height:24px;' align='middle' src='./images/incipit_24.png' title='Incipit'></a> Incipit del libro <i>Storia di una capinera</i> di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a>:</th>
+				</tr>
+			<tr class='row-a'>
+				<td><div id="inc_incipit" style="display:block"><div id="testo_inc_incipit"><p>Avevo visto una povera capinera chiusa in gabbia: era timida, triste, malaticcia ci guardava con occhio spaventato; si rifuggiava in un angolo della sua gabbia, e allorché udiva il canto allegro degli altri uccelletti che cinguettavano sul verde del prato o nell'azzurro del cielo, li seguiva con uno sguardo che avrebbe potuto dirsi pieno di lagrime. Ma non osava ribellarsi, non osava tentare di rompere il fil di ferro che la teneva carcerata, la povera prigioniera. Eppure i suoi custodi, le volevano bene, cari bambini che si trastullavano col suo dolore e le pagavano la sua malinconia con miche di pane e con parole gentili. La povera capinera cercava rassegnarsi, la meschinella; non era cattiva; non voleva rimproverarli neanche col suo dolore, poiché tentava di beccare tristamente quel miglio e quelle miche di pane; ma non poteva inghiottirle. Dopo due giorni chinò la testa sotto l'ala e l'indomani fu trovata stecchita nella sua prigione. Era morta, povera capinera! Eppure il suo scodellino era pieno. Era morta perché in quel corpicino c'era qualche cosa che non si nutriva soltanto di miglio, e che soffriva qualche cosa oltre la fame e la sete.<br />
+Allorché la madre dei due bimbi, innocenti e spietati carnefici del povero uccelletto, mi narrò la storia di un'infelice di cui le mura del chiostro avevano imprigionato il corpo, e la superstizione e l'amore avevano torturato lo spirito: una di quelle intime storie, che passano inosservate tutti i giorni, storia di un cuore tenero, timido, che aveva amato e pianto e pregato senza osare di far scorgere le sue lagrime o di far sentire la sua preghiera, che infine si era chiuso nel suo dolore ed era morto; io pensai alla povera capinera che guardava il cielo attraverso le gretole della sua prigione, che non cantava, che beccava tristamente il suo miglio, che aveva piegato la testolina sotto l'ala ed era morta.<br />
+Ecco perché l'ho intitolata: <i>Storia di una capinera</i>.</p></div><br><small><div align="center" onClick="document.getElementById('modi_inc_incipit').style.display='block'; document.getElementById('inc_incipit').style.display='none'; document.getElementById('salva_inc_incipit').style.display='block'; "><u>Modifica incipit</u></div></small><div id="inc_incipit_agg" style="display:none"></div></div><form class="form_tab" name="mo_inc_incipit" id="modi_inc_incipit" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<textarea id="cmp_inc_incipit" name="campo_inc_incipit" rows="10" cols="80" wrap maxlength="16384" onchange="sessionStorage.javscr_inc_incipit = 2; "><p>Avevo visto una povera capinera chiusa in gabbia: era timida, triste, malaticcia ci guardava con occhio spaventato; si rifuggiava in un angolo della sua gabbia, e allorché udiva il canto allegro degli altri uccelletti che cinguettavano sul verde del prato o nell'azzurro del cielo, li seguiva con uno sguardo che avrebbe potuto dirsi pieno di lagrime. Ma non osava ribellarsi, non osava tentare di rompere il fil di ferro che la teneva carcerata, la povera prigioniera. Eppure i suoi custodi, le volevano bene, cari bambini che si trastullavano col suo dolore e le pagavano la sua malinconia con miche di pane e con parole gentili. La povera capinera cercava rassegnarsi, la meschinella; non era cattiva; non voleva rimproverarli neanche col suo dolore, poiché tentava di beccare tristamente quel miglio e quelle miche di pane; ma non poteva inghiottirle. Dopo due giorni chinò la testa sotto l'ala e l'indomani fu trovata stecchita nella sua prigione. Era morta, povera capinera! Eppure il suo scodellino era pieno. Era morta perché in quel corpicino c'era qualche cosa che non si nutriva soltanto di miglio, e che soffriva qualche cosa oltre la fame e la sete.<br />
+Allorché la madre dei due bimbi, innocenti e spietati carnefici del povero uccelletto, mi narrò la storia di un'infelice di cui le mura del chiostro avevano imprigionato il corpo, e la superstizione e l'amore avevano torturato lo spirito: una di quelle intime storie, che passano inosservate tutti i giorni, storia di un cuore tenero, timido, che aveva amato e pianto e pregato senza osare di far scorgere le sue lagrime o di far sentire la sua preghiera, che infine si era chiuso nel suo dolore ed era morto; io pensai alla povera capinera che guardava il cielo attraverso le gretole della sua prigione, che non cantava, che beccava tristamente il suo miglio, che aveva piegato la testolina sotto l'ala ed era morta.<br />
+Ecco perché l'ho intitolata: <i>Storia di una capinera</i>.</p></textarea></label>
+			</form><button id="salva_inc_incipit" style="display:none">Salva</button><br><br>[...]</td>
+			</tr>
+		</table><table>
+			<tr>
+				<th class='first'><a name='explicit'><img style='border: 0px; width:24px; height:24px;' align='middle' src='./images/incipit_24.png' title='Explicit'></a> Explicit: <i>Storia di una capinera</i> di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a>:</th>
+				</tr>
+			<tr class='row-a'>
+				<td><div id="expl_explicit" style="display:block"><div id="testo_expl_explicit"><p>Quando il sole tramontò parve che provasse un nuovo affanno; le sue lagrime scorrevano così abbondanti che una delle converse si mosse a pietà e le asciugò il viso, ché la poveretta l'aveva tutto bagnato e non ci vedeva più. Poi agitò le labbra come se chiamasse; io mi chinai su di lei; fece uno sforzo per accostare il suo viso al mio, e mi sussurrò all'orecchio quel suo ultimo desiderio con uno stento affannoso che spezzava il cuore... Il rantolo la soffocava. Indovinai più che non mi dicesse. Corsi a prendere l'involto che mi avea designato, e allorché me lo vide fra le mani sorrise come sorridono gli angeli del paradiso... Quando il rantolo non la soffocava, diceva sempre: «''Per lui! per lui!''». Sarà stato delirio. Volle che le facessi veder tutto: i fogli, i capelli, il crocifisso, le foglie secche; le baciò, le baciò tanto, che una di quelle foglie l'ho tolta dalle sue labbra dopo morta. <br/> Poi volse appena il capo dall'altra parte e sospirò lievemente... Parve che si addormentasse... e si addormentò per sempre. <br/> Povera suor Maria! <br/> Però ella adesso è fra i beati e prega il Signore per noi miseri peccatori che abbiamo la debolezza di piangere la sua morte. Devo anche aggiungere, a lode della madre abbadessa e di tutta la comunità, e a conforto di tutti coloro che l'amarono in vita, che le sue esequie furono commoventissime. Più di trenta messe furono celebrate a tutti gli altari della chiesa e al ''De-profundis'' ardevano più di cento candele. Mi raccomandi al Signore nelle sue orazioni, e mi creda con stima: <br/> Sua devotissima serva <br/> ''Suor Filomena''</p></div><br><small><div align="center" onClick="document.getElementById('modi_expl_explicit').style.display='block'; document.getElementById('expl_explicit').style.display='none'; document.getElementById('salva_expl_explicit').style.display='block'; "><u>Modifica explicit</u></div></small><div id="expl_explicit_agg" style="display:none"></div></div><form class="form_tab" name="mo_expl_explicit" id="modi_expl_explicit" action="http://alklibri.com/rece.php?id=149" method="post" style="display:none">
+				<label>
+				<textarea id="cmp_expl_explicit" name="campo_expl_explicit" rows="10" cols="80" wrap maxlength="16384" onchange="sessionStorage.javscr_expl_explicit = 2; "><p>Quando il sole tramontò parve che provasse un nuovo affanno; le sue lagrime scorrevano così abbondanti che una delle converse si mosse a pietà e le asciugò il viso, ché la poveretta l'aveva tutto bagnato e non ci vedeva più. Poi agitò le labbra come se chiamasse; io mi chinai su di lei; fece uno sforzo per accostare il suo viso al mio, e mi sussurrò all'orecchio quel suo ultimo desiderio con uno stento affannoso che spezzava il cuore... Il rantolo la soffocava. Indovinai più che non mi dicesse. Corsi a prendere l'involto che mi avea designato, e allorché me lo vide fra le mani sorrise come sorridono gli angeli del paradiso... Quando il rantolo non la soffocava, diceva sempre: «''Per lui! per lui!''». Sarà stato delirio. Volle che le facessi veder tutto: i fogli, i capelli, il crocifisso, le foglie secche; le baciò, le baciò tanto, che una di quelle foglie l'ho tolta dalle sue labbra dopo morta. <br/> Poi volse appena il capo dall'altra parte e sospirò lievemente... Parve che si addormentasse... e si addormentò per sempre. <br/> Povera suor Maria! <br/> Però ella adesso è fra i beati e prega il Signore per noi miseri peccatori che abbiamo la debolezza di piangere la sua morte. Devo anche aggiungere, a lode della madre abbadessa e di tutta la comunità, e a conforto di tutti coloro che l'amarono in vita, che le sue esequie furono commoventissime. Più di trenta messe furono celebrate a tutti gli altari della chiesa e al ''De-profundis'' ardevano più di cento candele. Mi raccomandi al Signore nelle sue orazioni, e mi creda con stima: <br/> Sua devotissima serva <br/> ''Suor Filomena''</p></textarea></label>
+			</form><button id="salva_expl_explicit" style="display:none">Salva</button><br><br>[...]</td>
+			</tr>
+		</table><table>
+				<tr>
+					<th class='first'>Audiolibri di:</th>
+					<th class='first'><a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a></th>
+				</tr><tr class='row-b'>
+					<td><a href='./audiolibro.php?id=56'>Storia di una capinera</a><br>Romanzo epistolare</td>
+					<td>Audiolibro del romanzo epistolare romantico "Storia di una capinera" di Giovanni Verga.</td>
+				</tr><tr class='row-a'>
+					<td><a href='./audiolibro.php?id=57'>Eva</a><br>Romanzo</td>
+					<td>Audiolibro del romanzo romantico "Eva" di Giovanni Verga.</td>
+				</tr><tr class='row-b'>
+					<td><a href='./audiolibro.php?id=60'>Tutte le novelle 1</a><br>Raccolta di novelle</td>
+					<td>Audiolibro delle celebri novelle veriste di Giovanni Verga.</td>
+				</tr></table><table>
+			<tr>
+				<th class='first'>I libri catalogati di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a>:</th>
+			</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7391' title='Editore: Max Hueber Verlag'>Cavalleria Rusticana</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=685' title='Editore: Liber Liber'>Eros</a> (1875)</td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7392' title='Editore: '>Eros</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=700' title='Editore: Liber Liber'>Eva</a> (1873)</td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7393' title='Editore: '>Eva</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=429' title='Editore: Newton Compton'>I Malavoglia</a> (1881)</td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=17774' title='Editore: Non definito'>I nuovi tartufi</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7394' title='Editore: '>I ricordi del capitano d'Arce</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=709' title='Editore: Liber Liber'>Il Marito di Elena</a> (1882)</td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7395' title='Editore: '>Il marito di Elena</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7396' title='Editore: '>La lupa</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=17775' title='Editore: Non definito'>Le storie del Castello di Trezza</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=39' title='Editore: Bompiani'>Mastro Don Gesualdo</a> (1889)</td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7397' title='Editore: '>Mastro don Gesualdo</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=17773' title='Editore: Non definito'>Mastro-don Gesualdo</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7398' title='Editore: '>Nedda</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7399' title='Editore: '>Novelle Rusticane</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7400' title='Editore: '>Novelle sparse</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7401' title='Editore: '>Per le vie</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7402' title='Editore: '>Primavera e altri racconti</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7403' title='Editore: Arnoldo Mondadori Editore'>Rose caduche</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=17776' title='Editore: Non definito'>Rosso Malpelo</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=149' title='Editore: Newton Compton'>Storia di una capinera</a> (1871)</td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7404' title='Editore: '>Storia Di Una Capinera</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=702' title='Editore: Liber Liber'>Tigre reale</a> (1875)</td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7405' title='Editore: '>Tigre reale</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7406' title='Editore: '>Tutte le novelle</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=110' title='Editore: Arnoldo Mondadori Editore'>Tutte le novelle 1</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=1441' title='Editore: Fratelli Melita Editori'>Tutto il teatro</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=112' title='Editore: Newton Compton'>Una peccatrice</a> (1866)</td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7407' title='Editore: '>Una peccatrice</a> </td>
+				</tr><tr class='row-b'>
+				<td><a href='./rece.php?id=7408' title='Editore: '>Vagabondaggio</a> </td>
+				</tr><tr class='row-a'>
+				<td><a href='./rece.php?id=7409' title='Editore: '>Vita dei campi</a> </td>
+				</tr></table><table>
+				<tr>
+					<th class='first'>Citazioni di <a href='bio.php?id=40' class='zebra_tips1' title='<a href="./imgbio.php?id=801"><img src="./imgs/bio/piccole/Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" width="120px" height="165px" title="Immagine: Verga Giovanni - Ritratto_penna_e_acq_piccole.jpg" class="float-left" /></a> <big>Giovanni Verga</big><br><br>
+ &lt;b&gt;Nascita&lt;/b&gt;: Catania, 1840&lt;br&gt;
+ &lt;b&gt;Morte&lt;/b&gt;: 1922, Catania&lt;br&gt;
+ &lt;b&gt;Nazione&lt;/b&gt;: Italia&lt;br&gt;
+ '>Giovanni Verga</a>:</th>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2194'>S&igrave;, Milano &egrave; proprio bella, amico mio, e... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2195'>Sicch&eacute; quando gli dissero che era tempo... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2196'>A buon cavallo non gli manca sella.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2197'>Tu hai bisogno di vivere alla grand&#039;aria... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2198'>A chi vuol bene, Dio manda pene.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2199'>Ad albero caduto accetta! accetta!... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2200'>Al giorno d&#039;oggi per conoscere un uomo b... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2201'>Al servo pazienza, al padrone prudenza.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2202'>Alla casa del povero ognuno ha ragione.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2203'>Amare la vicina &egrave; un gran vantaggio, si... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2204'>Ascolta i vecchi e non la sbagli.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2205'>Augura bene al tuo vicino, ch&eacute; qualche c... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2206'>Cane affamato non teme bastone.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2207'>Chi cade nell&#039;acqua &egrave; forza che si bagni... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2208'>Chi comanda ha da dar conto.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2209'>Chi fa credenza senza pegno, perde l&#039;ami... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2210'>Chi ha carico di casa non pu&ograve; dormire qu... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2211'>Chi ha roba in mare non ha nulla.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2212'>Chi non sa l&#039;arte chiuda bottega, e chi... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2213'>Chi pratica con zoppi all&#039;anno zoppica.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2214'>Chi va col lupo allupa.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2215'>Ciascuno deve pensare alla sua barba pri... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2216'>Cos&igrave; dicendo si fregava le mani e rideva... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2217'>Dove ci sono i cocci ci son feste.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2218'>Fa il mestiere che sai, che se non arric... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2219'>Fra suocera e nuora ci si sta in malora.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2220'>I vicini devono fare come le tegole del... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2221'>Il cammino fatale, incessante, spesso fa... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2222'>Il mare non ha paese nemmen lui, ed &egrave; di... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2223'>Il matrimonio &egrave; come una trappola di top... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2224'>La Madonna ci ha fatto il miracolo, perc... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2225'>Maritati e muli vogliono star soli.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2226'>N&eacute; visita di morto senza riso, n&eacute; sposal... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2227'>&#039;Ntrua, &#039;ntrua! ciascuno a casa sua!... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2228'>Una mela fradicia guasta tutte le altre.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2229'>Uomo povero ha i giorni lunghi.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2230'>&ndash; Eh? Cos&#039;&egrave; stato? Lo sapete voi? Adesso... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2231'>&ndash; [...] Oggi non si ha pi&ugrave; riguardo a ne... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2232'>Ciascuno fa il suo interesse... Al giorn... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2233'>&ndash; Perch&eacute; dovrei averli tutti contro?...... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2234'>Don Diego non stava n&eacute; peggio n&eacute; meglio.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2235'>&ndash; Sapete cosa ho da dirvi? &ndash; si mise a s... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2236'>Voglio che tu sii meglio di una regina,... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2237'>Lo vedete? Comincia ad affezionarmisi. G... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2238'>Nei piccoli paesi c&#039;&egrave; della gente che fa... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2239'>Oramai, per amore o per forza, mastro-do... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2240'>E anche lui, adesso che la roba passava... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2241'>Fra tutte quelle piccine, in tutte le fa... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2242'>Egli aveva di queste uscite buffe alle v... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2243'>Ah! La mia roba? Voglio vederli! Dopo qu... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2244'>A quelle parole don Gesualdo mont&ograve; in fu... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2245'>Il mondo andava ancora pel suo verso, me... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2246'>Siamo degli umili fiorellini avezzi alla... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2247'>Monte Ilice, 3 Settembre 1854
+
+Mia car... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2248'>Incipit di &quot;... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2249'>Incipit di &quot;... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2250'>Incipit de &quot;... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=2251'>Incipit di &quot;... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=2252'>Incipit di &quot;... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57799'>S&igrave;, Milano &egrave; proprio bella, amico mio, e... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57800'>[NDR|Nella stessa casa] Su... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57801'>Tu hai bisogno di vivere alla grand&#039;aria... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57802'>Vi siete mai trovata, dopo una pioggia d... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57803'>A buon cavallo non gli manca sella.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57804'>A chi vuol bene, Dio manda pene.
+... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57805'>Ad albero caduto accetta! accetta!
+... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57806'>Ad ogni uccello, suo nido &egrave; bello.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57807'>Al giorno d&#039;oggi per conoscere un uomo b... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57808'>Al servo pazienza, al padrone prudenza.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57809'>Alla casa del povero ognuno ha ragione.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57810'>Amare la vicina &egrave; un gran vantaggio, si... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57811'>Ascolta i vecchi e non la sbagli.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57812'>Augura bene al tuo vicino, ch&eacute; qualche c... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57813'>Cane affamato non teme bastone. (cap. XV... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57814'>Chi cade nell&#039;acqua &egrave; forza che si bagni... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57815'>Chi comanda ha da dar conto.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57816'>Chi fa credenza senza pegno, perde l&#039;ami... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57817'>Chi ha carico di casa non pu&ograve; dormire qu... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57818'>Chi ha roba in mare non ha nulla.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57819'>Chi non sa l&#039;arte chiuda bottega, e chi... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57820'>Chi pratica con zoppi all&#039;anno zoppica.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57821'>Chi va col lupo allupa.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57822'>Ciascuno deve pensare alla sua barba pri... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57823'>Cos&igrave; dicendo si fregava le mani e rideva... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57824'>Dove ci sono i cocci ci son feste.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57825'>Fa il mestiere che sai, che se non arric... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57826'>Fra suocera e nuora ci si sta in malora.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57827'>I vicini devono fare come le tegole del... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57828'>Il buon pilota si prova alle burrasche.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57829'>Il cammino fatale, incessante, spesso fa... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57830'>Il mare non ha paese nemmen lui, ed &egrave; di... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57831'>Il matrimonio &egrave; come una trappola di top... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57832'>La Madonna ci ha fatto il miracolo, perc... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57833'>Maritati e muli vogliono star soli.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57834'>N&eacute; visita di morto senza riso, n&eacute; sposal... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57835'>&#039;Ntrua, &#039;ntrua! ciascuno a casa sua!... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57836'>Ogni buco ha il suo chiodo, chi l&#039;ha vec... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57837'>Una mela fradicia guasta tutte le altre.... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57838'>Uomo povero ha i giorni lunghi.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57839'>[NDR|Verga riferendosi a Mena]... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57840'>&ndash; Eh? Cos&#039;&egrave; stato? Lo sapete voi? Adesso... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57841'>&ndash; [...] Oggi non si ha pi&ugrave; riguardo a ne... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57842'>Ciascuno fa il suo interesse... Al giorn... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57843'>&ndash; Perch&eacute; dovrei averli tutti contro?...... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57844'>Don Diego non stava n&eacute; peggio n&eacute; meglio.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57845'>&ndash; Sapete cosa ho da dirvi? &ndash; si mise a s... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57846'>Voglio che tu sii meglio di una regina,... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57847'>Lo vedete? Comincia ad affezionarmisi. G... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57848'>Nei piccoli paesi c&#039;&egrave; della gente che fa... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57849'>Oramai, per amore o per forza, mastro-do... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57850'>E anche lui, adesso che la roba passava... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57851'>Fra tutte quelle piccine, in tutte le fa... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57852'>Egli aveva di queste uscite buffe alle v... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57853'>Ah! La mia roba? Voglio vederli! Dopo qu... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57854'>A quelle parole don Gesualdo mont&ograve; in fu... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57855'>Il mondo andava ancora pel suo verso, me... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57856'>&Egrave; che la malaria v&#039;entra nelle ossa col... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57857'>Per&ograve; dov&#039;&egrave; la malaria &egrave; terra benedetta... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57858'>La malaria non ce l&#039;ha contro di tutti.... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57859'>Sicch&eacute; quando gli dissero che era tempo... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57860'>Siamo degli umili fiorellini avezzi alla... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57861'>Monte Ilice, 3 Settembre 1854  Mia... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57862'>Il col&egrave;ra mieteva la povera gente colla... [leggi]</a></td>
+				</tr><tr class='row-a'>
+					<td><a href='./cit.php?id=57863'>Volevano morir piuttosto di una schioppe... [leggi]</a></td>
+				</tr><tr class='row-b'>
+					<td><a href='./cit.php?id=57864'>Dove avevano saputo far le cose bene era... [leggi]</a></td>
+				</tr></table><h2><a name="commento">Scrivi un commento</a></h2><form name="comm" action='http://alklibri.com/rece.php?id=149#commento' method="post">
+		<label>
+			<input type="text" id="ins_nome" name="nome" value="" size="20" maxlength="32"> &lt;- Nome (Richiesto)</label><br>
+		<label>
+			<input type="text" id="ins_email" name="email" value="" size="30" maxlength="128"> &lt;- eMail (Facoltativa, non verrà mostrata)</label><br>
+		<label>
+			http:// <input type="text" id="ins_sito" name="sito" value="" size="30" maxlength="256"> &lt;- Indirizzo sito o blog (Facoltativo, verrà mostrato)</label><br><label>Commento:
+			<textarea name="commento" rows="10" cols="50" wrap maxlength="8192"></textarea></label><br><label>Dai un voto all'articolo:
+		<select name="voto">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8" selected="selected">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+	   </select></label><br><input type="hidden" name="id_domanda" value="60">
+	<label>
+	<br>Togli "pre" a "premonizione".<br>
+		<input type="text" name="risposta_domanda" size="15" maxlength="256"></label><input type="submit" value="Invia">
+	</form><table class="left">
+			<tr class="row-b">
+				<td class="first" align="center"><form method="post" action="ricerca_avanzata.php" />
+		<input type="text" id="stringa_testo" name="stringa_testo" size="14" maxlength="256" /><input class="button" type="submit" value="Cerca" /><br>
+		<input type="hidden" id="nascost" name="nascost" value="nasc12po">
+		<small><input type="radio" id="dove" name="dove" value="1"> Libro | <input type="radio" id="dove" name="dove" value="2"> Scrittore | <input type="radio" id="dove" name="dove" value="3"> Citazione</small><br>
+		</form><center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="TDGSHXSS3G28J">
+		<input type="image" src="https://www.paypal.com/it_IT/IT/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - Il sistema di pagamento online pi� facile e sicuro!">
+		<img alt="" border="0" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1">
+		</form></center>
+		<br>
+		<div align="center">Donazioni BitCoin:</div>
+		<div align="center"><a href="bitcoin:132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg?label=Donazioni%20ALK%20libri" title="Aiuta ALK Libri donando Bitcoin">132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg</a></div><br>
+		<div align="center"><a href="bitcoin:132vG2BSxxG5FLGWpVRe8t9FsW2iiCSNqg?label=Donazioni%20ALK%20libri"><img alt="Aiuta ALK Libri donando Bitcoin" title="Aiuta ALK Libri donando Bitcoin" src="./images/Bitcoin_QR_code_Donazioni_ALK_libri.png" width="82" height="82" /></a></div>
+		</td></tr></table><form method="post" action="http://alklibri.com/rece.php?id=149" />
+		<label>Questa recensione ti è stata utile?</label>
+		<input type="radio" name="art_utile" value="1"> Sì | 
+		<input type="radio" name="art_utile" value="2"> No<br>
+		<input class="button" type="submit" value="Vota" />
+		</form><p class='post-footer align-right'>
+		<span class='date'>Data: 2014-07-23 08:28:46</span>
+		</p>
+		</div>	<!-- content-wrap ends here -->
+	</div></div></div>
+<!-- Inizio fondopagina-->
+	<div id="footer-wrap">
+		<div id="footer-columns">
+			<div class="col3">
+				<h2>Ultime recensioni pubblicate</h2>
+        <ul>
+<li><a href='./rece.php?id=25381' title='di Vincenzo Cerami'>Un borghese piccolo piccolo</a></li><li><a href='./rece.php?id=25378' title='di Emma Chapman'>Come essere una brava moglie</a></li><li><a href='./rece.php?id=25377' title='di Oliver Sacks'>L'uomo che scambiò sua moglie per un cappello</a></li><li><a href='./rece.php?id=25376' title='di Michela Murgia'>L'incontro</a></li><li><a href='./rece.php?id=25375' title='di William Irwin'>I Simpson e la filosofia</a></li>        </ul>
+      </div>
+			<div class="col3-center">
+				<h2>Ultime biografie pubblicate</h2>
+				<ul>
+<li><a href='./bio.php?id=4029'>Kjell Eriksson</a></li><li><a href='./bio.php?id=6231'>Vittorio Emanuele Falsitta</a></li><li><a href='./bio.php?id=3069'>Gianni Marilotti</a></li><li><a href='./bio.php?id=3699'>Joan Lowery Nixon</a></li><li><a href='./bio.php?id=5121'>Pier Giorgio Perotto</a></li>				</ul>
+			</div>
+			<div class="col3">
+				<h2>Ultimi audiolibri scaricati</h2>
+				<ul>
+<li><a href='./audiolibro.php?id=35'>Le veglie di Neri: paesi e figure della campagna Toscana - di Renato Fucini</a></li><li><a href='./audiolibro.php?id=11'>Le avventure di Pinocchio. Storia di un burattino - di Carlo Collodi</a></li><li><a href='./audiolibro.php?id=54'>Vino generoso - di Italo Svevo</a></li><li><a href='./audiolibro.php?id=44'>Due Racconti: "Scampagnata" e "Plenilunio" - di Guy de Maupassant</a></li><li><a href='./audiolibro.php?id=31'>Madame Bovary - di Gustave Flaubert</a></li>				</ul>
+			</div>
+		<!-- Fine colonne fondopagina -->
+		</div>
+		<div id="footer-bottom">
+      <p>
+			2014 ALK Libri
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="./index.php">Home</a>
+			</p>
+			<p>
+			I marchi registrati appartengono ai loro legittimi proprietari. I contenuti originali del sito ALK Libri
+possono essere distribuiti secondo la licenza Creative Commons <a href="http://creativecommons.org/licenses/by-nc-sa/2.5/it/deed.it" target="_blank">CC-BY-NC-SA 2.5</a> (Attribuzione - Non commerciale - Condividi allo stesso modo 2.5).<br><br>Durata dello script: 0.37229585647583<br>      </p>
+		</div>
+  </div>
+<!-- Termine fondopagina-->
+</body>
+</html>
+

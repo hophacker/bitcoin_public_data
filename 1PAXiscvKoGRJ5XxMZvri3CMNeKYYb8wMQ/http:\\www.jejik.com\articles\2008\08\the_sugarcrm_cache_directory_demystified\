@@ -1,0 +1,652 @@
+http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/
+HTTP/1.1 200 OK
+Date: Thu, 10 Jul 2014 01:47:30 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 10-Jul-2015 01:47:30 GMT; path=/
+Set-Cookie: lw_user_sid=315e0d9eb5923fcd6c143837ef03d20f; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 11330
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-10T03:47:30Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>The SugarCRM cache directory demystified - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/" class="entry-title">The SugarCRM cache directory demystified</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p><strong>Updated 2009-01-07.</strong> One of the projects I am working on at the moment at my day job is customizing <a href="http://www.sugarcrm.com">SugarCRM</a>. We want to start managing all changes to SugarCRM using subversion, so we need to know which bits should be under version control and which bits should not. During my analysis I came across the <a href="http://www.sugardev.net/content/the_pitifully_named_cache_directory">ill&#8208;named and infamous cache directory</a>.</p>
+
+<p>SugarCRM&#8217;s cache is anything but that. I already knew that uploaded files and e-mails were also stored in the cache directory, but I needed to know <em>exactly</em> what was in the cache so I can make some informed decision on what to put under version control and what bits of a production system should be backed up. I found my answer, after a whole lot of <a href="http://www.sugarcrm.com/wiki/index.php?title=Cleaning_Out_Old_Data_and_Files">searching</a>, reading the SugarCRM source code and <a href="http://www.sugarcrm.com/forums/showthread.php?t=36657">asking around</a>. It turns out that the cache directory contains a hodgepodge of user data files, configuration files and&mdash;oh yes, there are some real cache files in there as well.</p>
+
+<p>If there is one thing to take away from this article it&#8217;s &ldquo;Don&#8217;t mess with the cache unless you know what you&#8217;re doing&rdquo;. That bears repeating:</p>
+
+<p><em>&ldquo;Don&#8217;t mess with the cache unless you know what you&#8217;re doing&rdquo;</em></p>
+
+<p>With that firmly burned into the back of your eyeballs, here&#8217;s an overview what the cache directory contains.</p>
+
+<dl>
+
+<dt><tt>cache/</tt></dt>
+<dd><p>This top&#8208;level cache directory contains many subdirectories. All the standard directories are described below. Sometimes Sugar creates even more directories in here, for example when upgrading from one version to the next. Unless explicitly noted below you should <em>never</em> delete any of the files under the cache directory.</p></dd>
+
+<dt><tt>cache/blowfish/</tt></dt>
+<dd><p>This directory stores the blowfish encryption keys that SugarCRM uses to encrypt and decrypt your POP3, SMTP and IMAP passwords. If you remove them, SugarCRM can&#8217;t decrypt the passwords anymore and you will need to re&#8208;enter them.</p></dd>
+
+<dt><tt>cache/csv/</tt></dt>
+<dd><p>Exports in CSV format are stored here temporarily before you download them. You can safely remove these.</p></dd>
+
+<dt><tt>cache/dashlets/</tt></dt>
+<dd><p>Sugar keeps a list here of all dashlets that you can use. You can safely remove it. Sugar will recreate it automatically when it&#8217;s missing.</p></dd>
+
+<dt><tt>cache/diagnostic/</tt></dt>
+<dd><p>When you run Sugar&#8217;s diagnostic tool, this is where it stores the diagnostics file. You can safely delete these files.</p></dd>
+
+<dt><tt>cache/dynamic_fields/</tt></dt>
+<dd><p>This directory contains caches of all the custom modules and fields in order to speed up Sugar. You can safely delete it. When data is missing from it, Sugar will recreate it automatically. If you use the &ldquo;Quick Repair and Rebuild&rdquo; function it will also be cleaned and repaired.</p></dd>
+
+<dt><tt>cache/feeds/</tt></dt>
+<dd><p>When you users subscribe to RSS feeds in SugarCRM, they will be downloaded to this directory before being displayed to the user. You can safely delete these files. Sugar will re&#8208;download them.</p></dd>
+
+<dt><tt>cache/generated_forms/</tt></dt>
+<dd><p>If you have created any web-to-lead capture forums, this is the place where they get stored. If you use these forms directly on your website (for example via an i&#8208;frame) then you cannot delete them. But if you are like me and simply used them to create the correct HTML for your own website then you can safely remove these forms.</p></dd>
+
+<dt><tt>cache/images/</tt></dt>
+<dd>
+<p>This is a very nasty directory because it contains multiple types of data. Do <em>not</em> mess around with it!</p>
+<p>The first type of data it contains are images that you embed or attach into outgoing mail. These images are cached here before actually being attached to the e&#8208;mail when you hit &ldquo;Send&rdquo;. If you are using SugarCE (Community Edition) then you can safely remove these files.</p>
+<p>If you are a SugarPro or Sugar Enterprise user then you&#8217;re out of luck. These editions of SugarCRM come with the Knowledge Base add&#8208;on module. This directory is the <em>permanent</em> storage area of all the files and images you embed and attach to your Knowledge Base documents. You should not delete these!</p>
+<p>This directory is a prime example of how <em>not</em> to use a cache. Bad developer, no Twinkie for you!</p>
+</dd>
+
+<dt><tt>cache/import/</tt></dt>
+<dd><p>When you import data in csv format, the uploaded files will be stored here. You can safely remove them.</p></dd>
+
+<dt><tt>cache/jsLanguage/</tt></dt>
+<dd><p>Here you will find the JavaScript versions of all the language files. If they are missing they will be regenerated by the Sugar MVC View class, so can safely delete them if you want to.</p></dd>
+
+<dt><tt>cache/layout/</tt></dt>
+<dd><p>In Sugar 4.0.1 and below, this directory holds the HTML files for the views that you customized with Sugar Studio. In Sugar 4.5.x and up this directory doesn&#8217;t seem to be used any more because the custom views are now stored in the custom/ and modules/ directories. So, this directory should be empty, but if you run an old Sugar (4.0.1 or prior) then do not delete the contents of this directory.</p></dd>
+
+<dt><tt>cache/modules/</tt></dt>
+<dd><p>This is the directory where SugarCRM stores caches for all of the modules, templates, views, vardefs and more. You can safely remove most of these files, except some directories in the <tt>cache/modules/emails</tt> directory as listed below. They will be regenerated automatically when they are missing.</p></dd>
+
+<dt><tt>cache/modules/emails/*</tt></dt>
+<dd><p><strong>Updated:</strong> Thanks to <a href="#c3">spaps</a> for this one. If your users are using their e-mail inside Sugar then the emails cache directory will contain multiple directories with uuid directory names (like <tt>1e1c2480-473f-ee19-16f0-48c63de4bec8</tt>). You must <em>not</em> delete these.</p></dd>
+
+<dt><tt>cache/pdf/</tt></dt>
+<dd><p>When you download a report in PDF format and Sugar cannot stream it directly to your browser, it will store the PDF file in this directory and offer it as a download. They can safely be removed.</p></dd>
+
+<dt><tt>cache/smarty/</tt></dt>
+<dd><p>This directory contains three subdirectories that hold caches and configuration files for the Smarty templating engine that is used by the new MVC system in Sugar 5.0 and up. For a detailed description of what they are for you can read the <a href="http://www.smarty.net/manual/en/">Smarty manual</a>. You should not remove these directories.</p></dd>
+
+<dt><tt>cache/smarty/cache/</tt></dt>
+<dd><p>Smarty is able to cache static HTML version of templates which are stored here. Sugar does not use this functionality so this directory should be empty. If it&#8217;s not empty then you can safely clear it.</p></dd>
+
+<dt><tt>cache/smarty/configs/</tt></dt>
+<dd><p>Here live the configuration files for the Smarty templating engine. It should be empty (as of Sugar 5.1RC), but if a future Sugar update ever installs a file in this directory it should <em>not</em> be deleted because it&#8217;s a configuration file.</p></dd>
+
+<dt><tt>cache/smarty/templates_c</tt></dt>
+<dd><p>This directory contains compiled versions of all the Smarty templates. They are similar to the cached templates but they are dynamic PHP code instead of static HTML code. Smarty will automatically regenerate them if you delete them.</p></dd>
+
+<dt><tt>cache/upload/</tt></dt>
+<dd><p>This contains all the files that you uploaded or attached to things in Sugar as well as your installed modules and upgrades. The contents of this directory should <em>not</em> be deleted. If you do, you will loose all the e&#8208;mails, attachments and other files that your users added to Sugar!</p></dd>
+
+<dt><tt>cache/xml/</tt></dt>
+<dd><p>The pipeline graph and various other graphs that SugarCRM displays are generated from XML files. These XML files are stored here. Sugar will regenerate them so you can safely delete the contents of this directory.</p></dd>
+
+</dl>
+
+<p>There is one directory that I haven&#8217;t quite figured out yet. On the SugarCRM forums a user called SugarDev.net <a href="http://www.sugarcrm.com/forums/showthread.php?p=122448">posted a recipe</a> for getting SugarCRM under Subversion control. He manually created the cache/data directory. None of my Sugar installations have that directory and grepping the SugarCRM source code yielded me no results about it either. When I do figure it out I will update this article accordingly.</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-08-13T10:34:00Z">2008-08-13@10:34</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/php" rel="tag">php</a>
+															&nbsp;<a href="http://www.jejik.com/tag/sugarcrm" rel="tag">sugarcrm</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c1" class="number" id="c1">#1</a>
+																			<a href="http://www.mrvoip.com.au" class="name">CRM Migration<small> (http://www.mrvoip.com.au)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-20@06:45
+																																			</div>
+																Nice info.  I'm in the middle of a CRM Migration and need as much of the undocumented stuff as I can get my hands on to make an "informed" decision on things.<br />
+<br />
+Looks like a bit of smarty template reading is on order too.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-21@01:18
+																																			</div>
+																Smarty is actually pretty easy to use and well documented. I use it a lot and highly recommend it for other projects as well.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c3" class="number" id="c3">#3</a>
+																			spaps
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-07@12:26
+																																			</div>
+																Hi Sander!<br />
+<br />
+Thanks for a comprehensive listing!<br />
+Much better than the answer I got from Sugar Support.<br />
+<br />
+But I like to add some info about the cache/modules/emails/ directory:<br />
+<br />
+If the SugarCRM users are using email in the system, you will get subfolders named something like "1e1c2480-473f-ee19-16f0-48c63de4bec8"<br />
+(it's the users id, there will be one for each user) under <b>cache/modules/emails/</b>.<br />
+<br />
+<b>Do not delete them or their content.</b>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-07@17:17
+																																			</div>
+																Thanks for you addition spaps. I have updated the article with your information.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c5" class="number" id="c5">#5</a>
+																			Vishwas
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-08@06:12
+																																			</div>
+																Thanx,<br />
+        It will b useful for newcomer like me to understand sugar in detail.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c6" class="number" id="c6">#6</a>
+																			Ragin Hari
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-28@22:44
+																																			</div>
+																<blockquote><br />
+ "cache/modules/ <br />
+ You can safely remove most of these files, except some directories in the cache/modules/emails."<br />
+</blockquote><br />
+<br />
+Any files beyond modules/emails that cannot be removed?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c7" class="number" id="c7">#7</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-02@08:25
+																																			</div>
+																Not that I know of, at least for Sugar 5.1. It's quite possible that Sugar 5.2 adds new cache files that aren't really cache files though.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c8" class="number" id="c8">#8</a>
+																			<a href="http://sugardev.net" class="name">SugarDev.net<small> (http://sugardev.net)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-02@23:55
+																																			</div>
+																Hi Sander, I will look into why the ./cache/data is in my recipe. Perhaps it's a leftover from a long-gone version of Sugar.<br />
+<br />
+Great work on the articles here by the way.<br />
+<br />
+Loek
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c9" class="number" id="c9">#9</a>
+																			<a href="http://www.synolia.com" class="name">Vince Synolia<small> (http://www.synolia.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-07@23:28
+																																			</div>
+																Hello,<br />
+thank a lot for this post, your article is really interesting and allow me to find one article for a lot of spread infos.<br />
+I did a french translation (not a pure translation by the way) for the french community (crm-france.com) and put a link back to your article, hope you don't mind ?<br />
+Here is the french version http://www.crm-france.com/dernieres-nouvelles/le-repertoire-cache-de-sugarcrm-demystifie.html<br />
+<br />
+Regards,<br />
+<br />
+Vince
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c10" class="number" id="c10">#10</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-08@08:26
+																																			</div>
+																I don't mind at all Vince :-) All my articles are licensed under a "Creative Commons 3.0 - Attribution - Share Alike" license.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c11" class="number" id="c11">#11</a>
+																			<a href="http://www.ctigroup.com" class="name">Rick Byers<small> (http://www.ctigroup.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-17@14:16
+																																			</div>
+																Is there any way to move the cache off the web server and onto another server (say the DM server) as I am not happy with all this data living in the DMZ!!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c12" class="number" id="c12">#12</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-17@19:15
+																																			</div>
+																There are several ways, but none solve the problem with the DMZ, since the cache still has to be accessible by SugarCRM. You can move cache/ to a separate server and then mount it using samba or NFS on the correct directory. You could specify a different upload path in your configuration files and then move cache/upload/ to a networks share of some kind.<br />
+<br />
+In both cases the data is on a different server but could potentially still be accessed through the DMZ server.<br />
+<br />
+The only other thing I can think off is moving all of SugarCRM to a different server outside the DMZ and then use a proxy solution like Apache's mod_proxy to give access to SugarCRM from the outside.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c13" class="number" id="c13">#13</a>
+																			marsclark
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-10@22:22
+																																			</div>
+																Sander:<br />
+Very helpful information to me as I administer SugarCRM for our company.<br />
+My question is, can I apply the suggestions for removing files from the various cache subfolders to our 5.2 version?  I ask because your post #7 makes me think this is for 5.1 and maybe not 5.2?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c14" class="number" id="c14">#14</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-12@15:20
+																																			</div>
+																Hi Marsclark. You should be able to do that, but keep one thing in mind: Don't delete anything not listed above. It's possible that 5.2 adds even more directories under cache/ that I have not described above.<br />
+<br />
+So, when in doubt: don't delete.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c15" class="number" id="c15">#15</a>
+																			treats
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-01-08@06:41
+																																			</div>
+																<blockquote>We want to start managing all changes to SugarCRM using subversion, so we need to know which bits should be under version control and which bits should not. </blockquote><br />
+Did you ever conclude what needed to be under version control to allow you to drop your revisioned code onto a fresh install of sugar and get out your production version again?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c16" class="number" id="c16">#16</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-01-08@09:12
+																																			</div>
+																@Treats: Yes. See my articles <a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/" rel="nofollow">Keeping SugarCRM under Subversion control</a> and <a href="http://www.jejik.com/articles/2008/12/build_custom_sugarcrm_modules_in_subversion/" rel="nofollow">Build custom SugarCRM modules in Subversion</a>. Be sure to read the comments attached to those articles as well.<br />
+<br />
+Also, here is <a href="http://www.jejik.com/tag/sugarcrm" rel="nofollow">a list of all my SugarCRM articles</a>.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c17" class="number" id="c17">#17</a>
+																			<a href="http://sugardev.net" class="name">Loek van Gool<small> (http://sugardev.net)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-01-21@22:53
+																																			</div>
+																Another year, another SugarCRM release and another sugardevtools update. I've mapped the 5.5 cache dir and have discovered six directories that are kept even while they could probably be deleted. My aim is to provide full cache deletion in the next release of sugardevtools, including SugarCache contents (that system can be quite irritating when developing language packs).
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c18" class="number" id="c18">#18</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-01-24@20:42
+																																			</div>
+																Thanks Loek. Do you happen to have a list of these six new directories? That ay I can update this article for those who want to do it themselves.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c19" class="number" id="c19">#19</a>
+																			<a href="http://www.oribium.se/CRM" class="name">Niklas<small> (http://www.oribium.se/CRM)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-03-08@15:45
+																																			</div>
+																Great article!<br />
+SugarCRM can be a jungle every now and then depending on what you're doing, and its work like this that helps people like me to find the right path out - thanks!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c20" class="number" id="c20">#20</a>
+																			Cesspool
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-02@03:03
+																																			</div>
+																Thanks!  this info will be helpful to a newbie like me...hopefully all info still applies to ver 6.0+
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c21" class="number" id="c21">#21</a>
+																			<a href="http://markvletter.nl" class="name">Mark<small> (http://markvletter.nl)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-03-14@17:05
+																																			</div>
+																cache/upload/upgrades also contains the updates you ran and modules you installed as a zip. These can be large and can also be deleted.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c22" class="number" id="c22">#22</a>
+																			<a href="http://whatan00b.com" class="name">Wyatt<small> (http://whatan00b.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-08-09@23:37
+																																			</div>
+																@Mark -- this directory can be deleted with latest versions, but is required by older versions of Sugar. I'm fairly certain it's safe to delete past 6.0, but I can't remember the exact version.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c23" class="number" id="c23">#23</a>
+																			<a href="http://www.mohuweb.com" class="name">Alex<small> (http://www.mohuweb.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-03-02@21:51
+																																			</div>
+																@Mark@Wyatt Under 5.5.4 cache/upload/upgrades/temp contains directories (named randomly) with uploaded files and can be safely removed.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c24" class="number" id="c24">#24</a>
+																			<a href="http://keilaron.ca/" class="name">Keilaron<small> (http://keilaron.ca/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-06-26@17:40
+																																			</div>
+																In some version of SugarCRM - I'm maintaining 6.2.4 and 6.1.3 right now, and I think 6.1.3 doesn't exhibit this behaviour - the cache/modules/* directories become a bit of a minefield. It's not that you need to keep them, it's that Sugar no longer stores the full metadata inside the Ext/Extension directories.. so I find myself having to copy (most of!) the metadata from the cache into the appropriate vardefs file when creating new fields, otherwise when updating staging/prod and doing a repair, I don't get the new fields.<br />
+Very annoying.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c25" class="number" id="c25">#25</a>
+																			<a href="http://www.amazon.com" class="name">Tony<small> (http://www.amazon.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-07-05@02:38
+																																			</div>
+																In every application I've ever seen a cache is used for storing data that can be recalculated if it is not there. If the app relies on data being there, it shouldn't be in the cache. Another example of poor design in SugarCRM.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c26" class="number" id="c26">#26</a>
+																			<a href="https://www.sugaroutfitters.com" class="name">sugaroutfitters<small> (https://www.sugaroutfitters.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-10-05@06:44
+																																			</div>
+																<blockquote>If the app relies on data being there, it shouldn't be in the cache. Another example of poor design in SugarCRM.</blockquote><br />
+<br />
+This is simply a misunderstanding on how SugarCRM works and the best practices around managing multiple instances (dev/test/prod). Nothing is relied upon being in the cache. You can spin up a copy of an instance without the cache and it'll rebuild it appropriately.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c27" class="number" id="c27">#27</a>
+																			<a href="http://keilaron.ca/" class="name">Keilaron<small> (http://keilaron.ca/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-12-08@16:21
+																																			</div>
+																Wrong, sugaroutfitters. As I implied in my previous comment, create some fields via Studio, then delete your cache and you'll soon find yourself with missing or incorrect fields... the Extension directory is no longer being given all the data it is supposed to have.<br />
+<br />
+It IS bad design. I've been going over how to keep multiple instances (because we DO maintain dev, test, and prod environments for all our clients) and I noticed that when uploading some changes for newer versions of Sugar, repair didn't repair; it expected some data that the dev copy had only placed in the cache.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#c28" class="number" id="c28">#28</a>
+																			<a href="http://www.yellow.co.nz" class="name">Karl<small> (http://www.yellow.co.nz)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-01-28@22:59
+																																			</div>
+																An important update on all this from SugarCRM is here: http://developers.sugarcrm.com/wordpress/2012/06/27/making-sugar-a-bit-more-filesystem-friendly-every-day/<br />
+<br />
+A lot of the issues around things being in cache that shouldn't be have now been resolved - in particular the Blowfish Ciphers and Email module!
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/08/the_sugarcrm_cache_directory_demystified/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="29671d83d81e1acb3ec20b18075b0c9c" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F08%2Fthe_sugarcrm_cache_directory_demystified%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/">www.jejik.com/articles/2008...</a></li>
+															<li><a href="http://www.k-max.name/linux/principy-raboty/struktura-kataloga-cache-v-sugarcrm/">www.k-max.name/linux/princi...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c9">RPW: Maximum respect!
+This repacked...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

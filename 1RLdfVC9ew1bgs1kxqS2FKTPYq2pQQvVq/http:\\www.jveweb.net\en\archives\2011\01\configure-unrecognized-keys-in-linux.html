@@ -1,0 +1,482 @@
+http://www.jveweb.net/en/archives/2011/01/configure-unrecognized-keys-in-linux.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 01:15:37 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 7369
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Juan Valencia Escalante" />
+	<title>Configure unrecognized keys in Linux - Juan Valencia's website</title>
+	<link rel="alternate" href="http://www.jveweb.net/archivo/2011/01/configurar-teclas-no-reconocidas-en-linux.html" hreflang="es" lang="es" title="Versi&oacute;n en Espa&ntilde;ol" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 feed" href="http://www.jveweb.net/en/rss.xml" />
+    
+    <meta name="keywords" content="key code, scan code, dmesg, atkbd.c, unknown key pressed, xmodmap, keycode, setkeycodes, init.d, update-rc.d" />
+    <meta name="description" content="A guide to find the scan code of keys that are unrecognized in some keyboards, and assign them a key code so they can be given some functionality." />
+    
+	<!-- style START -->
+	<!-- default style -->
+	<link rel="stylesheet" type="text/css" href="http://www.jveweb.net/en/style.css" media="screen" />
+	<!-- for translations -->
+		<!--[if IE 6]>
+		<link rel="stylesheet" href="http://www.jveweb.net/en/ie6.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+	<!-- script START -->
+	<script type="text/javascript" src="http://www.jveweb.net/en/js/util.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>
+		<!-- script END -->
+</head>
+<body>
+<!-- wrap START -->
+<div id="wrap">
+<!-- container START -->
+<div id="container">
+<!-- header START -->
+<div id="header">
+	<div id="caption">
+		<h1 id="title"><a href="http://www.jveweb.net/en/index.html">Juan Valencia's website</a></h1>
+		<div id="tagline">Linux, Free and Open Source Software, Programming and some thoughts.</div>
+	</div>
+	<!-- navigation START -->
+	<div id="navigation">
+		<ul id="menus">
+			<li class="page_item page-item-1"><a class="home" title="Home" href="http://www.jveweb.net/en/index.html">Home</a></li>
+			<li class="page_item page-item-2"><a href="http://www.jveweb.net/en/linux_foss.html" title="Linux &amp; FOSS">Linux &amp; FOSS</a></li>
+			<li class="page_item page-item-3"><a href="http://www.jveweb.net/en/programming.html" title="Programming">Programming</a></li>
+			<li class="page_item page-item-4"><a href="http://www.jveweb.net/en/thoughts.html" title="Thoughts">Thoughts &amp; Opinion</a></li>
+			<li class="page_item page-item-5"><a href="http://www.jveweb.net/en/photography.html" title="Photography">Photography</a></li>
+			<li class="page_item page-item-6"><a href="http://www.jveweb.net/en/contact.html" title="Contact &amp; About me">Contact &amp; About me</a></li>
+			<li class="page_item page-item-7"><a href="http://www.jveweb.net/en/sitemap.html" title="Sitemap">Sitemap</a></li>
+			<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+		</ul>
+		<div class="fixed"></div>
+	</div>
+	<!-- navigation END -->
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+<!-- content START -->
+<div id="content">
+	<!-- main START -->
+	<div id="main">
+
+			<div class="post">
+			<h2><a class="title" href="http://www.jveweb.net/en/archives/2011/01/configure-unrecognized-keys-in-linux.html" rel="bookmark">Configure unrecognized keys in Linux</a></h2>
+			<div class="info">
+				<span class="date">Saturday, January 15, 2011 | <a href="http://www.jveweb.net/archivo/2011/01/configurar-teclas-no-reconocidas-en-linux.html" rel="alternate">En Espa&#241;ol</a></span>
+				<div class="fixed"></div>
+			</div>
+			<div class="info">
+        <p>
+          <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;"
+href="http://www.jveweb.net/en/archives/2011/01/configure-unrecognized-keys-in-linux.html"></a> <g:plusone size="medium"></g:plusone>
+        </p>
+			</div>
+			<div class="content">
+<p>
+      Occasionally I am presented with keyboards that contain keys that are 
+      not recognized by default in Linux. In most cases the fix consist in 
+      select a different keyboard layout, modern Linux distributions cover a 
+      wide variety of keyboards, but some times there is no keyboard layout 
+      available that matches our keyboard and the functionality of some keys 
+      is lost. In this post I write about how to detect and map unrecognized 
+      keys. I am making the assumption that you are working in a graphical 
+      environment and that you want to give it some functionality to the key 
+      there.
+    </p>
+    <p>
+      <b>Topics</b><br /><a href="#jveweb_en_023_01">What happens when we press 
+      a key?</a><br /><a href="#jveweb_en_023_02">Obtaining the scan code of 
+      unrecognized keys</a><br /><a href="#jveweb_en_023_03">Assing a key code 
+      to the scan code</a><br /><a href="#jveweb_en_023_04">Make a script that 
+      runs at boot time</a>
+    </p>
+    <h3 id="jveweb_en_023_01">
+      What happens when we press a key?
+    </h3>
+    <p>
+      When we press a key, a scan code is send from the keyboard to the 
+      system, the kernel reads this scan code and try to find it in a table 
+      that maps this scan codes, the number associated with the scan code in 
+      this table is called a key code. In order for a key to work the scan 
+      code must have a key code assigned to it. Then, if the environment where 
+      we are working on knows what to do with this key code, the key will have 
+      a functionality. The functionality in a terminal and the one in a 
+      graphical desktop environment may be different, usually multimedia keys 
+      don't have a function in a terminal but they do work in the graphical 
+      environment.
+    </p>
+    <p>
+      In most cases, we can assign to this scan code the key code of the 
+      functionality that we want, as the X system already support a wide 
+      variety of keys and most desktop environments interpret this keys and 
+      give them that very same functionality within them. Or we can just give 
+      the key any unused key code, and configure in our desktop environment 
+      the functionality of said key. This post is primarily about assigning a 
+      key code to an unrecognized scan code, and make this change permanent.
+    </p>
+    <h3 id="jveweb_en_023_02">
+      Obtaining the scan code of unrecognized keys
+    </h3>
+    <p>
+      When the kernel can't find the scan code of a pressed key in the map of 
+      key codes, the kernel produces an error saying that the key is unknown, 
+      and indicate us the scan code of the key in question. We can see this 
+      error messages by using <code>dmesg</code> or by checking the kernel log 
+      file, usually located in <code>/var/log/messages</code> or <code>/var/log/dmesg</code>.
+    </p>
+    <p>
+      You can press the unrecognized keys and use <code>dmesg</code> to find 
+      the scan codes, you would see something similar to this but with your 
+      own scan codes:
+    </p>
+    <pre><code class="console">atkbd.c: Unknown key pressed (translated set 2, code 0xa6 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e026 &lt;keycode&gt;' to make it known.
+atkbd.c: Unknown key released (translated set 2, code 0xa6 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e026 &lt;keycode&gt;' to make it known.
+
+atkbd.c: Unknown key pressed (translated set 2, code 0xa3 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e023 &lt;keycode&gt;' to make it known.
+atkbd.c: Unknown key released (translated set 2, code 0xa3 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e023 &lt;keycode&gt;' to make it known.
+
+atkbd.c: Unknown key pressed (translated set 2, code 0x94 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e014 &lt;keycode&gt;' to make it known.
+atkbd.c: Unknown key released (translated set 2, code 0x94 on isa0060/serio0).
+atkbd.c: Use 'setkeycodes e014 &lt;keycode&gt;' to make it known.</code></pre>
+    <p>
+      The other option is to use <code>tail -f</code> in the log file of the 
+      kernel, again, it may be in <code>/var/log/messages</code> or in <code>/var/log/dmesg</code>, 
+      and then press your unrecognized keys, to exit tail use <code>ctrl+c</code>:
+    </p>
+    <p>
+      <code class="snippet">tail -f /var/log/messages</code>
+    </p>
+    <p>
+      By this method you would see the same messages appear when you press 
+      said keys, only with the date and the user name in front.
+    </p>
+    <p>
+      In this example, the scan code of three keys were unrecognized, this is, 
+      no key code was found to be associated with the scan code, the important 
+      value here appears right next to the setkeycodes command. We have to 
+      define e026, e023 and e014.
+    </p>
+    <h3 id="jveweb_en_023_03">
+      Assing a key code to the scan code
+    </h3>
+    <p>
+      As I am still assuming that you are planing to give some functionality 
+      to this keys in a graphical environment, you can use the command:
+    </p>
+    <p>
+      <code class="snippet">xmodmap -pke | less</code>
+    </p>
+    <p>
+      This command will show you the current layout of the keyboard, in here 
+      you can both find unused key codes and well as the key codes of 
+      functionality already supported by <code>xmodmap</code>. If this three 
+      of the keys corresponded to the volume controls, mute, lower the volume 
+      and increase the volume, we will find that this functionality already 
+      have a key code associated to it, we will see the following lines:
+    </p>
+    <p>
+      <code class="snippet">keycode 121 = XF86AudioMute NoSymbol XF86AudioMute<br />keycode 
+      122 = XF86AudioLowerVolume NoSymbol XF86AudioLowerVolume<br />keycode 123 
+      = XF86AudioRaiseVolume NoSymbol XF86AudioRaiseVolume</code>
+    </p>
+    <p>
+      So, we are going to assign each of the scan codes one of the key codes 
+      that we found here. To assign a key code to a key, we use the command <code>setkeycodes</code>. 
+      Following our example:
+    </p>
+    <p>
+      <code class="snippet">setkeycodes e014 121<br />setkeycodes e023 122<br />setkeycodes 
+      e026 123</code>
+    </p>
+    <p>
+      If we don't get error messages then the keys has been correctly set. 
+      This should make the keys work. It is a good idea to try the keys 
+      individually to check that everything is working well. The worst case 
+      scenario is that we assign an invalid number and our keyboard stops 
+      working correctly, but this can be easily undone by reloading the 
+      session (logging out and logging in) or restarting. This shouldn't 
+      happen tho.
+    </p>
+    <h3 id="jveweb_en_023_04">
+      Make a script that runs at boot time
+    </h3>
+    <p>
+      Once all is nicely working, we are going to create a script to do this 
+      assignation when we boot the computer. We create a file inside <code>/etc/init.d</code> 
+      (in some systems it may be in <code>/etc/conf.d</code>, for Ubuntu and 
+      variants it's <code>/etc/init.d</code>), I am going to call it <code>keyremap</code>.
+    </p>
+    <p>
+      <code class="snippet">sudo gedit /etc/init.d/keyremap</code>
+    </p>
+    <p>
+      And then add the following lines in this file:
+    </p>
+    <p>
+      <code class="snippet">#!/bin/sh<br />setkeycodes e014 121<br />setkeycodes 
+      e023 122<br />setkeycodes e026 123</code>
+    </p>
+    <p>
+      We save the file, and then we make it executable with:
+    </p>
+    <p>
+      <code class="snippet">sudo chmod +x /etc/init.d/keyremap</code>
+    </p>
+    <p>
+      And make it be executed at the start together with the rest of the 
+      scripts in <code>/etc/init.d</code>:
+    </p>
+    <p>
+      <code class="snippet">update-rc.d keyremap defaults</code>
+    </p>
+    <p>
+      If we wanted to remove the script from the start, we can use:
+    </p>
+    <p>
+      <code class="snippet">update-rc.d -f keyremap remove</code>
+    </p>
+				<p class="under">
+				Categories: <a href="http://www.jveweb.net/en/archives/commands/index.html">Commands</a>, <a href="http://www.jveweb.net/en/archives/foss/index.html">FOSS</a>, <a href="http://www.jveweb.net/en/archives/linux/index.html">Linux</a>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+
+<div id="pagenavi">
+		<span class="newer"></span>
+		<span class="older"></span>
+		<div class="fixed"></div>
+</div>
+	</div>
+	<!-- main END -->
+<!-- sidebar START -->
+<div id="sidebar">
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3337979981448667";
+/* jveweb_en_300x250, created 11/7/10 */
+google_ad_slot = "6888076192";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a id="feedrss" title="Subscribe to this blog..." href="http://www.jveweb.net/en/rss.xml"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>
+				<ul id="feed_readers">
+					<li id="google_reader"><a class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Google</span></a></li>
+					<li id="youdao_reader"><a class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Youdao</span></a></li>
+					<li id="xianguo_reader"><a class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Xian Guo</span></a></li>
+					<li id="zhuaxia_reader"><a class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Zhua Xia</span></a></li>
+					<li id="yahoo_reader"><a class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>My Yahoo!</span></a></li>
+					<li id="newsgator_reader"><a class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>newsgator</span></a></li>
+					<li id="bloglines_reader"><a class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Bloglines</span></a></li>
+					<li id="inezha_reader"><a class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>iNezha</span></a></li>
+				</ul>
+			</div>
+						<div class="fixed"></div>
+		</div>
+	</div>
+		  <div class="widget">
+				<a href='http://www.jveweb.net' title='jveweb.net en español' class="lonelink">jveweb.net en español</a>
+		</div>	
+	<!-- posts -->
+	<div class="widget">
+		<h3>Recent Posts</h3>
+		<ul>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/ghosts-from-the-past.html">Ghosts from the past</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/learning-from-a-mistake.html">Learning from a mistake</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/natures-gallery.html">Nature's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/flowerss-gallery.html">Flowers's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/chile-trekking-in-pochoco.html">Chile: Trekking in Pochoco</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-santa-lucia.html">Santiago de Chile: Santa Lucía</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-los-dominicos.html">Santiago de Chile: Los Domínicos</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-downtown.html">Santiago de Chile: Downtown</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/here-comes-the-photographs.html">Here comes the photographs</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/to-chile.html">To Chile!</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/site-updates-im-still-here-the-future-of-this-website.html">Site updates: I'm still here! The future of this website</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/08/economic-uncertainty-in-the-world.html">Economic uncertainty in the world</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/a-journey-of-madness.html">A journey of madness</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/some-regular-expressions-and-how-to-use-them-in-php.html">Some regular expressions and how to use them in PHP</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/starting-the-photography-section.html">Starting the photography section</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/when-you-crash-against-the-wall-of-reality.html">When you crash against the wall of reality</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/now-this-is-bad-security-yet-another-sony-story.html">Now this is bad security (yet another Sony story)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-object-oriented-examples.html">Prepared MySQL statements in PHP (object oriented examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-structured-examples.html">Prepared MySQL statements in PHP (structured examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/an-sql-injection-attack.html">An SQL injection attack</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/split-and-merge-files-from-the-command-line.html">Split and merge files from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">The confusing prefixes for binary multiples</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/05/xorgconf-configuration-for-a-h770-series-monitor.html">xorg.conf configuration for a H770 series monitor</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html">Managing MySQL from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html">Using rsync and cron to automate incremental backups</a></li>
+		</ul>
+	</div>
+	  <div class="widget">
+			<h3>Categories</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/xhtml/index.html' title='(X)HTML'>(X)HTML</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/announcements/index.html' title='Announcements'>Announcements</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/apache/index.html' title='Apache'>Apache</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/commands/index.html' title='Commands'>Commands</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/foss/index.html' title='FOSS'>FOSS</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/kde/index.html' title='KDE'>KDE</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/linux/index.html' title='Linux'>Linux</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/mysql/index.html' title='MySQL'>MySQL</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/photography/index.html' title='Photography'>Photography</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/php/index.html' title='PHP'>PHP</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/programming/index.html' title='Programming'>Programming</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/rsync/index.html' title='rsync'>rsync</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/slackware/index.html' title='Slackware'>Slackware</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/ssh/index.html' title='SSH'>SSH</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/text-manipulation/index.html' title='Text manipulation'>Text manipulation</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/thoughts/index.html' title='Thoughts'>Thoughts</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/vim/index.html' title='Vim'>Vim</a></li>
+				
+				</ul>
+		</div>	
+	  <div id="tag_cloud" class="widget">
+			<h3>Archives</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/12/index.html' title='December 2011'>December 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/10/index.html' title='October 2011'>October 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/09/index.html' title='September 2011'>September 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/08/index.html' title='August 2011'>August 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/07/index.html' title='July 2011'>July 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/06/index.html' title='June 2011'>June 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/05/index.html' title='May 2011'>May 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/04/index.html' title='April 2011'>April 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/03/index.html' title='March 2011'>March 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/02/index.html' title='February 2011'>February 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/01/index.html' title='January 2011'>January 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/12/index.html' title='December 2010'>December 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/11/index.html' title='November 2010'>November 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/10/index.html' title='October 2010'>October 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/09/index.html' title='September 2010'>September 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/08/index.html' title='August 2010'>August 2010</a></li>
+				
+				</ul>
+		</div>		
+		<div class="widget">
+			<h3>Tip Jar</h3>
+			<ul>
+				<li><a href="http://flattr.com/thing/237912/jveweb-on-Flattr">Flattr jveweb.net</a></li>
+				<li>Bitcoin:<br /><small>1RLdfVC9ew1bgs1kxqS2FKTPYq2pQQvVq</small><br />see <a href="http://bitcoinme.com" rel="nofollow">http://bitcoinme.com</a></li>
+				<li>Paypal: paypal@jveweb.net</li>
+				<li>Liberty Reserve: U5664646</li>
+				<li>KoL: #1176202</li>
+				</ul>
+			<p>Tips helps me to keep the website mostly ad free.</p>
+		</div>	
+		<div class="widget">
+			<h3>Miscellaneous</h3>
+			<ul>
+				<li><a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a><br>
+				<small>Except for that G+ button that I just added =/, I'll fix it when I get a chance.</small></li>
+				<li><a href="http://jigsaw.w3.org/css-validator/check/referer">Valid CSS 2.1</a></li>
+				<li><a href="http://lynx.isc.org/">Lynx friendly</a></li>
+				<li><a href="http://www.dreamhost.com/green.cgi?jveweb.net">Green hosting</a></li>
+				<li>Sizes in <a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">KiB, MiB, etc.</a></li>
+				<li>E-mail: contact at jveweb.net</li>
+			</ul>
+		</div>	
+</div>
+<!-- sidebar north END -->
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Go to Top</a>
+	<div id="copyright">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />Copyright &copy; 2011. All the text, images and resources in this website that are not attributed to somebody else were created by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/" rel="cc:attributionURL">Juan Valencia Escalante</a> and are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a> unless is otherwise stated.<br />Permissions beyond the scope of this license may be available by contacting the author at <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/contact.html" rel="cc:morePermissions">http://www.jveweb.net/en/contact.html</a>.
+  </div>
+	<div id="themeinfo">
+	Theme ported to Thingamablog by The <a href="http://www.webdesignwomen.com" rel="nofollow">Web Design Women</a> of <a href="http://www.opensourceresources.org" rel="nofollow">Opensource Resources</a> (although I discontinued the use of Thingamablog, I just keep the design, for now)
+			</div>
+</div>
+<!-- footer END -->
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+<!-- Piwik --> 
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://jveweb.net/st/" : "http://jveweb.net/st/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://jveweb.net/st/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Tag -->
+</body>
+</html>

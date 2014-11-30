@@ -1,0 +1,108 @@
+http://registry.gimp.org/comment/9201
+Interpolation Plugin | GIMP Plugin Registry
+Skip to main content
+GIMP Plugin Registry Main menuAbout
+Documentation
+Forums
+GIMP User Group
+Get Help
+Stay Updated!
+gimp.org
+Navigation
+FAQ & How To's
+Content By Name
+Feed aggregator
+Popular content
+Report Spam Here
+Tags
+If you'd like to upload plug-ins, please create an account below. You do not need one for download. Enjoy :-) User login
+Username *
+Password *
+Request new password
+Syndicate
+You are hereHome Interpolation Plugin
+August 19, 2010 - 01:29 — stamit
+Rate 1
+2
+3
+4
+5
+Total votes: 0Rate this item!
+This is an interpolation plug-in for the GIMP. It works by doing plane/curve fitting and calculating weighted averages. It takes samples from a grid of pixels from 'known' image areas, trying to fit a plane or a curve to each, and then uses those samples to estimate the 'unknown' image areas.
+Upper-left: original image, upper-right: result after interpolation,
+lower left: selection (a.k.a. output mask), lower right: input mask
+0.2 version is now based on the standard gimp-plugin-template and so should be easy to compile on any system. There are some fixes and additions. If you find any bugs in the code, please send me a patch or a bug report.
+0.4 has an improved UI with a preview, support for using the active brush as a kernel, and a convenience option for internally subtracting the selection from the input mask.
+0.5 can work with gamma-compressed images (internally transforming them into linear space and back again, with no loss of bit-depth, since floating-point numbers are used), can handle large images by taking samples only from a grid of points (instead of from every pixel) and has a few more new things. See the ChangeLog for details.
+0.6 now supports quadratic approximation (x*x, x*y and y*y terms), has better arranged data (so as to make it easier to support new curve-fitting methods, or custom combinations of functions), can use a separate 'slopes' mask (so that the set of pixels used for calculating slopes can be different than the set of "slopes samples" used to calculate the output pixels), has sinc kernels, has 'cap' and 'base' settings for radius-based kernels, has separate horizontal and vertical kernel window settings (optional) and has a few bug-fixes. By using a separate "slopes mask" in combination with the newer "least squares" methods, you can use the filter in a completely new way: Instead of calculating a plane for each input pixel (or grid square) based on its near neighborhood, you can calculate planes (or curves) at sample points *within* the selection, based on a wide area (slopes window) that includes input pixels.
+1.0 is simply 0.6 with a few bug fixes, scripting support, an option for hiding the progress bars and an updated translation. This is it.
+There is also a homepage for this little project. I also wrote a small tutorial
+Bitcoin donations appreciated: 12oG41zMz8uGJMo7BZbZATeRy5ZiQvxN83
+AttachmentSize interpolate.tar.gz9.26 KB gimp-plugin-interpolate-0.2.tar.gz149.65 KB gimp-plugin-interpolate-0.3.tar.gz150.28 KB gimp-plugin-interpolate-0.4.tar.gz147.09 KB gimp-plugin-interpolate-0.5.tar.gz152.11 KB gimp-plugin-interpolate-0.6.tar.gz156.99 KB gimp-plugin-interpolate-1.0.tar.gz160.96 KB Tags: gradientgaussianinterpolationplanelinearweighted averageGIMP Version: 2.6Code License: GPLv3 Log in to post comments
+Comments
+September 22, 2010 - 18:55 — stamit
+use 0.4
+Actually, you need 0.4 for this to work. If you have a previous version, the input mask will have to exclude the white spot pixels as well (not just the duck pixels). That was difficult to do, so this is why I added the "subtract selection" option in 0.4. It will internally subtract the selection from the input mask. So, now, the input mask can be a simple white channel, with black in place of the duck.
+So, with 0.4, just blacken the duck on the input mask, select the spots and you are done.
+If you have a previous version you will have to do this: after you have made the selection of the white spots, go to the 'channels' tab where you saved your input mask, click the input mask channel to make it active and then do a fill with black. This will set the selected areas in the input mask to black (so the white-spot areas are not read by the filter). Then go to the layers tab and click the image layer to make it active (so that the filter is applied to the image and not to the mask channel). Then apply the filter.
+Log in to post comments
+September 22, 2010 - 19:02 — stamit
+Active drawable
+Always make sure that the layer you are applying the filter to is the active layer (it's the selected entry in the "layers" list) because that is the surface you want to paint on. Whenever you do a "save selection to channel", GIMP will automatically make the *new channel* active. So, each time you do a "save selection to channel" you have to manually go to the layers tab and click the RGB layer you are applying the filter to, to make it "active" again.
+I have this problem a lot, where I forget to click on the RGB layer and I mistakenly apply the filter to the temporary channel, instead of the image. But this is GIMP behavior, so I can't do much about it.
+Log in to post comments
+September 22, 2010 - 18:09 — stamit
+Masks
+The simplest thing you can do is to select a white spot with the lasso tool and apply the filter with the default options. And that's it. The job of this filter is to fill the selection based on the *surrounding* colors. If you had used a simple blur filter, that would have left a faint white smudge in place of the white spot that you wanted to remove. This filter will only use the *surrounding* colors to decide what to paint inside the selection. This is why I wrote this plug-in.
+The thing with this plug-in is that internally it uses two masks, an input mask and and the selection. If you don't give it an input mask, it will use the inverse of the selection by default. So a separate input mask is not really necessary. But there *has* to be a selection (the "output mask").
+A separate input mask is only necessary when you don't want all the surroundings to contribute their color. For example, the spot that is right above the duck's head. On that spot, you want to paint the lake's blue-green color and not the duck's black. If you don't do something special there, the result will be a mix between the color of the water and the color of the duck. You have to tell the filter to only read from the water pixels, and not the duck pixels. You do that with an input mask. You select only the water pixels and save the selection to a channel. Then you clear this selection and select the white spot pixels that you want to overwrite, and *then* you apply the filter. The defaults should be good for most cases.
+Log in to post comments
+August 21, 2010 - 04:53 — mahvin
+Interesting Lyle, I used the Select by Color tool to select the whitest areas of the image, used Heal Selection set to about 35% and got similar results (better results IMHO) as this interpolate process (comparing to the example image shown here - I couldn't get this plug-in loaded on Ubuntu). I had to be careful and eliminate some areas around the duck using the Free Select tool on subtract, but having the images side by side, you couldn't really tell the differences in a majority of the spots, although my process took out more. Not sure on how much faster it was, other than going by stamit saying it can take awhile to run interpolate. :)
+I'd prefer to test interpolate for myself, though.
+Log in to post comments
+August 21, 2010 - 07:43 — lylejk
+I like your result Mahvin. I
+I like your result Mahvin. I was a little lazy with my mask so my results were somewhat more like the author of this thread. He said that his plugins still requires a mask anyway, but I too would still like to test his plugin out. :)
+Log in to post comments
+August 26, 2010 - 06:29 — stamit
+Did it
+Here it is. I used gimp-plugin-template and the package size jumped from 10KB to 150KB. But it should compile easily.
+Log in to post comments
+August 21, 2010 - 01:58 — stamit
+No automatic mask
+No, there has to be a mask! It doesn't generate the mask automatically. It uses the selection as the output mask and the first extra channel as the input mask. If there is no extra channel, it uses the inverse of the selection as the input mask.
+But I made the mask for this picture easily by using the "magic wand" tool and then shrinking/growing and inverting the selection.
+Log in to post comments
+August 19, 2010 - 03:48 — lylejk
+The result looks cool; a lot
+The result looks cool; a lot better then trying to run the Healing Script-fu for each object. Anyway, I don't have any idea on how to compile this one for Windows; any possibility to port the executible for Windows by chance? :)
+Log in to post comments
+August 21, 2010 - 02:00 — stamit
+Ok
+Ok, I'm working on that. I didn't use the plug-in template. I just wrote a Makefile in my gimp plug-ins directory.
+Log in to post comments
+August 19, 2010 - 03:45 — liberace
+How to get it work
+Could you please explain how to install his plug in. I did: "make interpolate" but the produced file was not recognized by Gimp 2.6. Thnx
+Log in to post comments
+Pages« first
+‹ previous
+1
+2
+3
+next ›
+last »
+Unless otherwise noted, the rights for the individual plugins are with their respective authors. Logo image by Jakub Steiner.
+Questions
+No questions yet ... Search form
+Search Active forum topics
+Lasm's Color Punch
+Wall paper Designs Having MULTIPLE ISSUES
+More Updated Questions
+Direct link? Last change 2 weeks 15 hours No answers, yet! Why can I not find this Plugin? Last change 1 month 2 weeks 1 Answer(s) Could you add the link to the new fill with foreground color Last change 1 month 3 weeks 2 Answer(s) more Recent comments
+Release of G'MIC 1.5.9.3 2 weeks 5 days ago
+Release of G'MIC 1.5.9.2 1 month 4 days ago
+Release of G'MIC 1.5.9.1 1 month 1 week ago
+Recent content
+Batch Edit Color Balance, Brightness and Contrastpendel Path shape creator 5pgarcia Export Layerskhalim19 Done.khalim19 Done.khalim19 Direct link?Francois_C GIMP Bookragtag info about layersrob.brz1 GIMP Extensions Pack for WindowsGIMP Extensions Gimp Registry Futureingo-test 

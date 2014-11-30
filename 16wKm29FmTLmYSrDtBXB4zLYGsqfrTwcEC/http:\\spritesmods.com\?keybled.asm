@@ -1,0 +1,164 @@
+http://spritesmods.com/?keybled.asm
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 02:08:04 GMT
+Server: Apache/2.2.22 (Debian)
+X-Powered-By: PHP/5.4.4-14+deb7u12
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3703
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Sprites mods - Welcome - Welcome!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="style/style-new.css" />
+<link rel="stylesheet" type="text/css" href="style/print.css" media="print" />
+<link type="application/rss+xml" rel="alternate" title="Sprites Mods" href="http://spritesmods.com/rss.php" />
+</head>
+<body>
+
+<div id="header"><span id="sitename"><span id="sitenamebig">SpritesMods</span>.com</span><h1>Welcome - Welcome!</h1></div>
+
+
+<div id="left">
+<p />
+<a href="?art=main">Welcome</a><br /><ul id="mainmenu"><li><a href="?art=hardware">Hardware stuff</a></li><li><a href="?art=hacks">Hacks</a></li><li><a href="?art=software">Software</a></li><li><a href="?art=consoles">Console hacking</a></li><li><a href="?art=security">Security</a></li><li><a href="?art=nabaztag">Nabaztag</a></li><li><a href="?art=about">About Spritesmods</a></li></ul></div>
+
+<div id="right">
+<div id="righttop">
+<p /><strong>Page 1</strong><br />Welcome! (+ discussion / remarks)<p>
+</p>
+</div>
+<div id="rightbottom">
+<p>
+Do you like my hacking? If so, please consider leaving something in the<br />
+</p>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_donations">
+<input type="hidden" name="business" value="AWHK8LYRDDS3C">
+<input type="hidden" name="lc" value="GB">
+<input type="hidden" name="item_name" value="Spritesmods.com">
+<input type="hidden" name="no_note" value="0">
+<input type="hidden" name="cn" value="Remarks">
+<input type="hidden" name="no_shipping" value="1">
+<input type="hidden" name="rm" value="1">
+<input type="hidden" name="return" value="http://spritesmods.com/?art=main&amp;thanks=1">
+<input type="hidden" name="currency_code" value="EUR">
+<input type="hidden" name="bn" value="PP-DonationsBF:donate.png:NonHosted">
+<input type="image" src="http://spritesmods.com/donate.png" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen.">
+<!--
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+-->
+</form>
+
+<p>
+Or use Bitcoins:<br />
+<script src="btc/coin.js"></script>
+<script>
+CoinWidgetCom.go({
+	wallet_address: "16wKm29FmTLmYSrDtBXB4zLYGsqfrTwcEC"
+	, currency: "bitcoin"
+	, counter: "count"
+	, alignment: "bl"
+	, qrcode: true
+	, auto_show: false
+	, lbl_button: "Donate"
+	, lbl_address: "My Bitcoin Address:"
+	, lbl_count: "donations"
+	, lbl_amount: "BTC"
+});
+</script>
+</p>
+
+
+<p>
+<br />Current contents:
+<br />EUR181 (about $240.73) and a bunch of cool hardware.
+</p>
+
+
+<p>
+Follow Spritesmods on <a href="http://twitter.com/SpritesMods">Twitter</a>!
+</p>
+</div>
+</div>
+<div id="center">
+<p><h1>Welcome!
+</h1>
+</p>
+<!-- google_ad_section_start -->
+<p>Welcome to Spritesmods. At this site, I'll document my more interesting hacks
+for your viewing pleasure. While it's not updated that regularly, I try to add an
+article about every month.</p>
+<p>
+Ow, by the way: all the pictures are thumbnails. You can click on them to
+get the originals, straight from my camera. If you want to comment on an article,
+there's a discussion area at the last page of every one of 'em.
+</p>
+<p>
+You can follow Spritesmods on <a href="http://twitter.com/SpritesMods">Twitter</a> 
+too if you want to know about the projects I'm working on, that may or may not 
+eventually make it to the site.
+</p>
+<p>
+<a href="http://spritesmods.com/rss.php"><img src="main/rss.png" alt="rss logo" />RSS feed</a>
+</p>
+<p>
+Last added projects:<br />
+Jun 4 2014: <a href="?art=magnmicrobots">Duplicating the SRI magnet micro-robots</a><br />Dec 29 2013: <a href="?art=imx233-ws2811">WS2812 LEDs controlled by an iMX233</a><br />Dec 23 2013: <a href="?art=jello3dprinter">3d Jello printer</a><br />Aug 1 2013: <a href="?art=hddhack">Hard disk hacking</a><br />
+<p>This website is completely Web1.82 compliant.</p>
+</p><!-- google_ad_section_end -->
+<p id="prevnext">&nbsp;1&nbsp;</p><p /><strong>Last 10 comments</strong> <a href="?art=main&amp;page=1&amp;showall=true">Show all</a><a id="cmtid2394"></a><div class="comment"><strong>Kathyelecfreaks wrote at 1 Jul 2014, 4.55:</strong><p>Hi Sprite,
+
+This is DIY cardboard laser piano page: http://www.elecfreaks.com/7079.html
+
+It is just cool.
+
+Enjoy
+
+Kathy</p></div><a id="cmtid2392"></a><div class="comment"><strong>Andre wrote at 22 Jun 2014, 8.55:</strong><p>Hi, I have two 16GB and an 8GB chip from broken Ipod Touch units here as well as a few assorted Flash chips.
+Any use?
+I tried to transplant one onto a BGA capable pendrive but it isn't doing anything.
+Can send this too as it might be handy due to the large pin spacings.
+
+Had a thought about interfacing to chips, what about using an elastomer based system and 3D printed clamp?
+The connectors used on Poundland voltage sensors are useful here, discovered that ages ago.
+</p></div><a id="cmtid2283"></a><div class="comment"><strong>Jake M wrote at 14 Nov 2013, 19.07:</strong><p>This looks like a great forthcoming product, but I wonder how secure it is...  Maybe worth your expert hacking efforts?
+http://news.cnet.com/8301-1035_3-57612054-94/inside-coins-techie-vision-for-the-all-in-one-credit-card/</p></div><a id="cmtid2255"></a><div class="comment"><strong>Randolf wrote at 20 Aug 2013, 15.08:</strong><p>Keep rolling! The HDD mod is an excellent job done. </p></div><a id="cmtid2238"></a><div class="comment"><strong>kg86 wrote at 8 Aug 2013, 15.49:</strong><p>just plain awesomeness!! thanks for writing this up and the pics, the details. Enjoyed the reading!</p></div><a id="cmtid2128"></a><div class="comment"><strong>Sprite_tm wrote at 19 Apr 2013, 3.37:</strong><p>Rashid: Even if I did know what an AED is or fils are, I have no clue about commercial coin validators. I suggest you go contact some manufacturers of those, which imo you should have done long before commenting here.</p></div><a id="cmtid2127"></a><div class="comment"><strong>Sprite_tm wrote at 19 Apr 2013, 3.34:</strong><p>Sorry, the coin validator isn't done yet... I can get it to validate coins fairly well directly after calibrating it, but temperature, humidity, the phase of the moon and who knows what else makes it pretty unreliable even after sitting for just one day, making it kinda useless. I'm still planning on picking up the project again, but I'm not sure when I'll find the time.</p></div><a id="cmtid2126"></a><div class="comment"><strong>Rashid Hakim wrote at 18 Apr 2013, 11.11:</strong><p>Hi! I wonder if you can suggest me the coin validator to allow me validate 2 different coins. AED 1 or 50 fils. On validation of AED 1 I should get the SHORT pulse or on insertion of 2 50 fils i should get5 a SHORT pulse.I would want to know if I can get the interface as well to give me ingformation through the LCD about the status.Requesting to &quot;insert coin&quot;. Then giving message while it is processing to &quot;Please Wait&quot; . </p></div><a id="cmtid2125"></a><div class="comment"><strong>irouroui wrote at 18 Apr 2013, 10.25:</strong><p>any information about your coin video please ? what sensor are you using ?</p></div><a id="cmtid2051"></a><div class="comment"><strong>Team CryptX2 wrote at 28 Nov 2012, 10.10:</strong><p>Hi, 
+ Thought you would be interested to see the project we have developed. 
+CryptX2: an Open Source Hardware Encrypted Storage Device
+
+The campaign is up for about 2 more weeks at
+http://www.indiegogo.com/CryptX2
+
+Or the main website is here
+http://www.cryptx2.com/
+
+Let us know if you have any questions or feedback about it.
+Thanks</p></div><a id="leavecmt"></a>
+<div class="comment">
+Leave a comment:<form method="post" action="?#leavecmt">
+<p>
+<input type="hidden" name="page" value="1" />
+<input type="hidden" name="art" value="main" />
+<input type="hidden" name="capval" value="1501216814" />
+Your name:<br />
+<input type="text" name="name" value="" /><br />
+What does this picture say?<br />
+<img src="captcha/captcha.php?secret=245660966" alt="Sorry, this is a captcha" /><br />
+<input type="hidden" name="capfld" value="bzkage" />
+<input type="text" name="bzkage" /><br />
+Your comment:<br />
+<textarea name="comment" rows="5" cols="60"></textarea><br />
+<input type="submit" name="postcomment" value="Comment" />
+</p>
+</form>
+</div>
+<br /><div class="copy">&copy; 2006-2013 Sprite_tm - <a href="?art=contact&amp;af=Welcome">Contact</a></div></div>
+</body>
+</html>
+

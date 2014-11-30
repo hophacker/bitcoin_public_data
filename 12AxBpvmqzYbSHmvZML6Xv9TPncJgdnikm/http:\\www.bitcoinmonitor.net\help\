@@ -1,0 +1,281 @@
+http://www.bitcoinmonitor.net/help/
+HTTP/1.1 200 OK
+Server: nginx/0.7.67
+Date: Tue, 22 Jul 2014 11:21:36 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Vary: Cookie
+Set-Cookie: csrftoken=b1767722363e89bd680132b5ccba5840; expires=Tue, 21-Jul-2015 11:21:36 GMT; Max-Age=31449600; Path=/
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="js">
+<head>
+    
+    
+        <meta charset="utf-8"/>
+        <title>bitcoinmonitor.net &ndash; monitor your coins!</title>
+
+        <!-- Mobile viewport optimisation -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- (en) Add your meta data here -->
+
+        <link href="/static/css/styles.css" rel="stylesheet" type="text/css"/>
+        <!--[if lte IE 7]>
+        <link href="/static/yaml/core/iehacks.css" rel="stylesheet" type="text/css" />
+        <![endif]-->
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/yaml/add-ons/accessible-tabs/jquery.tabs.js"></script>
+        <script type="text/javascript" src="/static/yaml/add-ons/syncheight/jquery.syncheight.js"></script>
+
+        <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.jquery_tabs').accessibleTabs({
+                syncheight:true,
+                tabbody: '.tab-content',
+                fxspeed: 0,
+                autoAnchor: true
+            });
+        });
+    </script>
+
+</head>
+
+<body class="demo-2col">
+
+<div class="ym-wrapper">
+    <div class="ym-wbox">
+
+        <header>
+            <h1>bitcoinmonitor.net</h1>
+        </header>
+
+        <nav id="nav">
+            <div class="ym-hlist">
+                <ul>
+                    
+                    
+                    
+                    
+                    
+                    <li class=""><a href="/">Home</a></li>
+                    <li class=""><a href="/services/">Services</a></li>
+                    <li class=""><a href="/dashboard/">Dashboard</a>
+                    <li class="active"><a href="/help/">Support</a>
+                    <li class=""><a href="/apidoc/">API docs</a>
+                </ul>
+                <form class="ym-searchform" method="post" action="/accounts/login/">
+                    
+                        
+                            <div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='b1767722363e89bd680132b5ccba5840' /></div>
+                            <input id="id_username" type="text" name="username" maxlength="30" />
+                            <input type="password" name="password" id="id_password" />
+                            <input class="ym-searchbutton" type="submit" value="Log in"/>
+                            <a href="/accounts/register/" class="ym-searchbutton">Sign up</a>
+                        
+                    
+                </form>
+            </div>
+        </nav>
+
+        
+
+        <div id="main">
+            
+    <div class="jquery_tabs">
+
+        <h4 id="howto">Payment Howto</h4>
+        <div class="tab-content">
+            <h5>Setup</h5>
+            <p>You need to setup an url in your shop system which accepts http POST. The post body contains
+            information about incoming payment and number of confirmations.</p>
+            <p>You need to connect each order in your shop to one bitcoin address. Each address should be marked as
+                "used" in your system until the payment is received. If a payment notification comes in, you can look up
+                the belonging order based on the bitcoin address. If the amount is fine and the order can be processed
+                you can fulfill the order and "release" the bitcoin address for the next incoming order.</p>
+            <p>This means, you have to set up as many bitcoin addresses as you want to support parallel open orders. 
+                And you have to stop accepting additional orders if all bitcoin addresses in your system are linked to 
+                an open order.</p>
+            <p>There are two ways to setup you bitcoin addresses with your agent:
+            <ol>
+                <li>Static: Manually add all related addresses directly to the agent using the dashboard. Recommended for
+                    low-volume sites with only a few addresses which don't change often.</li>
+                <li>Dynamic: Add or remove bitcoin addresses from your agent on demand using the API. Recommended for
+                    sites which need a lot of bitcoin addresses or with frequently changing addresses.</li>
+            </ol>
+            Note that both options can be combined; you can mix & match dashboard and API usage as you like.
+            </p>
+            <p>For perfect customer support you should also handle correctly partial payments: If the amount received
+                is not sufficient the order should stay open and the address still be reserved for the same order until
+                the required amount is received.</p>
+            <div class="box info">
+                <p>You can look at <a target="_blank" href="http://www.txt4coins.net/sysinfo/">tx4coin's sysinfo
+                    page</a> as an example: Currently the site has 12 bitcoin addresses in the system. For each SMS
+                    ordered but not yet paid the "addresses in use" will increase. If all available addresses are in
+                    use, the system will not accept new SMS orders. If a SMS is paid completely, the associated bitcoin
+                    address is released again, decreasing the "addresses in use" reading.</p>
+                <p>txt4coins.net also supports partial payments. Give it a try - If you order a SMS and only pay
+                    partly the site keeps track of the missing amount and shows the according status on the order
+                    page.</p>
+            </div>
+
+            <h5>Security</h5>
+            <p>To make sure that the POSTed information is authentic, a signature is added to the data. The signature is
+            calculated by concatenating all parameters <em>and your http security token</em> into one long string. Then
+            the md5 hash of this string is calculated and provided in <code>signature</code>. As only you and
+                bitcoinmonitor.net know your security token, no one else can create a valid signature.</p>
+            <p>The information in the post body is formatted in json.</p>
+            <h5>Provided data in POST body</h5>
+            <dl>
+                <dt>"amount"</dt>
+                <dd>Amount received (unit: Satoshi)</dd>
+                <dt>"amount_btc"</dt>
+                <dd>Amount received (unit: Bitcoin)</dd>
+                <dt>"userdata"</dt>
+                <dd>Reserved for later use. At some time you will be able to set up additional information
+                    to be included in this parameter.</dd>
+                <dt>"confirmations"</dt>
+                <dd>Number of confirmations for this transaction. "0" for unconfirmed transactions</dd>
+                <dt>"address"</dt>
+                <dd>Bitcoin address which received the payment</dd>
+                <dt>"created"</dt>
+                <dd>timestamp when transaction was received</dd>
+                <dt>"txhash"</dt>
+                <dd>Hash of transaction which includes this payment</dd>
+                <dt>"agent"</dt>
+                <dd>Name of the agent who triggered this notification</dd>
+            </dl>
+            <h5>Example POST body</h5>
+            <div class="box info">
+            <code>
+                <pre>
+{
+    "signed_data": {
+        "amount": 122678000,
+        "userdata": "",
+        "confirmations": 2,
+        "amount_btc": "1.22678000",
+        "address": "12r9JzPNnyWs2j1s9KLW5keqBr4kbJjxz6",
+        "created": "2012-02-19 10:37:20.203541",
+        "txhash": "e0c84120068bfefddab051e751f3df963c4ed29e7b13eadac026e6f17f55fb06",
+        "agent": "callback_test"
+    },
+    "signature": "38a25ec14b9ffcfe98938f3e35ac9cf41de2a971"
+}
+                </pre>
+            </code>
+            </div>
+
+            <h5>Authenticate incoming payment notification</h5>
+            <p>To check that the signature is valid you have to perform the following steps (pseudocode):</p>
+            <ol>
+                <li>Concatenate contents of <code>signed_data</code> in exactly the following order (and make sure to use the string
+                    representation of each value!):</li>
+                <pre>concatenated_data = address + agent + amount + amount_btc + confirmations + created + userdata + txhash
+                </pre>
+                <li>Append your http security token:</li>
+                <pre>concatenated_data = concatenated_data + http_security_token
+                </pre>
+                <li>Calculate the md5 hash:</li>
+                <pre>my_signature = md5(concatenated_data).hexdigest()
+                </pre>
+                <li>Compare your calculated md5 hash with the hash provided in <code>signature</code>. Only accept the payment
+                if the signatures are equal.</li>
+            </ol>
+
+            <h6>Django/Python Example</h6>
+            <code>
+                <pre>
+import hashlib
+from django.utils import simplejson
+
+json_data = simplejson.loads(request.raw_post_data)
+
+tx_hash = json_data[u'signed_data'][u'txhash']
+address = json_data[u'signed_data'][u'address']
+created = json_data[u'signed_data'][u'created']
+confirmations = json_data[u'signed_data'][u'confirmations']
+userdata = json_data[u'signed_data'][u'userdata']
+amount = json_data[u'signed_data'][u'amount']
+agent = json_data[u'signed_data'][u'agent']
+amount_btc = json_data[u'signed_data'][u'amount_btc']
+signature = json_data[u'signature']
+
+sigstring = address + agent + str(amount) + str(amount_btc)+ str(confirmations) + created + str(userdata) + str(tx_hash) + &lt;your token&gt;
+
+my_signature = md5(sigstring).hexdigest()
+
+if my_signature == signature:
+    # Accept payment
+                </pre>
+            </code>
+
+        </div>
+
+        <h4 id="faq">FAQ</h4>
+        <div class="tab-content">
+            <div class="box info">
+                <h5>How is the behaviour of bitcoinmonitor.net during downtimes?</h5>
+                If you have set up your agent to trigger a notification e.g. at 0 and at 6 confirmations it is guaranteed that
+                both notifications are performed. Even when bitcoinmonitor is down and misses the initial confirmation,
+                so the transaction is spotted only late with e.g. 10 confirmations, you will get immediately two calls:
+                The first with 0 confirmations, the second with 6 confirmations.
+            </div>
+            <div class="box info">
+                <h5>Retry policy</h5>
+                In case a notification event can not be delivered, the agents will retry <em>up to 5 times</em>, waiting
+                <em>30 seconds</em> between each try. During this phase you will see the according <a href="/dashboard/#history">
+                notification history</a> entry in state <span class="warning">"RETRY"</span>. In case also the last try has failed
+                the agents will give up and the <a href="/dashboard/#history">notification history</a> entry will change to state <span class="error">"FAILURE"</span>.
+            </div>
+            <div class="box info">
+                <h5>Expected response codes</h5>
+                If your server responds to the url callback with an error (any 4xx or 5xx code) the notification will be retried
+                according to the retry policy. If your server responds with a success code (2xx) the notification is considered
+                to be successfully delivered.
+            </div>
+            <div class="box info">
+                <h5>Compromised token</h5>
+                Whoever knows your token can trigger fake payments on your site. If your token has been compromised you
+                should change it in the <a href="/dashboard/#settings">dashboard</a>.
+            </div>
+            <p class="highlight">Question not answered here? Drop me a mail at <a href="mailto:michael@bitcoinmonitor.net">
+            michael@bitcoinmonitor.net</a>.</p>
+        </div>
+
+        <h4 id="httpcallback">test http callback</h4>
+        <div class="tab-content">
+        
+            <div class="box warning">
+                You need to be logged to test http callbacks.
+            </div>
+        
+        </div>
+
+        <h4 id="xmpptest">test xmpp/jabber notification</h4>
+        <div class="tab-content">
+            
+                <div class="box warning">
+                    You need to be logged to test http callbacks.
+                </div>
+            
+        </div>
+    </div>
+
+        </div>
+        <footer class="center">
+            © <a href="mailto:michael@bitcoinmonitor.net">Michael Bauer</a> 2012 &ndash; Layout based on <a href="http://www.yaml.de">YAML</a>. Donations welcome at <a href="bitcoin:12AxBpvmqzYbSHmvZML6Xv9TPncJgdnikm?label=bitcoinmonitor.net">12AxBpvmqzYbSHmvZML6Xv9TPncJgdnikm</a>.
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>
+

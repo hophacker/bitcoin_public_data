@@ -1,0 +1,1730 @@
+http://www.vectoralgebra.info/eulermatrix.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 11:59:06 GMT
+Server: Apache
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 6783
+Connection: close
+Content-Type: text/html
+
+<html>
+<head>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+
+  _gaq.push(['_setAccount', 'UA-29821112-1']);
+
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+
+  })();
+</script>
+
+
+    <title>Euler angles to orientation matrix conversions</title>
+
+	<script type="text/javascript">
+
+           function sumar(op1,op2,op3)
+           {
+              //alert("quiero sumar "+op1+op2+op3);
+              if (op1.substring(0,1)==" ")
+                 op1="+"+op1.substring(1);
+              if (op2.substring(0,1)==" ")
+                 op2="+"+op2.substring(1);
+              if (op3.substring(0,1)==" ")
+                 op3="+"+op3.substring(1);
+
+              var result = "";
+
+              if (op1!="+ 0")
+                 result+=op1;
+              if (op2!="+ 0")
+                 result+=op2;
+              if (op3!="+ 0")
+                 result+=op3;
+
+              //alert("por ahora "+result);
+
+              if (result.substring(0,1)=="+") // quito + inicial
+                  result=result.substring(1);
+
+              //alert("devuelvo "+result);
+              if ((result=="")||(result==" ")||(result=="  ")||(result=="   "))
+                 result="  0";
+              return result;
+           }
+
+           function producto(op1,op2)
+           {
+              var contsigno = 0;
+              if (op1.substring(0,1)=="-")
+                 contsigno++;
+              if (op2.substring(0,1)=="-")
+                 contsigno++;
+              var signo=" ";
+              if ((contsigno==0)||(contsigno==2))
+                 signo=" ";
+              else
+                 signo="-";
+
+              // quito los signos
+              if ((op1.substring(0,1)=="+")||(op1.substring(0,1)=="-"))
+                  op1=op1.substring(1);
+              if ((op2.substring(0,1)=="+")||(op2.substring(0,1)=="-"))
+                  op2=op2.substring(1);
+
+              if ((op1==" 0")||(op2==" 0")||(op1=="  0")||(op2=="  0"))
+              {
+                  //alert("tengo alguno a cero");
+                  return "  0";
+              }
+              if ((op1==" 1")||(op1=="  1"))
+              {
+                  //alert("tengo op1 a uno");
+                   return signo+op2;
+              }
+              if ((op2==" 1")||(op2=="  1"))
+              {
+                  //alert("tengo op2 a uno");
+                  return signo+op1; // el otro
+              }
+
+              return signo+op1+op2;
+           } 
+
+           function displayData(letra1, letra2, letra3)
+           {
+               multiplyData(letra1,letra2,'a'); // rellena la A = B.C
+               multiplyDataLimpiando('a',letra3,'e'); // llena la E=A.D
+           }
+
+           function displayData2(letra1, letra2, letra3)
+           {
+               multiplyData(letra1,letra2,'j'); // rellena la A = B.C
+               multiplyDataLimpiando('j',letra3,'i'); // llena la E=A.D
+           }
+
+           function quitaespacios(cadena)
+           {
+//alert("Piden split de "+cadena)
+              var temp = new Array();
+              temp = cadena.split(' ');
+//alert("temp tiene elems="+temp.length);
+
+              var result="";
+//alert("result es "+result);
+              for (f=0; f<temp.length; f++)
+              {
+  //              alert("ahora result es "+result);
+                result+=temp[f];
+              }
+//alert(result);
+              return result;
+           }
+
+	   function multiplyData(letra1,letra2,letra3)
+	   {
+              // multiplica las dos matrices pasadas y deja el resultado en la letra3
+              //alert("por ahora bien");
+              var b11 = document.getElementById(letra1+"11").innerHTML;
+              var b12 = document.getElementById(letra1+"12").innerHTML;
+              var b13 = document.getElementById(letra1+"13").innerHTML;
+              var b21 = document.getElementById(letra1+"21").innerHTML;
+              var b22 = document.getElementById(letra1+"22").innerHTML;
+              var b23 = document.getElementById(letra1+"23").innerHTML;
+              var b31 = document.getElementById(letra1+"31").innerHTML;
+              var b32 = document.getElementById(letra1+"32").innerHTML;
+              var b33 = document.getElementById(letra1+"33").innerHTML;
+
+              var c11 = document.getElementById(letra2+"11").innerHTML;
+              var c12 = document.getElementById(letra2+"12").innerHTML;
+              var c13 = document.getElementById(letra2+"13").innerHTML;
+              var c21 = document.getElementById(letra2+"21").innerHTML;
+              var c22 = document.getElementById(letra2+"22").innerHTML;
+              var c23 = document.getElementById(letra2+"23").innerHTML;
+              var c31 = document.getElementById(letra2+"31").innerHTML;
+              var c32 = document.getElementById(letra2+"32").innerHTML;
+              var c33 = document.getElementById(letra2+"33").innerHTML;
+
+//alert("pre producto tengo "+b11+","+c11);
+              var h1111 = producto(b11,c11);
+              var h1221 = producto(b12,c21);
+              var h1331 = producto(b13,c31);
+//alert("tras producto tengo "+h1111);
+
+              var r11 = sumar(h1111,h1221,h1331);
+
+              var h1112 = producto(b11,c12);
+              var h1222 = producto(b12,c22);
+              var h1332 = producto(b13,c32);
+              var r12 = sumar(h1112,h1222,h1332);
+
+              var h1113 = producto(b11,c13);
+              var h1223 = producto(b12,c23);
+              var h1333 = producto(b13,c33);
+              var r13 = sumar(h1113,h1223,h1333);
+
+              var h2111 = producto(b21,c11);
+              var h2221 = producto(b22,c21);
+              var h2331 = producto(b23,c31);
+              var r21 = sumar(h2111,h2221,h2331);
+
+              var h2112 = producto(b21,c12);
+              var h2222 = producto(b22,c22);
+              var h2332 = producto(b23,c32);
+              var r22 = sumar(h2112,h2222,h2332);
+
+              var h2113 = producto(b21,c13);
+              var h2223 = producto(b22,c23);
+              var h2333 = producto(b23,c33);
+              var r23 = sumar(h2113,h2223,h2333);
+
+              var h3111 = producto(b31,c11);
+              var h3221 = producto(b32,c21);
+              var h3331 = producto(b33,c31);
+              var r31 = sumar(h3111,h3221,h3331);
+
+              var h3112 = producto(b31,c12);
+              var h3222 = producto(b32,c22);
+              var h3332 = producto(b33,c32);
+              var r32 = sumar(h3112,h3222,h3332);
+
+              var h3113 = producto(b31,c13);
+              var h3223 = producto(b32,c23);
+              var h3333 = producto(b33,c33);
+              var r33 = sumar(h3113,h3223,h3333);
+
+	      document.getElementById(letra3+"11").innerHTML=r11;
+	      document.getElementById(letra3+"12").innerHTML=r12;
+	      document.getElementById(letra3+"13").innerHTML=r13;
+	      document.getElementById(letra3+"21").innerHTML=r21;
+	      document.getElementById(letra3+"22").innerHTML=r22;
+	      document.getElementById(letra3+"23").innerHTML=r23;
+	      document.getElementById(letra3+"31").innerHTML=r31;
+	      document.getElementById(letra3+"32").innerHTML=r32;
+	      document.getElementById(letra3+"33").innerHTML=r33;
+	   }
+
+
+	   function multiplyDataLimpiando(letra1,letra2,letra3)
+	   {
+              // multiplica las dos matrices pasadas y deja el resultado en la letra3
+              //alert("por ahora bien");
+              var b11 = document.getElementById(letra1+"11").innerHTML;
+              var b12 = document.getElementById(letra1+"12").innerHTML;
+              var b13 = document.getElementById(letra1+"13").innerHTML;
+              var b21 = document.getElementById(letra1+"21").innerHTML;
+              var b22 = document.getElementById(letra1+"22").innerHTML;
+              var b23 = document.getElementById(letra1+"23").innerHTML;
+              var b31 = document.getElementById(letra1+"31").innerHTML;
+              var b32 = document.getElementById(letra1+"32").innerHTML;
+              var b33 = document.getElementById(letra1+"33").innerHTML;
+
+              var c11 = document.getElementById(letra2+"11").innerHTML;
+              var c12 = document.getElementById(letra2+"12").innerHTML;
+              var c13 = document.getElementById(letra2+"13").innerHTML;
+              var c21 = document.getElementById(letra2+"21").innerHTML;
+              var c22 = document.getElementById(letra2+"22").innerHTML;
+              var c23 = document.getElementById(letra2+"23").innerHTML;
+              var c31 = document.getElementById(letra2+"31").innerHTML;
+              var c32 = document.getElementById(letra2+"32").innerHTML;
+              var c33 = document.getElementById(letra2+"33").innerHTML;
+
+//alert("pre producto tengo "+b11+","+c11);
+              var h1111 = producto(b11,c11);
+              var h1221 = producto(b12,c21);
+              var h1331 = producto(b13,c31);
+//alert("tras producto tengo "+h1111);
+
+              var r11 = sumar(h1111,h1221,h1331);
+
+              var h1112 = producto(b11,c12);
+              var h1222 = producto(b12,c22);
+              var h1332 = producto(b13,c32);
+              var r12 = sumar(h1112,h1222,h1332);
+
+              var h1113 = producto(b11,c13);
+              var h1223 = producto(b12,c23);
+              var h1333 = producto(b13,c33);
+              var r13 = sumar(h1113,h1223,h1333);
+
+              var h2111 = producto(b21,c11);
+              var h2221 = producto(b22,c21);
+              var h2331 = producto(b23,c31);
+              var r21 = sumar(h2111,h2221,h2331);
+
+              var h2112 = producto(b21,c12);
+              var h2222 = producto(b22,c22);
+              var h2332 = producto(b23,c32);
+              var r22 = sumar(h2112,h2222,h2332);
+
+              var h2113 = producto(b21,c13);
+              var h2223 = producto(b22,c23);
+              var h2333 = producto(b23,c33);
+              var r23 = sumar(h2113,h2223,h2333);
+
+              var h3111 = producto(b31,c11);
+              var h3221 = producto(b32,c21);
+              var h3331 = producto(b33,c31);
+              var r31 = sumar(h3111,h3221,h3331);
+
+              var h3112 = producto(b31,c12);
+              var h3222 = producto(b32,c22);
+              var h3332 = producto(b33,c32);
+              var r32 = sumar(h3112,h3222,h3332);
+
+              var h3113 = producto(b31,c13);
+              var h3223 = producto(b32,c23);
+              var h3333 = producto(b33,c33);
+              var r33 = sumar(h3113,h3223,h3333);
+
+	      document.getElementById(letra3+"11").innerHTML=quitaespacios(r11);
+	      document.getElementById(letra3+"12").innerHTML=quitaespacios(r12);
+	      document.getElementById(letra3+"13").innerHTML=quitaespacios(r13);
+	      document.getElementById(letra3+"21").innerHTML=quitaespacios(r21);
+	      document.getElementById(letra3+"22").innerHTML=quitaespacios(r22);
+	      document.getElementById(letra3+"23").innerHTML=quitaespacios(r23);
+	      document.getElementById(letra3+"31").innerHTML=quitaespacios(r31);
+	      document.getElementById(letra3+"32").innerHTML=quitaespacios(r32);
+	      document.getElementById(letra3+"33").innerHTML=quitaespacios(r33);
+	   }
+	</script>
+	<script type="text/javascript">
+
+           var righthand1="0";
+
+           function sethandA()
+           {
+                righthand1 = document.formul1.selHand1.value;
+                //var righthand = document.formul1.selHand1.value;
+		//alert("hola "+righthand);
+                setvaluesA();
+           }
+	   function setvaluesA()
+	   {
+                righthand1 = document.formul1.selHand1.value;
+
+                if (righthand1=="0")
+                    setvaluesA1();
+                else
+                    setvaluesA2();
+           }
+
+	   function setvaluesA1()
+	   {
+		    var indice = document.formul1.selCombo1.selectedIndex
+
+		    var textoEscogido = document.formul1.selCombo1.options[indice].text
+
+
+                    // primera matriz
+                    var letra1 = textoEscogido.substring(0,1);
+                    var letra2 = textoEscogido.substring(1,2);
+                    var letra3 = textoEscogido.substring(2,3);
+
+
+                    var texto1;
+                    var texto2;
+                    var texto3;
+
+                    if (letra1=="X")
+                       texto1 = "  1,  0,  0,  0, c1,-s1,  0, s1, c1"
+                    else if (letra1=="Y")
+                       texto1 = " c1,  0, s1,  0,  1,  0,-s1,  0, c1"
+                    else if (letra1=="Z")
+                       texto1 = " c1,-s1,  0, s1, c1,  0,  0,  0,  1"
+
+                    if (letra2=="X")
+                       texto2 = "  1,  0,  0,  0, c2,-s2,  0, s2, c2"
+                    else if (letra2=="Y")
+                       texto2 = " c2,  0, s2,  0,  1,  0,-s2,  0, c2"
+                    else if (letra2=="Z")
+                       texto2 = " c2,-s2,  0, s2, c2,  0,  0,  0,  1"
+
+                    if (letra3=="X")
+                       texto3 = "  1,  0,  0,  0, c3,-s3,  0, s3, c3"
+                    else if (letra3=="Y")
+                       texto3 = " c3,  0, s3,  0,  1,  0,-s3,  0, c3"
+                    else if (letra3=="Z")
+                       texto3 = " c3,-s3,  0, s3, c3,  0,  0,  0,  1"
+
+	      document.getElementById("b11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("b12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("b13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("b21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("b22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("b23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("b31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("b32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("b33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("c11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("c12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("c13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("c21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("c22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("c23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("c31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("c32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("c33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("d11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("d12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("d13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("d21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("d22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("d23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("d31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("d32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("d33").innerHTML=texto3.substring(32,35);
+	   }
+
+	   function setvaluesA2()
+	   {
+		    var texto
+		    texto = "El numero de opciones del select:" +
+			 document.formul1.selCombo1.length
+
+		    var indice = document.formul1.selCombo1.selectedIndex
+
+		    var textoEscogido = document.formul1.selCombo1.options[indice].text
+		    //texto += "nTexto de la opcion escogida: " + textoEscogido
+		    //alert(textoEscogido);
+
+                    // primera matriz
+                    var letra1 = textoEscogido.substring(0,1);
+                    var letra2 = textoEscogido.substring(1,2);
+                    var letra3 = textoEscogido.substring(2,3);
+
+
+                    var texto1;
+                    var texto2;
+                    var texto3;
+
+                    if (letra1=="X")
+                       texto1 = "  1,  0,  0,  0, c1, s1,  0,-s1, c1"
+                    else if (letra1=="Y")
+                       texto1 = " c1,  0,-s1,  0,  1,  0, s1,  0, c1"
+                    else if (letra1=="Z")
+                       texto1 = " c1, s1,  0,-s1, c1,  0,  0,  0,  1"
+
+                    if (letra2=="X")
+                       texto2 = "  1,  0,  0,  0, c2, s2,  0,-s2, c2"
+                    else if (letra2=="Y")
+                       texto2 = " c2,  0,-s2,  0,  1,  0, s2,  0, c2"
+                    else if (letra2=="Z")
+                       texto2 = " c2, s2,  0,-s2, c2,  0,  0,  0,  1"
+
+                    if (letra3=="X")
+                       texto3 = "  1,  0,  0,  0, c3, s3,  0,-s3, c3"
+                    else if (letra3=="Y")
+                       texto3 = " c3,  0,-s3,  0,  1,  0, s3,  0, c3"
+                    else if (letra3=="Z")
+                       texto3 = " c3, s3,  0,-s3, c3,  0,  0,  0,  1"
+
+	      document.getElementById("b11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("b12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("b13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("b21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("b22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("b23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("b31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("b32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("b33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("c11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("c12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("c13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("c21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("c22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("c23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("c31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("c32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("c33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("d11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("d12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("d13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("d21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("d22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("d23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("d31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("d32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("d33").innerHTML=texto3.substring(32,35);
+	   }
+	</script>
+	<script type="text/javascript">
+           var righthand2="0";
+           function sethandB()
+           {
+                righthand2 = document.formul2.selHand2.value;
+                setvaluesB();
+           }
+           function setvaluesB()
+           {
+                righthand2 = document.formul2.selHand2.value;
+
+		var indice = document.formul2.selCombo2.selectedIndex;
+		var textoEscogido = document.formul2.selCombo2.options[indice].text;
+		var nombre = "euler_"+textoEscogido+".png";
+                // ajusto el grafico
+                document.getElementById("imagen1").src = nombre;
+
+                if (righthand2=="0") 
+                    setvaluesB1();
+                else
+                    setvaluesB2();
+           }
+
+	   function setvaluesB1()
+	   {
+		var indice = document.formul2.selCombo2.selectedIndex;
+
+		var textoEscogido = 
+                       document.formul2.selCombo2.options[indice].text
+
+                // primera matriz
+                var letra1 = textoEscogido.substring(0,1);
+                var letra2 = textoEscogido.substring(1,2);
+                var letra3 = textoEscogido.substring(2,3);
+
+                var texto1;
+                var texto2;
+                var texto3;
+
+                if (letra3=="x")
+                       texto1 = "  1,  0,  0,  0, c3,-s3,  0, s3, c3"
+                else if (letra3=="y")
+                       texto1 = " c3,  0, s3,  0,  1,  0,-s3,  0, c3"
+                else if (letra3=="z")
+                       texto1 = " c3,-s3,  0, s3, c3,  0,  0,  0,  1"
+
+                if (letra2=="x")
+                       texto2 = "  1,  0,  0,  0, c2,-s2,  0, s2, c2"
+                else if (letra2=="y")
+                       texto2 = " c2,  0, s2,  0,  1,  0,-s2,  0, c2"
+                else if (letra2=="z")
+                       texto2 = " c2,-s2,  0, s2, c2,  0,  0,  0,  1"
+
+                if (letra1=="x")
+                       texto3 = "  1,  0,  0,  0, c1,-s1,  0, s1, c1"
+                else if (letra1=="y")
+                       texto3 = " c1,  0, s1,  0,  1,  0,-s1,  0, c1"
+                else if (letra1=="z")
+                       texto3 = " c1,-s1,  0, s1, c1,  0,  0,  0,  1"
+
+
+	      document.getElementById("f11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("f12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("f13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("f21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("f22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("f23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("f31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("f32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("f33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("g11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("g12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("g13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("g21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("g22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("g23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("g31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("g32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("g33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("h11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("h12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("h13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("h21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("h22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("h23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("h31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("h32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("h33").innerHTML=texto3.substring(32,35);
+
+	   }
+	   function setvaluesB2()
+	   {
+		var indice = document.formul2.selCombo2.selectedIndex;
+
+		var textoEscogido = 
+                       document.formul2.selCombo2.options[indice].text
+
+                // primera matriz
+                var letra1 = textoEscogido.substring(0,1);
+                var letra2 = textoEscogido.substring(1,2);
+                var letra3 = textoEscogido.substring(2,3);
+
+                var texto1;
+                var texto2;
+                var texto3;
+
+                if (letra3=="x")
+                       texto1 = "  1,  0,  0,  0, c3, s3,  0,-s3, c3"
+                else if (letra3=="y")
+                       texto1 = " c3,  0,-s3,  0,  1,  0, s3,  0, c3"
+                else if (letra3=="z")
+                       texto1 = " c3, s3,  0,-s3, c3,  0,  0,  0,  1"
+
+                if (letra2=="x")
+                       texto2 = "  1,  0,  0,  0, c2, s2,  0,-s2, c2"
+                else if (letra2=="y")
+                       texto2 = " c2,  0,-s2,  0,  1,  0, s2,  0, c2"
+                else if (letra2=="z")
+                       texto2 = " c2, s2,  0,-s2, c2,  0,  0,  0,  1"
+
+                if (letra1=="x")
+                       texto3 = "  1,  0,  0,  0, c1, s1,  0,-s1, c1"
+                else if (letra1=="y")
+                       texto3 = " c1,  0,-s1,  0,  1,  0, s1,  0, c1"
+                else if (letra1=="z")
+                       texto3 = " c1, s1,  0,-s1, c1,  0,  0,  0,  1"
+
+
+	      document.getElementById("f11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("f12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("f13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("f21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("f22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("f23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("f31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("f32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("f33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("g11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("g12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("g13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("g21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("g22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("g23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("g31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("g32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("g33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("h11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("h12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("h13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("h21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("h22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("h23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("h31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("h32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("h33").innerHTML=texto3.substring(32,35);
+
+	   }
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+
+           function sumar(op1,op2,op3)
+           {
+              //alert("quiero sumar "+op1+op2+op3);
+              if (op1.substring(0,1)==" ")
+                 op1="+"+op1.substring(1);
+              if (op2.substring(0,1)==" ")
+                 op2="+"+op2.substring(1);
+              if (op3.substring(0,1)==" ")
+                 op3="+"+op3.substring(1);
+
+              var result = "";
+
+              if (op1!="+ 0")
+                 result+=op1;
+              if (op2!="+ 0")
+                 result+=op2;
+              if (op3!="+ 0")
+                 result+=op3;
+
+              //alert("por ahora "+result);
+
+              if (result.substring(0,1)=="+") // quito + inicial
+                  result=result.substring(1);
+
+              //alert("devuelvo "+result);
+              if ((result=="")||(result==" ")||(result=="  ")||(result=="   "))
+                 result="  0";
+              return result;
+           }
+
+           function producto(op1,op2)
+           {
+              var contsigno = 0;
+              if (op1.substring(0,1)=="-")
+                 contsigno++;
+              if (op2.substring(0,1)=="-")
+                 contsigno++;
+              var signo=" ";
+              if ((contsigno==0)||(contsigno==2))
+                 signo=" ";
+              else
+                 signo="-";
+
+              // quito los signos
+              if ((op1.substring(0,1)=="+")||(op1.substring(0,1)=="-"))
+                  op1=op1.substring(1);
+              if ((op2.substring(0,1)=="+")||(op2.substring(0,1)=="-"))
+                  op2=op2.substring(1);
+
+              if ((op1==" 0")||(op2==" 0")||(op1=="  0")||(op2=="  0"))
+              {
+                  //alert("tengo alguno a cero");
+                  return "  0";
+              }
+              if ((op1==" 1")||(op1=="  1"))
+              {
+                  //alert("tengo op1 a uno");
+                   return signo+op2;
+              }
+              if ((op2==" 1")||(op2=="  1"))
+              {
+                  //alert("tengo op2 a uno");
+                  return signo+op1; // el otro
+              }
+
+              return signo+op1+op2;
+           } 
+
+           function displayData(letra1, letra2, letra3)
+           {
+               multiplyData(letra1,letra2,'a'); // rellena la A = B.C
+               multiplyDataLimpiando('a',letra3,'e'); // llena la E=A.D
+           }
+
+           function displayData2(letra1, letra2, letra3)
+           {
+               multiplyData(letra1,letra2,'j'); // rellena la A = B.C
+               multiplyDataLimpiando('j',letra3,'i'); // llena la E=A.D
+           }
+
+           function quitaespacios(cadena)
+           {
+//alert("Piden split de "+cadena)
+              var temp = new Array();
+              temp = cadena.split(' ');
+//alert("temp tiene elems="+temp.length);
+
+              var result="";
+//alert("result es "+result);
+              for (f=0; f<temp.length; f++)
+              {
+  //              alert("ahora result es "+result);
+                result+=temp[f];
+              }
+//alert(result);
+              return result;
+           }
+
+	   function multiplyData(letra1,letra2,letra3)
+	   {
+              // multiplica las dos matrices pasadas y deja el resultado en la letra3
+              //alert("por ahora bien");
+              var b11 = document.getElementById(letra1+"11").innerHTML;
+              var b12 = document.getElementById(letra1+"12").innerHTML;
+              var b13 = document.getElementById(letra1+"13").innerHTML;
+              var b21 = document.getElementById(letra1+"21").innerHTML;
+              var b22 = document.getElementById(letra1+"22").innerHTML;
+              var b23 = document.getElementById(letra1+"23").innerHTML;
+              var b31 = document.getElementById(letra1+"31").innerHTML;
+              var b32 = document.getElementById(letra1+"32").innerHTML;
+              var b33 = document.getElementById(letra1+"33").innerHTML;
+
+              var c11 = document.getElementById(letra2+"11").innerHTML;
+              var c12 = document.getElementById(letra2+"12").innerHTML;
+              var c13 = document.getElementById(letra2+"13").innerHTML;
+              var c21 = document.getElementById(letra2+"21").innerHTML;
+              var c22 = document.getElementById(letra2+"22").innerHTML;
+              var c23 = document.getElementById(letra2+"23").innerHTML;
+              var c31 = document.getElementById(letra2+"31").innerHTML;
+              var c32 = document.getElementById(letra2+"32").innerHTML;
+              var c33 = document.getElementById(letra2+"33").innerHTML;
+
+//alert("pre producto tengo "+b11+","+c11);
+              var h1111 = producto(b11,c11);
+              var h1221 = producto(b12,c21);
+              var h1331 = producto(b13,c31);
+//alert("tras producto tengo "+h1111);
+
+              var r11 = sumar(h1111,h1221,h1331);
+
+              var h1112 = producto(b11,c12);
+              var h1222 = producto(b12,c22);
+              var h1332 = producto(b13,c32);
+              var r12 = sumar(h1112,h1222,h1332);
+
+              var h1113 = producto(b11,c13);
+              var h1223 = producto(b12,c23);
+              var h1333 = producto(b13,c33);
+              var r13 = sumar(h1113,h1223,h1333);
+
+              var h2111 = producto(b21,c11);
+              var h2221 = producto(b22,c21);
+              var h2331 = producto(b23,c31);
+              var r21 = sumar(h2111,h2221,h2331);
+
+              var h2112 = producto(b21,c12);
+              var h2222 = producto(b22,c22);
+              var h2332 = producto(b23,c32);
+              var r22 = sumar(h2112,h2222,h2332);
+
+              var h2113 = producto(b21,c13);
+              var h2223 = producto(b22,c23);
+              var h2333 = producto(b23,c33);
+              var r23 = sumar(h2113,h2223,h2333);
+
+              var h3111 = producto(b31,c11);
+              var h3221 = producto(b32,c21);
+              var h3331 = producto(b33,c31);
+              var r31 = sumar(h3111,h3221,h3331);
+
+              var h3112 = producto(b31,c12);
+              var h3222 = producto(b32,c22);
+              var h3332 = producto(b33,c32);
+              var r32 = sumar(h3112,h3222,h3332);
+
+              var h3113 = producto(b31,c13);
+              var h3223 = producto(b32,c23);
+              var h3333 = producto(b33,c33);
+              var r33 = sumar(h3113,h3223,h3333);
+
+	      document.getElementById(letra3+"11").innerHTML=r11;
+	      document.getElementById(letra3+"12").innerHTML=r12;
+	      document.getElementById(letra3+"13").innerHTML=r13;
+	      document.getElementById(letra3+"21").innerHTML=r21;
+	      document.getElementById(letra3+"22").innerHTML=r22;
+	      document.getElementById(letra3+"23").innerHTML=r23;
+	      document.getElementById(letra3+"31").innerHTML=r31;
+	      document.getElementById(letra3+"32").innerHTML=r32;
+	      document.getElementById(letra3+"33").innerHTML=r33;
+	   }
+
+
+	   function multiplyDataLimpiando(letra1,letra2,letra3)
+	   {
+              // multiplica las dos matrices pasadas y deja el resultado en la letra3
+              //alert("por ahora bien");
+              var b11 = document.getElementById(letra1+"11").innerHTML;
+              var b12 = document.getElementById(letra1+"12").innerHTML;
+              var b13 = document.getElementById(letra1+"13").innerHTML;
+              var b21 = document.getElementById(letra1+"21").innerHTML;
+              var b22 = document.getElementById(letra1+"22").innerHTML;
+              var b23 = document.getElementById(letra1+"23").innerHTML;
+              var b31 = document.getElementById(letra1+"31").innerHTML;
+              var b32 = document.getElementById(letra1+"32").innerHTML;
+              var b33 = document.getElementById(letra1+"33").innerHTML;
+
+              var c11 = document.getElementById(letra2+"11").innerHTML;
+              var c12 = document.getElementById(letra2+"12").innerHTML;
+              var c13 = document.getElementById(letra2+"13").innerHTML;
+              var c21 = document.getElementById(letra2+"21").innerHTML;
+              var c22 = document.getElementById(letra2+"22").innerHTML;
+              var c23 = document.getElementById(letra2+"23").innerHTML;
+              var c31 = document.getElementById(letra2+"31").innerHTML;
+              var c32 = document.getElementById(letra2+"32").innerHTML;
+              var c33 = document.getElementById(letra2+"33").innerHTML;
+
+//alert("pre producto tengo "+b11+","+c11);
+              var h1111 = producto(b11,c11);
+              var h1221 = producto(b12,c21);
+              var h1331 = producto(b13,c31);
+//alert("tras producto tengo "+h1111);
+
+              var r11 = sumar(h1111,h1221,h1331);
+
+              var h1112 = producto(b11,c12);
+              var h1222 = producto(b12,c22);
+              var h1332 = producto(b13,c32);
+              var r12 = sumar(h1112,h1222,h1332);
+
+              var h1113 = producto(b11,c13);
+              var h1223 = producto(b12,c23);
+              var h1333 = producto(b13,c33);
+              var r13 = sumar(h1113,h1223,h1333);
+
+              var h2111 = producto(b21,c11);
+              var h2221 = producto(b22,c21);
+              var h2331 = producto(b23,c31);
+              var r21 = sumar(h2111,h2221,h2331);
+
+              var h2112 = producto(b21,c12);
+              var h2222 = producto(b22,c22);
+              var h2332 = producto(b23,c32);
+              var r22 = sumar(h2112,h2222,h2332);
+
+              var h2113 = producto(b21,c13);
+              var h2223 = producto(b22,c23);
+              var h2333 = producto(b23,c33);
+              var r23 = sumar(h2113,h2223,h2333);
+
+              var h3111 = producto(b31,c11);
+              var h3221 = producto(b32,c21);
+              var h3331 = producto(b33,c31);
+              var r31 = sumar(h3111,h3221,h3331);
+
+              var h3112 = producto(b31,c12);
+              var h3222 = producto(b32,c22);
+              var h3332 = producto(b33,c32);
+              var r32 = sumar(h3112,h3222,h3332);
+
+              var h3113 = producto(b31,c13);
+              var h3223 = producto(b32,c23);
+              var h3333 = producto(b33,c33);
+              var r33 = sumar(h3113,h3223,h3333);
+
+	      document.getElementById(letra3+"11").innerHTML=quitaespacios(r11);
+	      document.getElementById(letra3+"12").innerHTML=quitaespacios(r12);
+	      document.getElementById(letra3+"13").innerHTML=quitaespacios(r13);
+	      document.getElementById(letra3+"21").innerHTML=quitaespacios(r21);
+	      document.getElementById(letra3+"22").innerHTML=quitaespacios(r22);
+	      document.getElementById(letra3+"23").innerHTML=quitaespacios(r23);
+	      document.getElementById(letra3+"31").innerHTML=quitaespacios(r31);
+	      document.getElementById(letra3+"32").innerHTML=quitaespacios(r32);
+	      document.getElementById(letra3+"33").innerHTML=quitaespacios(r33);
+	   }
+	</script>
+	<script type="text/javascript">
+
+           var righthand1="0";
+
+           function sethandA()
+           {
+                righthand1 = document.formul1.selHand1.value;
+                //var righthand = document.formul1.selHand1.value;
+		//alert("hola "+righthand);
+                setvaluesA();
+           }
+	   function setvaluesA()
+	   {
+                righthand1 = document.formul1.selHand1.value;
+
+                if (righthand1=="0")
+                    setvaluesA1();
+                else
+                    setvaluesA2();
+           }
+
+	   function setvaluesA1()
+	   {
+		    var indice = document.formul1.selCombo1.selectedIndex
+
+		    var textoEscogido = document.formul1.selCombo1.options[indice].text
+
+
+                    // primera matriz
+                    var letra1 = textoEscogido.substring(0,1);
+                    var letra2 = textoEscogido.substring(1,2);
+                    var letra3 = textoEscogido.substring(2,3);
+
+
+                    var texto1;
+                    var texto2;
+                    var texto3;
+
+                    if (letra1=="X")
+                       texto1 = "  1,  0,  0,  0, c1,-s1,  0, s1, c1"
+                    else if (letra1=="Y")
+                       texto1 = " c1,  0, s1,  0,  1,  0,-s1,  0, c1"
+                    else if (letra1=="Z")
+                       texto1 = " c1,-s1,  0, s1, c1,  0,  0,  0,  1"
+
+                    if (letra2=="X")
+                       texto2 = "  1,  0,  0,  0, c2,-s2,  0, s2, c2"
+                    else if (letra2=="Y")
+                       texto2 = " c2,  0, s2,  0,  1,  0,-s2,  0, c2"
+                    else if (letra2=="Z")
+                       texto2 = " c2,-s2,  0, s2, c2,  0,  0,  0,  1"
+
+                    if (letra3=="X")
+                       texto3 = "  1,  0,  0,  0, c3,-s3,  0, s3, c3"
+                    else if (letra3=="Y")
+                       texto3 = " c3,  0, s3,  0,  1,  0,-s3,  0, c3"
+                    else if (letra3=="Z")
+                       texto3 = " c3,-s3,  0, s3, c3,  0,  0,  0,  1"
+
+	      document.getElementById("b11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("b12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("b13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("b21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("b22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("b23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("b31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("b32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("b33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("c11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("c12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("c13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("c21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("c22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("c23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("c31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("c32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("c33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("d11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("d12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("d13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("d21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("d22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("d23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("d31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("d32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("d33").innerHTML=texto3.substring(32,35);
+	   }
+
+	   function setvaluesA2()
+	   {
+		    var texto
+		    texto = "El numero de opciones del select:" +
+			 document.formul1.selCombo1.length
+
+		    var indice = document.formul1.selCombo1.selectedIndex
+
+		    var textoEscogido = document.formul1.selCombo1.options[indice].text
+		    //texto += "nTexto de la opcion escogida: " + textoEscogido
+		    //alert(textoEscogido);
+
+                    // primera matriz
+                    var letra1 = textoEscogido.substring(0,1);
+                    var letra2 = textoEscogido.substring(1,2);
+                    var letra3 = textoEscogido.substring(2,3);
+
+
+                    var texto1;
+                    var texto2;
+                    var texto3;
+
+                    if (letra1=="X")
+                       texto1 = "  1,  0,  0,  0, c1, s1,  0,-s1, c1"
+                    else if (letra1=="Y")
+                       texto1 = " c1,  0,-s1,  0,  1,  0, s1,  0, c1"
+                    else if (letra1=="Z")
+                       texto1 = " c1, s1,  0,-s1, c1,  0,  0,  0,  1"
+
+                    if (letra2=="X")
+                       texto2 = "  1,  0,  0,  0, c2, s2,  0,-s2, c2"
+                    else if (letra2=="Y")
+                       texto2 = " c2,  0,-s2,  0,  1,  0, s2,  0, c2"
+                    else if (letra2=="Z")
+                       texto2 = " c2, s2,  0,-s2, c2,  0,  0,  0,  1"
+
+                    if (letra3=="X")
+                       texto3 = "  1,  0,  0,  0, c3, s3,  0,-s3, c3"
+                    else if (letra3=="Y")
+                       texto3 = " c3,  0,-s3,  0,  1,  0, s3,  0, c3"
+                    else if (letra3=="Z")
+                       texto3 = " c3, s3,  0,-s3, c3,  0,  0,  0,  1"
+
+	      document.getElementById("b11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("b12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("b13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("b21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("b22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("b23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("b31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("b32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("b33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("c11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("c12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("c13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("c21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("c22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("c23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("c31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("c32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("c33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("d11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("d12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("d13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("d21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("d22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("d23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("d31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("d32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("d33").innerHTML=texto3.substring(32,35);
+	   }
+	</script>
+	<script type="text/javascript">
+           var righthand2="0";
+           function sethandB()
+           {
+                righthand2 = document.formul2.selHand2.value;
+                setvaluesB();
+           }
+           function setvaluesB()
+           {
+                righthand2 = document.formul2.selHand2.value;
+
+		var indice = document.formul2.selCombo2.selectedIndex;
+		var textoEscogido = document.formul2.selCombo2.options[indice].text;
+		var nombre = "euler_"+textoEscogido+".png";
+                // ajusto el grafico
+                document.getElementById("imagen1").src = nombre;
+
+                if (righthand2=="0") 
+                    setvaluesB1();
+                else
+                    setvaluesB2();
+           }
+
+	   function setvaluesB1()
+	   {
+		var indice = document.formul2.selCombo2.selectedIndex;
+
+		var textoEscogido = 
+                       document.formul2.selCombo2.options[indice].text
+
+                // primera matriz
+                var letra1 = textoEscogido.substring(0,1);
+                var letra2 = textoEscogido.substring(1,2);
+                var letra3 = textoEscogido.substring(2,3);
+
+                var texto1;
+                var texto2;
+                var texto3;
+
+                if (letra3=="x")
+                       texto1 = "  1,  0,  0,  0, c3,-s3,  0, s3, c3"
+                else if (letra3=="y")
+                       texto1 = " c3,  0, s3,  0,  1,  0,-s3,  0, c3"
+                else if (letra3=="z")
+                       texto1 = " c3,-s3,  0, s3, c3,  0,  0,  0,  1"
+
+                if (letra2=="x")
+                       texto2 = "  1,  0,  0,  0, c2,-s2,  0, s2, c2"
+                else if (letra2=="y")
+                       texto2 = " c2,  0, s2,  0,  1,  0,-s2,  0, c2"
+                else if (letra2=="z")
+                       texto2 = " c2,-s2,  0, s2, c2,  0,  0,  0,  1"
+
+                if (letra1=="x")
+                       texto3 = "  1,  0,  0,  0, c1,-s1,  0, s1, c1"
+                else if (letra1=="y")
+                       texto3 = " c1,  0, s1,  0,  1,  0,-s1,  0, c1"
+                else if (letra1=="z")
+                       texto3 = " c1,-s1,  0, s1, c1,  0,  0,  0,  1"
+
+
+	      document.getElementById("f11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("f12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("f13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("f21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("f22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("f23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("f31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("f32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("f33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("g11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("g12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("g13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("g21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("g22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("g23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("g31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("g32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("g33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("h11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("h12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("h13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("h21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("h22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("h23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("h31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("h32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("h33").innerHTML=texto3.substring(32,35);
+
+	   }
+	   function setvaluesB2()
+	   {
+		var indice = document.formul2.selCombo2.selectedIndex;
+
+		var textoEscogido = 
+                       document.formul2.selCombo2.options[indice].text
+
+                // primera matriz
+                var letra1 = textoEscogido.substring(0,1);
+                var letra2 = textoEscogido.substring(1,2);
+                var letra3 = textoEscogido.substring(2,3);
+
+                var texto1;
+                var texto2;
+                var texto3;
+
+                if (letra3=="x")
+                       texto1 = "  1,  0,  0,  0, c3, s3,  0,-s3, c3"
+                else if (letra3=="y")
+                       texto1 = " c3,  0,-s3,  0,  1,  0, s3,  0, c3"
+                else if (letra3=="z")
+                       texto1 = " c3, s3,  0,-s3, c3,  0,  0,  0,  1"
+
+                if (letra2=="x")
+                       texto2 = "  1,  0,  0,  0, c2, s2,  0,-s2, c2"
+                else if (letra2=="y")
+                       texto2 = " c2,  0,-s2,  0,  1,  0, s2,  0, c2"
+                else if (letra2=="z")
+                       texto2 = " c2, s2,  0,-s2, c2,  0,  0,  0,  1"
+
+                if (letra1=="x")
+                       texto3 = "  1,  0,  0,  0, c1, s1,  0,-s1, c1"
+                else if (letra1=="y")
+                       texto3 = " c1,  0,-s1,  0,  1,  0, s1,  0, c1"
+                else if (letra1=="z")
+                       texto3 = " c1, s1,  0,-s1, c1,  0,  0,  0,  1"
+
+
+	      document.getElementById("f11").innerHTML=texto1.substring(0,3);
+	      document.getElementById("f12").innerHTML=texto1.substring(4,7);
+	      document.getElementById("f13").innerHTML=texto1.substring(8,11);
+	      document.getElementById("f21").innerHTML=texto1.substring(12,15);
+	      document.getElementById("f22").innerHTML=texto1.substring(16,19);
+	      document.getElementById("f23").innerHTML=texto1.substring(20,23);
+	      document.getElementById("f31").innerHTML=texto1.substring(24,27);
+	      document.getElementById("f32").innerHTML=texto1.substring(28,31);
+	      document.getElementById("f33").innerHTML=texto1.substring(32,35);
+
+	      document.getElementById("g11").innerHTML=texto2.substring(0,3);
+	      document.getElementById("g12").innerHTML=texto2.substring(4,7);
+	      document.getElementById("g13").innerHTML=texto2.substring(8,11);
+	      document.getElementById("g21").innerHTML=texto2.substring(12,15);
+	      document.getElementById("g22").innerHTML=texto2.substring(16,19);
+	      document.getElementById("g23").innerHTML=texto2.substring(20,23);
+	      document.getElementById("g31").innerHTML=texto2.substring(24,27);
+	      document.getElementById("g32").innerHTML=texto2.substring(28,31);
+	      document.getElementById("g33").innerHTML=texto2.substring(32,35);
+
+	      document.getElementById("h11").innerHTML=texto3.substring(0,3);
+	      document.getElementById("h12").innerHTML=texto3.substring(4,7);
+	      document.getElementById("h13").innerHTML=texto3.substring(8,11);
+	      document.getElementById("h21").innerHTML=texto3.substring(12,15);
+	      document.getElementById("h22").innerHTML=texto3.substring(16,19);
+	      document.getElementById("h23").innerHTML=texto3.substring(20,23);
+	      document.getElementById("h31").innerHTML=texto3.substring(24,27);
+	      document.getElementById("h32").innerHTML=texto3.substring(28,31);
+	      document.getElementById("h33").innerHTML=texto3.substring(32,35);
+
+	   }
+
+	</script>
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-8523956724195123";
+/* trial1 */
+google_ad_slot = "0337480861";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+
+
+<br>
+
+<a href='index.html'>Index</a>
+<a href='quaternions.html'>Previous</a>
+<a href='euleranglesvector.html'>Next</a>
+</p>
+<!-- 
+021
+Ahora count es 021 y corresponde a eulermatrix.html
+-->
+
+
+
+
+<style type="text/css">
+table.sample {
+	border-width: 2px;
+	border-spacing: 2px;
+	border-style: outset;
+	border-color: gray;
+	border-collapse: separate;
+	background-color: "#F0F0FF";
+}
+table.sample th {
+	border-width: 0px;
+	padding: 1px;
+	border-style: inset;
+	border-color: gray;
+	background-color: "#F0F0FF";
+	-moz-border-radius: ;
+}
+table.sample td {
+	border-width: 0px;
+	padding: 1px;
+	border-style: inset;
+	border-color: gray;
+	background-color: "#F0F0FF";
+	-moz-border-radius: ;
+}
+</style>
+
+
+
+
+
+
+
+
+<!--- Description.Intro Page 
+
+    Esto es un applet MODIFIED para demostrar como funcionan los &#225;ngulos de Euler --->
+
+
+
+<h1>Matrix wizard</h1>
+<!-- =========== First table =============== -->
+
+<div>
+<table>
+<tr ALIGN=TOP>
+<td>
+        <h3>Generate matrix as extrinsic rotations composition</h3>
+
+	When the three rotations are applied over the reference frame axes, for example in order z-x-z, it is equivalent to a right-product of matrices</p>
+	<lu>
+	<li>The first rotation moves the body around the external 'z' axis an angle &#966;</li>
+	<li>The second rotation moves the body around the external 'x' axis an angle &#952;</li>
+	<li>The third rotation moves the body again around the external 'z' axis an angle &#968;</li>
+	</lu>
+	</p>
+
+	<form name="formul2">
+	Choose extrinsic composition <SELECT NAME="selCombo2" SIZE=1 onChange="javascript:setvaluesB()">
+	<OPTION VALUE="xyx">xyx</OPTION>
+	<OPTION VALUE="xzx">xzx</OPTION>
+	<OPTION VALUE="yxy">yxy</OPTION>
+	<OPTION VALUE="yzy">yzy</OPTION>
+	<OPTION VALUE="zxz">zxz</OPTION>
+	<OPTION VALUE="zyz">zyz</OPTION> 
+	<OPTION VALUE="xyz">xyz</OPTION>
+	<OPTION VALUE="xzy">xzy</OPTION>
+	<OPTION VALUE="yxz">yxz</OPTION>
+	<OPTION VALUE="yzx">yzx</OPTION>
+	<OPTION VALUE="zxy">zxy</OPTION>
+	<OPTION VALUE="zyx">zyx</OPTION> 
+	</SELECT> and the rotation sign convention <SELECT onload="1" NAME="selHand2" SIZE=1 onChange="javascript:sethandB()">
+	<OPTION VALUE="0" default>right-hand</OPTION>
+	<OPTION VALUE="1">left-hand</OPTION>
+	</SELECT>
+
+	</form>
+	</p>
+	<TABLE>
+	  <Tr>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+            <!-- b->f; c->g; d->h; e->i; a->j -->
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=f11> 0</td>
+				<Td ALIGN=CENTER id=f12>0</Td>
+				<Td ALIGN=CENTER id=f13>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=f21> 0</td>
+				<Td ALIGN=CENTER id=f22> 0</Td>
+				<Td ALIGN=CENTER id=f23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=f31>  0</td>
+				<Td ALIGN=CENTER id=f32>  0</Td>
+				<Td ALIGN=CENTER id=f33>  0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=g11> 0</td>
+				<Td ALIGN=CENTER id=g12>  0</Td>
+				<Td ALIGN=CENTER id=g13>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=g21>  0</td>
+				<Td ALIGN=CENTER id=g22>  0</Td>
+				<Td ALIGN=CENTER id=g23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=g31> 0</td>
+				<Td ALIGN=CENTER id=g32>  0</Td>
+				<Td ALIGN=CENTER id=g33> 0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=h11> 0</td>
+				<Td ALIGN=CENTER id=h12>  0</Td>
+				<Td ALIGN=CENTER id=h13>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=h21>  0</td>
+				<Td ALIGN=CENTER id=h22>  0</Td>
+				<Td ALIGN=CENTER id=h23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=h31> 0</td>
+				<Td ALIGN=CENTER id=h32>  0</Td>
+				<Td ALIGN=CENTER id=h33> 0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+
+	  </Tr>
+	</TABLE>
+	</p>
+
+
+	Press <button type="button" onclick="displayData2('f','g','h')">here</button> to see the result of the product</p>
+
+	<!-- matriz A=aij. Es un resultado temporal -->
+	<TABLE  BORDER CELLPADDING=5 style="display: none">
+		   <Tr>
+			<Td ALIGN=CENTER id=j11>1</td>
+			<Td ALIGN=CENTER id=j12>2</Td>
+			<Td ALIGN=CENTER id=j13>3</Td>
+		   </Tr>
+		   <Tr>
+			<Td ALIGN=CENTER id=j21>4</td>
+			<Td ALIGN=CENTER id=j22>5</Td>
+			<Td ALIGN=CENTER id=j23>0</Td>
+		   </Tr>
+		   <Tr>
+			<Td ALIGN=CENTER id=j31>0</td>
+			<Td ALIGN=CENTER id=j32>0</Td>
+			<Td ALIGN=CENTER id=j33>0</Td>
+		   </Tr>
+	</TABLE></p>
+
+	<!-- matriz E=eij. Son resultado de la composicion intrinseca de las tres-->
+	<TABLE CELLPADDING=5 >
+	<tr>
+	        <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+		<td>
+		<table>
+		   <Tr>
+			<Td ALIGN=CENTER id=i11>0</td>
+			<Td ALIGN=CENTER id=i12>0</Td>
+			<Td ALIGN=CENTER id=i13>0</Td>
+		   </Tr>
+		   <Tr>
+			<Td ALIGN=CENTER id=i21>0</td>
+			<Td ALIGN=CENTER id=i22>0</Td>
+			<Td ALIGN=CENTER id=i23>0</Td>
+		   </Tr>
+		   <Tr>
+			<Td ALIGN=CENTER id=i31>0</td>
+			<Td ALIGN=CENTER id=i32>0</Td>
+			<Td ALIGN=CENTER id=i33>0</Td>
+		   </Tr>
+		</table>
+		</td>
+  	        <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	</tr>
+	</TABLE></p>
+
+	The notation has been made short by using the order that composition implies (1 for &#966;, 2 for &#952; and 3 for &#968;) and writing sK and cK for sin and cos of the K-th angle</p>
+
+</td>
+<td>
+<!-- a target="_blank" href="http://affiliate.godaddy.com/redirect/43F533A0070755159C5B2D89201773CC32E7D0F685899BD3334AB014815E0F2F6BFFA9F9E134FAC9C2233BB4AFD5C28BF9BB89B01CD836321F129BB18456531B"><img src="http://affiliate.godaddy.com/ads/43F533A0070755159C5B2D89201773CC32E7D0F685899BD3334AB014815E0F2F6BFFA9F9E134FAC9C2233BB4AFD5C28BF9BB89B01CD836321F129BB18456531B" border="0" width="200"  height="200" alt="$1.99 Domains* at GoDaddy.com"/></a -->
+	<img id=imagen1 src="eulerangles.png">
+</td>
+</tr>
+</table>
+</div>
+</p>
+
+<!-- =========== Second table =============== -->
+<div>
+<table>
+<tr ALIGN=TOP>
+<td>
+        <h3>Generate a matrix as composition of intrinsic rotations</h3>
+	When the three rotations are applied over the moving body axes, for example in order Z-X-Z, it is equivalent to a right-product of matrices</p>
+
+	<lu>
+	<li>The first rotation moves the body around its axis Z an angle with value &#968;</li>
+	<li>The second rotation moves the body around its axis X an angle &#952;</li>
+	<li>The third rotation moves the body around its axis Z again an angle with value &#966;</li>
+	</lu>
+	</p>
+
+After this three rotations:</p>
+
+<lu>
+	<li>&#968; will be the external angle of the static construction</li>
+	<li>&#952; will be the medium angle of the static construction</li>
+	<li>&#966; will be the internal angle of the static construction</li>
+<lu>
+</p>
+	<form name="formul1">
+	Choose the ordered rotations for the intrinsic composition <SELECT NAME="selCombo1" SIZE=1 onChange="javascript:setvaluesA()">
+	<OPTION VALUE="xyx">XYX</OPTION>
+	<OPTION VALUE="xzx">XZX</OPTION>
+	<OPTION VALUE="yxy">YXY</OPTION>
+	<OPTION VALUE="yzy">YZY</OPTION>
+	<OPTION VALUE="zxz">ZXZ</OPTION>
+	<OPTION VALUE="zyz">ZYZ</OPTION> 
+	<OPTION VALUE="xyz">XYZ</OPTION>
+	<OPTION VALUE="xzy">XZY</OPTION>
+	<OPTION VALUE="yxz">YXZ</OPTION>
+	<OPTION VALUE="yzx">YZX</OPTION>
+	<OPTION VALUE="zxy">ZXY</OPTION>
+	<OPTION VALUE="zyx">ZYX</OPTION> 
+	</SELECT>  and the rotation sign convention <SELECT onload="0" NAME="selHand1" SIZE=1 onChange="javascript:sethandA()">
+	<OPTION VALUE="0">right-hand</OPTION>
+	<OPTION VALUE="1">left-hand</OPTION>
+	</SELECT>
+	</form>
+	</p>
+	<TABLE>
+	  <Tr>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=b11> 0</td>
+				<Td ALIGN=CENTER id=b12> 0</Td>
+				<Td ALIGN=CENTER id=b13>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=b21> 0</td>
+				<Td ALIGN=CENTER id=b22> 0</Td>
+				<Td ALIGN=CENTER id=b23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=b31>  0</td>
+				<Td ALIGN=CENTER id=b32>  0</Td>
+				<Td ALIGN=CENTER id=b33>  0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=c11> 0</td>
+				<Td ALIGN=CENTER id=c12>  0</Td>
+				<Td ALIGN=CENTER id=c13>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=c21>  0</td>
+				<Td ALIGN=CENTER id=c22>  0</Td>
+				<Td ALIGN=CENTER id=c23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=c31> 0</td>
+				<Td ALIGN=CENTER id=c32>  0</Td>
+				<Td ALIGN=CENTER id=c33> 0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	    <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+	    <Td ALIGN=CENTER>
+			<TABLE CELLPADDING=5 >
+			   <Tr>
+				<Td ALIGN=CENTER id=d11> 0</td>
+				<Td ALIGN=CENTER id=d12>  0</Td>
+				<Td ALIGN=CENTER id=d13>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=d21>  0</td>
+				<Td ALIGN=CENTER id=d22>  0</Td>
+				<Td ALIGN=CENTER id=d23>  0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=d31> 0</td>
+				<Td ALIGN=CENTER id=d32>  0</Td>
+				<Td ALIGN=CENTER id=d33> 0</Td>
+			   </Tr>
+			</TABLE>
+	    </td>
+	    <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	  </Tr>
+	</TABLE>
+	</p>
+
+
+	Press <button type="button" onclick="displayData('b','c','d')">here</button> to see the result of the product</p>
+
+	<!-- matriz A=aij. Es un resultado temporal -->
+	<TABLE  BORDER CELLPADDING=5 style="display: none">
+	   <Tr>
+		<Td ALIGN=CENTER id=a11>0</td>
+		<Td ALIGN=CENTER id=a12>0</Td>
+		<Td ALIGN=CENTER id=a13>0</Td>
+	   </Tr>
+	   <Tr>
+		<Td ALIGN=CENTER id=a21>0</td>
+		<Td ALIGN=CENTER id=a22>0</Td>
+		<Td ALIGN=CENTER id=a23>0</Td>
+	   </Tr>
+	   <Tr>
+		<Td ALIGN=CENTER id=a31>0</td>
+		<Td ALIGN=CENTER id=a32>0</Td>
+		<Td ALIGN=CENTER id=a33>0</Td>
+	   </Tr>
+	</TABLE></p>
+
+	<!-- matriz E=eij. Son resultado de la composicion intrinseca de las tres-->
+	<TABLE CELLPADDING=5 >
+	<tr>
+	    	   <Td ALIGN=CENTER><image src="abrir.png"></image></td>
+		<td>
+		<table>
+			   <Tr>
+				<Td ALIGN=CENTER id=e11>0</td>
+				<Td ALIGN=CENTER id=e12>0</Td>
+				<Td ALIGN=CENTER id=e13>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=e21>0</td>
+				<Td ALIGN=CENTER id=e22>0</Td>
+				<Td ALIGN=CENTER id=e23>0</Td>
+			   </Tr>
+			   <Tr>
+				<Td ALIGN=CENTER id=e31>0</td>
+				<Td ALIGN=CENTER id=e32>0</Td>
+				<Td ALIGN=CENTER id=e33>0</Td>
+			   </Tr>
+		</table>
+		</td>
+	    	   <Td ALIGN=CENTER><image src="cerrar.png"></image></td>
+	</tr>
+	</TABLE></p>
+
+	The notation has been made short by using the order that composition implies (1 for &#968;, 2 for &#952; and 3 for &#966;) and writing sK and cK for sin and cos of the K-th angle</p>
+
+<br>
+
+<h1>Other online tools</h1>
+<a href="eulermatrix.html">Change between different Euler conventions and matrices</a><br>
+<a href="inversematrix.html">Calculate the inverse matrix of a given one</a><br>
+<a href="simultaneous.html">Linear simultaneous equations solving</a><br>
+<a href="matrixproduct.html">Matrix product</a><br>
+<a href="euleranglesvector.html">Euler angles to rotation vector</a><br>
+<a href="angspeedconventions.html">Change angular speed from different Euler conventions to matrix</a><br>
+<a href="determinant.html">Matrix determinant</a><br>
+</p></p>
+
+</td>
+<td>
+<!-- a target="_blank" href="http://affiliate.godaddy.com/redirect/2121E0FE7764C5CADFBB1351F62516A9391E5B698AEA6D1721564F890BA4C3F99C424CA1C9E23218FB2B0B8909781C45826CC8C7D73EEEDC1D262D434475371B"><img src="http://affiliate.godaddy.com/ads/2121E0FE7764C5CADFBB1351F62516A9391E5B698AEA6D1721564F890BA4C3F99C424CA1C9E23218FB2B0B8909781C45826CC8C7D73EEEDC1D262D434475371B" border="0" width="200"  height="200" alt="Get Online FAST with a name you trust. £2.69 .CO.UK at GoDaddy.com"/></a -->
+	<img id=imagen2 src="euleranglesZXZ.png">
+</td>
+</tr>
+</table>
+</div>
+
+
+
+
+
+
+
+</p> <p>
+<a href='index.html'>Index</a>
+<a href='quaternions.html'>Previous</a> 
+<a href='euleranglesvector.html'>Next</a> 
+<br>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-annotation="inline" data-width="300"></div>
+
+
+<!-- br>
+<h6>Doubts? Ask them to our forum. Visit <a href="forum">www.vectoralgebra.info/forum</a></h6> 
+<br -->
+
+
+<!-- p><strong>Useful for a BTC fan?</strong> Consider a small donation: <a href="bitcoin:1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH?amount=0.001&label=Agile%20Stack">1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH</a></p -->
+
+<p align="right"><strong>Please keep this site running:</strong><br>
+<strong>BTC: </strong> 18UPcAbUv1x4uVaiNUuTBzibijBL7pXJA6<br>
+<strong>LTC: </strong> LiEpnqi6MGrcSNdPAWrLrZbsfknHMUQbsS<br>
+<strong>DOGE: </strong> DAx4h2fzRrCyqSSXEVTFxf4H427yMnZ9Ju</p>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+
+
+
+
+<br>
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-8523956724195123";
+/* trial1 */
+google_ad_slot = "0337480861";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+
+
+</body>
+</html>
+

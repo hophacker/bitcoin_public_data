@@ -1,0 +1,224 @@
+http://www.bortzmeyer.org/trouver-adresse-ns.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 13:48:39 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Wed, 02 Jul 2014 19:03:39 GMT
+ETag: "21c84-36f8-4fd3a8cccb8c0"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 5165
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-07-02T21:03 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Trouver l'adresse IP de son serveur de noms
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Trouver l'adresse IP de son serveur de noms</h2><p>Première rédaction de cet article le 24 janvier 2010<br/>Dernière mise à jour le 24 janvier 2011<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Je cherche un moyen de trouver l'<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/adresse%20IP" title="Consultez l'article &quot;adresse IP&quot; de l'encyclopédie libre Wikipedia">adresse IP</a></b>
+avec laquelle mon <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">serveur de
+noms</a></b> interroge le monde extérieur. C'est bien plus
+compliqué que cela n'en a l'air.</p></div>
+<div class="para"><p>Lorsque j'appelle <code>www.example.org</code>,
+l'application que j'utilise (que ce soit
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Mozilla%20Firefox" title="Consultez l'article &quot;Mozilla Firefox&quot; de l'encyclopédie libre Wikipedia">Firefox</a></b> ou <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/cURL" title="Consultez l'article &quot;cURL&quot; de l'encyclopédie libre Wikipedia">curl</a></b>) fait
+appel (en général via le sous-programme
+<code><b><a href="http://phpunixman.sourceforge.net/index.php/man/getaddrinfo" title="Consultez la page de manuel Unix &quot;getaddrinfo&quot; ">getaddrinfo</a></b>()</code>) à un <b class="emphasis">résolveur</b> <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">DNS</a></b> ; sur <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Unix" title="Consultez l'article &quot;Unix&quot; de l'encyclopédie libre Wikipedia">Unix</a></b>, son
+adresse est trouvé dans <code>/etc/resolv.conf</code>. Il y a
+des fois où j'aimerai bien savoir quelle adresse utilise ce résolveur
+pour interroger les serveurs <b class="emphasis">faisant autorité</b>. On
+ne peut pas simplement prendre l'adresse qui se trouve dans
+<code>/etc/resolv.conf</code> pour au moins trois raisons :
+</p><ul>
+<li>Le résolveur peut faire appel à un autre résolveur (appelé un
+<i class="foreign" xml:lang="en">forwarder</i> ; avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/BIND" title="Consultez l'article &quot;BIND&quot; de l'encyclopédie libre Wikipedia">BIND</a></b>, c'est
+le nom de la directive qui sert à configurer un tel « résolveur
+supérieur »).</li>
+<li>Le résolveur peut être derrière un routeur
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Network%20address%20translation" title="Consultez l'article &quot;Network address translation&quot; de l'encyclopédie libre Wikipedia">NAT</a></b>, qui va changer son adresse.</li>
+<li>Le résolveur n'utilise pas forcément la même adresse pour les
+requêtes sortantes et les requêtes entrantes.</li>
+</ul></div>
+<div class="para"><p>Je vois trois façons possibles de trouver l'adresse utilisée par la
+résolution de noms :
+</p><ul>
+<li>Regarder sa configuration en détail, notamment des directives
+comme <code>forwarder</code> et <code>query-source</code> sur
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/BIND" title="Consultez l'article &quot;BIND&quot; de l'encyclopédie libre Wikipedia">BIND</a></b>. Cela ne marche que si on accès à cette
+configuration, ce qui n'est pas le cas de tout le monde.</li>
+<li>Sur une zone qu'on contrôle, écouter le trafic (par exemple avec
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/tcpdump" title="Consultez l'article &quot;tcpdump&quot; de l'encyclopédie libre Wikipedia">tcpdump</a></b>) sur tous les serveurs de noms faisant
+autorité et faire une requête pour
+<code>nexistepas.MAZONE</code> (il vaut mieux utiliser un nom
+non existant pour ne pas risquer qu'il soit dans le
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/M%C3%A9moire%20cache" title="Consultez l'article &quot;Mémoire cache&quot; de l'encyclopédie libre Wikipedia">cache</a></b> d'un résolveur). Cela oblige à avoir une
+zone dont on contrôle tous les serveurs de noms et ce n'est pas très pratique.</li>
+<li>Avoir quelque part une zone spécialement configurée pour servir
+de réflecteur qui, aux requêtes DNS, renvoie l'adresse IP du client
+qui l'a interrogé. C'est de loin la meilleure méthode.</li>
+</ul></div>
+<div class="para"><p>Mais un tel service existe t-il ? Aucun serveur de noms standard ne
+sait faire cela, il faut donc écrire un serveur adapté. Par manque de temps, je cherche un
+service déjà existant.</p></div>
+<div class="para"><p>Le premier testé est celui créé par l'<a href="http://www.dns-oarc.net/">OARC</a> pour un tout autre but,
+<a href="https://www.dns-oarc.net/oarc/services/replysizetest">replysizetest</a>
+et disponible en <code>rs.dns-oarc.net</code> et
+<code>rs.ripe.net</code>. Ignorons le but principal de ce
+service, ce qui m'intéresse ici est qu'il donne l'adresse IP de son
+client DNS. Ainsi, depuis <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Free%20(soci%C3%A9t%C3%A9)" title="Consultez l'article &quot;Free (société)&quot; de l'encyclopédie libre Wikipedia">Free</a></b>, j'obtiens :
+</p><pre>
+% dig +short TXT rs.dns-oarc.net  
+...
+"213.228.63.32 sent EDNS buffer size 4096"
+</pre><p>
+donc le résolveur de Free sort avec l'adresse IP
+<code>213.228.63.32</code>. Et <a href="google-dns.html" title="Consultez ce blog à propos de &quot;google-dns&quot;">Google
+DNS</a> :
+</p><pre>
+% dig +short TXT rs.dns-oarc.net             
+...
+"209.85.228.94 lacks EDNS, defaults to 512"
+</pre><p>
+On voit qu'il n'utilise pas en sortie les fameuses
+<code>8.8.8.8</code> et <code>8.8.4.4</code>.</p></div>
+<div class="para"><p>À noter qu'il fonctionne également avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/IPv6" title="Consultez l'article &quot;IPv6&quot; de l'encyclopédie libre Wikipedia">IPv6</a></b>
+(contrairement à ce que j'avais écrit dans une précédente version de
+l'article).</p></div>
+<div class="para"><p>À noter également que l'OARC a un <a href="https://www.dns-oarc.net/oarc/services/porttest">outil
+équivalent</a> qui avait également été fait dans un autre but
+(détecter les résolveurs vulnérables à la <a href="comment-fonctionne-la-faille-kaminsky.html" title="Consultez ce blog à propos de &quot;comment-fonctionne-la-faille-kaminsky&quot;">faille Kaminsky</a>)
+et qui peut également être « détourné » pour nos recherches :
+</p><pre>
+% dig +short porttest.dns-oarc.net TXT
+
+porttest.y.x.w.v.u.t.s.r.q.p.o.n.m.l.k.j.i.h.g.f.e.d.c.b.a.pt.dns-oarc.net.
+"192.134.4.162 is GREAT: 26 queries in 3.9 seconds from 8 ports with std dev 21270"
+</pre><p>
+Même chose pour le <a href="http://dns.measurement-factory.com/surveys/openresolvers.html">service de test</a> des <a href="fermer-les-recursifs-ouverts.html" title="Consultez ce blog à propos de &quot;fermer-les-recursifs-ouverts&quot;">résolveurs ouverts</a> (merci à Nicolas Aupetit) :
+</p><pre>
+% dig +short amiopen.openresolvers.org TXT
+"Your resolver at 192.134.7.248 is CLOSED"
+</pre></div>
+<div class="para"><p>Ce service est-il une solution parfaite ? Outre qu'il est un peu
+lent car il fait bien autre chose que renvoyer l'adresse IP, je
+regrette qu'il ne puisse pas renvoyer une adresse binaire (en réponse à une
+question de type A ou AAAA).</p></div>
+<div class="para"><p>Les entreprises qui font du
+<i class="foreign" xml:lang="en"><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/R%C3%A9partition%20de%20charge" title="Consultez l'article &quot;Répartition de charge&quot; de l'encyclopédie libre Wikipedia">load-balancing</a></b></i> ont souvent
+des noms qu'on peut résoudre dans le DNS pour obtenir l'adresse IP du
+résolveur, à des fins de déboguage. C'est le cas de
+<code>whoami.ultradns.net</code> et de
+<code>whoami.akamai.net</code>. Ces deux services ont
+l'avantage de renvoyer l'adresse IPv4 en binaire (il faut donc faire
+une requête de type <code>A</code> et pas <code>TXT</code>), ce qui est pratique.
+Celui d'UltraDNS a l'inconvénient de planter complètement avec des adresses IPv6
+(renvoyant <code>NXDOMAIN</code> au lieu du normal
+<code>NODATA</code>, ce qui est une bogue énorme
+</p><pre>
+
+% dig AAAA whoami.ultradns.net
+...
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NXDOMAIN, id: 51301
+...
+
+</pre><p>
+mais celui d'Akamai semble bien marcher.
+</p></div>
+<div class="para"><p>D'un modèle analogue est celui de Cloudfront, <code>resolver-identity.cloudfront.net</code> (types A et TXT).</p></div>
+<div class="para"><p>Encore mieux, le service de Cedexis (merci à Stéphane Enten),
+<code>1-01-2743-000d.cdx.cedexis.net</code>. Si le nom est un
+peu bizarre (le service ne semble pas encore stabilisé et plante parfois), le réflecteur
+marche très bien, renvoyant un CNAME vers un nom qui code le client, indiquant même le numéro d'<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Autonomous%20System" title="Consultez l'article &quot;Autonomous System&quot; de l'encyclopédie libre Wikipedia">AS</a></b> :
+</p><pre>
+% dig +short A 1-01-2743-000d.cdx.cedexis.net
+client-ip-208.75.84.80--client-asn-23372.
+</pre></div>
+<div class="para"><p>Enfin, le meilleur service (notamment parce qu'il marche
+correctement avec IPv6) : <code><a href="http://myresolver.info/">myresolver.info</a></code> (merci
+à Nicolas Aupetit). On peut
+l'utiliser en visitant simplement la page Web, grâce à d'astucieuses
+redirections, ou bien via dig :
+</p><pre>
+% dig +short ANY self.myresolver.info 
+2001:db8:1f10:3aa::2
+</pre></div>
+<div class="para"><p>Je continue à chercher. Si vous avez des idées...</p></div>
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="trouver-adresse-ns.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="trouver-adresse-ns.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Ftrouver-adresse-ns.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

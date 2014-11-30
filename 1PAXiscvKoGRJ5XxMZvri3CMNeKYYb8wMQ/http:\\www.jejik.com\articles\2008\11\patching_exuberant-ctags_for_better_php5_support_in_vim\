@@ -1,0 +1,429 @@
+http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 21:23:53 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Wed, 22-Jul-2015 21:23:53 GMT; path=/
+Set-Cookie: lw_user_sid=f678cf0e6ef7cfaa9c07df8625c0fed8; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 8568
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-22T23:23:53Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Patching exuberant-ctags for better PHP5 support in vim - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/" class="entry-title">Patching exuberant-ctags for better PHP5 support in vim</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>Thanks to the <a href="http://www.vim.org/scripts/script.php?script_id=273">taglist</a> vim plugin, vim users have access to a decent tag browser. A tag browser allows you to view a list of all variables, functions and classes and quickly jump to their definitions. Taglist is built on <a href="http://ctags.sourceforge.net/">exuberant ctags</a> so it support a large amount of languages. Unfortunately however, when the exuberant ctags people replaced their old PHP lexer with a brand new regexp-based parser the quality of parsing PHP code decreased dramatically. Ctags suddenly could not distinguish real class and function declarations from mere mentions of the words &ldquo;class&rdquo; and &ldquo;function&rdquo; in multi-line comments. This is because the ctags regular expression parses is inherently line oriented.</p>
+
+<p>In this article I have two patches that greatly improve PHP support in exuberant-ctags. I will also show you how you can apply these patches on a Debian-based system.</p>
+
+<p><strong>Update 2009-07-07:</strong> David Mudrak has written <a href="http://bugs.gentoo.org/attachment.cgi?id=197070">an updated patch for Gentoo</a>. I have ported his improvements back to my patch here. It fixed a problem with old-style functions without a visibility declaration and it applied the same trick to interfaces as well.</p>
+<h4>Properly handle multi-line comments</h4>
+
+<p>The exuberant ctags regular expression parser works on a line-by-line basis. The problem with this is that it cannot detect the start and end of a multi-line comment. Any text in the comment that contains the word &ldquo;class&rdquo; or &ldquo;function&rdquo; will make ctags think that it is a declaration instead of simply a comment.</p>
+
+<p>Short of writing a full PHP lexer this cannot be easily fixed, but the patch below works around it by making a few assumptions. Almost all people write PHP code in such a way that a function or class declaration starts at a new line. Most people use docblock-style multi-line comments in their code. By simply looking at what is in front of a &ldquo;class&rdquo; or &ldquo;function&rdquo; you can predict with 99% certainty if it is a declaration or not. There should be only whitespace or keywords such as &ldquo;public&rdquo;, &ldquo;static&rdquo; or &ldquo;abstract&rdquo; in front of a class or function statement.</p>
+
+<p>Download <a href="http://www.jejik.com/files/examples/php-multiline-comment-v2.patch">php-multiline-comment-v2.patch</a></p>
+<div class="geshi-wrap"><div class="diff geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">--- exuberant-ctags-<span class="nu0">5.7</span>/php.c &nbsp; <span class="nu0">2007</span>-06-<span class="nu0">24</span> <span class="nu0">21</span>:<span class="nu0">57</span>:<span class="nu0">09.000000000</span> +0200</div></li>
+<li class="li1"><div class="de1"><span class="re4">+++ exuberant-ctags-<span class="nu0">5.7</span>-multiline/php.c <span class="nu0">2009</span>-07-07 <span class="nu0">17</span>:<span class="nu0">34</span>:<span class="nu0">27.000000000</span> +0200</span></div></li>
+<li class="li1"><div class="de1"><span class="re6">@@ -<span class="nu0">11</span>,<span class="nu0">6</span> +<span class="nu0">11</span>,<span class="nu0">8</span> @@</span></div></li>
+<li class="li1"><div class="de1">&nbsp;* &nbsp; variables.</div></li>
+<li class="li1"><div class="de1">&nbsp;*</div></li>
+<li class="li1"><div class="de1">&nbsp;* &nbsp; Parsing PHP defines by Pavel Hlousek &lt;pavel.hlousek@seznam.cz&gt;, Apr 2003.</div></li>
+<li class="li1"><div class="de1"><span class="re8">+* &nbsp; Multiline comment fixes by David Mudrak &lt;david.mudrak@gmail.com&gt;, Jul 2009</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+*&nbsp; &nbsp; &nbsp; based on a patches by Sander Marechal &lt;s.marechal@jejik.com&gt;, Nov 2008.</span></div></li>
+<li class="li1"><div class="de1">&nbsp;*/</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp;/*</div></li>
+<li class="li1"><div class="de1"><span class="re6">@@ -<span class="nu0">64</span>,<span class="nu0">14</span> +<span class="nu0">66</span>,<span class="nu0">14</span> @@</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp;static void installPHPRegex <span class="br0">&#40;</span>const langType language<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;<span class="br0">&#123;</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>class<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;c,class,classes&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>interface<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#40;</span>abstract<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?class<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">3</span>&quot;, &quot;c,class,classes&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span>interface<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;i,interface,interfaces&quot;, NULL<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>define<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*\\<span class="br0">&#40;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#91;</span>'\&quot;<span class="br0">&#93;</span>?<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span>define<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*\\<span class="br0">&#40;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#91;</span>'\&quot;<span class="br0">&#93;</span>?<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;d,define,constant definitions&quot;, NULL<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>function<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+&amp;?<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;f,function,functions&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#40;</span>public<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|protected<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|private<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?<span class="br0">&#40;</span>static<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?function<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+&amp;?<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">4</span>&quot;, &quot;f,function,functions&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>\\$<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*=&quot;,</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;v,variable,variables&quot;, NULL<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="re6">@@ -<span class="nu0">87</span>,<span class="nu0">7</span> +<span class="nu0">89</span>,<span class="nu0">7</span> @@</span></div></li>
+<li class="li1"><div class="de1">&nbsp;/* Create parser definition structure */</div></li>
+<li class="li1"><div class="de1">&nbsp;extern parserDefinition* PhpParser <span class="br0">&#40;</span>void<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;<span class="br0">&#123;</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; static const char *const extensions <span class="br0">&#91;</span><span class="br0">&#93;</span> = <span class="br0">&#123;</span> &quot;php&quot;, &quot;php3&quot;, &quot;phtml&quot;, NULL <span class="br0">&#125;</span>;</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; static const char *const extensions <span class="br0">&#91;</span><span class="br0">&#93;</span> = <span class="br0">&#123;</span> &quot;php&quot;, &quot;php3&quot;, &quot;php4&quot;, &quot;php5&quot;, &quot;phtml&quot;, NULL <span class="br0">&#125;</span>;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; parserDefinition* def = parserNew <span class="br0">&#40;</span>&quot;PHP&quot;<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; def-&gt;extensions = extensions;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; def-&gt;initialize = installPHPRegex;</div></li>
+</ol></div></div>
+
+<p>I have already <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=2276257&group_id=6556&atid=106556">submitted this patch</a> to the upstream exuberant-ctags project.</p>
+
+<h4>Only show class member variables</h4>
+
+<p>With the above patch ctags will correctly tag functions and classes, but variables are still not handled the way I like. The standard implementation tags all variables, including temporary variables and local variables. I prefer that ctags only tags class variables. Approximately the same logic as above is followed. A variable is a class variable if it is preceded by a keyword such as var, static, public, etcetera.</p>
+
+<p>Download <a href="http://www.jejik.com/files/examples/php-member-variables-only-v2.patch">php-member-variables-only-v2.patch</a></p>
+<div class="geshi-wrap"><div class="diff geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">--- exuberant-ctags-<span class="nu0">5.7</span>-multiline/php.c <span class="nu0">2009</span>-07-07 <span class="nu0">17</span>:<span class="nu0">34</span>:<span class="nu0">27.000000000</span> +0200</div></li>
+<li class="li1"><div class="de1"><span class="re4">+++ exuberant-ctags-<span class="nu0">5.7</span>-members/php.c &nbsp; <span class="nu0">2009</span>-07-07 <span class="nu0">17</span>:<span class="nu0">37</span>:<span class="nu0">29.000000000</span> +0200</span></div></li>
+<li class="li1"><div class="de1"><span class="re6">@@ -<span class="nu0">74</span>,<span class="nu0">8</span> +<span class="nu0">74</span>,<span class="nu0">8</span> @@</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;d,define,constant definitions&quot;, NULL<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#40;</span>public<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|protected<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|private<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?<span class="br0">&#40;</span>static<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?function<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+&amp;?<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span>&quot;,</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">4</span>&quot;, &quot;f,function,functions&quot;, NULL<span class="br0">&#41;</span>;</div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span>\\$<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*=&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re7">- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">2</span>&quot;, &quot;v,variable,variables&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; addTagRegex<span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#40;</span>var<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|public<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|protected<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+|private<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?<span class="br0">&#40;</span>static<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>+<span class="br0">&#41;</span>?\\$<span class="br0">&#40;</span><span class="br0">&#91;</span>&quot; ALPHA &quot;_<span class="br0">&#93;</span><span class="br0">&#91;</span>&quot; ALNUM &quot;_<span class="br0">&#93;</span>*<span class="br0">&#41;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*=&quot;,</span></div></li>
+<li class="li1"><div class="de1"><span class="re8">+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;\\<span class="nu0">4</span>&quot;, &quot;v,variable,variables&quot;, NULL<span class="br0">&#41;</span>;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; /* function regex is covered by PHP regex */</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; addTagRegex <span class="br0">&#40;</span>language, &quot;<span class="br0">&#40;</span>^|<span class="br0">&#91;</span> \t<span class="br0">&#93;</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#91;</span>A-Za-z0-<span class="nu0">9</span>_<span class="br0">&#93;</span>+<span class="br0">&#41;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*<span class="br0">&#91;</span>=:<span class="br0">&#93;</span><span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*function<span class="br0">&#91;</span> \t<span class="br0">&#93;</span>*\\<span class="br0">&#40;</span>&quot;,</div></li>
+</ol></div></div>
+
+<h4>Patching exuberant-ctags on Debian</h4>
+
+<p>On Debian and derivative it is quite easy to build your own custom packages. Lets start off by installing everything we need to build exuberant-ctags ourselves.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~$ sudo aptitude build-dep exuberant-ctags</div></li>
+</ol></div></div>
+
+<p>Next we create a working directory and download the source package.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~$ mkdir ctags</div></li>
+<li class="li1"><div class="de1">~$ cd ctags</div></li>
+<li class="li1"><div class="de1">~/ctags$ aptitude source exuberant-ctags</div></li>
+</ol></div></div>
+
+<p>I am assuming that you have downloaded the two patch files to your desktop. Apply them like this.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~/ctags$ cd exuberant-ctags-5.7</div></li>
+<li class="li1"><div class="de1">~/ctags/exuberant-ctags-5.7$ patch -p1 &lt; ~/Desktop/php-multiline-comment.patch</div></li>
+<li class="li1"><div class="de1">~/ctags/exuberant-ctags-5.7$ patch -p1 &lt; ~/Desktop/php-member-variables-only.patch</div></li>
+</ol></div></div>
+
+<p>Now you need to increase the version number of the package so that you can later install it. You can use the <tt>dch</tt> to do this. It will read the changelog, add your name to it and open your preferred editor to edit the changelog.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~/ctags/exuberant-ctags-5.7$ dch</div></li>
+</ol></div></div>
+
+<p>I edited my changelog to look like this. Notice the &ldquo;+multiline&rdquo; that I added to the version number at the top.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">exuberant-ctags (1:5.7-4+multiline) unstable; urgency=low</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; [ Colin Watson ]</div></li>
+<li class="li1"><div class="de1">&nbsp; * Update DEB_BUILD_OPTIONS parsing code from policy 3.8.0.</div></li>
+<li class="li1"><div class="de1">&nbsp; * Backport from upstream (closes: #484797, SF #1878155):</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; - jscript.c was not properly handling escaped quotes.</div></li>
+<li class="li1"><div class="de1">&nbsp; * Add a Homepage control field.</div></li>
+<li class="li1"><div class="de1">&nbsp; * Refer to /usr/share/common-licenses/GPL-2 in debian/copyright rather</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; than plain GPL.</div></li>
+<li class="li1"><div class="de1">&nbsp; * Policy version 3.8.0.</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; [ Sander Marechal ]</div></li>
+<li class="li1"><div class="de1">&nbsp; * Try to avoid matching multiline PHP comments</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp;-- Sander Marechal &lt;s.marechal@jejik.com&gt; &nbsp;Tue, 25 Nov 2008 14:09:00 +0100</div></li>
+</ol></div></div>
+
+<p>Now we can build the package. The -b flag tells debuild that we only want to build a binary package. The -i flag runs some extra checks after building. The -us and -uc tell debuild that you do not wish to sign the package with your GPG key.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~/ctags/exuberant-ctags-5.7$ debuild -i -us -uc -b</div></li>
+</ol></div></div>
+
+<p>Exuberant-ctags should build without errors. Now you can install the package.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">~/ctags/exuberant-ctags-5.7$ cd ..</div></li>
+<li class="li1"><div class="de1">~/ctags$ sudo dpkg -i exuberant-ctags_5.7-4+multiline_i386.deb</div></li>
+</ol></div></div>
+
+<p>The last thing to do is to tell your package manager that you want to keep exuberant-ctags at the version you just installed and not install an updated version.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">echo 'exuberant-ctags hold' | dpkg --set-selections</div></li>
+</ol></div></div>
+
+<p>And that&#8217;s it! Now you should have much better support for taglist in vim with PHP. See the screenshot below for an example. Notice how there is no function called &ldquo;in&rdquo; and a variable called &ldquo;$foo&rdquo; in the laglist.</p>
+
+<img src="http://www.jejik.com/images/articles/vim-ctags/vim-ctags.png" /></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-11-25T14:38:00Z">2008-11-25@14:38</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/php" rel="tag">php</a>
+															&nbsp;<a href="http://www.jejik.com/tag/ctags" rel="tag">ctags</a>
+															&nbsp;<a href="http://www.jejik.com/tag/vim" rel="tag">vim</a>
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+															&nbsp;<a href="http://www.jejik.com/tag/apt" rel="tag">apt</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#c1" class="number" id="c1">#1</a>
+																			<a href="http://pixeltards.com/" class="name">Rys<small> (http://pixeltards.com/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-05@11:50
+																																			</div>
+																Hi Sander,<br />
+<br />
+Thanks for the patches, they've definitely improved my PHP dev experience under vim.  Would you also be willing to share your vim colorscheme?  It looks great, very easy on the eye.<br />
+<br />
+Thanks!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-05@12:57
+																																			</div>
+																Hi Rys,<br />
+<br />
+I shared my vim colorschemes (and other plugins) in a previous article already. It's the "Wombat" colorscheme. See my article &ldquo;<a href="http://www.jejik.com/articles/2008/10/my_list_of_must-have_vim_scripts/" rel="nofollow">My list of must-have vim scrips</a>&rdquo;.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#c3" class="number" id="c3">#3</a>
+																			David Mudrak
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-07@12:03
+																																			</div>
+																Thanks for the patches. Those using gentoo may look at<br />
+http://bugs.gentoo.org/show_bug.cgi?id=276902
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-07@17:46
+																																			</div>
+																Thanks David. I have updated the article and my patches with your improvements.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.perceptum.biz" class="name">Bryan Gruneberg<small> (http://www.perceptum.biz)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-12-10@00:33
+																																			</div>
+																Hi<br />
+<br />
+Thanks for this!<br />
+<br />
+The multiline comment problem poped up in the ctags-5.8 MacPorts distro as well. Unfortunately the patch didnt apply cleanly to the 5.8 code base, so I merged the changes and created a new patch file for the ctags-5.8 MacPorts distribution.<br />
+<br />
+Ive posted it on my blog @ http://www.drupaler.co.za/macports-patch-ctags-58-phpc if anyone needs it. <br />
+<br />
+It seems to work ok, but Im not sure if I have broken anything in the process.<br />
+<br />
+Thanks again for the post!<br />
+<br />
+Bryan
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/11/patching_exuberant-ctags_for_better_php5_support_in_vim/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="026de2a6b140d73b7eb46a7d5fe6db3c" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F11%2Fpatching_exuberant-ctags_for_better_php5_support_in_vim%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://readmetxt.com/?p=202">readmetxt.com/?p=202</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

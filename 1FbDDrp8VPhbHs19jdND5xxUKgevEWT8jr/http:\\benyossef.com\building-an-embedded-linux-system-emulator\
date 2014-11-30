@@ -1,0 +1,309 @@
+http://benyossef.com/building-an-embedded-linux-system-emulator/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 11:21:40 GMT
+Server: Apache
+X-Pingback: http://benyossef.com/xmlrpc.php
+Link: <http://benyossef.com/?p=10>; rel=shortlink
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 7325
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Gilad Ben-Yossef   &raquo; Building an embedded Linux system emulator</title>
+
+<link rel="stylesheet" href="http://benyossef.com/wp-content/themes/esther/style.css" type="text/css" media="screen" />
+<!--[if IE]>
+<style type='text/css'>
+<!--
+#headerimg{position: absolute;}
+--></style>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef RSS Feed" href="http://benyossef.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="Gilad Ben-Yossef Atom Feed" href="http://benyossef.com/feed/atom/" />
+<link rel="pingback" href="http://benyossef.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef &raquo; Building an embedded Linux system emulator Comments Feed" href="http://benyossef.com/building-an-embedded-linux-system-emulator/feed/" />
+<link rel='stylesheet' id='social-widget-css'  href='http://benyossef.com/wp-content/plugins/social-media-widget/social_widget.css?ver=3.9' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://benyossef.com/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://benyossef.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://benyossef.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='sys_clone: Beyond Processes and Threads' href='http://benyossef.com/sys_clone-beyond-processes-and-threads/' />
+<link rel='next' title='Using a shared library constructor' href='http://benyossef.com/using-a-shared-library-constructor/' />
+<meta name="generator" content="WordPress 3.9" />
+<link rel='canonical' href='http://benyossef.com/building-an-embedded-linux-system-emulator/' />
+<link rel='shortlink' href='http://benyossef.com/?p=10' />
+<style type="text/css">
+#header { background: url(http://benyossef.com/wp-content/uploads/2011/03/cropped-1299389848395.jpg) no-repeat right; background-position: 460px 2px;}
+#header { margin: 0 !important; margin:0 0 0 0;padding: 0 0 0 0; height: 299px; width: 899px; }
+</style>
+</head>
+<body>
+<div id="page">
+
+
+<div id="header">
+	<div id="frames"><img alt="photo frame" src="http://benyossef.com/wp-content/themes/esther/images/frame.gif" width="518px" height="299px" border="0" /></div>
+	<div id="headerimg">
+		<h1><a href="http://benyossef.com/">Gilad Ben-Yossef</a></h1>
+		<div class="description">Since 1998</div>
+	</div>
+</div>
+<div id="frame"></div>
+<hr />
+
+	<div id="content" class="narrowcolumn">
+
+				<div class="post" id="post-10">
+		<h2>Building an embedded Linux system emulator</h2>
+			<div class="entry">
+				<p><em>Originally posted to the now defunct Tuxology technoblog on December 14th, 2008, later picked up and edited by linuxdevices.com<br />
+Fixes and conclusion by Henry Kingman from LinuxDevices.com. Thanks Henry! </em></p>
+<p>One of the hallmarks of embedded system programming is working with specialized hardware. Unfortunately, embedded system developers do not always have the luxury to develop and test their code on the actual hardware they target. Often, the hardware is developed in tandem with the system software and therefore it it is not available for much of the embedded system software development cycle.</p>
+<p>While one can develop and test much of our code on a PC running Linux, such a PC is a very different environment from the target board. More often then not, the target board is not even of the same architecture as the PC. A solution to this problem can be obtained by using an emulator &#8211; a software tool that executes software code of our target platform in a virtual machine that is running on our development host, and running our system software in it.</p>
+<p>The following article describes how to build an embedded Linux system running inside an emulator which can be used to develop, test and debug target code even without access to target hardware.</p>
+<p><strong>The components<br />
+</strong><br />
+To build our emulator we will need the following components:</p>
+<ol>
+<li>Hardware emulator (we’ll use Qemu)
+</li>
+<li>Minimal Linux root file system containing a C library and Busybox
+</li>
+<li>The Linux kernel
+</li>
+<li>Installing Qemu
+</li>
+</ol>
+<p>As first step, we will download and install the Qemu emulator. Qemu is an Open Source machine emulator supporting seven target architectures, including x86, MIPS, Arm and PowerPC, creating by Fabrice Ballard.</p>
+<p>Depending on the Linux distribution you use as a workstation, you might be able to use the native package management system of the distribution to get do that.</p>
+<p>For Debian, Ubuntu and derivatives:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ sudo apt-get install qemu</pre></td></tr></table></div>
+
+<p>For Fedore and derivatives (as root):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;"># yum install qemu</pre></td></tr></table></div>
+
+<p>For other distributions lacking a Qemu package or those wishing to obtain the very latest package. Note that the “i386″ label refers to the host running the emulator and not the target platform:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ wget http://bellard.org/qemu/qemu-0.9.1-i386.tar.gz
+$ cd /
+$ sudo tar zxvf qemu-0.9.1-i386.tar.gz</pre></td></tr></table></div>
+
+<p>Or, as root:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;"># tar zxvf qemu-0.9.1-i386.tar.gz</pre></td></tr></table></div>
+
+<p>Alternatively, you can download the sources and build the emulator from scratch. This has the added advantage that you can later adapt the emulator to more accurately reflect your actual hardware:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ wget http://bellard.org/qemu/qemu-0.9.1.tar.gz
+$ tar zxvf qemu-0.9.1.tar.gz
+$ cd qemu-0.9.1/
+$ ./configure
+$ make
+$ sudo make install</pre></td></tr></table></div>
+
+<p>Or, as root:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;"># make install</pre></td></tr></table></div>
+
+<p><strong>Kernel and file system images<br />
+</strong></p>
+<p>The Qemu emulator we have just installed provides a virtual machine mimicking our target hardware. To actually get Linux running on this virtual machine however, we will need to download an image of the Linux kernel and a suitable root file system image for our target architecture.</p>
+<p>Luckily, the Qemu project provides several test images for several architectures supported by Qemu that can be used to get a fast start with Qemu as an embedded Linux system emulator.</p>
+<p>Go to the Qemu project download page and choose one of the Qemu test disk images suitable for your embedded platform and download it to your Linux host (in this example we use arm):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ wget http://bellard.org/qemu/arm-test-0.2.tar.gz</pre></td></tr></table></div>
+
+<p>Now extract the image:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ tar zxvf arm-test-0.2.tar.gz
+$ cd arm-test</pre></td></tr></table></div>
+
+<p><strong>Booting Linux on the emulator<br />
+</strong></p>
+<p>Start up Qemu with the following command line, adjusting the architecture name, kernel file name and root file system image name according to your specific architecture (again, we use arm in this example):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ qemu-system-arm -kernel zImage.integrator \
+   -initrd arm_root.img -tftp / -redir tcp:9999::9999</pre></td></tr></table></div>
+
+<p>The above command line starts Qemu in system emulation mode, booting into the kernel image zImage.integrator while loading into the virtual machine RAM the arm_root.img file system and instructing Qemu to make your entire host root file system available for access via TFTP from the emulated machine (more on this ahead).</p>
+<p>You should now be seeing a window in which the emulated LCD display of the board is shown. You can log-in with the user “root”. No password is required.</p>
+<p><strong>Transferring files to and from the host</strong></p>
+<p>The emulator and file system are set up to automatically configure a virtual Ethernet interface in the virtual machine with an internal IP. Through that virtual network interface, the emulator is set up to enable transferring of files to and from the host machine file system using the TFTP protocol.</p>
+<p>For example, the following command will copy the file “/home/gby/hello_emu” from the host file system to the current directory inside the emulator:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ tftp -g -r /home/gby/hello_emu -l hello_emu 10.0.2.2</pre></td></tr></table></div>
+
+<p>The following command will copy the file “/root/test.log” from the emulator to the host file system directory “/home/gby/”:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ tftp -p -l/root/test.log -r /home/gby/test.log 10.0.2.2</pre></td></tr></table></div>
+
+<p>In addition, you can use the “wget” comment to transfer files using the FTP and HTTP protocol to the emulator from any compatible server accessible in the network:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ wget http://codefidence.com/some/file</pre></td></tr></table></div>
+
+<p>Qemu supports numerous other way to interact with the host and it’s environment, including bridged virtual network interfaces (as opposed to the default NAT used in the example above) which enables both using NFS to communicate with the host as well as remote debugging from the host, VLAN support, exposing the host file system as a FAT file system, mounting disk, flash or CDROM images from the host file system and even using USB devices connected to the host. For more information on these advanced options, please refer to the Qemu user manual.</p>
+<p><strong>Debugging user applications<br />
+</strong></p>
+<p>Using the GNU debugger GDBserver agent, we can debug applications running inside the emulator using the GDB debugger on the host. To do this, first copy (using one of the methods outlined above) the “gdbserver” executable to the emulator. Note that you will need a “gdbserver” executable which was built to run on the target architecture (such as Arm, in the example above) and not on the host!</p>
+<p>Also note that since the test images do not contain debugging symbols for the system libraries, you will only be able to debug statically compiled application using them. This limitation can be removed by building your own kernel and file system image (see below for more information on this topic).</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ tftp -g -r /home/gby/src/gdb/gdb/gdbserver/gdberver \
+   -l gdbserver 10.0.2.2</pre></td></tr></table></div>
+
+<p>Next, assign the gdbserver binary execute permissions:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ chmod u+x gdbserver</pre></td></tr></table></div>
+
+<p>Now, run the gdbserver agent, instructing it to use port 9999 (which have redirected to the emulator using the qemu command line) to listen for connections from the debugger:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ gdbserver 0.0.0.0:9999 /bin/myprog</pre></td></tr></table></div>
+
+<p>Or, if you wish to attach to an already running program, use:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ gdbserver 0.0.0.0:9999 --attach 1234</pre></td></tr></table></div>
+
+<p>Finally, run the GDB debugger on your host and instruct it to connect to the host local port 9999 (which the emulator is redirected to the virtual machine):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ arm-linux-gdb target/bin/myprog
+GNU gdb 6.6-debian
+Copyright (C) 2006 Free Software Foundation, Inc.
+...
+(gdb) set solib-absulote-prefix /dev/null
+(gdb) set solib-search-path target/lib/
+(gdb) target remote 127.0.0.1:9999</pre></td></tr></table></div>
+
+<p><strong>Debugging the kernel<br />
+</strong></p>
+<p>Using the Qemu emulator to debug kernel code is quite straight forward as Qemu incorporates a minimal GDB agent as part of the emulator itself. To debug the Linux kernel running inside the emulator, add the “-s” parameter to the command line used to start Qemu:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ qemu-system-arm -kernel zImage.integrator \
+    -initrd arm_root.img -tftp / -redir tcp:9999::9999 -s</pre></td></tr></table></div>
+
+<p>Now when the emulator will start, it will wait for a debugger connection on the default port “1234″ (or a different port specific with the “-p” option) , before proceeding with the boot. Once the emulator has started, you can debug the Linux kernel running inside using GDB on the host:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ arm-linux-gdb linux/vmlinux
+GNU gdb 6.6-debian
+Copyright (C) 2006 Free Software Foundation, Inc.
+...
+(gdb) target remote 127.0.0.1:1234
+You can use GDB as you normally would. For example, type “cont” to launch the kernel:
+&nbsp;
+(gdb) cont</pre></td></tr></table></div>
+
+<p><strong>Building your own kernel and file system images<br />
+</strong></p>
+<p>So far we have seen how to use the Qemu emulator with the test kernel and file system images that are available on the Qemu site. To make full use of the emulator, we can create our own custom kernel and file system images that will better reflect the real target we are trying to develop for.</p>
+<p>First, query Qemu regarding which boards it can emulate for you chosen architecture. Replace “arm” in the example above with one of: mips, x86_64, ppc or sparc. For i386, simply use “qemu” as the command:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ qemu-system-arm -M \?</pre></td></tr></table></div>
+
+<p>Choose the board that most closely resembles your real target environment. Note that you can add support to Qemu of your specific true board. This requires some programming though and we shall not cover it in this tutorial.</p>
+<p>The creation of kernel and file system for our emulated target is no different then doing the same task for a real hardware and in fact. Many tools are freely available to accomplish this task. In this example we shall use the Buildroot framework. Buildroot is a set of make files and patches that makes it easy generate a cross-compilation tool chain and root file system for your target Linux system using the uClibc C library:</p>
+<p>First, we shall download the latest Buildroot release from the project web site and extract it:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ wget http://buildroot.uclibc.org/downloads/snapshots/buildroot-snapshot.tar.bz2
+$ tar jxvf buildroot-snapshot.tar.bz2
+$ cd buildroot/</pre></td></tr></table></div>
+
+<p>Next, let’s configure Buildroot for our chosen target board:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ make menuconfig</pre></td></tr></table></div>
+
+<p>You will be presented with a menu enabling you to pick your architecture, sub-architecture, specific board to build for, GCC and uClibc versions and related details. For each entry of the configuration tool, you can find associated help that describes the purpose of the entry.</p>
+<p>At minimum, the following configuration options needs to be set:</p>
+<ul>
+<li>Target Architecture option &#8211; choose your target architecture (e.g. arm.)
+</li>
+<li>Target Architecture Variant option &#8211; chose a specific model of the architecture (e.g. arm926t.)
+</li>
+<li>Target options menu &#8211; if the target board you wish to emulate (that is supported by Qemu) is listed, turn on support for that board (e.g. enable the “ARM Ltd. Device Support” menu and inside it choose the “Integrator arm926″ option).
+</li>
+<li>Toolchain menu &#8211; turn on “Build gdb server for the Target” option and if you would like to test C++ programs on the emulator, also the “C++ cross-compiler support” option.
+</li>
+<li>Target filesystem options menu &#8211; enable the “cpio the root filesystem” option and choose the “gzip” compression method. You may also request the file system image to be copied to a specified directory once it is generated here.
+</li>
+<li>Kernel menu &#8211; choose the “linux (Advanced configuration)” option and pick one of the offered Linux kernel versions of the list offered. Also, select the “zImage” binary format. Here you can also specify a directory to copy the generated kernel to.
+</li>
+</ul>
+<p>In addition, you will need to supply a proper Linux kernel configuration file. Note that you extract the kernel configuration configuration file used to generate the kernel supplied as part of the test images by issuing the following command when inside the emulator:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ zcat /proc/config.gz &gt; linux.config</pre></td></tr></table></div>
+
+<p>Alternatively, Linux provides specific kernel configuration for optimal use with Qemu for some architectures. Run the following command to inspect the default kernel configuration included in a specific Linux kernel version:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ make help</pre></td></tr></table></div>
+
+<p>When you’ve done configuring Buildroot, exit the configuration utility (making sure to OK saving the changes) and type: “make”. Buildroot will now download all required sources and build your new kernel and file system image for you. You should now be able to run the emulator using the kernel and file system image you have just created. Use the file name and path of the zImage binary as a parameter to Qemu “-kernel” option and the file name and path of the file system image to the Qemu “-initrd” parameter, like so:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">$ qemu-system-arm -kernel zImage \
+    -initrd rootfs.arm.cpio.gz -tftp / -redir tcp:9999::9999 -s</pre></td></tr></table></div>
+
+<p><strong>Conclusion<br />
+</strong></p>
+<p>As we have shown, the Qemu emulator provides a fairly simple way to develop, debug, and test Linux kernels, drivers, and applications for a variety of embedded architectures, even when no actual hardware is available. More information about the software used in this article can be found on the qemu, gdb, and Buildroot websites.</p>
+
+				
+			</div>
+		</div>
+				</div>
+
+	<div id="sidebar">
+		<ul>
+			<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Menu</h2>		<ul>
+			<li class="page_item page-item-14"><a href="http://benyossef.com/benchmarking-boot-latency-on-x86/">Benchmarking boot latency on x86</a></li>
+<li class="page_item page-item-10 current_page_item"><a href="http://benyossef.com/building-an-embedded-linux-system-emulator/">Building an embedded Linux system emulator</a></li>
+<li class="page_item page-item-6"><a href="http://benyossef.com/helping-the-compiler-help-you/">Helping The Compiler Help You</a></li>
+<li class="page_item page-item-8"><a href="http://benyossef.com/sys_clone-beyond-processes-and-threads/">sys_clone: Beyond Processes and Threads</a></li>
+<li class="page_item page-item-11"><a href="http://benyossef.com/using-a-shared-library-constructor/">Using a shared library constructor</a></li>
+<li class="page_item page-item-2"><a href="http://benyossef.com/">Who is this?</a></li>
+		</ul>
+		</li><li id="social-widget-4" class="widget Social_Widget"><h2 class="widgettitle">Social me</h2><div class="socialmedia-buttons smw_left"><a href="http://www.facebook.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/facebook.png" 
+				alt="Links to various social sites Facebook" 
+				title="Links to various social sites Facebook" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://plus.google.com/116984042169887848341" rel="publisher" target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/googleplus.png" 
+				alt="Links to various social sites Google+" 
+				title="Links to various social sites Google+" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.twitter.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/twitter.png" 
+				alt="Links to various social sites Twitter" 
+				title="Links to various social sites Twitter" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.linkedin.com/in/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/linkedin.png" 
+				alt="Links to various social sites LinkedIn" 
+				title="Links to various social sites LinkedIn" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="skype:gilad.benyossef?add"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/skype.png" 
+				alt="Links to various social sites Skype" 
+				title="Links to various social sites Skype" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://github.com/gby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/github.png" 
+				alt="Links to various social sites Github" 
+				title="Links to various social sites Github" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://foursquare.com/user/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/foursquare.png" 
+				alt="Links to various social sites Foursquare" 
+				title="Links to various social sites Foursquare" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="mailto:gilad@benyossef.com"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/email.png" 
+				alt="Links to various social sites E-mail" 
+				title="Links to various social sites E-mail" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a></div></li><li id="text-3" class="widget widget_text"><h2 class="widgettitle">My bitcoin address</h2>			<div class="textwidget">1FbDDrp8VPhbHs19jdND5xxUKgevEWT8jr</div>
+		</li>		</ul>
+	</div>
+
+
+
+<hr />
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		2014 &copy; Gilad Ben-Yossef is proudly powered by
+		<a href="http://wordpress.org/">WordPress</a>
+		<br /><a class="rsslink" href="http://benyossef.com/feed/">Entries (RSS)</a>
+		 <a class="rsslink" href="http://benyossef.com/comments/feed/">Comments (RSS)</a> | Esther Theme By <a title="Patrick" href="http://patrick.bloggles.info/">Patrick</a>
+		<!-- 13 queries. 0.618 seconds. -->
+	</p>
+</div>
+</div>
+
+<!-- This is designed for Esther Goh, wish her happy birthday and have a happiness life! -->
+
+	</body>
+</html>
+

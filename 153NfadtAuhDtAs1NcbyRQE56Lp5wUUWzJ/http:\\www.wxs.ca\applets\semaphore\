@@ -1,0 +1,242 @@
+http://www.wxs.ca/applets/semaphore/
+HTTP/1.1 200 OK
+Server: nginx/1.1.19
+Date: Tue, 22 Jul 2014 17:25:43 GMT
+Content-Type: text/html
+Content-Length: 6776
+Last-Modified: Wed, 23 Jan 2013 21:21:02 GMT
+Connection: close
+Accept-Ranges: bytes
+
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    
+
+        <title>Semaphore: Built with Processing</title>
+        <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/blog/feed" />
+        <link rel="alternate" type="application/atom+xml" title="Atom 1.0"
+        href="/blog/feed/atom" />
+        <link rel='stylesheet' href='/css/pygments_murphy.css' type='text/css' />
+        <link rel="stylesheet" media="screen" type="text/css" href="/cutout.css" />
+        <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    
+<style type="text/css">
+#semaphorebox {
+    width: 600px;
+    height: 350px;
+    border: thin solid black;
+}
+#semaphorein {
+    position: absolute;
+    top: -9999em;
+    left: -9999em;
+}
+</style>
+<script type="text/javascript" src="/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/js/raphael-min.js"></script>
+<script type="text/javascript">
+Raphael.fn.semaphore = function(cx, cy, input_name) {
+    var paper = this;
+    var input = $("#"+input_name);
+    input.attr("value", " ");
+    var positions = {
+        'a':[1,0],'b':[2,0],'c':[3,0],'d':[0,4],'e':[0,5],'f':[0,6],
+        'g':[0,7],'h':[2,1],'i':[1,3],'j':[4,6],'k':[1,4],'l':[1,5],
+        'm':[1,6],'n':[1,7],'o':[2,3],'p':[2,4],'q':[2,5],'r':[2,6],
+        's':[2,7],'t':[3,4],'u':[3,5],'v':[4,7],'w':[6,5],'x':[7,5],
+        'y':[3,6],'z':[7,6],' ':[0,0],
+    };
+    var speed=500;
+    var pause=800;
+    var hr=20, hy=-30; //Head radius and y-position
+    var bw=50, bh=150, by=-5, br=8; // Body width, height, y-pos and radius
+    var aw=15, ah=100, ax=5,ay=0, ar=3;  // Similar for the arms
+    var sw=2,  sh=50,  sy=ah; // The sticks!
+    var fw=30, fh=30, fy=sy+sh-fh;
+
+    function unit_flag() {
+        var flag_a = paper.path("M0 0L1 1L1 0L0 0");
+        flag_a.attr("fill", "#f00");
+        var flag_b = paper.path("M0 0L1 1L0 1L0 0");
+        flag_b.attr("fill", "#ff0");
+        var flag = paper.set();
+        flag.push(flag_a, flag_b);
+        return flag;
+    }
+
+    var head = paper.circle(0,hy,hr);
+    head.attr("fill","#000");
+    var body = paper.rect(-bw/2, by, bw, bh, br);
+    body.attr("fill","#000");
+    var l_arm_bod = paper.rect(-aw/2,0,aw,ah,ar);
+    l_arm_bod.attr("fill", "#000");
+    var l_stick = paper.rect(-sw/2,sy,sw,sh);
+    var l_flag = unit_flag();
+    l_flag.scale(-fw,fh,0,0);
+    l_flag.translate(0,fy);
+
+    var l_arm = this.set();
+    l_arm.push(l_arm_bod, l_stick, l_flag);
+    l_arm.translate(bw/2+ax,ay);
+
+    var r_arm_bod = paper.rect(-aw/2,0,aw,ah,ar);
+    r_arm_bod.attr("fill", "#000");
+    var r_stick = paper.rect(-sw/2,sy,sw,sh);
+    var r_flag = unit_flag();
+    r_flag.scale(fw,fh,0,0);
+    r_flag.translate(0,fy);
+
+    var r_arm = this.set();
+    r_arm.push(r_arm_bod, r_stick,r_flag);
+    r_arm.translate(-bw/2-ax,ay);
+
+    // Generates a rotation string for the arms that
+    // has the correct centre point (mind, the centre
+    // point is not properly translated by Raphael) 
+    function l_rot_string(angle) {
+        return angle + " " + (bw/2+ax+cx) + " " + (cy+by+ay);
+    }
+    function r_rot_string(angle) {
+        return angle + " " + (cx-bw/2-ax) + " " + (cy+by+ay);
+    }
+    var guy = this.set();
+    
+    guy.push(
+        head,
+        body,
+        l_arm,
+        r_arm
+    );
+    guy.translate(cx,cy);
+
+    var cur_char = paper.text(40,40,"")
+    var text_disp = paper.text(80,40,"Click & Type text to start!");
+    cur_char.attr({"font-size": 40, "fill": "#f00", "text-anchor": "start"});
+    text_disp.attr({"font-size": 40,
+                    "text-anchor": "start"});
+    var running=false;
+    function read_loop() {
+        running=true;
+        var text = input.attr("value")    
+        if (text.length > 0) {
+            var c = text[0].toLowerCase();
+            cur_char.attr("text", c);
+            input.attr("value",text.substring(1));
+            text_disp.attr("text",text.substring(1));
+            if (positions[c]) {
+                l_arm.animate({rotation: l_rot_string(45*positions[c][1])},speed);
+                r_arm.animate({rotation: r_rot_string(45*positions[c][0])},speed,function() {
+                    setTimeout(read_loop,pause);
+                });
+            } else {
+                read_loop();
+            }
+        } else {
+            running=false;
+        }
+    }
+    input.keyup(function() {
+        text_disp.attr("text",input.attr("value"));
+        if (!running) read_loop();
+    });
+
+
+};
+$(function() {
+    var paper = Raphael("semaphorebox", 600, 350);
+    paper.semaphore(300,175,"semaphorein");
+    $("#semaphorebox").click(function() {
+        $("#semaphorein").focus();
+    });
+});
+
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5159448-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </head>
+  <body>
+    <header id="header">
+    
+      <div id="headertop">
+<a href="/">
+<img src="/images/wxs_header.png" alt="WXS.ca" /><br />
+<img src="/images/tagline.png" alt="Projects and more by W. Xavier Snelgrove" />
+</a>
+</div>
+<div id="headerbottom">
+<img src="/images/scissors.png" alt="scissors" />
+<div id="tipme">
+Tip? Send BTC to: 153NfadtAuhDtAs1NcbyRQE56Lp5wUUWzJ
+</div>
+</div>
+
+    
+    </header>
+    <div id="main">
+      
+
+
+<h1>Semaphore</h1>
+<div id="semaphorebox">
+
+</div>
+<input id="semaphorein" type="text" />
+<ul class="media">
+    <li>Javascript</li>
+    <li><a href="http://jquery.com">Jquery</a></li>
+    <li><a href="http://raphaeljs.com">Raphaël</a></li>
+</ul>
+<p>
+Having trouble? Old Java version can be found <a href="javaversion.html">here</a>
+</p>
+<p>
+Click on the program to give it focus, and then type a message.
+<p>
+<h2>About</h2>
+<p>Semaphore is a archaic way of sending messages using flags. This applet is a
+handy translator for anyone who wants to send a message in semaphore without
+memorizing it. (or alternatively to test someone's semaphore knowledge). For
+more information see the
+<a href="http://en.wikipedia.org/wiki/Flag_semaphore">Wikipedia
+article on semaphore</a>
+
+
+
+    </div><!-- End Main Block -->
+    <footer id="footer">
+    
+        <ul>
+<li id="contact">
+    Contact: <address class='address'>webmaster@<span class='hide'> REMOVE </span>wxs.ca</address>
+</li>
+<li id="credits">
+Powered by <a href="http://www.blogofile.com">Blogofile</a>.
+</li>
+<li>
+RSS feeds for <a href="/blog/feed">Entries</a>
+</li>
+</ul>
+
+    
+    </footer>
+  </body>
+</html>
+
+

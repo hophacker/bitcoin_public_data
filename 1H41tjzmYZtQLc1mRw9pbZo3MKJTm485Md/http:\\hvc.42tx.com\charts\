@@ -1,0 +1,329 @@
+http://hvc.42tx.com/charts/
+HTTP/1.1 200 OK
+Server: nginx/1.4.1 (Ubuntu)
+Date: Wed, 23 Jul 2014 22:10:44 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 8114
+Connection: close
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>42tx.com [HVC]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="shortcut icon" href="/static/42tx.ico">
+    <!-- CSS -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+      <style type="text/css">
+          html,
+          body {
+              height: 100%;
+              font-size: 12px;
+              /* The html and body elements cannot have any padding or margin. */
+          }
+
+              /* Wrapper for page content to push down footer */
+          #wrap {
+              min-height: 100%;
+              height: auto !important;
+              height: 100%;
+              /* Negative indent footer by it's height */
+              margin: 0 auto -60px;
+          }
+
+              /* Set the fixed height of the footer here */
+          #push,
+          #footer {
+              height: 60px;
+          }
+
+          #footer {
+              background-color: #f5f5f5;
+          }
+
+              /* Lastly, apply responsive CSS fixes as necessary */
+          @media (max-width: 767px) {
+              #footer {
+                  margin-left: -20px;
+                  margin-right: -20px;
+                  padding-left: 20px;
+                  padding-right: 20px;
+              }
+          }
+
+
+
+
+
+
+      </style>
+
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+
+</head>
+
+<body>
+
+    <div id="wrap">
+
+        <div class="container">
+            <div class="container-fluid" style="border-bottom: 1px solid #eee; margin-bottom:20px; margin-top:20px; padding-left:5px !important;">
+                    <div class="navbar-header">
+                      <a class="navbar-brand" href="http://hvc.42tx.com" style="padding:0 !important; height:auto !important;">
+                          <img src="/static/42tx.png" height="27" width="50" style="margin-bottom: 5px"></a>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-4" style="font-size:13px !important;">
+
+                        <p class="navbar-text navbar-right"><a href="http://heavycoin.github.io"><strong>heavycoin</a> block explorer</strong></p>
+                        <p class="navbar-text navbar-right"><a href="/stats/">block reward</a></p>
+<p class="navbar-text navbar-right"><a href="/charts/">charts</a></p>
+                    </div>
+        </div>
+
+
+
+                 
+
+
+            
+                
+            
+
+
+	<div class="alert alert-danger">
+	 please consider donating for a better service uptime. 
+        </div>
+
+
+
+
+
+    
+
+<div class="row">
+
+    <div class="col-md-12" id="eta_reward_div"
+style="width:100%; margin: 0 auto; height:400px; background: url('http://hvc.42tx.com/static/spinner.gif') no-repeat center;">
+
+    </div>
+
+    <div class="col-md-12" id="vote_div"
+style="width:100%; margin: 0 auto; height:400px;">
+
+    </div>
+
+
+
+    <div class="col-md-12" id="reward_div" style="width:100%; height:400px;">
+    </div>
+
+
+    <div class="col-md-12" id="diff_div" style="width:100%; height:400px;">
+    </div>
+
+    <div class="col-md-12" id="supply_div" style="width:100%; height:400px;">
+    </div>
+
+
+</div>
+
+
+
+<div class="col-md-4 pull-right">
+
+     
+        <a href="http://heavycoin.github.io"><img src="/static/HVC_icon.png" height="150" width="150" style="margin-bottom: 5px"></a>
+
+</div>
+   
+            <div class="container" style="padding-top:20px; padding-bottom: 20px;">
+                <hr>
+                <p class="pull-right"><a href="#">Back to top</a></p>
+
+                <p>donations: (HVC) <em>HMKEBd4TtJD4eixjBhmg8fSoroJSdpTiUh</em>, (BTC) <em>1H41tjzmYZtQLc1mRw9pbZo3MKJTm485Md</em></p>
+            </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+<script type="text/javascript">
+
+var d = new Date();
+dataSource = '/hvc_charts_data?' + d.getTime();
+
+function sortChartData(chartData) {
+    function cmp(a, b) {
+        return a[0] - b[0];
+    }
+
+    return chartData.sort(cmp);
+}
+
+$(document).ready(function () {
+    $.getJSON(dataSource, function (data) {
+        var reward_data = [];
+        var eta_reward_data = [];
+        var diff_data = [];
+        var supply_data = [];
+        var vote_data = [];
+
+        $.each(data, function (key, val) {
+            var arr = [parseInt(val.time) * 1000, parseInt(val.estimated_reward)];
+            eta_reward_data.push(arr);
+
+            var reward_arr = [parseInt(val.time) * 1000, parseInt(val.block_reward)];
+            reward_data.push(reward_arr);
+
+            var diff_arr = [parseInt(val.time) * 1000, parseFloat(val.diff)];
+            diff_data.push(diff_arr);
+            var supply_arr = [parseInt(val.time) * 1000, parseInt(val.supply)];
+            supply_data.push(supply_arr);
+
+            var vote_arr = [parseInt(val.time) * 1000, parseInt(val.vote)];
+            vote_data.push(vote_arr);
+
+        });
+
+        eta_reward_data = sortChartData(eta_reward_data);
+        diff_data = sortChartData(diff_data);
+        supply_data = sortChartData(supply_data);
+        reward_data = sortChartData(reward_data);
+        vote_data = sortChartData(vote_data);
+
+        // Create the chart
+        $('#eta_reward_div').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+            },
+
+	    chart: {
+	        events: {
+	        	load: function() {
+                        
+                        $("#eta_reward_div").css('background-image', '');
+                         }
+	        }
+	    },
+
+            title: {
+                text: 'estimated block reward'
+            },
+
+            series: [
+                {
+                    name: 'estimated block reward',
+                    data: eta_reward_data,
+                    tooltip: {
+                        valueDecimals: 0
+                    }
+                }
+            ]
+        });
+
+        // Create the chart
+        $('#diff_div').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+            },
+
+            title: {
+                text: 'mining difficulty'
+            },
+
+            series: [
+                {
+                    name: 'diff',
+                    data: diff_data,
+                    tooltip: {
+                        valueDecimals: 8
+                    }
+                }
+            ]
+        });
+
+        // Create the chart
+        $('#vote_div').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+            },
+
+            title: {
+                text: 'block reward vote'
+            },
+
+            series: [
+                {
+                    name: 'diff',
+                    data: vote_data,
+                    tooltip: {
+                        valueDecimals: 0
+                    }
+                }
+            ]
+        });
+
+
+
+        // Create the chart
+        $('#supply_div').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+            },
+
+            title: {
+                text: 'total coin supply'
+            },
+
+            series: [
+                {
+                    name: 'coin supply',
+                    data: supply_data,
+                    tooltip: {
+                        valueDecimals: 0
+                    }
+                }
+            ]
+        });
+
+
+        // Create the chart
+        $('#reward_div').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+            },
+
+            title: {
+                text: 'block reward'
+            },
+
+            series: [
+                {
+                    name: 'block reward',
+                    data: reward_data,
+                    tooltip: {
+                        valueDecimals: 0
+                    }
+                }
+            ]
+        });
+
+
+    });
+
+});
+
+
+
+</script>
+
+
+</body>
+</html>

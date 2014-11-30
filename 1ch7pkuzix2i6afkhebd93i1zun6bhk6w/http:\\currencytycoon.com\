@@ -1,0 +1,449 @@
+http://currencytycoon.com/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Thu, 24 Jul 2014 12:59:40 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d22fefacf6306247a49b37e8d152114dd1406206779882; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.currencytycoon.com; HttpOnly
+X-Powered-By: PHP/5.5.11
+Set-Cookie: PHPSESSID=j1h9c592ltv4hirlu6spjvvvq6; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+CF-RAY: 14f04bd64fd20844-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Project: Currency Tycoon
+Author: Clomode
+Date:2011 
+-->
+<head>
+<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+<meta name="HandheldFriendly" content="true">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Currency Tycoon - Foreign Currency Trading Simulator, includes Bitcoin</title>
+<meta name="description" content="Multi-player online currency exchange game. Play with $1,000,000 USD for free.">
+<meta name="viewport" content="width=320, initial-scale=0.95, maximum-scale=1.5">
+<link rel="stylesheet" type="text/css" href="//currencytycoon.com/forex.css">
+<style type="text/css">
+                </style>
+<script type="text/javascript" src="//currencytycoon.com/tycoon.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="//currencytycoon.com/highcharts/js/highstock.js"></script>
+<script src="//currencytycoon.com/simplemodal/jquery.simplemodal.1.4.4.min.js"></script>
+
+
+<script type="text/javascript">
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function (from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
+
+
+$(window).resize(function () {
+
+    // re-pin the element and re-calculate the position
+    pin_element.unpin('#controls');
+    pin_element.pin('#controls');
+    pin_element.process();
+});
+
+$(document).ready(function () {
+
+    forex_init();
+    forex_lang();
+
+    pins = new pin_element();
+    pin_element.pin('#controls');
+
+    $("#refresh_button").click(function (event) {
+        event.preventDefault();
+        refresh_all();
+
+    });
+
+    $("#logout_button").click(function (event) {
+        // default event is ok for now
+        //event.preventDefault();
+    });
+
+
+
+        $(window).scroll(function (event) {
+        var toppos = $(window).scrollTop();
+
+        $(".status_alert").each(function (i) {
+            // re-arrange
+            var new_top = (i * 30) + toppos;
+            // a hack for android / iphone, coz they don't support fixed positioning
+            $(this).attr('style', 'width: ' + $(window).width() + 'px;display:block; position: absolute; top: ' + new_top + 'px !important');
+        });
+
+        pin_element.process();
+    });
+
+
+    $("#open_trades_table").delegate(".close_trade_action", 'click', function (event) {
+
+                // when 'close trade' is clicked
+
+
+                event.preventDefault();
+                $("#open_trades_spinner").css('display', 'inline');
+
+                var trade_id = $(this).attr('data-trade_id');
+
+                forex_init_vars.last_req_time = Math.round(new Date().getTime());
+                $.ajax({
+                            url:forex_init_vars.ajax_url + '?f=close_trade',
+                            dataType:'json',
+                            data:({trade_id:trade_id, tok:forex_init_vars.tok}),
+                            type:'POST',
+                            timeout:'5000',
+                            cache:false,
+                            tryCount:0,
+                            retryLimit:3,
+                            error:function (xhr, textStatus, errorThrown) {
+                                if (textStatus == 'timeout') {
+                                    this.tryCount++;
+                                    if (this.tryCount <= this.retryLimit) {
+                                        forex_init_vars.last_req_time = Math.round(new Date().getTime());
+                                        $.ajax(this); // try again
+                                        return;
+                                    }
+                                }
+
+                                if (xhr.status == 500) {
+                                    // problem with server
+                                } else {
+                                    // connection probs?
+                                }
+                                status_alert('There was an error contacting the server. Please try later.');
+                                $("#open_trades_spinner").css('display', 'none');
+
+
+                            },
+                            success:function (result) {
+
+
+                                $('tr[data-trade_id="' + trade_id + '"]').fadeOut(300,
+                                        function () {
+                                            $(this).remove();
+                                            status_alert('<img src="' + forex_init_vars.path + 'ok.png" align="ABSMIDDLE"> Trade closed');
+                                        });
+
+                                refresh_all();
+                                $("#open_trades_spinner").css('display', 'none');
+
+                            }
+                        }
+                );
+
+
+            }
+
+    );
+
+    $("#place_order_button").click(function (event) {
+
+        event.preventDefault();
+        //$("#place_order_button").parent().append('<img class="spinner_gif" src="spinner.gif" width="16" height="16">');
+        //toggle_spinner($("#place_order_button").parent());
+
+
+        var buy_amount_field = $("#place_order_form input[name=buy_amount]");
+        var buy_cur_field = $("#place_order_form select[name=buy_cur]");
+        var trade_type_field = $("#place_order_form input[name=trade_type]:checked");
+
+        var buy_amount = buy_amount_field.val();
+        var buy_cur = buy_cur_field.val();
+        var trade_type = trade_type_field.val();
+
+        //status_alert(buy_amount);
+        forex_init_vars.last_req_time = Math.round(new Date().getTime());
+        $.ajax({
+            url:forex_init_vars.ajax_url + '?f=place_and_execute_order',
+            dataType:'json',
+            data:({buy_amount:buy_amount, buy_cur:buy_cur, trade_type:trade_type, tok:forex_init_vars.tok}),
+            type:'POST',
+            timeout:'5000',
+            cache:false,
+            tryCount:0,
+            retryLimit:3,
+            error:function (xhr, textStatus, errorThrown) {
+                if (textStatus == 'timeout') {
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        forex_init_vars.last_req_time = Math.round(new Date().getTime());
+                        $.ajax(this); // try again
+                        return;
+                    }
+                }
+
+                if (xhr.status == 500) {
+                    // problem with server
+                } else {
+                    // connection probs?
+                }
+                status_alert('There was an error contacting the server. Please try later.');
+
+
+            },
+            success:function (result) {
+
+                //toggle_spinner();
+
+
+                if (result.error) {
+                    status_alert('<b>Error: </b>' + result.error);
+                } else {
+
+                    //$("#place_order_form").fadeOut();
+
+                    buy_amount_field.val(0);
+                    buy_cur_field.val('');
+                    status_alert('<img src="' + forex_init_vars.path + 'ok.png" align="ABSMIDDLE">Your order received and a new trade was opened.');
+
+                    refresh_all();
+
+                }
+
+
+            }
+        });
+
+    });
+
+    if ($('#public-charts.box').length) {
+        ty_load_historical_chart();
+    }
+
+    quickEx.init();
+
+    var open_player_history = function (player_id, game_id) {
+
+        var setModalUrl = function () {
+            window.history.pushState({action:'ranks', player_id:player_id}, "Ranks-" + player_id, forex_init_vars.path + "trades/g/" + game_id + "/p/" + player_id);
+        };
+        var backModalUrl = function () {
+            //window.history.back();
+            window.history.pushState({action:'home'}, "CurrencyTycoon", forex_init_vars.path);
+            $.modal.close();
+        };
+        //alert('clicked '+$(this).attr('data-player-id'));
+        $.modal('<div><div id="player-history" style="">' +
+            // '<iframe src="ajax.php?f=get_trades_history&player_id='+$(this).attr('data-player-id')+'"  height="450" width="100%" border="0"></iframe>' +
+                '</div><br></div>', {overlayClose:true, onShow:setModalUrl, onClose:backModalUrl  });
+        $.ajax(forex_init_vars.path + 'ajax.php?f=get_trades_history&player_id=' + player_id,
+                { success:function (result) {
+                    $('#player-history').html(result);
+                }
+
+                }
+        );
+    };
+
+    $('#ranks').on('click', 'table tr', {}, function (e) {
+        var player_id = $(this).attr('data-player-id');
+        var game_id = $(this).attr('data-game-id');
+        open_player_history(player_id, game_id);
+    });
+
+    
+
+});
+
+
+function forex_init() {
+
+    forex_init_vars = {
+        pid:'PLAYER_ID',
+        path:'//currencytycoon.com/',
+        session_length: 1440000,
+        last_req_time:Math.round(new Date().getTime()),
+        tok:'FOREX_TOK',
+        game_stats: null,
+        player: null,
+        portfolio: null,
+        trades: null,
+        rates: {"AUD":"1.058150761233","BGN":"1.452506498329","BRL":"2.217898254735","BTC":"0.001639666820","CAD":"1.072112885258","CHF":"0.902339398440","CNY":"6.199405867063","CZK":"20.389157073895","DKK":"5.537987374675","EUR":"0.742666171556","GBP":"0.587300408466","HKD":"7.750612699592","HRK":"5.659858893427","HUF":"228.109914593390","IDR":"11491.429632380000","ILS":"3.410397326402","INR":"60.049981433346","JPY":"101.381359079090","KRW":"1024.084663943600","LTL":"2.564277757148","MXN":"12.935239509840","MYR":"3.167768288155","NOK":"6.181581878945","NZD":"1.151206832529","PHP":"43.210545859636","PLN":"3.070181953212","RON":"3.284663943557","RUB":"34.860527292982","SEK":"6.833717044189","SGD":"1.238321574452","THB":"31.795766802822","TRY":"2.094615670256","USD":"1.000000000000","ZAR":"10.527961381359"} ,
+        trades_template:'<tr class="data_row" data-trade_id="%TRADE_ID%"><td class="data_cell date">%TRADE_DATE%<br>[<a class="close_trade_action" data-trade_id="%TRADE_ID%" href="/index.php?action=close_trade&amp;trade_id=%TRADE_ID%">Close Trade</a>]</td><td class="data_cell amount">%TRADE_TYPE% %BUY_AMOUNT% %CUR_TO%<br>($%SELL_AMOUNT% USD)</td><td class="data_cell worth">%WORTH%</td><td class="data_cell pl">%PROFIT%<br>%CHANGE%%</td></tr>',
+        trades_total_template:'<tr class="summary_row"><td class="summary_cell label">Totals</td><td class="summary_cell spent">$%USD_TOTAL% USD spent</td><td class="summary_cell worth"></td><td class="summary_cell profit">%TOTAL_PROFIT%<br> %TOTAL_CHANGE%% </td></tr>',
+        balance_template:'<li class="balance_item"><span class="stat">%AMOUNT%</span> in %CURRENCY%, today worth $<span class="stat">%USD_AMOUNT%</span> USD</li>',
+        balance_template_s:'<li class="balance_item"><span class="stat">%AMOUNT%</span> in %CURRENCY% (from short selling trades)</li>',
+        news_row_template:'<tr class="data_row"><td class="data_cell date">%DATE%</td><td class="data_cell name">%NAME%</td><td class="data_cell news">%NEWS%</td></tr>',
+        rank_row_template:'<tr class="data_row %HIGHLIGHT_ROW%" data-game-id="%GAME_ID%" data-player-id="%PLAYER_ID%"><td class="data_cell rank">%RANK%</td><td class="data_cell name">%PLAYER_NAME%</td><td class="data_cell worth">%NETWORTH%</td></tr>',
+        controls_fixed_pos:$('#controls').position(),
+        ajax_url:'//currencytycoon.com/ajax.php'
+    };
+    
+        //status_alert('<img src="ok.png" align="ABSMIDDLE"> Welcome to Currency Tycoon');
+        
+}
+
+
+function forex_lang() {
+
+    
+    forex_lang.label = {
+
+        sec: 'sec',
+days: 'days',
+hrs: 'hours',
+min: 'min',
+
+
+    };
+
+}
+
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-92645-32']);
+_gaq.push(['_trackPageview']);
+
+(function () {
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</head>
+<body>
+
+<div id="logo">
+    <img src="//currencytycoon.com/logo2.png" width="320" height="100">
+</div>
+    
+
+            <div class="box" id="login">
+
+            <p>
+                <span style="font-weight: bold; font-size: larger;">To enter the game, choose your login provider:</span><br>
+                <a href="/index.php?openid_service=google"><img
+                        src="//currencytycoon.com/login_google.png" alt="Google" border="0"></a> <a
+                    href="/index.php?openid_service=yahoo"><img
+                    src="//currencytycoon.com/login_yahoo.png" border="0" alt="Yahoo"></a><br>
+                <small>Note: Using OpenID ensures that Currency Tycoon never sees your password or email address. OpenID
+                    is used for login, and that's all.
+                </small>
+            <form action="/index.php" method="post">
+                Or, if you have an OpenID account:<br><img src="//currencytycoon.com/openid-16x16.gif" width="16"
+                                                           height="16"
+                                                           alt="OpenID URL:"><input size="30" type="text"
+                                                                                    name="openid_identifier">
+                <button>Login</button>
+            </form>
+            <p>
+                <b>About:</b>Currency Tycoon is a game where players trade
+                currencies on a simulated foreign exchange trading platform with rates from the real-world. Each player
+                starts
+                with $1,000,000 USD of imaginary funds and they can use this to either buy or short-sell a range of
+                foreign currencies and also <b>Bitcoin (BTC)</b>. The game starts and ends at the beginning of each
+                month. Think you've got what it takes to be a top trader? Come in and try!
+            </p>
+
+
+        </div>
+        <div class="box" id="exchange">
+            <h3>Quick Bitcoin Exchange Calculator</h3>
+                        <form id="exchange-calc" action="#">
+                <input type="text" id="input-amount-btc" value="1"> <label for="input-amount-btc">BTC</label> = <input
+                    type="text"
+                    id="input-amount-currency" value="609.88">
+                <select name="to-currency" id="quick-to-currency">
+                    <option value="USD">USD</option>
+                    <option value="AUD" data-rate="1.058150761233">AUD</option><option value="BGN" data-rate="1.452506498329">BGN</option><option value="BRL" data-rate="2.217898254735">BRL</option><option value="BTC" data-rate="0.001639666820">BTC</option><option value="CAD" data-rate="1.072112885258">CAD</option><option value="CHF" data-rate="0.902339398440">CHF</option><option value="CNY" data-rate="6.199405867063">CNY</option><option value="CZK" data-rate="20.389157073895">CZK</option><option value="DKK" data-rate="5.537987374675">DKK</option><option value="EUR" data-rate="0.742666171556">EUR</option><option value="GBP" data-rate="0.587300408466">GBP</option><option value="HKD" data-rate="7.750612699592">HKD</option><option value="HRK" data-rate="5.659858893427">HRK</option><option value="HUF" data-rate="228.109914593390">HUF</option><option value="IDR" data-rate="11491.429632380000">IDR</option><option value="ILS" data-rate="3.410397326402">ILS</option><option value="INR" data-rate="60.049981433346">INR</option><option value="JPY" data-rate="101.381359079090">JPY</option><option value="KRW" data-rate="1024.084663943600">KRW</option><option value="LTL" data-rate="2.564277757148">LTL</option><option value="MXN" data-rate="12.935239509840">MXN</option><option value="MYR" data-rate="3.167768288155">MYR</option><option value="NOK" data-rate="6.181581878945">NOK</option><option value="NZD" data-rate="1.151206832529">NZD</option><option value="PHP" data-rate="43.210545859636">PHP</option><option value="PLN" data-rate="3.070181953212">PLN</option><option value="RON" data-rate="3.284663943557">RON</option><option value="RUB" data-rate="34.860527292982">RUB</option><option value="SEK" data-rate="6.833717044189">SEK</option><option value="SGD" data-rate="1.238321574452">SGD</option><option value="THB" data-rate="31.795766802822">THB</option><option value="TRY" data-rate="2.094615670256">TRY</option><option value="ZAR" data-rate="10.527961381359">ZAR</option>
+                </select>
+            </form>
+        </div>
+
+                <div class="box" id="public-charts">
+            <div id="main-chart" style="width:100%; height:400px;">
+
+            </div>
+
+        </div>
+        <div class="box" id="news">
+            <h3>Game Statistics</h3>
+                        <p>There are <b>63</b> players trading. The game started on
+                <b>1st of July, 2014</b> and will end on <b>1st of August, 2014 (UTC)</b> (
+                <small>Its now: 24th Jul 2014 12:59:40</small>
+                ).
+            </p>
+            <p>
+                A total of $16,498,644 trades are currently opened,
+                $35,288,174 closed.</p>
+            <p>
+                Interesting fact: <b>96.72%</b> of Bitcoin (BTC) trades are long,
+                <b>3.28%</b> short.</p>
+            <p>
+                $<b>51,786,819</b> USD has been traded since the game started!
+            </p>
+                    </div>
+                <div class="box" id="ranks">
+            <h3>Current Game Rankings</h3>
+
+            <p>Here are the Top 25 players form the current game</p>
+            
+<table id="top_traders_table">
+    <tbody>
+    <tr class="table_head ">
+        <td class="head_cell rank">Rank</td>
+        <td class="head_cell name">Name</td>
+        <td class="head_cell worth">Networth (USD)</td>
+    </tr>
+        <tr class="data_row " data-game-id="31" data-player-id="5293"><td class="data_cell rank">1</td><td class="data_cell name">Mr. d&#039;Anconia</td><td class="data_cell worth">1,090,824.84</td></tr><tr class="data_row " data-game-id="31" data-player-id="5261"><td class="data_cell rank">2</td><td class="data_cell name">Falconloft</td><td class="data_cell worth">1,006,673.88</td></tr><tr class="data_row " data-game-id="31" data-player-id="5278"><td class="data_cell rank">3</td><td class="data_cell name">Lokain</td><td class="data_cell worth">1,002,979.13</td></tr><tr class="data_row " data-game-id="31" data-player-id="5300"><td class="data_cell rank">4</td><td class="data_cell name">axinos</td><td class="data_cell worth">1,002,923.02</td></tr><tr class="data_row " data-game-id="31" data-player-id="5290"><td class="data_cell rank">5</td><td class="data_cell name">MoneyAndShizzle</td><td class="data_cell worth">1,000,963.04</td></tr><tr class="data_row " data-game-id="31" data-player-id="5272"><td class="data_cell rank">6</td><td class="data_cell name">Lapetit</td><td class="data_cell worth">1,000,685.90</td></tr><tr class="data_row " data-game-id="31" data-player-id="5301"><td class="data_cell rank">7</td><td class="data_cell name">boxingisbomb</td><td class="data_cell worth">1,000,333.59</td></tr><tr class="data_row " data-game-id="31" data-player-id="5298"><td class="data_cell rank">8</td><td class="data_cell name">Michele49</td><td class="data_cell worth">1,000,244.09</td></tr><tr class="data_row " data-game-id="31" data-player-id="5260"><td class="data_cell rank">9</td><td class="data_cell name">Arestofor</td><td class="data_cell worth">1,000,132.30</td></tr><tr class="data_row " data-game-id="31" data-player-id="5268"><td class="data_cell rank">10</td><td class="data_cell name">Vriska</td><td class="data_cell worth">1,000,085.36</td></tr><tr class="data_row " data-game-id="31" data-player-id="5294"><td class="data_cell rank">11</td><td class="data_cell name">NbnyDeacon</td><td class="data_cell worth">1,000,080.01</td></tr><tr class="data_row " data-game-id="31" data-player-id="5282"><td class="data_cell rank">12</td><td class="data_cell name">American boss </td><td class="data_cell worth">1,000,026.92</td></tr><tr class="data_row " data-game-id="31" data-player-id="4940"><td class="data_cell rank">13</td><td class="data_cell name">berserk hazar</td><td class="data_cell worth">1,000,021.64</td></tr><tr class="data_row " data-game-id="31" data-player-id="5303"><td class="data_cell rank">14</td><td class="data_cell name">augalmopar</td><td class="data_cell worth">1,000,007.20</td></tr><tr class="data_row " data-game-id="31" data-player-id="3645"><td class="data_cell rank">15</td><td class="data_cell name">nic</td><td class="data_cell worth">1,000,002.18</td></tr><tr class="data_row " data-game-id="31" data-player-id="5288"><td class="data_cell rank">16</td><td class="data_cell name">snakeper</td><td class="data_cell worth">1,000,000.04</td></tr><tr class="data_row " data-game-id="31" data-player-id="5302"><td class="data_cell rank">17</td><td class="data_cell name"></td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5299"><td class="data_cell rank">17</td><td class="data_cell name">rewyuio</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5297"><td class="data_cell rank">17</td><td class="data_cell name">get money game</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5296"><td class="data_cell rank">17</td><td class="data_cell name">Duncan</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5292"><td class="data_cell rank">17</td><td class="data_cell name">E_</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5291"><td class="data_cell rank">17</td><td class="data_cell name">RetroJam98</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5289"><td class="data_cell rank">17</td><td class="data_cell name">Lieutenant_Bob</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5286"><td class="data_cell rank">17</td><td class="data_cell name">bigpippa</td><td class="data_cell worth">1,000,000.00</td></tr><tr class="data_row " data-game-id="31" data-player-id="5280"><td class="data_cell rank">17</td><td class="data_cell name">Taylor</td><td class="data_cell worth">1,000,000.00</td></tr>    </tbody>
+
+</table>
+
+    
+        </div>
+        <div class="box" id="news">
+            <h3>News</h3>
+            <ul>
+                <li>3rd Mar 2014 - What a year in BTC! Rates are from Bitstamp. RIP MtGox</li>
+                <li>29th Mar 2013 - BTC crossed $90! Mtgox giving funny rates from time to time. Investigating.</li>
+		<li>27 Mar 2013 - Oops, Mtgox suddenly changed API URL so rates stopped. Fixed</li>
+                <li>11th Mar 2013 - Released some updates that have been brewing for a while</li>
+                <li>2nd July 2011 - Fixed a glitch with placing orders. Good to go now! Also, you can follow
+                    CurrencyTycoon on Twitter for the latest news <a href="http://twitter.com/currencytycoon"
+                                                                     class="twitter-follow-button"
+                                                                     data-show-count="false">Follow @currencytycoon</a>
+                </li>
+                <li>1st July 2011 - New game started! Thanks everyone for testing. Congrats to the top five of the test
+                    run: Flux $1459770.35(first), Tito $1365450.30 (2nd), Zidane8998 $1292582.85 (3rd), ShortBTC lol
+                    $1257711.47 (4th), and ch0wn $1208660.81 (5th)!
+                </li>
+                <li>22th June 2011 - Fixed a bug with the ranks list &amp; fine tuned some things</li>
+                <li>21th June 2011 - Tweaked CSS for mobile devices. Currency Tycoon should be accessible from most
+                    modern devices and there's also a fall-back mode if JavaScript is disabled
+                </li>
+
+            </ul>
+
+        </div>
+        <div class="box" id="vid" style="text-align: center;">
+            <h3>Currency Tycoon - The Theme song</h3>
+                        <iframe width="320" height="210" src="http://www.youtube.com/embed/-EU0Ui-RZ4g" frameborder="0"
+                    allowfullscreen></iframe>
+                    </div>
+        <div class="box" id="foot" style="text-align: center;">
+           <!-- 1Pe7ryGvadVFMeEJPyQnCzjGFvtgRZoHXP -->
+            Hosted on <a href="http://1ch7pkuzix2i6afkhebd93i1zun6bhk6w.net/">http://1ch7pkuzix2i6afkhebd93i1zun6bhk6w.net/</a>
+        </div>
+        
+        	</body>
+	</html>
+	

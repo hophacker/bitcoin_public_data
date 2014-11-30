@@ -1,0 +1,442 @@
+http://oli.me.uk/2012/02/25/getting-started-with-less/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 17:26:02 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=dbbba710d125e30ea8c0e7e59ac6a554b1406049961979; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.oli.me.uk; HttpOnly
+Last-Modified: Sat, 26 Apr 2014 13:24:40 GMT
+Cache-Control: max-age=86400
+Expires: Wed, 23 Jul 2014 17:26:10 GMT
+Vary: Accept-Encoding
+CF-RAY: 14e157465fd80f03-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Getting started with LESS - Oliver.prototype.blog</title>
+<meta name="author" content="Oliver Caldwell">
+<meta name="description" content="Taking your first step in any language can be a daunting task. And starting with LESS is no different. The main difficulty with LESS is getting your &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://oli.me.uk/2012/02/25/getting-started-with-less">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Oliver.prototype.blog" type="application/atom+xml">
+ 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29131116-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<h1><a href="/">Oliver.prototype.blog</a></h1>
+<h2>A place to share my knowledge and escapades in the world of web development.</h2>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:oli.me.uk"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archives/">Archives</a></li>
+<li><a href="/about-me/">About me</a></li>
+<li><a href="https://github.com/Wolfy87/oli.me.uk">Source</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Getting started with LESS</h1>
+<p class="meta">
+<time datetime="2012-02-25T09:23:00+00:00" pubdate data-updated="true">Feb 25<span>th</span>, 2012</time>
+| <a href="#disqus_thread">Comments</a>
+</p>
+</header>
+<div class="entry-content"><p>Taking your first step in any language can be a daunting task. And starting with <a href="http://lesscss.org/">LESS</a> is no different. The main difficulty with LESS is getting your development environment set up to work with it correctly. In this post I am going to try and guide you through getting up and running with this brilliant CSS preprocessor.</p>
+ 
+<h2>Prerequisites</h2>
+<p>Before you can actually use LESS you need a few things. Sure you can get started at a basic level by including the JavaScript file in your page. But that can be inefficient and should only be used while in development. To use LESS properly you need a few tools.</p>
+<ul>
+<li><a href="#git">Git</a></li>
+<li><a href="#nodejs">Node.js</a></li>
+<li><a href="#npm">NPM</a></li>
+</ul>
+<h3>Git</h3>
+<p><a href="http://git-scm.com/">Git</a> is a version control system. If you are not using it already then you are really missing out. It allows you to store every change in your code and collaborate with others on sites such as <a href="https://github.com/">GitHub</a>. It also has a handy feature called submodules. A submodule is a git project nested inside your git project. We will use this to download less.js (the in browser version of LESS) and keep it up to date.</p>
+<p>If you are on Ubuntu, you can install git the usual easy way: <code>sudo apt-get install git</code>. Job done. For all other operating systems (such as Mac) you are going to want to use the installer. It can be found on <a href="http://git-scm.com/">the git website</a>. You may need to run a script that comes with that install to make the git commands available in your terminal.</p>
+<h3>Node.js</h3>
+<p><a href="http://nodejs.org/">Node.js</a> allows you to run JavaScript on your local machine or server. We will use this to compile our LESS to CSS before deployment. You should never be compiling LESS live in the browser when the site is in production. Only do that while it is in development so you don&rsquo;t have to recompile with every change.</p>
+<p>You should always install the latest version of node from source. The Ubuntu apt-get version is <strong>way</strong> behind. Node releases a lot of updates very regularly. Some include huge changes to the underlying system. The first step is to download the latest version of node&rsquo;s source. At this time that is v0.6.11, although it may have already changed. So hit <a href="http://nodejs.org/">the node website</a> and copy the download link to the latest version. Use that in place of the one below if it is different.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Change to a suitable folder</span>
+</span><span class='line'><span class="c"># This will be where we download and compile node</span>
+</span><span class='line'><span class="c"># You can delete everything when done because it will be installed in your system</span>
+</span><span class='line'><span class="nb">cd</span> ~/Downloads
+</span><span class='line'>
+</span><span class='line'><span class="c"># Download the latest version of node</span>
+</span><span class='line'>curl http://nodejs.org/dist/v0.6.11/node-v0.6.11.tar.gz -o node.tar.gz
+</span><span class='line'>
+</span><span class='line'><span class="c"># Uncompress it</span>
+</span><span class='line'>tar -xf node.tar.gz
+</span><span class='line'>
+</span><span class='line'><span class="c"># Navigate to the extracted folder (different name depending on version)</span>
+</span><span class='line'><span class="nb">cd </span>node-v0.6.11
+</span><span class='line'>
+</span><span class='line'><span class="c"># Make sure you have the required programs to build it</span>
+</span><span class='line'><span class="c"># If you get errors, Google is your friend</span>
+</span><span class='line'><span class="c"># You just need to search node + what ever errors you are getting</span>
+</span><span class='line'><span class="c"># Use some common sense and it will be easy</span>
+</span><span class='line'>./configure
+</span><span class='line'>
+</span><span class='line'><span class="c"># If configure went well then you can compile it</span>
+</span><span class='line'><span class="c"># This may take some time</span>
+</span><span class='line'>make
+</span><span class='line'>
+</span><span class='line'><span class="c"># Finally install your compiled node install</span>
+</span><span class='line'>sudo make install
+</span></code></pre></td></tr></table></div></figure>
+<p>If you just can&rsquo;t get this to work, then try the installers on the node site. I do not recommend them, they may cause trouble in the long run. But they should work okay as a quick fix.</p>
+<h3>NPM</h3>
+<p><a href="http://npmjs.org/">NPM</a> stands for node package manager. It allows you to install packages written in JavaScript to be run with node incredibly easily. I believe NPM now comes built into node. To check if you have it installed simply type <code>npm</code> into your terminal. If you get an error then here is how to install it.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl http://npmjs.org/install.sh | sudo sh
+</span></code></pre></td></tr></table></div></figure>
+<p>That line is taken from the NPM website. It should install NPM onto your system. Once done you are going to want to install a package. We will be installing <code>less</code> via NPM. Less provides a program called <code>lessc</code> which allows you to compile your LESS to CSS on the command line.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Install the less package</span>
+</span><span class='line'><span class="c"># The -g means it is a global package, so it will be accessible via the terminal</span>
+</span><span class='line'>sudo npm install less -g
+</span><span class='line'>
+</span><span class='line'><span class="c"># Now when running this you should get the following error:</span>
+</span><span class='line'><span class="c">#     lessc: no input files</span>
+</span><span class='line'>lessc
+</span><span class='line'>
+</span><span class='line'><span class="c"># You will also want to install clean-css to minify your CSS</span>
+</span><span class='line'>sudo npm install clean-css -g
+</span></code></pre></td></tr></table></div></figure>
+<p>You may want to install <code>n</code> to keep your node install up to date. Here is an example of downloading and using n.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Download and install n</span>
+</span><span class='line'>sudo npm install n -g
+</span><span class='line'>
+</span><span class='line'><span class="c"># Update to the latest version of node at any time</span>
+</span><span class='line'><span class="c"># May take some time but so easy</span>
+</span><span class='line'><span class="c"># You should not have to if you have just installed</span>
+</span><span class='line'>sudo n latest
+</span><span class='line'>
+</span><span class='line'><span class="c"># You can even change to specific versions</span>
+</span><span class='line'><span class="c"># If that version is not installed then it will download and build it first</span>
+</span><span class='line'>sudo n 0.6.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># To check what installs of node you have available, simply run the program</span>
+</span><span class='line'>n
+</span></code></pre></td></tr></table></div></figure>
+<h2>Downloading less.js</h2>
+<p>Okay, so now you have everything set up we can get cracking. It may seem like a lot to install, but it is so worth it. The above programs will make working with other things easier too. They are all great tools to have ready.</p>
+<p>If you have a git project set up already, then great. If not you will want to set one up. If you do not know how then <a href="http://stackoverflow.com/questions/315911/git-for-beginners-the-definitive-practical-guide#320140">this should help</a>. Once you have your repo set up and a terminal in that directory, we can download less.js as a submodule. Please edit the path at the end of this command to point at your desired download directory.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Download less.js in a submodule</span>
+</span><span class='line'>git submodule add git://github.com/cloudhead/less.js.git ./assets/javascript/less.js/
+</span><span class='line'>
+</span><span class='line'><span class="c"># Commit our changes</span>
+</span><span class='line'>git add .
+</span><span class='line'>git commit -m <span class="s2">&quot;Added less.js as a submodule.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Alternatively you can visit <a href="https://github.com/cloudhead/less.js">the GitHub repository for less.js</a> and download the project in a zip. I would recommend using git but it is up to you. Now less.js&rsquo;s repo will be in <code>./assets/javascript/less.js/</code>. Let&rsquo;s load that into our page with the following script tag. You should place this just before the closing head tag (<code>&lt;/head&gt;</code>) after any included styles.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;assets/javascript/less.js/dist/less-1.2.2.min.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>You will have to check inside the dist folder for a later version. If there is one then load that instead.</p>
+<h2>Writing some basic LESS</h2>
+<p>This tutorial is about using, compiling and understanding the concept of LESS, not the syntax it&rsquo;s self. So I will show you some of the basics, but for the rest you will want to use <a href="http://lesscss.org/">the documentationn</a>. LESS allows you to do a lot that you wish you could do in CSS, these include variables, functions / mixins and selector nesting. Here are a few examples of using these.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='sass'><span class='line'><span class="c1">// You can use this style of comment, no need for /* ... */</span>
+</span><span class='line'><span class="c1">// You can nest selectors like this</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.content</span> <span class="err">{</span>
+</span><span class='line'>  <span class="nt">p</span> <span class="err">{</span>
+</span><span class='line'>      <span class="nt">a</span> <span class="err">{</span>
+</span><span class='line'>          <span class="na">color</span><span class="o">:</span> <span class="mh">#FF0000</span><span class="err">;</span>
+</span><span class='line'>      <span class="err">}</span>
+</span><span class='line'>  <span class="err">}</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Which would compile to: div.content p a { color: #FF0000 }</span>
+</span><span class='line'><span class="c1">// You can mix and match with normal CSS, you don&#39;t /need/ to nest selectors</span>
+</span><span class='line'><span class="c1">// For example</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.content</span> <span class="nt">p</span> <span class="err">{</span>
+</span><span class='line'>  <span class="nt">a</span> <span class="err">{</span>
+</span><span class='line'>      <span class="na">color</span><span class="o">:</span> <span class="mh">#FF0000</span>
+</span><span class='line'>  <span class="err">}</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// You can also use variables!</span>
+</span><span class='line'><span class="c1">// Like this:</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@color-red</span><span class="nd">:</span> <span class="nn">#FF0000</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.content</span> <span class="nt">p</span> <span class="nt">a</span> <span class="err">{</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="o">@</span><span class="no">color</span><span class="o">-</span><span class="nb">red</span><span class="err">;</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// You can even import other LESS files</span>
+</span><span class='line'><span class="c1">// If the file ends with the .less extension all you need is something like this</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@import</span> <span class="s">&#39;someDirectory/myStyles&#39;;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s">&#39;someMoreStyles&#39;;</span>
+</span></code></pre></td></tr></table></div></figure>
+<h2>Including your stylesheet</h2>
+<p>You do not include LESS in the normal way, you have to use a special <code>rel</code> attribute. So place the following line <strong>above</strong> your include of less.js and change the path of the file to match your layout.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet/less&#39;</span> <span class="na">type=</span><span class="s">&#39;text/css&#39;</span> <span class="na">href=</span><span class="s">&#39;assets/less/main.less&#39;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Notice the <code>rel</code> attribute of this link tag is <code>stylesheet/less</code>. This allows less.js to identify, load and compile your LESS. If you open up FireBug / some form of console you will be able to see debug information produced by less.js. Such as how long it took to compile.</p>
+<h2>Compiling in the terminal</h2>
+<p>You should only compile LESS in the browser during the development stage. When you are done and you are uploading to your FTP server for example you should compile your LESS to CSS and load that instead. To compile your LESS you can use the following line. Remember to point to the correct files!</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lessc assets/less/main.less | cleancss -o assets/css/styles.min.css
+</span></code></pre></td></tr></table></div></figure>
+<p>This will compile your LESS with <code>lessc</code> and then minify it with <code>cleancss</code>. Now all we have to do is swap to the CSS version on our production server. So we can remove this.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet/less&#39;</span> <span class="na">type=</span><span class="s">&#39;text/css&#39;</span> <span class="na">href=</span><span class="s">&#39;assets/less/main.less&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;assets/javascript/less.js/dist/less-1.2.2.min.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>And replace it with this.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet&#39;</span> <span class="na">type=</span><span class="s">&#39;text/css&#39;</span> <span class="na">href=</span><span class="s">&#39;assets/css/styles.min.css&#39;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Wow, this post ended up a lot longer than I expected. I hope you have enjoyed it. Please feel free to ask questions in the comments below.</p>
+</div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">Posted by <span class="fn">Oliver Caldwell</span></span>
+<time datetime="2012-02-25T09:23:00+00:00" pubdate data-updated="true">Feb 25<span>th</span>, 2012</time>
+<span class="categories">
+<a class='category' href='/categories/git/'>git</a>, <a class='category' href='/categories/less/'>less</a>, <a class='category' href='/categories/nodejs/'>nodejs</a>, <a class='category' href='/categories/npm/'>npm</a>
+</span>
+</p>
+<div class="sharing">
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="http://oli.me.uk/2012/02/25/getting-started-with-less/" data-via="OliverCaldwell" data-counturl="http://oli.me.uk/2012/02/25/getting-started-with-less/">Tweet</a>
+</div>
+<p class="meta">
+<a class="basic-alignment left" href="/2012/02/22/color-in-javascript/" title="Previous Post: Color in JavaScript">&laquo; Color in JavaScript</a>
+<a class="basic-alignment right" href="/2012/02/27/sliced-text-effect/" title="Next Post: Sliced text effect">Sliced text effect &raquo;</a>
+</p>
+</footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Bitcoin</h1>
+<p>Like what I do here? Want even more? Spur me on with a small donation, it will probably go towards a coffee that will fuel my next post or project.</p>
+<script type='text/javascript' src='http://coinwidget.com/widget/coin.js'></script>
+<script type='text/javascript'>
+		CoinWidgetCom.go({
+			wallet_address: '1BE2s3dsELzBHGk3su2U6GfAqSXcA65P34',
+			currency: 'bitcoin',
+			counter: 'hide',
+			alignment: 'bl',
+			qrcode: true,
+			auto_show: false,
+			lbl_button: 'Donate',
+			lbl_address: 'My Bitcoin Address:',
+			lbl_count: 'donations',
+			lbl_amount: 'BTC'
+		});
+	</script>
+</section>
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/2014/04/26/installing-vimdeck-on-arch/">Installing Vimdeck on Arch</a>
+</li>
+<li class="post">
+<a href="/2014/03/18/always-remain-a-beginner/">Always remain a beginner</a>
+</li>
+<li class="post">
+<a href="/2013/12/13/test-private-methods/">Test private methods</a>
+</li>
+<li class="post">
+<a href="/2013/12/05/graph-from-scratch/">Graph from scratch</a>
+</li>
+<li class="post">
+<a href="/2013/09/25/grabbing-elements-from-the-dom/">Grabbing elements from the DOM</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>GitHub Repos</h1>
+<ul id="gh_repos">
+<li class="loading">Status updating...</li>
+</ul>
+<a href="https://github.com/Wolfy87">@Wolfy87</a> on GitHub
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/libs/jXHR.js"></script>
+<script type="text/javascript" src="/javascripts/github.js"></script>
+<script type="text/javascript">
+	github.showRepos({
+		user: 'Wolfy87',
+		count: 5,
+		skip_forks: true,
+		target: '#gh_repos'
+	});
+</script>
+<p>
+Copyright &copy; 2014 - Oliver Caldwell -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'olimeuk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://oli.me.uk/2012/02/25/getting-started-with-less/';
+        var disqus_url = 'http://oli.me.uk/2012/02/25/getting-started-with-less/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

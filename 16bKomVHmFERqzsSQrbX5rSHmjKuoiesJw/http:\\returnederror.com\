@@ -1,0 +1,447 @@
+http://returnederror.com/
+HTTP/1.0 200 OK
+Date: Wed, 23 Jul 2014 21:56:27 GMT
+Server: Apache/2
+X-Powered-By: PHP/5.3.28
+X-Pingback: http://returnederror.com/xmlrpc.php
+Vary: Accept-Encoding,User-Agent
+Content-Encoding: gzip
+Content-Length: 13144
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Returned Error | Fixes that work</title>
+	<link rel="stylesheet" type="text/css" media="all" href="http://returnederror.com/wp-content/themes/zbench/style.css" />
+	<link rel="pingback" href="http://returnederror.com/xmlrpc.php" />
+	<link rel="alternate" type="application/rss+xml" title="Returned Error &raquo; Feed" href="http://returnederror.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Returned Error &raquo; Comments Feed" href="http://returnederror.com/comments/feed/" />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://returnederror.com/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://returnederror.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://returnederror.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 3.9.1" />
+	<link href="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Styles/SyntaxHighlighter.css" type="text/css" rel="stylesheet" />
+		<meta name="viewport" content="width=device-width"/><!-- for mobile -->
+</head>
+<body class="home blog">
+<div id="nav">
+	<div class="nav-inside">
+		<div id="menus">
+			<ul id="menus-dt" class="menus-dt">
+				<li class="current_page_item"><a href="http://returnederror.com/">Home</a></li><li class="page_item page-item-2"><a href="http://returnederror.com/about/">About</a></li>
+			</ul>
+			<ul id="menus-m" class="menus-m">
+				<li>Menu</li>
+			</ul>
+		</div>
+		<div id="search">
+			<form id="searchform" method="get" action="http://returnederror.com/">
+<input type="text" value="Search: type, hit enter" onfocus="if (this.value == 'Search: type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search: type, hit enter';}" size="35" maxlength="50" name="s" id="s" />
+<input type="submit" id="searchsubmit" value="SEARCH" />
+</form>		</div>
+	</div>
+</div>
+<div id="header">
+		<div class="site_title">
+		<h1><a href="http://returnederror.com/">Returned Error</a></h1>
+		<h2>Fixes that work</h2>
+		<div class="clear"></div>
+	</div>
+	</div>
+<div id="wrapper">
+<div id="content">
+			<div class="post-174 post type-post status-publish format-standard hentry category-applications category-centos category-general category-linux post" id="post-174"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/08/22/centos-6-rhel-6-kvm-bridged-networking-with-static-ip-on-host-howto/" title="Permalink to CENTOS 6 (RHEL 6) KVM Bridged Networking With Static IP on Host HowTo">CENTOS 6 (RHEL 6) KVM Bridged Networking With Static IP on Host HowTo</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/08/22/centos-6-rhel-6-kvm-bridged-networking-with-static-ip-on-host-howto/" title="5:09 pm" rel="bookmark">August 22, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/08/22/centos-6-rhel-6-kvm-bridged-networking-with-static-ip-on-host-howto/#comments" title="Comment on CENTOS 6 (RHEL 6) KVM Bridged Networking With Static IP on Host HowTo">18 comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p><strong>Edit: Everything described here can be accomplished in the Virtual-Manager GUI, but this is here for all the CLI junkies.</strong></p>
+<p>I decided to take the time to write up a quick HowTo for configuring RHEL 6 or any of it&#8217;s clones (CentOS 6 and Scientific Linux to name a couple) so that KVM can use your main network device for bridged connections on your VMs. Some virtualization solutions make bridge connections pretty simple and automatic. KVM requires (from everything I&#8217;ve seen at least) a little more hands-on configuration.</p>
+<p>I&#8217;ve collected this information from various sources. One of the things I&#8217;ve noticed is that most sources advise you to stop the NetworkManager service and to disable it at boot. I agree with this as we are going to be doing more advanced configurations of our network devices and automated tools like NetworkManager are best for more basic setups where the user doesn&#8217;t want to fiddle with the configurations manually. So you&#8217;ll want to do the following as root:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">chkconfig NetworkManager off
+chkconfig network on
+service NetworkManager stop
+service network start</pre></td></tr></table></div>
+
+<p>In this example I&#8217;ll be using eth0 as my physical network device. You may be using eth1 or some other device. Make sure to replace eth0 with your actual network device. In most cases it is eth0.</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">ifdown</span> eth0</pre></td></tr></table></div>
+
+<p>Now create a bridge device. We are going to call it bridge0. If you&#8217;ll notice in /etc/sysconfig/network-scripts you&#8217;ll see configuration files for your network devices. You should see one for eth0. It will be called ifcfg-eth0. Edit that file. If you use a static IP address you&#8217;ll actually set that up in the bridge0 device configuration file later. Change the ifcfg-eth0 file to look like this (leave the HWADDR line alone, I&#8217;m leaving it out of the below example because it will be different on each machine):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #007800;">DEVICE</span>=<span style="color: #ff0000;">&quot;eth0&quot;</span>
+<span style="color: #007800;">BOOTPROTO</span>=<span style="color: #ff0000;">&quot;none&quot;</span>
+<span style="color: #007800;">NM_CONTROLLED</span>=<span style="color: #ff0000;">&quot;yes&quot;</span>
+<span style="color: #007800;">ONBOOT</span>=<span style="color: #ff0000;">&quot;yes&quot;</span>
+<span style="color: #007800;">BRIDGE</span>=<span style="color: #ff0000;">&quot;bridge0&quot;</span></pre></td></tr></table></div>
+
+<p>Now we have told eth0 to use the bridge &#8220;bridge0&#8243;. We now need to create the configuration file for that bridge. Edit/Create the file /etc/sysconfig/network-scripts/ifcfg-bridge0 and add these lines:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #007800;">DEVICE</span>=<span style="color: #ff0000;">&quot;bridge0&quot;</span>
+<span style="color: #007800;">TYPE</span>=<span style="color: #ff0000;">&quot;Bridge&quot;</span>
+<span style="color: #007800;">BOOTPROTO</span>=<span style="color: #ff0000;">&quot;static&quot;</span>
+<span style="color: #007800;">ONBOOT</span>=<span style="color: #ff0000;">&quot;yes&quot;</span>
+<span style="color: #007800;">DELAY</span>=<span style="color: #000000;">0</span>
+<span style="color: #007800;">IPADDR</span>=192.168.1.5
+<span style="color: #007800;">GATEWAY</span>=192.168.1.1
+<span style="color: #007800;">DNS1</span>=192.168.1.1</pre></td></tr></table></div>
+
+<p>Save it and let&#8217;s start eth0 back up along with the new bridge:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">ifup</span> eth0
+<span style="color: #c20cb9; font-weight: bold;">ifup</span> bridge0</pre></td></tr></table></div>
+
+<p>Now if you look at an ifconfig your bridge device will have your static IP of 192.168.1.5 (you can change this to your own static IP of course). Now in your KVM virtual machine manager, you&#8217;ll be able to use bridge0 as your bridge network device. Any VM that connects to that bridge will be able to get a DHCP IP address from the router or it can be configured with a static IP. </p>
+<p>Be wary of Firewall rules on the host machine. Check those first if you have any access issues on the guest.</p>
+<p>Questions/Comments are welcome.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-167 post type-post status-publish format-standard hentry category-databases category-general category-php post" id="post-167"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/07/13/relational-database-design-woes/" title="Permalink to Relational Database Design Woes">Relational Database Design Woes</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/07/13/relational-database-design-woes/" title="5:05 am" rel="bookmark">July 13, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/07/13/relational-database-design-woes/#respond" title="Comment on Relational Database Design Woes">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>Every college course you could take will explain &#8220;proper&#8221; database design in terms of normalizing data into many smaller tables of related data. We are taught to think of tables much like we think of objects in object oriented programming. For consistency, this works out great. It keeps the data in its proper place. I&#8217;ve seen many database designs that made me laugh in the past. They would not be normalized, and I always had this smug attitude toward this improper database design. It was obvious to me that it was designed by someone who didn&#8217;t have a grasp on proper relational database design.</p>
+<p>I was an idiot. Anyone who thinks proper relational database design is the best way to do things has never had a large, high traffic database to maintain and optimize. Proper relational database design works fine for small projects and low traffic CMS systems, but don&#8217;t expect it to work well for something larger. I spent days designing my latest database project. I thought I had developed a great database design. It was normalized well. I had JOINS combining my data in nice, easy to use views. </p>
+<p>Within a day or two of high traffic inserts, one of my tables was starting to get a large amount of rows. I had a couple of indexes on this table to make sorting and such faster. A simple select statement performed extremely well. However, to my dismay, a join that used this table was already excruciatingly slow. Now anyone who knows anything about database design knows that you can&#8217;t expect a JOIN on a huge table to be fast, but they may over-estimate the definition of a &#8220;large&#8221; table. After only around 50,000 rows, this table was almost unusable in a join. </p>
+<p>At that point, I began to ask, &#8220;What&#8217;s the point of having the ability to join tables, if it takes this long at such a small size?&#8221; I think the answer to that has more to do with cheap hardware costs. Instead of optimizing the database, most companies probably just add more clustered computers. This is all well and good, but it seems like a huge waste of resources, in the name of sticking to the &#8220;proper&#8221; relational database design. I&#8217;m also well aware of the different points to relational databases and that I&#8217;m only hitting on one. Performance isn&#8217;t the only concern of some people. Data availability and consistency are also major factors.</p>
+<p>Which leads me to something I used to think about SQL databases, and I feel that I&#8217;m vindicated in this regard. I once thought that I didn&#8217;t need the major features of RDBMS. I could handle all the relational parts via the programming language itself. Now this does bring up data integrity issues, but lets be honest. If there are data integrity issues in the program they are more than likely going to be there either way. We can say that it&#8217;s more difficult to have integrity issues if we stick to a proper relational model, but that may not be the case. The data is still being manipulated by the programmer in either case. I would actually say that there&#8217;s more of a chance of injecting bad data into a database by using proper relational database techniques. </p>
+<p>For instance, imagine a table called `example` with a few fields but two in particular: `id` and `foreign_id`<br />
+Now say that there over 900,000 of these records in the database and you want to count and group the records by the `foreign_id`. You would use a query like:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #993333; font-weight: bold;">COUNT</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">`id`</span><span style="color: #66cc66;">&#41;</span><span style="color: #66cc66;">,</span> <span style="color: #ff0000;">`foreign_id`</span> <span style="color: #993333; font-weight: bold;">FROM</span> <span style="color: #ff0000;">`example`</span> <span style="color: #993333; font-weight: bold;">GROUP</span> <span style="color: #993333; font-weight: bold;">BY</span> <span style="color: #ff0000;">`foreign_id`</span>;</pre></td></tr></table></div>
+
+<p>On my server, on a similar table, this query takes 0.73 secs to execute. Now that&#8217;s pretty fast and can be improved with caching and such, but if that query were added to a view with other summarizing data and a few joins, it suddenly goes from being a slightly less than 1 sec query to a 30 second query. </p>
+<p>There are a few solutions to making this faster. One is to run the query in a cron and cache the data in a separate table. One important aspect of this example table in my production environment is that the 900,000 records aren&#8217;t useful for anything but creating this summary data. My point&#8230; the data is never looked at in detail. Here&#8217;s where you move away from the typical relational db techniques. For data integrity, we should give up the performance and leave all these records in there as they are. However since we only need a the summary, we can remove most of the records and add their calculations to a separate table. This table can be queried in a fraction of the time. </p>
+<p>I think my main point here is that you will typically start out with a proper relational database, but that design doesn&#8217;t really take into consideration performance. If you have to optimize your database, you&#8217;ll be steering completely away from the relational model. You&#8217;ll have to do things that seem like hacks, and you may even get smug looks on your database design by others later on, but they won&#8217;t realize that you started out with good intentions and had to make sacrifices to get the database to perform as required. You actually have a better understanding of how things work in the real world than those smug relational zealots. </p>
+<p>But some of you may disagree. Please tell me where I&#8217;m wrong. I know there are plenty of experts out there on the internets.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-161 post type-post status-publish format-standard hentry category-applications category-bitcoin category-linux category-programming-languages category-python post" id="post-161"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/07/12/pushpool-errors/" title="Permalink to Pushpool Errors">Pushpool Errors</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/07/12/pushpool-errors/" title="5:02 am" rel="bookmark">July 12, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/07/12/pushpool-errors/#respond" title="Comment on Pushpool Errors">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>Over the last few days, I&#8217;ve been learning a lot about MySQL, and that&#8217;s definitely helping me see the light on a few database optimization techniques, namely JOINs aren&#8217;t always a good idea. In fact, I&#8217;m starting to hate the whole relational database model all together. I may be looking into better solutions down the road.</p>
+<p>On top of that, I&#8217;ve been learning a lot about the various pieces of software needed to run a Bitcoin mining pool. First off, let me say that the developers responsible for pushpool are awesome and none of this is meant to be bad towards them. In fact, I tend to blame my own ignorance on most issues like this. However, I&#8217;ve been having a lot of trouble keeping pushpool running stable. With our pool at around 6 gh/sec it tends to become unresponsive after about 8 hours. There&#8217;s probably some documentation on pushpool somewhere that I&#8217;ve failed to read, though it&#8217;s not readily apparent where such documentation may be located.</p>
+<p>So I&#8217;ve resorted in using a technique I learned from dealing with HP Service Center and Windows XP. When in doubt, recycle the app. I&#8217;ve setup a cron every four hours to check if pushpool is running and restart/start the app. If you are having trouble with pushpool dying, you may want to give it a try.</p>
+<p>I&#8217;m making it available to anyone who wants to use it. If it&#8217;s useful, send BTC donations to:<br />
+16bKomVHmFERqzsSQrbX5rSHmjKuoiesJw</p>
+<p>Here&#8217;s the python script source:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">#!/usr/bin/python</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">import</span> <span style="color: #dc143c;">commands</span>
+&nbsp;
+output <span style="color: #66cc66;">=</span> <span style="color: #dc143c;">commands</span>.<span style="color: black;">getoutput</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;ps aux&quot;</span><span style="color: black;">&#41;</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">if</span> <span style="color: #483d8b;">'pushpool'</span> <span style="color: #ff7700;font-weight:bold;">in</span> output:
+	pppid <span style="color: #66cc66;">=</span> <span style="color: #dc143c;">commands</span>.<span style="color: black;">getoutput</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;pidof pushpoold&quot;</span><span style="color: black;">&#41;</span>
+	<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #483d8b;">&quot;Killing pushpoold (&quot;</span><span style="color: #66cc66;">,</span> pppid<span style="color: #66cc66;">,</span> <span style="color: #483d8b;">&quot;)&quot;</span>
+	killcommand <span style="color: #66cc66;">=</span> <span style="color: #483d8b;">&quot;kill -15 &quot;</span> + pppid
+	<span style="color: #ff7700;font-weight:bold;">if</span> <span style="color: #dc143c;">commands</span>.<span style="color: black;">getstatusoutput</span><span style="color: black;">&#40;</span>killcommand<span style="color: black;">&#41;</span>:
+		<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #483d8b;">&quot;Killed Pushpool...&quot;</span>
+		<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #483d8b;">&quot;Restarting...&quot;</span>
+		<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #dc143c;">commands</span>.<span style="color: black;">getstatusoutput</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">'/usr/local/sbin/pushpoold -D 2 --config /etc/pushpool.json'</span><span style="color: black;">&#41;</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">else</span>:
+	<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #483d8b;">&quot;Pushpoold isn't running. Starting it...&quot;</span>
+	<span style="color: #ff7700;font-weight:bold;">print</span> <span style="color: #dc143c;">commands</span>.<span style="color: black;">getstatusoutput</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;/usr/local/sbin/pushpoold -D 2 --config /etc/pushpool.json&quot;</span><span style="color: black;">&#41;</span></pre></td></tr></table></div>
+
+<p>Make sure to change the obvious parts, such as the location of the pushpool executable on your system and the location of the config file.</p>
+<p>Name the script whatever you want and cron it for however often you need it to run.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-156 post type-post status-publish format-standard hentry category-applications category-bitcoin category-centos category-general category-linux post" id="post-156"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/07/07/july-7th-update-on-out-bitcoin-mining-pool/" title="Permalink to July 7th update on our Bitcoin Mining Pool">July 7th update on our Bitcoin Mining Pool</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/07/07/july-7th-update-on-out-bitcoin-mining-pool/" title="9:28 am" rel="bookmark">July 7, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/07/07/july-7th-update-on-out-bitcoin-mining-pool/#respond" title="Comment on July 7th update on our Bitcoin Mining Pool">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>Well, we are in day three of our <a title="bitcoin mining pool" href="http://bithasher.com" target="_blank">bitcoin mining pool</a> and it has been very fun. I&#8217;m always learning new things and today really gave me a better understanding of the performance decreases one can run into by using SQL VIEWS, if one is not careful.</p>
+<p>We wanted to give our users quick updates on their bitcoin miner stats so I used a few views and some joins. One of the views had a few nested SELECT statements. I really didn&#8217;t think that I&#8217;d see the slowness this early on but those nested SELECT statements within the view really took their toll on performance. We quickly started seeing three to five second page loads. So I knew it was time to start caching more data.</p>
+<p>My caching technique was pretty simple-minded but it does the trick. I simple created physical tables identical to the views and added some crontab tasks to update the physical tables with the up-to-date data from the views. The pages now load pretty swiftly. I have a feeling that we will need some more powerful hardware soon, especially with the current rate of increase of users.</p>
+<p>Most of the big bitcoin mining pools are getting hit by DDOS attacks. We&#8217;re just chugging along and picking up miners without homes while all of that is going on. So if you have a miner without a home, point it at our <a title="Bitcoin Mining Pool" href="http://bithasher.com" target="_blank">bitcoin mining pool</a>.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-151 post type-post status-publish format-standard hentry category-applications category-compiling category-general category-linux post" id="post-151"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/07/06/bithasher-grand-opening-exciting-day/" title="Permalink to Bithasher Grand Opening &#8211; Exciting Day">Bithasher Grand Opening &#8211; Exciting Day</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/07/06/bithasher-grand-opening-exciting-day/" title="12:51 am" rel="bookmark">July 6, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/07/06/bithasher-grand-opening-exciting-day/#respond" title="Comment on Bithasher Grand Opening &#8211; Exciting Day">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>Lynn and I have had an exciting day. We opened the doors on our beta bitcoin mining pool. I didn&#8217;t expect to get any users today, but we actually have quite a few joining. With the massive DDOS attacks against the other pools, many people are without a mining pool to connect to. Some of them may venture to our little pool. We surged pass 3 ghash/sec earlier today but it has dropped back down to 2.8 ghash/sec. We&#8217;ll be celebrating the milestones. Anyone that wants to join it is welcome to help us test it out.</p>
+<p><a title="Bitcoin Mining Pool" href="http://bithasher.com">http://bithasher.com</a></p>
+<p>It&#8217;s my blog and I&#8217;ll spam if I want to&#8230;.spam if I want to&#8230;spam if I want to&#8230;.You would spam too if it happened to you.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-146 post type-post status-publish format-standard hentry category-applications category-general category-linux post" id="post-146"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/07/05/best-bitcoin-mining-pool/" title="Permalink to Best Bitcoin Mining Pool">Best Bitcoin Mining Pool</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/07/05/best-bitcoin-mining-pool/" title="7:41 am" rel="bookmark">July 5, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/07/05/best-bitcoin-mining-pool/#respond" title="Comment on Best Bitcoin Mining Pool">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>We just opened the pool. There are many enhancements to the site that I have on the &#8220;todo&#8221; list, but all the core functions are present. Check it out at <a title="Bitcoin Mining Pool" href="http://bithasher.com" target="_blank">http://bithasher.com</a>.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-142 post type-post status-publish format-standard hentry category-general category-linux post" id="post-142"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/06/19/frontend-for-pushpoold/" title="Permalink to Frontend for pushpoold">Frontend for pushpoold</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/06/19/frontend-for-pushpoold/" title="1:58 am" rel="bookmark">June 19, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/06/19/frontend-for-pushpoold/#respond" title="Comment on Frontend for pushpoold">No comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>My friend Lynn and I have been working on starting a bitcoin mining pool. I&#8217;ve opted to write my own frontend for pushpoold/bitcoind. At first I was going to use simplecoin and modify it to my liking, but it&#8217;s just not for me. The mixture of coding techniques in the project, along with a large margin for error in many places made me have a bad taste in my mouth fairly early when looking at the code.</p>
+<p>Don&#8217;t get me wrong. It&#8217;s commendable work, but there&#8217;s a huge lack of planning to the project from what I can see. Scripts are thrown into place, and though they work, they are terrible from a maintenance perspective. I mean very little disrespect to the developers. I think I&#8217;ve been looking at so much OOP PHP for the past year or so that the procedural layout used in simplecoin just appears more ugly than it really is.</p>
+<p>Stay tuned for that finished product.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-120 post type-post status-publish format-standard hentry category-applications category-compiling category-linux tag-bitcoind tag-centos-2 tag-centos-5-6 tag-glibc-2-9 tag-htole32 tag-libcurl tag-pushpoold post" id="post-120"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/06/12/compiling-pushpool-on-centos-5-6/" title="Permalink to Compiling PushPool on CentOS 5.6">Compiling PushPool on CentOS 5.6</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/06/12/compiling-pushpool-on-centos-5-6/" title="4:20 pm" rel="bookmark">June 12, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/06/12/compiling-pushpool-on-centos-5-6/#comments" title="Comment on Compiling PushPool on CentOS 5.6">9 comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>I&#8217;ve just had a full day of troubleshooting a single issue, and I thought it would be a good one to share here. A friend and I are setting up a bitcoin mining pool. We are going to run it on a server which uses CentOS 5.6 and Direct Admin. I was able to get bitcoind running pretty easily, but pushpoold was a little more difficult. The first problem I ran across was related to a missing aclocal macro. I eventually fixed that problem by adding a libcurl.m4 macro. If you need help with that, I can look back and see how I did it. Just post a comment.</p>
+<p>After I worked through the libcurl issue, I ran into another roadblock. This one was related to htole32 and le32toh. Both of these are functions introduced in glibc 2.9. Prior versions of glibc DO NOT WORK. The version of glibc included with CentOS 5.6 is earlier than 2.9. So eventually I happened upon this bit of code. It was in one of the commits of a git branch of pushpool. I must admit, I&#8217;m fairly ignorant when it comes to the inner workings of git. That&#8217;s about to change. At any rate, the change was presented as a few additional lines to the msg.c and server.c files. However, as pointing out by the original author (although not committed to the original branch) the code should be added to server.h instead, as it&#8217;s included in both msg.c and server.c. Here is the code that needs to be added near the top of server.h.</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;"><span style="color: #666666; font-style: italic;">// Compatibility with glibc &lt; 2.9</span>
+<span style="color: #339933;">#if !defined(htole32) &amp;&amp; !defined(le32toh)</span>
+<span style="color: #339933;">#  include &lt;byteswap.h&gt;</span>
+<span style="color: #339933;">#  define htole32(x)  (bswap_32(htonl(x)))</span>
+<span style="color: #339933;">#  define le32toh(x)  (ntohl(bswap_32(x)))</span>
+<span style="color: #339933;">#endif </span>
+&nbsp;
+<span style="color: #666666; font-style: italic;">//Disregard this part of the code. There is an error in this syntax </span>
+<span style="color: #666666; font-style: italic;">//highlighting plugin apparently.</span></pre></td></tr></table></div>
+
+<p>Include the hashes, this is not a comment. This bit of code should go before the struct hist; declaration.</p>
+<p>Hope this helps others! I sure could have used it.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-106 post type-post status-publish format-standard hentry category-php category-programming-languages tag-hy093-pdo tag-pdo-error post" id="post-106"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/05/03/hy093-pdo-error/" title="Permalink to HY093 PDO Error">HY093 PDO Error</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/05/03/hy093-pdo-error/" title="3:47 am" rel="bookmark">May 3, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/05/03/hy093-pdo-error/#comments" title="Comment on HY093 PDO Error">2 comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>I get this error enough to be a nuisance. It&#8217;s not that it&#8217;s PHP or PDO&#8217;s fault. I simply made a typo that resulted in this error. The problem with this error is that it doesn&#8217;t really give you a good clue as to what&#8217;s going on. In fact, it probably comes up for various reasons, but here is why it came up for me. When you are blurry eyed from coding, sometimes the simplest mistakes are very frustrating to troubleshoot. We all go through those, but here&#8217;s the one that just got me with a HY093 Error in PDO.<br />
+For this example <del datetime="2011-06-15T20:02:30+00:00">$query</del>$this->odb is my PDO object. So I&#8217;ve already done this:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="php" style="font-family:monospace;"><span style="color: #000088;">$q</span> <span style="color: #339933;">=</span> <span style="color: #0000ff;">&quot;SELECT `votes`.`id` FROM `votes` JOIN `comments` ON 
+        `votes`.`comment_id`=`comments`.`id` WHERE `user_id`=:user  
+         AND `topic_id`=:topic;&quot;</span><span style="color: #339933;">;</span>
+<span style="color: #666666; font-style: italic;">// $this-&gt;odb is a PDO object I have defined for the class in this case</span>
+<span style="color: #000088;">$query</span> <span style="color: #339933;">=</span> <span style="color: #000088;">$this</span><span style="color: #339933;">-&gt;</span><span style="color: #004000;">odb</span><span style="color: #339933;">-&gt;</span><span style="color: #004000;">prepare</span><span style="color: #009900;">&#40;</span><span style="color: #000088;">$q</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #000088;">$query</span><span style="color: #339933;">-&gt;</span><span style="color: #004000;">execute</span><span style="color: #009900;">&#40;</span><span style="color: #990000;">array</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;:user&quot;</span> <span style="color: #339933;">=&gt;</span> <span style="color: #000088;">$user</span><span style="color: #339933;">,</span> <span style="color: #0000ff;">&quot;:topic_id&quot;</span> <span style="color: #339933;">=&gt;</span> <span style="color: #000088;">$topic</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre></td></tr></table></div>
+
+<p>Do you see the error? It&#8217;s pretty obvious when you only have that bit to look at and you have a clear head. This is one of those simple hiccups that causes a little frustration. On top of that, the PDO error simply says &#8220;HY093&#8243;. That&#8217;s very informative. </p>
+<p>The error, in case you don&#8217;t see it, is in the execute. The list of fields doesn&#8217;t match those used in the prepare statement. They are close enough to not be easy to spot. The &#8220;:topic_id&#8221; should be &#8220;:topic&#8221;, but PDO doesn&#8217;t just tell you that your fields don&#8217;t match. PDO does tell you that your fields don&#8217;t match if they are out of order, but not if they are completely wrong. At least, that&#8217;s my experience. So if you see an error HY093, you should check your field binding.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+		<div class="post-104 post type-post status-publish format-standard hentry category-general post" id="post-104"><!-- post div -->
+		<h2 class="title"><a href="http://returnederror.com/2011/05/02/endurapro-first-impressions/" title="Permalink to EnduraPro &#8211; First Impressions">EnduraPro &#8211; First Impressions</a></h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				Posted by <a href="http://returnederror.com/author/Randy/" title="View all posts by Randy" rel="author">Randy</a>
+				on <a href="http://returnederror.com/2011/05/02/endurapro-first-impressions/" title="10:01 pm" rel="bookmark">May 2, 2011</a>
+							</span>
+			<span class="gotocomments"><a href="http://returnederror.com/2011/05/02/endurapro-first-impressions/#comments" title="Comment on EnduraPro &#8211; First Impressions">2 comments</a></span>
+		</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p>I&#8217;ve owned an IBM Model M keyboard for a while now. I love typing on it. However, I&#8217;ve tinkered with it enough to mess up the key alignment on the left CTRL key. This was entirely my fault and in no way some defect in the Model M. Also it should be noted that my Model M is a Part NO: 52G9658. It was made in 1993. At the time of this writing, it is 18 years old. It looks like it&#8217;s brand new and it types like a dream.</p>
+<p>So, finding a keyboard that compares well to my Model M was a challenge. You can tell that I love my Model M. To me, it is the ultimate typing experience. Since I program, a faulty CTRL key can wreak havoc on my productivity. So I required a new keyboard. My first purchase was a Dell AT101W. It is a great alternative to the Model M, but has a completely different feel. It isn&#8217;t a &#8220;clicky&#8221; keyboard, but it is a loud vintage keyboard with tactile mechanical keys.  I bought it on eBay for $20. I typed on it while I waited on my next keyboard, which I found at <a title="PCKeyboards" href="http://pckeyboards.stores.yahoo.net/keyboards.html" target="_blank">PCKeyboards.com</a>.</p>
+<p>This new keyboard is called the Unicomp EnduraPro. Unicomp owns the rights to manufacture spring buckling Model M replica keyboards. They have a full line of them. The Endurapro is around $100 and is basically a Model M with an integrated Trackpoint pointing device. I ordered it because I thought the Trackpoint would be a good addition and could come in handy.</p>
+<p>The shipping was quick but I ordered toward the end of the week. So, it didn&#8217;t arrive until Monday evening. Which leads me to now. I&#8217;m sitting at my desk typing like a mad man on a new post to my blog on the EnduraPro.</p>
+<p>My first impressions are as follows:</p>
+<ul>
+<li>It has a slightly different feel than the Model M. At first it had a dirty feel to it, for lack of a better word to describe it. It feels almost as if there is some sand in the keys. My Model M has a much cleaner feel. It still has the resistance but doesn&#8217;t feel like I&#8217;m scratching something as I type. I can say, however, that after typing on it for a while, either that feeling is going away or I&#8217;m getting used to it.</li>
+<li>The keys feel a little closer together. The keys may not be, but this is the feeling I get from the keyboard. It may be due to the next issue.</li>
+<li>The Trackpoint is in the way. I had to take the red cap off the Trackpoint just to be able to type g, h, and b properly. I had a lot of trouble typing these letters fluidly with it there.</li>
+<li>The Trackpoint functions, but it isn&#8217;t a very good pointing device. You have you push it very hard to get the pointer to move at a decent rate.</li>
+</ul>
+<p>Other than these things, this keyboard is awesome. The Trackpoint is there if you need it, but it&#8217;s not going to be your primary pointing device probably. If I could go back and do it all over again, I&#8217;d order the Customizer 104 instead. The Trackpoint is actually in the way.</p>
+<p>After a few hours of use, the keyboard feels more like the original Model M. I will post again in a day or so, hopefully, with more details.</p>
+		</div><!-- END entry -->
+			</div><!-- END post -->
+	<div id="pagination"><a href="http://returnederror.com/page/2/" >Next page &raquo;</a></div></div><!--content-->
+<div id="sidebar-border">
+	<div id="rss_border">
+		<div class="rss_border">
+			<div id="rss_wrap">
+				<div class="rss_wrap">
+										<a class="rss " href="http://returnederror.com/feed/" rel="bookmark" title="RSS Feed">RSS Feed</a>
+										<a class="twitter" href="http://twitter.com/randy_yates" rel="author" title="Follow me on twitter.">Follow me on twitter.</a>
+																													</div>
+			</div>
+		</div>
+	</div>
+	<div id="sidebar">
+
+
+	<div class="widget">
+		<h3>Random Posts</h3>
+		<ul>
+						<li><a href="http://returnederror.com/2010/11/22/weird-default-settings/">Weird default settings</a></li>
+						<li><a href="http://returnederror.com/2011/05/03/hy093-pdo-error/">HY093 PDO Error</a></li>
+						<li><a href="http://returnederror.com/2011/07/06/bithasher-grand-opening-exciting-day/">Bithasher Grand Opening &#8211; Exciting Day</a></li>
+						<li><a href="http://returnederror.com/2010/07/27/file_get_contents-error-failed-to-open-stream/">file_get_contents Error &#8211; Failed to Open Stream</a></li>
+						<li><a href="http://returnederror.com/2011/07/07/july-7th-update-on-out-bitcoin-mining-pool/">July 7th update on our Bitcoin Mining Pool</a></li>
+					</ul>
+	</div>
+	<div class="widget">
+		<h3>Search by Tags!</h3>
+		<div><a href='http://returnederror.com/tag/afocus/' class='tag-link-37' title='1 topic' style='font-size: 9pt;'>a:focus</a>
+<a href='http://returnederror.com/tag/bitcoind/' class='tag-link-52' title='1 topic' style='font-size: 9pt;'>bitcoind</a>
+<a href='http://returnederror.com/tag/centos-2/' class='tag-link-57' title='1 topic' style='font-size: 9pt;'>centos</a>
+<a href='http://returnederror.com/tag/centos-5-6/' class='tag-link-56' title='1 topic' style='font-size: 9pt;'>centos 5.6</a>
+<a href='http://returnederror.com/tag/close/' class='tag-link-21' title='1 topic' style='font-size: 9pt;'>close</a>
+<a href='http://returnederror.com/tag/default-settings/' class='tag-link-40' title='1 topic' style='font-size: 9pt;'>default settings</a>
+<a href='http://returnederror.com/tag/default-window-buttons-ubuntu/' class='tag-link-23' title='1 topic' style='font-size: 9pt;'>default window buttons ubuntu</a>
+<a href='http://returnederror.com/tag/distorted/' class='tag-link-47' title='1 topic' style='font-size: 9pt;'>distorted</a>
+<a href='http://returnederror.com/tag/dotted-box-around-link/' class='tag-link-38' title='1 topic' style='font-size: 9pt;'>dotted box around link</a>
+<a href='http://returnederror.com/tag/empathy/' class='tag-link-44' title='1 topic' style='font-size: 9pt;'>empathy</a>
+<a href='http://returnederror.com/tag/error-with-freenx/' class='tag-link-15' title='1 topic' style='font-size: 9pt;'>error with FreeNX</a>
+<a href='http://returnederror.com/tag/failed-to-open-stream/' class='tag-link-13' title='1 topic' style='font-size: 9pt;'>failed to open stream</a>
+<a href='http://returnederror.com/tag/firefox-box-around-link/' class='tag-link-39' title='1 topic' style='font-size: 9pt;'>firefox box around link</a>
+<a href='http://returnederror.com/tag/freenx-protocol-mismatch/' class='tag-link-16' title='1 topic' style='font-size: 9pt;'>freenx protocol mismatch</a>
+<a href='http://returnederror.com/tag/glibc-2-9/' class='tag-link-58' title='1 topic' style='font-size: 9pt;'>glibc 2.9</a>
+<a href='http://returnederror.com/tag/htole32/' class='tag-link-55' title='1 topic' style='font-size: 9pt;'>htole32</a>
+<a href='http://returnederror.com/tag/hy093-pdo/' class='tag-link-49' title='1 topic' style='font-size: 9pt;'>HY093 PDO</a>
+<a href='http://returnederror.com/tag/ie/' class='tag-link-27' title='1 topic' style='font-size: 9pt;'>ie</a>
+<a href='http://returnederror.com/tag/i-hate-ie/' class='tag-link-28' title='1 topic' style='font-size: 9pt;'>i hate IE</a>
+<a href='http://returnederror.com/tag/javascript-2/' class='tag-link-29' title='1 topic' style='font-size: 9pt;'>javascript</a>
+<a href='http://returnederror.com/tag/jquery-ui/' class='tag-link-26' title='1 topic' style='font-size: 9pt;'>jquery-ui</a>
+<a href='http://returnederror.com/tag/libcurl/' class='tag-link-54' title='1 topic' style='font-size: 9pt;'>libcurl</a>
+<a href='http://returnederror.com/tag/maximize/' class='tag-link-20' title='1 topic' style='font-size: 9pt;'>maximize</a>
+<a href='http://returnederror.com/tag/messed-up/' class='tag-link-48' title='1 topic' style='font-size: 9pt;'>messed up</a>
+<a href='http://returnederror.com/tag/minimize/' class='tag-link-19' title='1 topic' style='font-size: 9pt;'>minimize</a>
+<a href='http://returnederror.com/tag/offset/' class='tag-link-34' title='1 topic' style='font-size: 9pt;'>OFFSET</a>
+<a href='http://returnederror.com/tag/outline-style-none/' class='tag-link-36' title='1 topic' style='font-size: 9pt;'>outline-style: none</a>
+<a href='http://returnederror.com/tag/pagination/' class='tag-link-35' title='1 topic' style='font-size: 9pt;'>PAGINATION</a>
+<a href='http://returnederror.com/tag/param_int/' class='tag-link-33' title='1 topic' style='font-size: 9pt;'>PARAM_INT</a>
+<a href='http://returnederror.com/tag/pdo/' class='tag-link-32' title='1 topic' style='font-size: 9pt;'>PDO</a>
+<a href='http://returnederror.com/tag/pdo-error/' class='tag-link-50' title='1 topic' style='font-size: 9pt;'>PDO Error</a>
+<a href='http://returnederror.com/tag/pidgin/' class='tag-link-45' title='2 topics' style='font-size: 18pt;'>pidgin</a>
+<a href='http://returnederror.com/tag/pidgin-waiting-for-network/' class='tag-link-17' title='1 topic' style='font-size: 9pt;'>pidgin waiting for network</a>
+<a href='http://returnederror.com/tag/pushpoold/' class='tag-link-53' title='1 topic' style='font-size: 9pt;'>pushpoold</a>
+<a href='http://returnederror.com/tag/site-use/' class='tag-link-31' title='1 topic' style='font-size: 9pt;'>site use</a>
+<a href='http://returnederror.com/tag/smileys/' class='tag-link-42' title='1 topic' style='font-size: 9pt;'>smileys</a>
+<a href='http://returnederror.com/tag/sound/' class='tag-link-46' title='1 topic' style='font-size: 9pt;'>sound</a>
+<a href='http://returnederror.com/tag/ubuntu/' class='tag-link-43' title='1 topic' style='font-size: 9pt;'>ubuntu</a>
+<a href='http://returnederror.com/tag/ubuntu-windows/' class='tag-link-22' title='1 topic' style='font-size: 9pt;'>ubuntu windows</a>
+<a href='http://returnederror.com/tag/waiting-for-network-connection/' class='tag-link-11' title='2 topics' style='font-size: 18pt;'>waiting for network connection</a>
+<a href='http://returnederror.com/tag/warning-protocol-mismatch-or-no-x-authentication-data/' class='tag-link-14' title='1 topic' style='font-size: 9pt;'>Warning: Protocol mismatch or no X authentication data.</a>
+<a href='http://returnederror.com/tag/wordpress/' class='tag-link-41' title='1 topic' style='font-size: 9pt;'>wordpress</a></div>
+	</div>	
+	<div class="widget">
+		<h3>Archives</h3>
+		<ul>
+				<li><a href='http://returnederror.com/2011/08/'>August 2011</a></li>
+	<li><a href='http://returnederror.com/2011/07/'>July 2011</a></li>
+	<li><a href='http://returnederror.com/2011/06/'>June 2011</a></li>
+	<li><a href='http://returnederror.com/2011/05/'>May 2011</a></li>
+	<li><a href='http://returnederror.com/2010/12/'>December 2010</a></li>
+	<li><a href='http://returnederror.com/2010/11/'>November 2010</a></li>
+	<li><a href='http://returnederror.com/2010/10/'>October 2010</a></li>
+	<li><a href='http://returnederror.com/2010/09/'>September 2010</a></li>
+	<li><a href='http://returnederror.com/2010/08/'>August 2010</a></li>
+	<li><a href='http://returnederror.com/2010/07/'>July 2010</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+		<h3>Links</h3>
+		<ul>
+			<li><a href="http://supremetechs.com" rel="me" title="My old blog" target="_blank">Supremetechs</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+		<h3>Meta</h3>
+		<ul>
+						<li><a href="http://returnederror.com/wp-login.php">Log in</a></li>
+					</ul>
+	</div>
+
+
+
+	</div><!-- end: #sidebar -->
+</div><!-- end: #sidebar-border --></div><!--wrapper-->
+<div class="clear"></div>
+<div id="footer">
+	<div id="footer-inside">
+		<p>
+			Copyright &copy; 2014 Returned Error			| Powered by <a href="http://zww.me">zBench</a> and <a href="http://wordpress.org/">WordPress</a>		</p>
+		<span id="back-to-top">&uarr; <a href="#" rel="nofollow" title="Back to top">Top</a></span>
+	</div>
+</div><!--footer-->
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shCore.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushCSharp.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushPhp.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushJScript.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushJava.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushVb.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushSql.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushXml.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushDelphi.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushPython.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushRuby.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushCss.js"></script>
+<script class="javascript" src="http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/shBrushCpp.js"></script>
+<script class="javascript">
+dp.SyntaxHighlighter.ClipboardSwf = 'http://returnederror.com/wp-content/plugins/google-syntax-highlighter/Scripts/clipboard.swf';
+dp.SyntaxHighlighter.HighlightAll('code');
+</script>
+</body>
+</html>

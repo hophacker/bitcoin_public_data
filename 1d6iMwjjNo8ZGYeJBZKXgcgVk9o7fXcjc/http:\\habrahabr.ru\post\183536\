@@ -1,0 +1,3198 @@
+http://habrahabr.ru/post/183536/
+HTTP/1.1 200 OK
+Server: nginx/1.4.7
+Date: Wed, 23 Jul 2014 11:40:53 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+X-Powered-By: PHP/5.5.11
+X-Frame-Options: SAMEORIGIN
+P3P: CP="CAO DSP COR CURa ADMa DEVa PSAa PSDa IVAi IVDi CONi OUR OTRi IND PHY ONL UNI FIN COM NAV INT DEM STA"
+X-Content-Type-Options: nosniff
+X-Engine: engine-slave
+Content-Encoding: gzip
+X-Frame-Options: SAMEORIGIN
+
+
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content='width=1024' name='viewport'>
+    
+    
+    <title>Qt Bitcoin Trader — программа для торговли Bitcoin под Windows, Mac и Linux / Хабрахабр</title>
+    
+    <meta name='yandex-verification' content='67d46b975fa41645' /> <!-- яндекс вебмастер - верификация -->
+
+    <meta name="description" content="В этой статье я покажу вам, как работает программа Qt Bitcoin Trader, и поведаю историю ее разработки.
+Эта программа с открытым исходным кодом позволяет быстро делать ставки на BTC-e и Mt.Gox,..." />    
+    <meta name="keywords" content="QtBitcoinTrader, Qt, Bitcoin, Trader, Mt.Gox, BTC-e, торговля на бирже, программирование, программное обеспечение, криптография" />
+    
+    	<meta property="fb:app_id"      content="444736788986613" /> 
+<meta property="og:type"        content="article" /> 
+<meta property="og:url"         content="http://habrahabr.ru/post/183536/" /> 
+<meta property="og:title"       content="Qt Bitcoin Trader — программа для торговли Bitcoin под Windows, Mac и Linux" /> 
+	<meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/503/9d2/280/5039d2280cabe0d9fdc71cea0504766d.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/503/9d2/280/5039d2280cabe0d9fdc71cea0504766d.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/e8d/6a8/585/e8d6a8585a295097aea273e09f56a5c7.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/e8d/6a8/585/e8d6a8585a295097aea273e09f56a5c7.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/ac7/ac3/61e/ac7ac361edd7ac55a0e3e71e3944b503.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/ac7/ac3/61e/ac7ac361edd7ac55a0e3e71e3944b503.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/cef/4ee/f78/cef4eef789c7850ab30dccbf50a71cb6.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/cef/4ee/f78/cef4eef789c7850ab30dccbf50a71cb6.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/8e8/727/2f3/8e87272f3527b18a4088fea0eb84b37e.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/8e8/727/2f3/8e87272f3527b18a4088fea0eb84b37e.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/8d0/b49/b99/8d0b49b9931b4437ba770d555d88bfc1.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/8d0/b49/b99/8d0b49b9931b4437ba770d555d88bfc1.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/0e7/cb0/454/0e7cb0454e8b1cc1812e8783e7adc663.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/0e7/cb0/454/0e7cb0454e8b1cc1812e8783e7adc663.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/db0/c67/7e6/db0c677e6762e6a65966bfe0340bbbf2.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/db0/c67/7e6/db0c677e6762e6a65966bfe0340bbbf2.png" /><meta property="og:image"       content="http://habrastorage.org/getpro/habr/post_images/843/64e/9c0/84364e9c05cb0dd41b2ecf36cc7b1bd5.png" />
+	<link rel="image_src" href="http://habrastorage.org/getpro/habr/post_images/843/64e/9c0/84364e9c05cb0dd41b2ecf36cc7b1bd5.png" />
+	
+<meta property="og:description" content="В этой статье я покажу вам, как работает программа Qt Bitcoin Trader, и поведаю историю ее разработки. Эта программа с открытым исходным кодом позволяет быстро..." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@habrahabr" />
+	<meta property="al:ios:url" content="habrahabr://post/183536" />
+<meta property="al:ios:app_store_id" content="778613673" />
+<meta property="al:ios:app_name" content="Habrahabr" />
+<meta property="al:android:url" content="habrahabr://post/183536" />
+<meta property="al:android:app_name" content="Habrahabr" />
+<meta property="al:android:package" content="ru.habrahabr" />
+<meta property="al:windows_phone:url" content="habrahabr://post/183536" />
+<meta property="al:windows_phone:app_name" content="Habrahabr" />
+<meta property="al:windows_phone:app_id" content="460a6bd6-8955-470f-935e-9ea1726a6060" />
+
+
+      <link href="/styles/1406033523/all.css" rel="stylesheet" media="all" />
+  
+    <link href="/styles/1406033523/_parts/navbar.css" rel="stylesheet" media="all" />
+
+      <link href="/styles/1406033523/_parts/posts.css" rel="stylesheet" media="all" />
+  <link href="/styles/1406033523/_parts/comments.css" rel="stylesheet" media="all" />
+  <link href="/styles/1406033523/forms.css" rel="stylesheet" media="all" />
+  <link href="/styles/1406033523/highlight.css" rel="stylesheet" media="all" />
+
+
+    <link href="/styles/1406033523/printer.css" rel="stylesheet" media="print" />
+
+    
+    
+
+      <script src="/javascripts/1406033523/all.js"></script>
+    <script src="/javascripts/1406033523/_parts/_navbar.js"></script>
+
+
+      <script type="text/javascript" src="/javascripts/1406033523/libs/jquery.form.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/libs/jquery.cookie.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/libs/wysiwyg.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/libs/highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/libs/jquery-ui-highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/_parts/posts.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/_parts/comments.js"></script>
+  <script type="text/javascript" src="/javascripts/1406033523/posts/all.js"></script>
+
+
+      <!-- www.criteo.com/ru -->
+<script type='text/javascript'>
+  var crtg_nid="2580";
+  var crtg_cookiename="cto_rtt";
+  var crtg_varname="crtg_content";
+  function crtg_getCookie(c_name){
+    var i,x,y,ARRCookies=document.cookie.split(";");
+    for(i=0;i<ARRCookies.length;i++){
+      x=ARRCookies[i].substr(0,ARRCookies[i].indexOf("="));
+      y=ARRCookies[i].substr(ARRCookies[i].indexOf("=")+1);
+      x=x.replace(/^\s+|\s+$/g,"");
+      if(x==c_name){return unescape(y);}
+    }
+    return'';
+  }
+  var crtg_content = crtg_getCookie(crtg_cookiename);var crtg_rnd=Math.floor(Math.random()*99999999999);
+  var crtg_url=location.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
+  var crtg_script=document.createElement('script');crtg_script.type='text/javascript';crtg_script.src=crtg_url;crtg_script.async=true;
+  if(document.getElementsByTagName("head").length>0)document.getElementsByTagName("head")[0].appendChild(crtg_script);
+  else
+  if(document.getElementsByTagName("body").length>0)document.getElementsByTagName("body")[0].appendChild(crtg_script);
+</script>
+      <script >
+        var N = 5;
+        var ar_duo1 = Math.floor(Math.random()*N+1);
+      </script>
+      <script type="text/javascript" src="/javascripts/1406033523/adriver.core.2.js"></script>
+
+    <link title="Хабрахабр / Комментарии к публикации «Qt Bitcoin Trader — программа для торговли Bitcoin под Windows, Mac и Linux»" type="application/rss+xml" rel="alternate" href="http://habrahabr.ru/rss/post/183536/"/>
+        
+    
+    
+<script type="text/javascript">
+
+    var user_type = "guest";
+    var username = 'guest';
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+    ga('create', 'UA-726094-1',  'auto' ); 
+
+  ga('require', 'displayfeatures');
+  ga('set', 'dimension1', user_type); // user type - guest/readonly/habrauser
+  ga('set', 'dimension2', username); // username
+
+
+  ga('send', 'pageview');
+  
+</script>
+
+
+
+<script type="text/javascript">
+var pp_gemius_identifier = new String('p8zr4.NqiIZJgD2cnP2s5fWWnIQFHrAvZ280B955gIr.f7');
+</script>
+<script src="/javascripts/1406033523/gemius.js"></script>
+
+
+
+
+
+
+
+    
+    <meta content='Хабрахабр' name='apple-mobile-web-app-title'>
+<link href='/images/apple-touch-icon_142x142.png' rel='apple-touch-icon' type='image/png'>
+
+
+
+  </head>
+
+  <body>
+    
+    <div id="layout">
+      <div id="navbar_overlay" class="hidden"></div>
+<div id="navbar">
+    <div class="nav_panel">
+        <a href="http://habrahabr.ru/" class="logo"></a>
+
+            <a href="/posts/" class="tab tab_menu" data-tab="menu_tab" title="Меню"></a>
+            <a href="https://habrahabr.ru/auth/login/" class="tab tab_login" id="login" title="Войти"></a>
+
+        <a href="#" class="scroll_to_up hidden scroll_to_up_for_guest" id="scroll_to_top" title="Наверх"></a>
+    </div>
+    <div class="nav_tabs_content ">
+        
+        <div class="nav_tab hidden" id="menu_tab">
+            <div class="title">Разделы</div>
+            <form action="/search/" method="get" class="global_search_form">
+                <div>
+                    <input type="text" name="q" placeholder="Поиск" />
+                </div>
+            </form>
+            <div class="menu">
+                <a href="/posts/top/">Посты</a>
+                <a href="/hubs/">Хабы</a>
+                <a href="/companies/">Компании</a>
+                <a href="/users/">Пользователи</a>
+                <a href="http://toster.ru/?utm_source=tm_habrahabr&utm_medium=tm_menu&utm_campaign=tm_promo"    class="new_window">Q&A</a>
+                <a href="/sandbox/">Песочница</a>
+                
+
+            </div>
+
+            
+
+                    <div class="line"></div>
+                    <div class="title">Спецпроекты</div>
+                    <div class="menu">
+
+                    <a href="/lnk/17/">LG G3</a>
+
+                    <a href="/lnk/15/">Nokia</a>
+
+                    <a href="/lnk/7/">М.Видео</a>
+                    </div>
+
+                
+        </div>
+
+        
+    </div>
+</div>
+      <div class="inner">
+        
+                
+        
+
+        	
+  <div class="content_left">
+  	
+
+
+
+
+
+    <div class="post_show">
+  	  
+  <div class="post shortcuts_item" id="post_183536">
+  	<div class="published">17 июня 2013 в 10:27</div>
+    <h1 class="title">
+	    
+        <span class="post_title">Qt Bitcoin Trader — программа для торговли Bitcoin под Windows, Mac и Linux</span>
+      
+			
+  	</h1>
+  	
+  	<div class="hubs">
+		<a href="http://habrahabr.ru/hub/finance/" class="hub " title="Вы не подписаны на этот хаб" >Финансы в IT-индустрии</a>, 
+		<a href="http://habrahabr.ru/hub/programming/" class="hub " title="Вы не подписаны на этот хаб" >Программирование</a><span class="profiled_hub" title="Профильный хаб">*</span>
+</div>
+
+  	
+  	<div class="content html_format">
+    	В этой статье я покажу вам, как работает программа Qt Bitcoin Trader, и поведаю историю ее разработки.<br/>
+Эта программа с открытым исходным кодом позволяет быстро делать ставки на BTC-e и Mt.Gox, задавать правила для автоматической торговли.<br/>
+Написана она на чистом Qt 4 с использованием OpenSSL, и, по моему мнению, в ней есть интересные особенности со стороны разработки, о которых тоже хочу рассказать.<br/>
+<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/503/9d2/280/5039d2280cabe0d9fdc71cea0504766d.png"/><br/>
+<a name="habracut"></a><br/>
+<h2>Предыстория</h2><br/>
+Во время апрельских скачков курса Bitcoin я, и мой друг <a href="http://habrahabr.ru/users/dybik/" class="user_link">Dybik</a>, как и многие на хабре, заинтересовались этой замечательной криптовалютой. Мы, как и, думаю, множество из тех кто читает эту статью, решили попробовать себя на бирже. Как оказалось, самой популярной биржей для торговли Bitcoin является Mt.Gox. Мы зарегистрировались там и начали делать первые ставки.<br/>
+<br/>
+Курс постоянно рос, ажиотаж нарастал. Весь интернет гудел об этом, и помню, даже по телевизору тогда говорили о Bitcoin. Мы торговали на сайте Mt.Gox, и сайт часто подлагивал. Раздражало когда выставишь ордера, а отменить не получается. Вернее, получается, но кнопка «cancel» не давала никаких подтверждений и откликов. Было непонятно, отменился ордер или нет.<br/>
+<br/>
+Уже тогда я подумал: «А почему нет на сайте возможности задать правила для создания ордеров?». Круглосуточно следить за курсом нельзя, было бы хорошо оставить правила на ночь. Искал программы и находил python боты и какие-то непонятные мне тогда платные клиенты для десктопа. «Редактировать файл, чтобы подправить правило? Это же неудобно», — подумал я. Нужна программа, которая не позволит сделать механических ошибок, пропустить ноль или запятую.<br/>
+<br/>
+Курс постоянно прыгал, и мы успевали выгодно покупать и продавать. Я пытался получить выгоду на мелких скачках. В логе ордеров Mt.Gox ясно отображался отдельный пункт суммой комиссии на покупку, но не было пункта для продажи. «Комиссия только на покупку», — подумал я. А когда посчитал, то понял, что проигрываю. Комиссия на продажу тоже есть, он встроен в сумму. По-моему, логичнее было бы делать одинаково отображение комиссии и для продажи и для покупки. Но, может, Mt.Gox специально хочет нас запутать? Не знаю. Выяснил это и начал дальше торговать.<br/>
+<br/>
+Получилась хорошая сумма и мы поняли, что не зря потратили столько времени. А дальше, ну, вы и сами помните, дальше настал полный крах курса и мы тоже попали под удар. Сайт зависал, продать Bitcoin было невозможно, а потом Mt.Gox вовсе заморозил торги на сутки. Курс стремительно упал. Так я проиграл половину вложенной суммы.<br/>
+<br/>
+Что дальше делать? Сдаться и вывести остаток суммы? Я не на минуту не сомневался и начал думать о стратегии, она не выходила у меня из головы. Искать боты на python? Нет, мне стало интересно реализовать что-то свое. Когда только начал торговать на Mt.Gox, у меня перед глазами уже была простая программа, которую я не мог нигде найти и тогда я приступил к разработке Qt Bitcoin Trader.<br/>
+<br/>
+<h2>Встречайте — Qt Bitcoin Trader</h2><br/>
+После первого запуска вас встретит окно создания профиля.<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/e8d/6a8/585/e8d6a8585a295097aea273e09f56a5c7.png"/><br/>
+Надо выбрать биржу, получить API ключ с параметрами Info и Trade, вести его в программу, далее — придумать надежный пароль.<br/>
+Все данные сохраняются в папке профиля пользователя, зашифрованные c помощью OpenSSL шифрованием AES256.<br/>
+<br/>
+В окне логина можете включить проверку обновлений.<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/ac7/ac3/61e/ac7ac361edd7ac55a0e3e71e3944b503.png"/><br/>
+Для пользователей Mac и Windows есть автоматическое обновление.<br/>
+Проверка новых версий проводится по загрузке файла с <a href="https://raw.github.com/JulyIGHOR/QtBitcoinTrader/master/versions.txt">GitHub</a>, в котором сохранена контрольная сумма бинарного файла, зашифрованного с помощью RSA2048. Поэтому, нет риска подмены файла вредоносным.<br/>
+<br/>
+Когда выйдет новая версия, то вы увидите такое окно:<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/cef/4ee/f78/cef4eef789c7850ab30dccbf50a71cb6.png"/><br/>
+<br/>
+Интерфейс я старался разработать простым, и так, чтобы все было на виду. Не в обиду пользователям с низкими разрешениями экранов, но оптимизировать интерфейс для них буду позже.<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/8e8/727/2f3/8e87272f3527b18a4088fea0eb84b37e.png"/><br/>
+Слева вы видите список открытых ордеров, обновляющихся в реальном времени.<br/>
+Вы можете создавать ордера на покупку и на продажу, но, чтобы сумма их не превышала ваш баланс. С недавних пор Mt.Gox сразу удаляет ордера, которые превышают баланс.<br/>
+Наконец-то можно отменить ордер, и сразу видеть его статус «Отменен», даже если он еще висит на сайте, API получает подтверждение доставки.<br/>
+<br/>
+Все данные маркета обновляются одним запросом, кроме последней цены. Она обновляется еще и из цен последних сделок.<br/>
+<br/>
+Калькулятор комиссии доступен по маленькой кнопке слева вверху. Мне приходили отзывы, и я сделал его таким, какой привыкли использовать пользователи онлайн калькуляторов.<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/8d0/b49/b99/8d0b49b9931b4437ba770d555d88bfc1.png"/><br/>
+Он работает так же, за исключением того, что автоматически загружается баланс и последние цены, что есть удобно.<br/>
+Вы можете открыть сколько угодно калькуляторов на свое усмотрение.<br/>
+<br/>
+Вы можете легко создать правило для автоматического создания ордеров:<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/0e7/cb0/454/0e7cb0454e8b1cc1812e8783e7adc663.png"/><br/>
+Сейчас вы можете создавать правила в двух режимах: «По очереди» и в «Параллельном».<br/>
+В параллельном режиме, при изменении значений, проверяются на сходство все правила, и любое из них может быть исполнено. В режиме «По очереди» вторая строка правила будет проверяться только, если исполнена первая. Вы можете менять порядок правил и редактировать их.<br/>
+<br/>
+Для некоторых значений есть звуковое оповещение. Значок динамика — это кнопка-выключатель.<br/>
+<br/>
+Есть возможность отцеплять групбоксы, делая их отдельными окнами, что несомненно удобно с использованием нескольких мониторов.<br/>
+<br/>
+Для Windows пользователей есть возможность включить портабельный режим. Надо создать папку QtBitcoinTrader в той же папке что exe файл, и все зашифрованные данные будут сохраняться в ней.<br/>
+<br/>
+<h2>Что ожидается в следующих версиях Qt Bitcoin Trader?</h2><br/>
+Сейчас поддерживаются биржи BTC-e и Mt.Gox. По возможности свободного времени, я доделаю поддержку остальных самых популярных бирж по очереди.<br/>
+Возможно работа websocket api и http api одновременно.<br/>
+Далее — отображение графиков в реальном времени.<br/>
+Будет реализована возможность добавления API разных бирж и разных валют в один профиль, для одновременного мониторинга.<br/>
+Скриптовый язык, как дополнение правил, которым можно будет в несколько строк написать стратегию анализирующую цены на разных биржах.<br/>
+<br/>
+<h2>Как вы мне можете помочь в усовершенствовании Qt Bitcoin Trader?</h2><br/>
+На данный момент программа переведена на английский, немецкий, русский, украинский, испанский, голландский и норвежский языки.<br/>
+Вы можете помочь перевести программу на свой родной язык. В программе присутствует встроенный движок-переводчик. Нажмите кнопку «О программе», и вы увидите инструкцию:<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/db0/c67/7e6/db0c677e6762e6a65966bfe0340bbbf2.png"/><br/>
+<br/>
+Нажмете кнопку «Перевести программу», и увидите диалог:<br/>
+<img src="http://habrastorage.org/getpro/habr/post_images/843/64e/9c0/84364e9c05cb0dd41b2ecf36cc7b1bd5.png"/><br/>
+<br/>
+Здесь есть все поля, которые надо перевести. Поля с красным текстом — это поля, совпадающие с английским переводом.<br/>
+По нажатию кнопки «Применить», вы сразу увидите свой перевод в программе и сможете подкорректировать слишком длинные тексты. Когда вы закончите перевод, сохраните файл и пришлите на электронный адрес, указанный в инструкции. После проверки перевода я добавлю его в следующую версию Qt Bitcoin Trader.<br/>
+И не забудьте оставить свою контактную информацию и адрес Bitcoin для донейтов в поле «Переводчик:».<br/>
+<br/>
+Также вы можете помочь в развитии программы материально, поскольку программа живет только на донейтах.<br/>
+Адрес Bitcoin для поддержки: <b>1d6iMwjjNo8ZGYeJBZKXgcgVk9o7fXcjc</b><br/>
+<br/>
+<h2>Официальные ресурсы Qt Bitcoin Trader</h2><br/>
+<a href="https://github.com/JulyIGHOR/QtBitcoinTrader">Исходник на GitHub</a><br/>
+<br/>
+<a href="https://sourceforge.net/projects/bitcointrader/">Скачать для Windows и Mac (SourceForge.net)</a><br/>
+<a href="http://www.softpedia.com/get/Others/Finances-Business/Bitcoin-Trader.shtml">Скачать с Softpedia для Windows</a><br/>
+<a href="http://mac.softpedia.com/get/Finance/Qt-Bitcoin-Trader.shtml">Скачать с Softpedia для Mac</a><br/>
+<br/>
+<a href="https://bitcointalk.org/index.php?topic=218044">BitcoinTalk RUS Форум</a><br/>
+<a href="https://bitcointalk.org/index.php?topic=201062">BitcoinTalk ENG Форум</a><br/>
+<a href="https://forum.btcsec.com/index.php?/topic/1496-qt-bitcoin-trader-klient-mtgox-pod-macwinlinux/">BtcSec Форум</a><br/>
+<br/>
+<a href="http://www.facebook.com/QtBitcoinTrader">Facebook</a><br/>
+<a href="http://twitter.com/QtBitcoinTrader">Twitter</a><br/>
+<a href="http://vk.com/QtBitcoinTrader">VK</a><br/>
+<br/>
+<iframe width="560" height="349" src="//www.youtube.com/embed/I95n6MPxEH4?wmode=opaque" frameborder="0" allowfullscreen></iframe><br/>
+<br/>
+<h2>Фишинг</h2><br/>
+Как только моя программа появилась в интернете, сразу начали появляться дубликаты с описанием моей программы.<br/>
+Но, вместо ссылок на скачку Qt Bitcoin Trader предлагается скачать вирус. Я был удивлен, почему так много фейков Qt Bitcoin Trader в интернете. И даже qtbitсоintrаdеr.соm — это фейк с ссылкой на вирус, и www. qt-trаdаr.ru тоже фейк. Если бы знал, что программа будет так популярна, то сразу бы забил эти домены. Думаю, это урок для меня и для всех, кто читает эту статью.<br/>
+Будьте внимательны, если не знаете, надежная ли ссылка, то гуглите по названию.<br/>
+Я рекомендую использовать встроенное в программу безопасное обновление. <br/>
+<br/>
+<h2>Особенности разработки Qt Bitcoin Trader</h2><br/>
+<h4>Механизм встроенного переводчика</h4><br/>
+Может, вы задаетесь вопросом, почему я не выбрал для перевода программы стандартный Qt Linguist?<br/>
+Мне он не нравится, может и удобно редактировать форму, но, чтобы перевести файл, нужен сам Qt Linguist, а он есть, наверное, только у 5% всех пользователей программы.<br/>
+Поэтому, я решил написать свой движок, и сделать его удобным не только для разработчиков, но и для всех пользователей программы.<br/>
+Можете посмотреть исходники класса JulyTranslator на GitHub. Это базовый класс, в котором сохраняются все ассоциации слов в QHash. Этот класс умеет загружать и сохранять файлы перевода, а так же переводить отдельные объекты интерфейса и загружать текст из интерфейса в файл.<br/>
+Каждому объекту интерфейса, который должен переводиться, я задаю уникальный текстовый идентификатор через setAccessibleName().<br/>
+Функция translateUi(QWidget *parent) класса JulyTranslator обходит все дочерние виджеты родителя из параметра функции. Каждому виджету, который надо перевести, само собой надо вызывать translateUi() в конструкторе или по сигналу.<br/>
+Например, обходим все кнопки QPushButton, проверяем, есть ли значение accessibleName(), и, если да, то достаем ассоциацию этого значения из QHash класса JulyTranslator<br/>
+<pre><code class="cpp">foreach(QPushButton* curButton, par-&gt;findChildren&lt;QPushButton*&gt;())
+   if(!curButton-&gt;accessibleName().isEmpty())
+       curButton-&gt;setText(translateButton(curButton-&gt;accessibleName(),curButton-&gt;text()));
+</code></pre><br/>
+Получился класс, который загружает язык из файла и применяет его в интерфейс.<br/>
+<br/>
+Поскольку мне не всегда нравится, как работает QLayout, то, после применения перевода, я прохожусь по каждому виджету, вычисляю минимальный размер, чтобы обеспечить подобающий вид виджета, и задаю ему минимальную ширину.<br/>
+<br/>
+Пример для кнопки:<br/>
+<pre><code class="cpp">foreach(QPushButton* pushButtons, par-&gt;findChildren&lt;QPushButton*&gt;())
+	pushButtons-&gt;setMinimumWidth(qMin(pushButtons-&gt;maximumWidth(),QFontMetrics(pushButtons-&gt;font()).width(pushButtons-&gt;text())+10));
+</code></pre><br/>
+В результате, мы экономим место в интерфейсе, и при этом тексты не выходят за виджеты.<br/>
+<br/>
+Второй этап — сделать создание перевода удобным для пользователей.<br/>
+Класс TranslationDialog предназначен для генерации списка полей. Он достает весь массив текстов из JulyTranslator и генерирует QTextEdit для каждого поля.<br/>
+Поскольку мне не всегда нравится то, что делает лейаут с QTextEdit, я написал виджет TranslationLine, который при изменении идеально обтекает текст для экономии места.<br/>
+Вы можете это наблюдать в переводчике, когда дописываете что-нибудь или ставите энтеры в текстовые поля. Поле автоматически увеличивается и уменьшается.<br/>
+<br/>
+<h4>Безопасное автоматическое обновление только с помощью GitHub и SourceForge</h4><br/>
+Принцип обновления прост: программа при запуске загружает файл <a href="https://raw.github.com/JulyIGHOR/QtBitcoinTrader/master/versions.txt">raw.github.com/JulyIGHOR/QtBitcoinTrader/master/versions.txt</a>, который лежит на GitHub в открытом виде.<br/>
+В файле сохранена зашифрованная с помощью RSA2048 контрольная сумма бинарника SH1.<br/>
+Public.key вшит в ресурс программы, а Private.key надежно сохранен и запаролен, и есть только у меня.<br/>
+Программа при проверке обновления загружает файл по указаной ссылке из файла в оперативную память, если файл больше 15 мб, то закачка отменяется.<br/>
+Дальше вычисляется контрольная сумма SH1 скачанных данных, и сопоставляется с расшифрованной информацией из файла обновления.<br/>
+Если контрольная сумма совпадает, то программа сохраняет файл из оперативки на диск под названием QtBitcoinTrader.upd. После контрольной проверки читает его обратно, и проверяет, хорошо ли сохранился файл. После успешной проверки переименовывает себя в *.bkp, а файл *.upd — в оригинальное имя файла.<br/>
+После перезапуска лишние файлы удалятся.<br/>
+Этот принцип работает одинаково и для Windows, и для Mac OS X.<br/>
+<br/>
+<h2>Послесловие</h2><br/>
+Помните, программа за вас не торгует, это лишь инструмент помогающий вам торговать.<br/>
+Надеюсь, я не слишком затянул и статья была вам интересна.<br/>
+Буду рад поддержке, отзывам и рекомендациям. 
+    	<div class="clear"></div> 	
+  	</div>
+    
+<ul class="tags">
+	<li ><a href="http://habrahabr.ru/search/?q=%5BQtBitcoinTrader%5D&target_type=posts" rel="tag">QtBitcoinTrader</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5BQt%5D&target_type=posts" rel="tag">Qt</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5BBitcoin%5D&target_type=posts" rel="tag">Bitcoin</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5BTrader%5D&target_type=posts" rel="tag">Trader</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5BMt.Gox%5D&target_type=posts" rel="tag">Mt.Gox</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5BBTC-e%5D&target_type=posts" rel="tag">BTC-e</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5B%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BB%D1%8F%20%D0%BD%D0%B0%20%D0%B1%D0%B8%D1%80%D0%B6%D0%B5%5D&target_type=posts" rel="tag">торговля на бирже</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5B%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%5D&target_type=posts" rel="tag">программирование</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5B%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B5%20%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%5D&target_type=posts" rel="tag">программное обеспечение</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5B%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F%5D&target_type=posts" rel="tag">криптография</a></li>
+</ul>
+
+    <div class="infopanel_wrapper">
+	<div class="infopanel " id="infopanel_post_183536">
+	
+				<div class="voting   ">
+	
+						<span class="plus" title="Голосовать могут только зарегистрированные пользователи."></span>
+	
+					<div class="mark positive ">
+							<span class="score" title="Всего 69: &uarr;54 и &darr;15">+39</span>
+					</div>
+					
+						<span class="minus" title="Голосовать могут только зарегистрированные пользователи."></span>
+		
+				</div>
+	
+		<div class="pageviews" title="Просмотры поста">37896</div>
+			
+		<div class="favorite">
+				<a class="guest"	href="#" onclick="return false;" title="Только зарегистрированные пользователи могут добавлять посты в избранное"></a>
+		</div>
+		<div class="favs_count" title="Количество пользователей, добавивших пост в избранное">191</div>
+		
+		
+		
+	
+	
+	
+	
+				<div class="author">
+					<a title="Автор текста" href="http://habrahabr.ru/users/IGHOR/" >IGHOR</a>
+					<span class="rating" title="рейтинг пользователя">27,8</span>
+						<a href="https://plus.google.com/115209738537938107216/?rel=author" class="googleplus_profile">G+</a>
+				</div>
+		
+	
+	
+		
+			<div class="share">
+				<div class="twitter">
+					<a href="http://twitter.com/intent/tweet?text=Qt+Bitcoin+Trader+%E2%80%94+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0+%D0%B4%D0%BB%D1%8F+%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BB%D0%B8+Bitcoin+%D0%BF%D0%BE%D0%B4+Windows%2C+Mac+%D0%B8+Linux+http://habr.ru/p/183536/+via+%40habrahabr+%23habr" title="Опубликовать ссылку в Twitter" target="_blank"></a>
+				</div>
+				<div class="vkontakte">
+					<a href="http://vk.com/share.php?url=http://habrahabr.ru/post/183536/" title="Опубликовать ссылку во ВКонтакте" onclick="window.open(this.href, 'Опубликовать ссылку во Вконтакте', 'width=800,height=300'); return false"></a>
+				</div>
+				<div class="facebook">
+					<a href="https://www.facebook.com/sharer/sharer.php?u=http://habrahabr.ru/post/183536/" title="Опубликовать ссылку в Facebook" onclick="window.open(this.href, 'Опубликовать ссылку в Facebook', 'width=640,height=436,toolbar=0,status=0'); return false"></a>
+				</div>
+				<div class="googleplus">
+					<a href="https://plus.google.com/share?url=http://habrahabr.ru/post/183536/" title="Опубликовать ссылку в Google Plus" onclick="window.open(this.href, 'Опубликовать ссылку в Google Plus', 'width=800,height=300'); return false"></a>
+				</div>
+			</div>
+	
+	</div>
+	<div class="clear"></div>
+</div>
+
+
+
+
+    
+    
+	</div>
+
+    </div>
+
+  	    
+    <div id="adriver_banner_132032996"></div>  
+
+  <script type="text/javascript">
+      /** Для блоков гугла **/
+      function requireAdsafe(file){
+          var head = document.getElementsByTagName("head")[0];
+          var script = document.createElement('script');
+          script.src = file;
+          script.type = 'text/javascript';
+          head.appendChild(script);
+      }
+
+      function show_inner_banner_block(name, url){
+          if( typeof(name) !== 'undefined'){
+              $.get('/html/'+name+'/1406033523/', function(html){
+                  $('#adriver_banner_132032996').html(html);
+                  $('.'+name+'_inner_banner').removeClass('hidden');
+                  if( typeof(url) !== 'undefined'){
+                      $('.'+name+'_inner_banner .block_url').attr('href', url);
+                  }
+
+                  if (name == 'google') {
+                      new Image().src = 'http://ad.doubleclick.net/jump/N5295.197836HABRAHABR.RU/B8185867.109918092;sz=1x1;ord=![rnd]';
+                      requireAdsafe('http://pixel.adsafeprotected.com/rjss/st/28047/2559986/skeleton.js');
+                  }
+
+                  if (name == 'google2') {
+                      new Image().src = 'https://ad.doubleclick.net/ad/N5295.197836HABRAHABR.RU/B8064776.109574175;sz=1x1;ord=![rnd]';
+                      requireAdsafe('https://pixel.adsafeprotected.com/rjss/st/25624/2476044/skeleton.js');
+                  }
+
+                  if (name == 'google3') {
+                      new Image().src = 'http://ad.doubleclick.net/jump/N5295.197836HABRAHABR.RU/B8185867.109918090;sz=1x1;ord=![rnd]';
+                      requireAdsafe('http://pixel.adsafeprotected.com/rjss/st/28047/2559984/skeleton.js');
+                  }
+
+                  if (name == 'google4') {
+                      new Image().src = 'https://ad.doubleclick.net/ad/N5295.197836HABRAHABR.RU/B8064776.109574176;sz=1x1;ord=![rnd]';
+                      requireAdsafe('https://pixel.adsafeprotected.com/rjss/st/25624/2476046/skeleton.js');
+                  }
+              })
+          }
+      }
+
+        $(function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = { 4:ar_duo1 };
+                custom[1] = 'finance';
+                custom[2] = 'programming';
+
+            /* Антоша не удаляй это условие блеать! Как я тестить буду? */
+            //if (true)
+            //    show_inner_banner_block('ertelecom');
+            //else
+                new adriver("adriver_banner_132032996", {sid: 176776, bt: 52, bn: 3, custom: custom, keyword: keyword});
+        });
+    </script>
+    
+
+
+  	
+  		<div class="comments_list " id="comments">
+
+  <h2 class="title ">Комментарии (<span id="comments_count">50</span>)
+  
+  
+  </h2>
+
+    <div class="comment_item" id="comment_6377708" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377708">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377708" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 9: &uarr;7 и &darr;2">+5</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Ockonal/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/fae/f87/f6d/faef87f6d1ccbaa895034d816481187b_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Ockonal/" class="username">Ockonal</a><span class="comma">,</span>
+            <time>17 июня 2013 в 10:40</time>
+
+            <a href="#comment_6377708" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <blockquote>Интерфейс я старался разработать простым, и так, чтобы все было на виду.</blockquote><br/>
+<i>Не в тему но.</i> Страшненько, имхо, нужно допиливать очень.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377708">
+        <div class="comment_item" id="comment_6377762" >
+
+    <span class="parent_id" data-parent_id="6377708"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377762">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377762" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 5: &uarr;4 и &darr;1">+3</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Fedcomp/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/d96/b7b/e17/d96b7be170838a1a5bbd601156275166_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Fedcomp/" class="username">Fedcomp</a><span class="comma">,</span>
+            <time>17 июня 2013 в 10:57</time>
+
+            <a href="#comment_6377762" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377762" data-parent_id="6377708" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377708" data-id="6377762" data-parent_id="6377708" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Согласен, абсолютно не нужно рисовать свой стиль.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377762">
+        <div class="comment_item" id="comment_6378904" >
+
+    <span class="parent_id" data-parent_id="6377762"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378904">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378904" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/evnuh/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/5c5/b51/53f/5c5b5153f90f9e441e8b46c5a0ea9683_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/evnuh/" class="username">evnuh</a><span class="comma">,</span>
+            <time>17 июня 2013 в 14:39</time>
+
+            <a href="#comment_6378904" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378904" data-parent_id="6377762" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377762" data-id="6378904" data-parent_id="6377762" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Можно посмотреть какие-нибудь профессиональные торговые терминалы и понять, почему они все сделаны в многооконном режиме. Это удобно, настраиваемо и концетрирует человека только на том, что ему нужно. 
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378904">
+    </div>
+</div>
+
+        <div class="comment_item" id="comment_6391294" >
+
+    <span class="parent_id" data-parent_id="6377762"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6391294">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6391294" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>19 июня 2013 в 15:56</time>
+
+            <a href="#comment_6391294" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6391294" data-parent_id="6377762" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377762" data-id="6391294" data-parent_id="6377762" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Я просто хотел включить прозрачность Aero для фона.<br/>
+Но из-за бага Qt который присутствует с версии 4.7.х при включении прозрачности стиль QGroupBox исчезает.<br/>
+Поэтому пришлось задать стиль принудительно.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6391294">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6377794" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377794">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377794" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 3: &uarr;2 и &darr;1">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Disasm/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Disasm/" class="username">Disasm</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:10</time>
+
+            <a href="#comment_6377794" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <blockquote>Мне он не нравится, может и удобно редактировать форму, но, чтобы перевести файл, нужен сам Qt Linguist, а он есть, наверное, только у 5% всех пользователей программы.<br/>
+</blockquote><br/>
+Зачем он пользователю? Переводите, компилируете перевод, распространяете вместе с программой.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377794">
+        <div class="comment_item" id="comment_6377816" >
+
+    <span class="parent_id" data-parent_id="6377794"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6377816">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377816" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 2: &uarr;1 и &darr;1">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:13</time>
+
+            <a href="#comment_6377816" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377816" data-parent_id="6377794" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377794" data-id="6377816" data-parent_id="6377794" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            У меня нет возможности перевести программу на другие языки.<br/>
+А если у пользователей есть время и они переводят сами, почему бы и нет?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377816">
+        <div class="comment_item" id="comment_6377820" >
+
+    <span class="parent_id" data-parent_id="6377816"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377820">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377820" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  negative">
+                    <span class="score" title="Всего 5: &uarr;2 и &darr;3">–1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Disasm/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Disasm/" class="username">Disasm</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:15</time>
+
+            <a href="#comment_6377820" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377820" data-parent_id="6377816" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377816" data-id="6377820" data-parent_id="6377816" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format bad bad1">
+            Обычно пользователи в таком случае довольствуются английским языком.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377820">
+        <div class="comment_item" id="comment_6377896" >
+
+    <span class="parent_id" data-parent_id="6377820"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377896">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377896" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 5: &uarr;4 и &darr;1">+3</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/BaJlepa/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/BaJlepa/" class="username">BaJlepa</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:33</time>
+
+            <a href="#comment_6377896" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377896" data-parent_id="6377820" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377820" data-id="6377896" data-parent_id="6377820" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            По моему опыту, пользователи с удовольствием переводят на свой язык.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377896">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6377836" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377836">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377836" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 11: &uarr;6 и &darr;5">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:18</time>
+
+            <a href="#comment_6377836" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Инструменты, подобные этому, облегчают вход в торговлю для неподготовленных пользователей. Поэтому я считаю, что они скорее вредны, чем полезны.<br/>
+Чтобы иметь доход на бирже, нужно обладать хотя бы базовым пониманием механизмов трейдинга и анализа — как технического, так и фундаментального. А еще нужно постоянно следить за изменяющейся ситуацией.<br/>
+Если вы этого не умеете, пожалуйста, не ввязывайтесь — больше вероятность потерять свои деньги, чем приумножите. Помните: никогда не вкладывайте больше денег, чем можете безболезненно потерять.<br/>
+<br/>
+И конечно же не стоит забывать про моральные аспекты такого типа дохода…
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377836">
+        <div class="comment_item" id="comment_6378026" >
+
+    <span class="parent_id" data-parent_id="6377836"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378026">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378026" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 5: &uarr;3 и &darr;2">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tangro/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tangro/" class="username">tangro</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:55</time>
+
+            <a href="#comment_6378026" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378026" data-parent_id="6377836" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377836" data-id="6378026" data-parent_id="6377836" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Я правильно понимаю, что Вы выставляете недостатком простоту и легкодоступность программы, а также указываете на то, что людям должно быть стыдно за заработанные с её помощью деньги?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378026">
+        <div class="comment_item" id="comment_6378108" >
+
+    <span class="parent_id" data-parent_id="6378026"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378108">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378108" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 10: &uarr;5 и &darr;5">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 12:11<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6378108" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378108" data-parent_id="6378026" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378026" data-id="6378108" data-parent_id="6378026" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            «Заработанные» деньги? В чем здесь «работа» заключается и какой ее продукт?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378108">
+        <div class="comment_item" id="comment_6378296" >
+
+    <span class="parent_id" data-parent_id="6378108"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378296">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378296" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 3: &uarr;2 и &darr;1">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tangro/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tangro/" class="username">tangro</a><span class="comma">,</span>
+            <time>17 июня 2013 в 12:49<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6378296" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378296" data-parent_id="6378108" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378108" data-id="6378296" data-parent_id="6378108" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Это придирки к словам. Подставьте туда «полученные», «выигранные» или «найденные» — суть не измениться, Вы предлагаете людям стыдиться того факта, что у них хватило ума увеличить свой капитал? Слегка наивно и необоснованно, не находите?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378296">
+        <div class="comment_item" id="comment_6378366" >
+
+    <span class="parent_id" data-parent_id="6378296"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378366">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378366" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 6: &uarr;4 и &darr;2">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 12:59</time>
+
+            <a href="#comment_6378366" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378366" data-parent_id="6378296" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378296" data-id="6378366" data-parent_id="6378296" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            «У них хватило ума увеличить свой капитал» за счет потерь у других людей, не дав тем ничего взамен. С тем же успехом можно оправдывать действия организаторов МММ, телевангелистов и всякого отребья типа гадалок и наперсточников в переходах.<br/>
+Если расстрелять всех обладателей такого «ума», для общества будет только лучше.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378366">
+        <div class="comment_item" id="comment_6378384" >
+
+    <span class="parent_id" data-parent_id="6378366"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378384">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378384" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 10: &uarr;6 и &darr;4">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tangro/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tangro/" class="username">tangro</a><span class="comma">,</span>
+            <time>17 июня 2013 в 13:04</time>
+
+            <a href="#comment_6378384" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378384" data-parent_id="6378366" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378366" data-id="6378384" data-parent_id="6378366" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            В парке стоит каруселька — жрёт электричество и отбирает у родителей деньги, принося по сути фигню — детскую улыбку на 2-3 минуты. Сжечь её к чертям, поскольку где же тут полезная работа и готовый продукт?<br/>
+<br/>
+Хватит рассказывать людям как им жить. Я согласен что все эти форексы — развод и кидалово, но если люди хотят там играть на свои честно заработанные деньги и испытывать эмоции от их потери или получения — разве это повод их в чём-то обвинять? Или тем более наезжать на авторов софта? 
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378384">
+        <div class="comment_item" id="comment_6378412" >
+
+    <span class="parent_id" data-parent_id="6378384"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378412">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378412" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 6: &uarr;3 и &darr;3">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 13:09</time>
+
+            <a href="#comment_6378412" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6378412" data-parent_id="6378384" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378384" data-id="6378412" data-parent_id="6378384" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Первый абзац — некорректная аналогия, доведение до абсурда. Второй — приписывание оппоненту того, чего он не говорил и торжественное опровержение.<br/>
+<br/>
+Дешевые приемчики.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378412">
+        <div class="comment_item" id="comment_6379262" >
+
+    <span class="parent_id" data-parent_id="6378412"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379262">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379262" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tangro/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tangro/" class="username">tangro</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:25</time>
+
+            <a href="#comment_6379262" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379262" data-parent_id="6378412" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378412" data-id="6379262" data-parent_id="6378412" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Такие себе, да. <br/>
+<br/>
+Однако по первому абзацу — все общие признаки (выполнение ненужной работы и отсутствие продукта) на лицо, а разницу Вы не указали. Соответственно, где тут доведения до абсурда — я не вижу.<br/>
+<br/>
+По второму — вот слова: «нужно постоянно следить», «не ввязывайтесь», «помните», «никогда не вкладывайте» — прямые указания к действию, т.е. отсутствие уважения к свободной воле людей, желающих частенько делать глупости.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379262">
+        <div class="comment_item" id="comment_6379326" >
+
+    <span class="parent_id" data-parent_id="6379262"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379326">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379326" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  negative">
+                    <span class="score" title="Всего 5: &uarr;1 и &darr;4">–3</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:33<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6379326" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379326" data-parent_id="6379262" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379262" data-id="6379326" data-parent_id="6379262" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format bad bad3">
+            «Соответственно, где тут доведения до абсурда — я не вижу.» — «Тато, де море?»<br/>
+<br/>
+Я использовал свою свободную волю предупредить людей, чтоб не сливали деньги бездумно. А еще высказал порицание тем, кто получает (уж точно не «зарабатывает», за отсутствием работы) таким способом.<br/>
+<br/>
+Не пытайтесь мне доказать, что я сказал/сделал что-то неправильно. Я лучше вас знаю, что правильно, а что нет. Потому и даю советы.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379326">
+        <div class="comment_item" id="comment_6379362" >
+
+    <span class="parent_id" data-parent_id="6379326"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379362">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379362" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tangro/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tangro/" class="username">tangro</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:40</time>
+
+            <a href="#comment_6379362" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379362" data-parent_id="6379326" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379326" data-id="6379362" data-parent_id="6379326" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            &gt;Я лучше вас знаю, что правильно, а что нет. <br/>
+<br/>
+А, ну тогда конечно ок, сорри.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379362">
+        <div class="comment_item" id="comment_6379500" >
+
+    <span class="parent_id" data-parent_id="6379362"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379500">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379500" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:55</time>
+
+            <a href="#comment_6379500" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379500" data-parent_id="6379362" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379362" data-id="6379500" data-parent_id="6379362" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Не стоит извинений, я не обиделся.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379500">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+        <div class="comment_item" id="comment_6380314" >
+
+    <span class="parent_id" data-parent_id="6378366"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6380314">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6380314" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/SAGAK/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/0ba/ac5/bca/0baac5bca82e733ee5ea58becf4b4046_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/SAGAK/" class="username">SAGAK</a><span class="comma">,</span>
+            <time>17 июня 2013 в 18:02<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6380314" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6380314" data-parent_id="6378366" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378366" data-id="6380314" data-parent_id="6378366" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Возьмем пример лотереи. Каждый участник какой-либо лотереи покупает билет, часть от стоимости билета уходит на джек-пот (призовой фонд), другая часть — организаторам лотереи (но это не суть важно). Так вот, тот, кто выиграл в лотерею, забирает джек-пот, а все остальные участники остаются ни с чем. Но каждый участник прекрасно знает, что шансы победить ничтожны, но все равно покупают билеты.<br/>
+<br/>
+В случае бирж — ситуация идентичная: каждый знает, что он может остаться ни с чем. Все участники об этом знают, это их ВЫБОР. По сути, это перетягивание каната — выигрывает только одна сторона, которая забирает свой выигрыш. Но, опять-таки, повторюсь — все оправданно идут на риск, их никто не принуждает.<br/>
+<br/>
+Что касается наперсточников и гадалок — это уже другая тема, это банальный развод. Насчет МММ немного другая ситуация, чтобы что-то в ней получить — нужно знать правила, которые никому обычно не интересны и никто их не читает, за что многие и расплачиваются/расплатились. Кроме того, от МММ пострадали/пострадают те, кто жаждит халявное бабло, закладывает квартиры, машины и т.п., а как известно: «жадность фраера сгубила».
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6380314">
+        <div class="comment_item" id="comment_6380716" >
+
+    <span class="parent_id" data-parent_id="6380314"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6380716">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6380716" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>17 июня 2013 в 19:22</time>
+
+            <a href="#comment_6380716" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6380716" data-parent_id="6380314" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6380314" data-id="6380716" data-parent_id="6380314" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Ах, если бы начинающие трейдеры действительно помнили, что могут потерять деньги. На практике это, как правило, не так: люди вкладывают семейные сбережения, считая себя самыми умными, хитрыми и т.д. — «я уж точно знаю, как навариться!». А потом обжигаются, но поздно — денег не вернешь.<br/>
+<br/>
+По большому счету, суть спекуляций, пирамид типа МММ и всяческих лотерей-лохотронов одинакова — выигрывают только те, кто действительно понимает «правила игры», и таких меньшинство. Фактически, получается ввод большинства участников происходящего в заблуждение.<br/>
+Против этого и предостерегаю.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6380716">
+        <div class="comment_item" id="comment_6381278" >
+
+    <span class="parent_id" data-parent_id="6380716"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6381278">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6381278" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/SAGAK/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/0ba/ac5/bca/0baac5bca82e733ee5ea58becf4b4046_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/SAGAK/" class="username">SAGAK</a><span class="comma">,</span>
+            <time>17 июня 2013 в 21:39</time>
+
+            <a href="#comment_6381278" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6381278" data-parent_id="6380716" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6380716" data-id="6381278" data-parent_id="6380716" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            «Несостоявшийся электрик Вова, который хотел сэкономить денег на вызов электрика, не понимал и не читал ничего про технику безопасности при работе с электрооборудованием и не мог понять, почему оказался на небесах. Он жалобно просил бога о том, чтобы тот вернул его на Землю. Бог ему отказал, а Вова все продолжал поглядывать на своё обожжённое мёртвое тело».<br/>
+<br/>
+Если ты начинающий трейдер — ты в первую очередь должен помнить о рисках, если все проиграл — твоя проблема, и не нужно винить кого-то, кроме себя. Про горе МММщиков можно сказать тоже самое. Мне не жалко ни первых, ни вторых — думать мозгами и читать инструкции никто не запрещает.<br/>
+<br/>
+И вы не предостерегаете, в большей степени — пропагандируете то, что трейдеры и МММщики белые и пушистые, и их надо согреть и приласкать. И ещё раз повторюсь — они сами знали то, чем это может обернуться.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6381278">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+        <div class="comment_item" id="comment_6379740" >
+
+    <span class="parent_id" data-parent_id="6378108"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379740">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379740" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/shaeng/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/shaeng/" class="username">shaeng</a><span class="comma">,</span>
+            <time>17 июня 2013 в 16:36</time>
+
+            <a href="#comment_6379740" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379740" data-parent_id="6378108" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378108" data-id="6379740" data-parent_id="6378108" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            работа заключается в том что люди продают товар когда в нём дефицит, и покупают товар когда в на рынке его излишки, это устанавливает на товар справедливую цену. это намного важнее чем вы думаете.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379740">
+        <div class="comment_item" id="comment_6382654" >
+
+    <span class="parent_id" data-parent_id="6379740"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6382654">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6382654" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/ankh1989/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/ankh1989/" class="username">ankh1989</a><span class="comma">,</span>
+            <time>18 июня 2013 в 10:03</time>
+
+            <a href="#comment_6382654" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6382654" data-parent_id="6379740" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379740" data-id="6382654" data-parent_id="6379740" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            не могли бы вы пояснить в чём состоит важность этого процесса?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6382654">
+        <div class="comment_item" id="comment_6382702" >
+
+    <span class="parent_id" data-parent_id="6382654"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6382702">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6382702" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/shaeng/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/shaeng/" class="username">shaeng</a><span class="comma">,</span>
+            <time>18 июня 2013 в 10:15</time>
+
+            <a href="#comment_6382702" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6382702" data-parent_id="6382654" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6382654" data-id="6382702" data-parent_id="6382654" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Представьте, вы при ходите на рынок, купить скажем капусту, но сегодня она стоит в десять раз дороже чем вчера, вчера она вам не нужна была, а сегодня вы не можете позволить себе платить столько. фактически такой ситуации произойти не может, так как есть люди которые скупают излишки капусты когда она дешёвая, и продают её когда она в дефиците, эти люди обеспечивают стабильность цен и доступность товара. Почему это важно? Наверное потому что это приносит пользу как продавцам капусты, которые могут продать товар быстрее снизив цену, так и покупателям, которые не должны искать момент чтобы купить капусту дешевле, потому что цена уравновешена рынком.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6382702">
+        <div class="comment_item" id="comment_6383000" >
+
+    <span class="parent_id" data-parent_id="6382702"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6383000">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6383000" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/db9/5d5/9f4/db95d59f4bfde896b293bfe7f611270b_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/turboNOMAD/" class="username">turboNOMAD</a><span class="comma">,</span>
+            <time>18 июня 2013 в 11:14</time>
+
+            <a href="#comment_6383000" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6383000" data-parent_id="6382702" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6382702" data-id="6383000" data-parent_id="6382702" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Надо же, какое вранье. Всегда было так, что при повышении цены спекулянты придерживают товар, а то и скупают его, тем самым заставляя цену вырасти еще сильнее и максимизировать их доход. Соответственно, при падении цены они демпингуют, чтоб потом закупиться еще дешевле.<br/>
+<br/>
+Возникает вопрос — вы этого действительно не понимаете, или же сознательно вводите людей в заблуждение? Вы случаем не спекулянт?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6383000">
+        <div class="comment_item" id="comment_6383506" >
+
+    <span class="parent_id" data-parent_id="6383000"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6383506">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6383506" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/shaeng/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/shaeng/" class="username">shaeng</a><span class="comma">,</span>
+            <time>18 июня 2013 в 12:23</time>
+
+            <a href="#comment_6383506" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6383506" data-parent_id="6383000" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6383000" data-id="6383506" data-parent_id="6383000" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            то есть Вы утверждаете что «спекулянты» покупают товар когда цена растёт (спрос превышает предложение), а продают когда цена падает? Откуда они в таком случае получают прибыль?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6383506">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6377842" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377842">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377842" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/RussianNeuroMancer/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/9af/193/d86/9af193d8683d9de632b3813a7f919d2e_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/RussianNeuroMancer/" class="username">RussianNeuroMancer</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:19</time>
+
+            <a href="#comment_6377842" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            &gt; Фишинг<br/>
+Планируется ли в связи с этим официальный PPA проекта?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377842">
+        <div class="comment_item" id="comment_6377976" >
+
+    <span class="parent_id" data-parent_id="6377842"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6377976">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377976" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:48</time>
+
+            <a href="#comment_6377976" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377976" data-parent_id="6377842" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377842" data-id="6377976" data-parent_id="6377842" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Думаю с официальным сайтом разберемся, и репозиторий Ubuntu добавлю.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377976">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6377946" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377946">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377946" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Evengard/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/976/ce9/508/976ce95083739c1bbcfd7e69484dbbbb_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Evengard/" class="username">Evengard</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:42<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6377946" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            А графики-то где? Как без графиков-то? На Metatrader хоть посмотрите — там графикам уделена центральная часть, и неспроста
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377946">
+        <div class="comment_item" id="comment_6377972" >
+
+    <span class="parent_id" data-parent_id="6377946"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6377972">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377972" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:47</time>
+
+            <a href="#comment_6377972" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6377972" data-parent_id="6377946" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377946" data-id="6377972" data-parent_id="6377946" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            И графики будут, и поддержка других бирж. Поскольку разработчик только один, это занимает больше времени.<br/>
+Приоритетной была разработка именно текущего функционала программы.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377972">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6377958" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6377958">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6377958" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 4: &uarr;4 и &darr;0">+4</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/bO_oblik/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/230/7c5/80e/2307c580eee9f9a48ee4d199085ee989_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/bO_oblik/" class="username">bO_oblik</a><span class="comma">,</span>
+            <time>17 июня 2013 в 11:45</time>
+
+            <a href="#comment_6377958" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Впервые вижу такую функциональность перевода. Очень интересно. Надо взять на заметку.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6377958">
+        <div class="comment_item" id="comment_6386998" >
+
+    <span class="parent_id" data-parent_id="6377958"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6386998">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6386998" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>18 июня 2013 в 21:14</time>
+
+            <a href="#comment_6386998" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6386998" data-parent_id="6377958" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6377958" data-id="6386998" data-parent_id="6377958" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Я давно хотел реализовать такой встроенный в программу переводчик.<br/>
+И Qt Bitcoin Trader стала первой программой куда я его встроил.<br/>
+<br/>
+Требования себе ставил такие:<br/>
+1) дать пользователям возможность просто перевести программу без надобности изучать разметку файлов;<br/>
+2) не дать пользователю ввести не верные значения перевода;<br/>
+3) дать пользователю возможность сразу применить перевод и посмотреть как он выглядит;<br/>
+4) возможность сохранить готовый файл для распространения.<br/>
+
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6386998">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6378688" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378688">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378688" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/sphinks/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/sphinks/" class="username">sphinks</a><span class="comma">,</span>
+            <time>17 июня 2013 в 14:07</time>
+
+            <a href="#comment_6378688" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            В свое время тоже подумывал о некой автоматической торговле биткоинами, но в итоге отказался — отсутствие стабильности работы бирж, пробовать заработать на небольших изменениях курса довольно тяжело. Как вы написали достаточно 1-2 остановок в работе биржи, что бы потерять все заработанное, а такое случается не редко на биткоин биржах.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378688">
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6378900" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6378900">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6378900" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Amomum/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Amomum/" class="username">Amomum</a><span class="comma">,</span>
+            <time>17 июня 2013 в 14:38</time>
+
+            <a href="#comment_6378900" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <i>Не по теме</i>: Вот, опять. Опять это требование к паролю — не меньше 7 символов, спецсимволы и цифры. А если у меня пароль — фраза из 42 символов, но без цифр и спецсимволов? Спасибо хоть нет ограничения сверху на длину.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6378900">
+        <div class="comment_item" id="comment_6379306" >
+
+    <span class="parent_id" data-parent_id="6378900"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6379306">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379306" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:30</time>
+
+            <a href="#comment_6379306" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379306" data-parent_id="6378900" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6378900" data-id="6379306" data-parent_id="6378900" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Я прислушаюсь к вам и отключу это требование при пароле длиннее 10 символов.<br/>
+Спасибо за отзыв.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379306">
+        <div class="comment_item" id="comment_6379494" >
+
+    <span class="parent_id" data-parent_id="6379306"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379494">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379494" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Amomum/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Amomum/" class="username">Amomum</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:54</time>
+
+            <a href="#comment_6379494" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379494" data-parent_id="6379306" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379306" data-id="6379494" data-parent_id="6379306" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            О, надо же! Спасибо!<br/>
+Но лучше ориентироваться на какую-нибудь другую характеристику сложности пароля, вроде энтропии.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379494">
+        <div class="comment_item" id="comment_6379642" >
+
+    <span class="parent_id" data-parent_id="6379494"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6379642">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379642" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 16:15</time>
+
+            <a href="#comment_6379642" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379642" data-parent_id="6379494" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379494" data-id="6379642" data-parent_id="6379494" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Я подумаю над этим.<br/>
+А пока уже выложил обновление на GitHub.<br/>
+И теперь требования к паролю такие:<br/>
+1) Пароль должен быть минимум 8 символов, состоять из букв, чисел и спец символов.<br/>
+2) Пароль должен быть минимум 8 символов, состоять из букв, чисел и содержать как большие так и маленькие буквы.<br/>
+3) Если пароль длиннее 14 символов то нет в ограничениях спец символов.<br/>
+В следующей версии v1.0.2 это будет по умолчанию.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379642">
+        <div class="comment_item" id="comment_6383518" >
+
+    <span class="parent_id" data-parent_id="6379642"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6383518">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6383518" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/foff4ik/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/1c3/828/f28/1c3828f289fe68b96806f04234a01695_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/foff4ik/" class="username">foff4ik</a><span class="comma">,</span>
+            <time>18 июня 2013 в 12:26</time>
+
+            <a href="#comment_6383518" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6383518" data-parent_id="6379642" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379642" data-id="6383518" data-parent_id="6379642" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            А ачем вообще эти ограничения нужны, просто написать думаю в примечании стоит что не надо делать слабые пароли и при слабом пароле спросить «А вы уверенны? Это же совсем небезопасно.»
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6383518">
+        <div class="comment_item" id="comment_6386968" >
+
+    <span class="parent_id" data-parent_id="6383518"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6386968">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6386968" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>18 июня 2013 в 21:07</time>
+
+            <a href="#comment_6386968" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6386968" data-parent_id="6383518" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6383518" data-id="6386968" data-parent_id="6383518" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Сначала не было пароля вовсе.<br/>
+А потом начали приходить отзывы с просьбами улучшить безопасность.<br/>
+И думаю большинство пользователей поставили бы простой пароль несмотря на предупреждения.<br/>
+Я об этом еще подумаю, чтобы сделать требования к паролю не такими жесткими, но и не дать пользователю поставить слишком простой пароль.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6386968">
+    </div>
+</div>
+
+        <div class="comment_item" id="comment_6789192" >
+
+    <span class="parent_id" data-parent_id="6383518"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6789192">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789192" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="username">kin63camapa</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:38</time>
+
+            <a href="#comment_6789192" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6789192" data-parent_id="6383518" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6383518" data-id="6789192" data-parent_id="6383518" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Коментим 3 строки кода, пересобираем, profit.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789192">
+        <div class="comment_item" id="comment_6789204" >
+
+    <span class="parent_id" data-parent_id="6789192"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6789204">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789204" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:42</time>
+
+            <a href="#comment_6789204" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6789204" data-parent_id="6789192" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6789192" data-id="6789204" data-parent_id="6789192" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Реализацию проверки пароля уже переписал.<br/>
+И согласитесь, каждый раз обновляя версию программы, неудобно комментировать даже несколько строк кода.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789204">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6379102" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6379102">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379102" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/reimax/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/b01/fc5/d78/b01fc5d780743c1435a68857a00d7801_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/reimax/" class="username">reimax</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:04</time>
+
+            <a href="#comment_6379102" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            в заголовке указан клиент для linux, что то не нашел ссылок на него, плохо смотрю?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379102">
+        <div class="comment_item" id="comment_6379314" >
+
+    <span class="parent_id" data-parent_id="6379102"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6379314">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6379314" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>17 июня 2013 в 15:32</time>
+
+            <a href="#comment_6379314" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6379314" data-parent_id="6379102" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6379102" data-id="6379314" data-parent_id="6379102" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Можете собрать программу из исходников GitHub если у вас есть библиотека Qt 4.x.x
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6379314">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6385758" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6385758">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6385758" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 1: &uarr;1 и &darr;0">+1</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Santacruz/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/d62/b84/1a1/d62b841a19587d37ea7752d0f6f2248d_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Santacruz/" class="username">Santacruz</a><span class="comma">,</span>
+            <time>18 июня 2013 в 17:08</time>
+
+            <a href="#comment_6385758" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Пиши еще автор! полезные вещи… посмотри еще <a href="https://github.com/rippleFoundation/ripple-lib">github.com/rippleFoundation/ripple-lib</a> Это скоро будет нужно
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6385758">
+        <div class="comment_item" id="comment_6387294" >
+
+    <span class="parent_id" data-parent_id="6385758"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6387294">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6387294" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>18 июня 2013 в 22:24</time>
+
+            <a href="#comment_6387294" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6387294" data-parent_id="6385758" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6385758" data-id="6387294" data-parent_id="6385758" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Над этим тоже работаю.<br/>
+Ждите обновлений :)
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6387294">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6789124" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6789124">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789124" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="username">kin63camapa</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:19<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6789124" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Не нашел ни на форуме ни тут под какой лицензией исходники распространяются? Хочется заиспользовать часть в целях личного обогащения.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789124">
+        <div class="comment_item" id="comment_6789138" >
+
+    <span class="parent_id" data-parent_id="6789124"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6789138">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789138" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:22<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6789138" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6789138" data-parent_id="6789124" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6789124" data-id="6789138" data-parent_id="6789124" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Лицензия на GitHub как в файле LICENSE.GPL3 так и в каждом cpp и h файле.<br/>
+GPL3<br/>
+Планируеться скриптовый язык для создания любых стратегий и ботов.<br/>
+Если есть предложения по механизму стратегий, пишите на email в окне About.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789138">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_6789164" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="6789164">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789164" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/kin63camapa/" class="username">kin63camapa</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:29<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_6789164" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            слона то и не заметил, сорри. Автору респект и уважуха, идея такого у меня была уже давно а реализовать никак руки не доходили а тут готовое почти всё, чуть чуть под себя доработать осталось. кстати автор не рассматривал идею ботов плагинами подключать?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789164">
+        <div class="comment_item" id="comment_6789190" >
+
+    <span class="parent_id" data-parent_id="6789164"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="6789190">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_6789190" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/301/681/087/301681087b4725ca76628d81c62f7453_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/IGHOR/" class="username">IGHOR</a><span class="comma">,</span>
+            <time>29 сентября 2013 в 23:38</time>
+
+            <a href="#comment_6789190" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="6789190" data-parent_id="6789164" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_6789164" data-id="6789190" data-parent_id="6789164" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Рассматривал, и буду реализововать несколько вариантов создания стратегий, от простых правил до скриптов и плагинов.<br/>
+Но пока не знаю сколько времени уйдет на все что запланировал.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_6789190">
+    </div>
+</div>
+
+    </div>
+</div>
+
+</div>
+
+  					<p class="for_users_only_msg">Только зарегистрированные пользователи могут оставлять комментарии.<br><a href="https://habrahabr.ru/auth/login/">Войдите</a>, пожалуйста.</p>
+
+
+  	
+<form action="/json/favorites/" method="post" id="edit_tags_form" class="hidden">
+  <input type="hidden" name="action" value="add" />
+  <input type="hidden" name="ti" value="0" />
+  <input type="hidden" name="tt" value="0" />
+  <label>Пометьте топик понятными вам метками, если хотите</label>
+  <input type="text" name="tags_string" class="tags_string" />
+  <div class="description">Метки лучше разделять запятой. Например: <i>общение, социальные сети, myspace.com, подростки, мердок</i></div>
+  <input type="submit" value="Сохранить" class="submit" /> или <a href="#" class="close" onclick="return close_edit_tags()">закрыть</a>
+</form>
+    
+    
+
+  </div>
+  <div class="sidebar_right">
+      	<div class="banner_300x100">
+		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 5 -->
+		<div id="adriver_banner_2100516578"></div>
+		<script type="text/javascript">
+			$(function(){
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'finance';
+					custom[2] = 'programming';
+
+				new adriver("adriver_banner_2100516578", {sid: 176776, bt: 52, bn: 5, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+
+  			<div class="banner_300x500">
+		<div id="adriver_banner_1863387959"></div>
+		<script type="text/javascript">
+            function show_bn1_block(name, url){
+                console.log('show' + name);
+                if( typeof(name) !== 'undefined'){
+                    $.get('/html/'+name+'/1406033523/', function(html){
+                        $('#adriver_banner_1863387959').html(html);
+                        if( typeof(url) !== 'undefined'){
+                            $('.'+name+'_inner_banner .block_url').attr('href', url);
+                        }
+                    })
+                }
+            }
+
+			$(function(){
+
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'finance';
+					custom[2] = 'programming';
+
+                 new adriver("adriver_banner_1863387959", {sid: 176776, bt: 52, bn: 1, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+  		
+  		
+<div class="block daily_best_posts">
+  <div class="title">Популярное за сутки</div>
+  <div class="posts_list">
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230711/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Делаем настольное устройство для изготовления печатных плат в один клик</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230737/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Что не нужно кодить самостоятельно</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230735/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Игрища с сервером jabber.ru</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230719/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Тролль заплатит за все</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230741/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Россия переходит на постоянное зимнее время с 26 октября</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230661/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Веб-сервер за 5 минут на базе PIC и W5100</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230715/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Как мы строим авиатренажер: проекционный экран</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230713/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Космическая одиссея 1969. Интервью Нила Армстронга и Базза Олдрина</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230589/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">CSScomb 3.0: красивый код одной командой</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230791/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Falcon 9 успешно приводнилась</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230807/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Как я уехал работать айтишником в Лондон</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230789/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Как не поступить в вуз США</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230751/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Что такое HTML импорт и как это работает?</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230805/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Руководство по собеседованию на вакансию PHP-программиста</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/moscowjs/blog/230019/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Как подготовиться к докладу на техническую тему</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/mailru/blog/230799/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Удаленное тестирование. Советы бывалого фрилансера</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230227/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Хорошая и плохая прокрастинация</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/medgadgets/blog/230305/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Браслет Phyode W/Me. Персональный анализатор жизни</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/dsec/blog/229849/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Можно ли украсть деньги из мобильного банкинга? Часть 2</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/230783/"
+           onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'daily_best_posts', $(this).parents('.daily_best_posts').hasClass('float_block') ? 'float' : 'common'); }"
+           class="post_name">Методы Макдонольдса не работают, что делать?</a>
+      </div>
+  </div>
+  <div class="all"><a href="/top/">все лучшие</a></div>
+</div>
+
+  	  
+
+
+<div class="block similar_posts">
+
+	<div class="title">Похожие посты</div>
+  <div class="posts_list">
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/216687/">Биржа Mt. Gox объявила об обнаружении более 100 миллионов долларов пользовательских средств на собственном кошельке</a>
+    				<span class="when">22 марта в 00:45</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/214795/">Инсайд истории Mt. Gox</a>
+    				<span class="when"> 6 марта в 00:22</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/214213/">Биржа Mt. Gox объявила себя банкротом</a>
+    				<span class="when">28 февраля в 15:03</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/213653/">CEO Mt.Gox Марк Карплс покинул пост в совете директоров Bitcoin Foundation</a>
+    				<span class="when">24 февраля в 13:51</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/224127/">Анализ логов Mt.Gox выявил подозрительную активность бота Вилли</a>
+    				<span class="when">26 мая в 13:30</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/94760/">Торговля на бирже превращается в битву математиков</a>
+    				<span class="when">27 мая 2010 в 23:42</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/191328/">Со счетов Bitcoin-обменника Mt. Gox правительство США изъяло еще 2,1 миллион долларов</a>
+    				<span class="when">25 августа 2013 в 23:56</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/210148/">Центр онлайн-обучения на базе свободного программного обеспечения за 15 минут, или Еще раз о BigBlueButton</a>
+    				<span class="when">24 января в 11:22</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/197484/">Организация сервиса общих календарей и контактов для корпоративного использования на базе свободного программного обеспечения</a>
+    				<span class="when">14 октября 2013 в 16:33</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'similar_posts', $(this).parents('.similar_posts').hasClass('float_block') ? 'float' : 'common'); }" href="/post/212503/">Создатель Mt. Gox и eDonkey работает над секретным проектом, связанным с Биткоин</a>
+    				<span class="when">14 февраля в 23:58</span>
+      </div>
+  </div>			
+</div>
+
+
+	
+  	  
+<div class="block similar_questions">
+	<div class="title">Вопросы по теме</div>
+
+	<div class="posts_list">
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/113243?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как снять выделение элементов формы в PyQT?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/113199?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Передача информации в основной поток PyQt4: как?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/112963?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Какие сложные проекты реализованы на QT?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/112551?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">На сколько одна транзакция увеличивает размер БД Биткоин?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/112527?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Зависает GUI при выполнении цикла в отдельном потоке. Как исправить?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/112379?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Что сделать чтобы optical rotary encoder использовать как оптическую мышь?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/112353?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Есть ли смысл пробовать майнить на cex.io?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/111101?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как сгенерировать клиент web сервиса на QT?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/110953?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Почему не отправляется 1 сатоши через сеть Bitcoin ?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/110927?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Прием платежей в биткоин кошелек?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/108599?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Есть ли нотификатор для Blockchain?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/107877?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как узнать баланс bitcoin адреса?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/107397?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Где найти напарника, что бы учиться кодить?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/107309?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как рендерить анимированный QGraphicsPixmapItem из одной общей картинки, размещённой вне QGraphicsPixmapItem?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/107269?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как просмотреть адрес переменной в Qt Creator?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/106627?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Qt не видит сигнал, как исправить?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/105663?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как в QT отследить движение мыши над WebView?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/105607?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Qt чат. Как запустить сервер на своей машине,чтобы другие пользователи могли подключиться?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/104831?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как сделать Видеочат на QT (RTP/RTSP/RTMP)?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="http://toster.ru/q/104667?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как импортировать кошелек bitoin wallet.dat, если не помню, в какой программе его сохранял?</a>
+		</div>
+  </div>			
+		
+</div>
+
+  		
+  		
+
+	<div class="block live_broadcast">
+		<div class="title">Что обсуждают? </div>
+
+		<div class="live_broadcast_activity">
+				<div class="posts_list">
+							<div class="post_item">
+								<a href="/post/230807#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Как я уехал работать айтишником в Лондон</a>&nbsp;<span class="count">30</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230827#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Почему вам следует загрузить свой разум в суперкомпьютер?</a>&nbsp;<span class="count">4</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230825#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">«Роскосмос» собирается создать лунную посещаемую орбитальную станцию на базе модуля для МКС</a>&nbsp;<span class="count">5</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230637#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Как улучшить свой стиль программирования?</a>&nbsp;<span class="count">172</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230527#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">IT Эмиграция в Минск</a>&nbsp;<span class="count">467</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230711#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Делаем настольное устройство для изготовления печатных плат в один клик</a>&nbsp;<span class="count">66</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230701#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Социальные сети в России, лето 2014: цифры, тренды, прогнозы</a>&nbsp;<span class="count">4</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/226953#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Биогаз из биомасс</a>&nbsp;<span class="count">104</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/227849#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Менеджер записей ELibrary</a>&nbsp;<span class="count">17</span>
+							</div>
+							<div class="post_item">
+								<a href="/post/230697#comments" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'post'); }" class="post_name">Как сделать из ядра Linux Windows?</a>&nbsp;<span class="count">23</span>
+							</div>
+				</div>
+				<div class="all"><a href="/posts/" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'live_broadcast_activity', 'all_posts'); }">все посты</a></div>
+		</div>
+
+	</div>
+  
+  		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 2 -->
+
+<div id="adriver_banner_480931290" class="adbanner"></div>
+
+
+<script type="text/javascript">
+    function show_bn2_block(name, url){
+        if( typeof(name) !== 'undefined'){
+            $.get('/html/'+name+'/1406033523/', function(html){
+                $('#adriver_banner_480931290').html(html);
+                if( typeof(url) !== 'undefined'){
+                    $('.'+name+'_inner_banner .block_url').attr('href', url);
+                }
+            })
+        }
+    }
+
+    $(function(){
+
+        var check_scroll_position = function() {
+            var height = $(window).height();
+            var scrollTop = $(window).scrollTop();
+            var scrollBottom = $(window).scrollTop() + height;
+            var blockTop = $('#adriver_banner_480931290').position().top;
+            var show = scrollTop < blockTop && blockTop < scrollBottom;
+            //console.log('scroll', scrollTop, blockTop, scrollBottom, show)
+            if( show ){
+                //console.log('show bn2');
+                $( window ).off('scroll', check_scroll_position);
+                $( window ).trigger('show_bn2');
+            }
+        };
+        $( window ).on('scroll', check_scroll_position);
+
+        $( window ).on('show_bn2', function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = {4:ar_duo1};
+            custom[1] = 'finance';
+            custom[2] = 'programming';
+            new adriver("adriver_banner_480931290", {sid: 176776, bt: 52, bn: 2, custom: custom, keyword: keyword});
+        });
+    });
+    </script>
+<!--  AdRiver code END  -->
+
+  		
+<div class="block best_company">
+
+		<div class="title">Компания дня <img src="/images/bg_cicle_help.png" title="
+Компания, чей пост набрал максимальное количество баллов<br>
+среди всех опубликованных в корпоративных блогах постах за <br>
+прошедшие сутки. Учитываются посты, для которых истек срок голосования <br>(3 дня с момента публикации)." class="help-tip"></div>
+
+		<div class="company_info">
+			<div class="name">
+			 <img class="favicon" src="//habrastorage.org/getpro/habr/company/d01/e8d/859/d01e8d85973a08ea7d4248f3d4a4456e_small.png" alt="Mail.Ru Group" height="16" width="16" />
+			 <div class="company_name"><a href="http://habrahabr.ru/company/mailru/" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'best_company', 'title'); }" class="title">Mail.Ru Group</a></div>
+			</div>
+
+			<p>Последний пост:
+				<a href="http://habrahabr.ru/company/mailru/blog/230799/" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'best_company', 'post'); }">Удаленное тестирование. Советы бывалого фрилансера</a>
+			</p>
+
+			<div class="buttons">
+  			<div id="fans_count">3737 подписчиков</div>
+			</div>
+		</div>
+
+	</div>
+
+
+  		
+
+  		
+	<div class="block new_vacanies">
+  <a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title">Brainstorage</a>
+  <div class="vacancies">
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/21231?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Опытный Drupal-разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/21225?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Программист PHP, jQuery</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/20075?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Frontend разработчик/дизайнер</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/18311?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Front-end разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/10921?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">.NET/C# Engineer</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/20421?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Программист PHP Yii</a>
+		</div>
+		<div class="job_item marked">
+			<a href="http://brainstorage.me/jobs/21065?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Frontend (Magento) developer</a>
+		</div>
+		<div class="job_item marked">
+			<a href="http://brainstorage.me/jobs/20745?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Frontend/UX-разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19615?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo"> Java Developer</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/20937?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Java Mobile Web Developer - team</a>
+		</div>
+  </div>
+  <div class="all"><a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все вакансии</a></div>
+</div>
+
+  		
+	<div class="block freelansim">
+	  <a href="http://freelansim.ru?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title"></a>
+	  <div class="tasks">
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77197?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Необходимо написать плагина для хрома</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77199?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Битрикс - МойСклад</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/76885?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Доработка купленной wordpress темы</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77195?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Добавить третью языковую версию на готовый сайт</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77193?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Нужно переделать дизайн простого сайта</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77189?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">IOS разработка для Enterprise лицензии</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77185?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработка портала</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77187?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Наполнить контентом сайт</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77181?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Создание спец-эффектов, FX-анимаций для игры в ВК</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/77179?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Анализ возможностей offline Google translate API</a>
+				</div>
+
+	  </div>
+	  <div class="all"><a href="http://freelansim.ru/tasks?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все заказы</a></div>
+	</div>
+
+  		
+  		
+  		
+  </div>
+  <div class="clear"></div>
+
+  <script>
+    // hubs to GA
+      ga('send', 'event', 'Post_view', 'finance (Финансы в IT-индустрии)',  window.location.pathname + window.location.search);
+      ga('send', 'event', 'Post_view', 'programming (Программирование)',  window.location.pathname + window.location.search);
+  </script>
+
+
+
+        	
+	<div class="rotated_posts">
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/post/224767/" class="grey" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'posts_rotation_block'); }">Не наживайтесь на ошибках клиентов</a>
+			</div>
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/post/213719/" class="grey" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'posts_rotation_block'); }">Ещё один пример теста на проникновение из собственной практики</a>
+			</div>
+			<div class="rotated_post last">
+				<a href="http://habrahabr.ru/post/222605/" class="grey" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'posts_rotation_block'); }">Портативный спектрометр набрал на Kickstarter 1,3 миллиона долларов вместо 200 тысяч</a>
+			</div>
+		<div class="clear"></div>
+	</div>
+
+
+        <div class="clear"></div>
+
+        <div class="footer_panel">
+          <div id="footer">
+	<dl>
+		<dd><a href="https://habrahabr.ru/auth/login/">Войти</a></dd>
+		<dd><a href="https://habrahabr.ru/auth/register/">Регистрация</a></dd>
+	</dl>
+	<dl>
+		<dt>Разделы</dt>
+		<dd><a href="http://habrahabr.ru/posts/top/">Посты</a></dd>
+		<dd><a href="http://habrahabr.ru/hubs/">Хабы</a></dd>
+		<dd><a href="http://habrahabr.ru/companies/">Компании</a></dd>
+		<dd><a href="http://habrahabr.ru/users/">Пользователи</a></dd>
+		<dd><a href="http://toster.ru/?_aa=press_anykey">Q&amp;A</a></dd>
+		<dd><a href="http://habrahabr.ru/sandbox/">Песочница</a></dd>
+		
+	</dl>	
+	<dl>
+		<dt>Инфо</dt>
+		<dd><a href="/info/about/">О сайте</a></dd>
+		<dd><a href="/info/help/rules/">Правила</a></dd>
+		<dd><a href="/info/help/">Помощь</a></dd>
+		<dd><a href="/info/agreement/">Соглашение</a></dd>
+	</dl>
+	<dl>
+		<dt>Услуги</dt>
+		<dd><a href="/info/advertising/">Реклама</a></dd>
+		<dd><a href="/info/advertising/corporate/">Корпоративные тарифы</a></dd>
+		<dd><a href="/info/advertising/workshops/">Семинары</a></dd>
+		<dd><a href="/special/">Спецпроекты</a></dd>
+	</dl>
+	<dl>
+		<dt>Разное</dt>
+		<dd><a href="/apps/">Приложения</a></dd>
+		<dd><a href="/special/testdrive/">Тест-драйвы</a></dd>
+		<dd><a href="/info/hello_startup/">Помощь стартапам</a></dd>
+		<dd><a href="/special/minsvyaz/">Льготы стартапам</a></dd>
+	</dl>
+	<div class="copyright">
+
+		<div class="about">
+			<a href="http://tmtm.ru/">TM</a>
+			© 2006&#8211;2014
+			<br><br>
+			<a href="http://habrahabr.ru/feedback/">Служба поддержки</a><br><br>
+			    <a href="http://m.habrahabr.ru?mobile=yes">Мобильная версия</a><br><br>
+			
+
+			<div class="social_accounts">
+				<a href="https://twitter.com/habrahabr" class="tw"></a>
+				<a href="https://www.facebook.com/habrahabr.ru" class="fb"></a>
+				<a href="http://vk.com/habr" class="vk"></a>
+				<!-- <a href="" class="gp"></a> //-->
+			</div>
+
+		</div>
+	</div>
+
+</div>    
+          <div class="footer_logos">
+		
+		<div class="project brainstorage">
+			<a href="http://brainstorage.ru/?utm_source=tm_habrahabr&utm_medium=tm_footer&utm_campaign=tm_promo" class="icon "></a>
+			<div class="text">Все мозги в одном месте</div>
+		</div>
+
+		<div class="project toster">
+			<a href="http://toster.ru/?utm_source=tm_habrahabr&utm_medium=tm_footer&utm_campaign=tm_promo" class="icon "></a>
+			<div class="text">Q&A-сервис для разработчиков</div>
+		</div>
+		
+		<div class="project freelansim">
+			<a href="http://freelansim.ru/?utm_source=tm_habrahabr&utm_medium=tm_footer&utm_campaign=tm_promo" class="icon "></a>
+			<div class="text">Заказы для фрилансеров</div>
+		</div>
+		
+		<div class="project autokadabra">
+			<a href="http://autokadabra.ru/?utm_source=tm_habrahabr&utm_medium=tm_footer&utm_campaign=tm_promo" class="icon "></a>
+			<div class="text ">Уютная и дружелюбная</div>
+		</div>
+		
+</div>
+
+        </div>
+      </div>
+    </div>
+  
+
+      <script type="text/javascript" src="/javascripts/1406033523/libs/jquery.cookie.js"></script>
+      <script type="text/javascript">
+        $(document).ready( function(){
+          window.tmidLogin = function(){ return false; };
+          if( $.cookie('tmid_no_check') == undefined ) {
+            var expire = new Date();
+            expire.setMinutes(expire.getMinutes() + 10 );
+            $.cookie('tmid_no_check', 1, { expires: expire } );
+            $.getScript("https://id.tmtm.ru/checklogin", function(){
+              if( window.tmidLogin() ) {
+
+                  var href = $('#login').attr('href');
+
+                  if( href !== undefined ) {
+                      window.location.href = href;
+                  }
+              }
+            });
+          }
+        });
+      </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $.jGrowl.defaults.closerTemplate = '<div>Закрыть все уведомления</div>';         
+        $(".help-tip").tipTip({maxWidth: "300px", edgeOffset: 10});  
+      });
+      // global vars
+      var g_base_url = 'habrahabr.ru';
+      var g_show_xpanel = false;
+      var g_base_fullurl = 'http://habrahabr.ru/';
+      var g_is_guest = false;
+    </script> 
+    
+    <script type="text/javascript" src="/javascripts/1406033523/_parts/shortcuts.js"></script>
+    
+    
+    <script type="text/javascript" src="/javascripts/1406033523/_parts/float_block.js"></script>
+    
+    	<script type="text/javascript" src="http://habrahabr.ru/viewcount/post/183536/"></script>
+
+    
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter24049213 = new Ya.Metrika({id:24049213,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/24049213" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+    
+
+  </body>
+</html>
+

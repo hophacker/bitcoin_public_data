@@ -1,0 +1,636 @@
+http://www.smarty.net/docsv2/es/smarty.for.programmers.tpl
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 19:31:11 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.3.10-1ubuntu3.13
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 8091
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Part III. Smarty For Programmers | Smarty</title>
+    <meta name="description" content="Smarty is a template engine for PHP.">
+    <meta name="keywords" content="smarty, template, engine, php">
+    <style type="text/css" media="screen">
+    @import "/css/screen/global.css";
+    @import "/css/typography.css";
+    </style>
+    
+    <!--[if lt IE 7]>
+    <style type="text/css" media="screen">
+    @import "/css/screen/fix_ie.css";
+    </style>
+    <![endif]-->
+    
+    <!--[if IE 7]>
+    <style type="text/css" media="screen">
+    @import "/css/screen/fix_ie7.css";
+    </style>
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" media="print" href="/css/typography.css">
+    <link rel="stylesheet" type="text/css" media="print" href="/css/print/global.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/js/bbedit.css">
+    
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAtNLTcaiYcFN-f4XrzpVY_RSkE6bExsEa6fcoWABjZpep9Iy-rxQHKn32rDn2QOaRGdO78OCTegXQvw"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.bbedit.min.js"></script>
+
+    <link href="/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="/js/prettify/prettify.js"></script>    
+    
+    <script type="text/JavaScript"> 
+     $(document).ready(function(){
+       prettyPrint();
+              $("#commentFormBodyText").bbedit({
+           highlight: true,
+           enableSmileybar: false,
+           tags: 'b,i,url,code,quote'
+       });
+       $("#commentPreviewText").hide();
+       $("#commentPostedText").hide();
+       $("#commentBusyIcon").hide();
+       $("#commentForm").submit(function() { return false; });
+       $("#commentFormPreviewButton").click(function(){
+         $("#commentBusyIcon").show();
+         $.post("/comments/preview", { body: $("#commentFormBodyText").val(), author: $("#commentFormAuthorText").val() },
+            function(data){
+              var options = {};
+              if($("#commentPreviewText").is(":visible")) {
+                $("#commentPreviewText").hide('blind',options,500,function() {
+                  $("#commentPreviewText").html(data);
+                  $("#commentPreviewText").show('blind',options,500,function() {
+                    $("#commentBusyIcon").hide();
+                  });                  
+                });
+              } else {
+                $("#commentPreviewText").html(data);
+                $("#commentPreviewText").show('blind',options,500,function() {
+                  $("#commentBusyIcon").hide();
+                });                  
+              }
+            });
+       }); 
+       $("#commentFormPostButton").click(function(){
+         $("#commentBusyIcon").show();
+         $.post("/comments/post", { body: $("#commentFormBodyText").val(), author: $("#commentFormAuthorText").val(), page_id: $("#commentFormPageID").val(), email: $("#commentFormEmailText").val(), challenge: $("#commentFormChallengeText").val(), obf: $("#commentFormChallengeObf").val()},
+            function(data){
+              var options = {};
+              $("#commentPostedText").html(data);
+              if($("#commentPreviewText").is(":visible")) {
+                $("#commentPreviewText").hide('blind',options,500,function() {
+                  $("#commentPostedText").show('blind',options,500,function() {
+                    $("#commentBusyIcon").hide();
+                    $("#commentFormPostButton").attr('disabled','true'); 
+                    $("#commentFormPreviewButton").attr('disabled','true'); 
+                  });
+                });
+              } else {
+                $("#commentPostedText").show('blind',options,500,function() {
+                  $("#commentBusyIcon").hide();
+                  $("#commentFormPostButton").attr('disabled','true'); 
+                  $("#commentFormPreviewButton").attr('disabled','true'); 
+                });
+              }                  
+            });
+       });
+            });
+          function clearDefaultandCSS(el) {
+     	if (el.defaultValue==el.value) el.value = ""
+     	// If Dynamic Style is supported, clear the style
+     	if (el.style) el.style.cssText = ""
+     }
+         </script>
+    
+    <script type="text/javascript" src="/js/smarty.js"></script>
+  	<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"> 
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GS_googleAddAdSenseService("ca-pub-8878956630941543");
+  	  GS_googleEnableAllServices();
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_footer");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_left_box");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_right_skyscraper");
+  	  GA_googleAddSlot("ca-pub-8878956630941543", "smarty_top_banner");
+  	</script> 
+  	<script type="text/javascript"> 
+  	  GA_googleFetchAds();
+  	</script>
+  </head>
+  <body>
+  <a class="skiplink" accesskey="S" href="#mainContent">Skip over navigation</a>
+  <div id="wrapper">
+      <div id="header">
+        <div id="header_logo">
+          <div id="logo"><a href="/"><img src="/images/logo_print.gif" width="249" height="74" alt="Smarty Template Engine"></a></div>
+        </div>
+        <div id="header_ad" style="float: right;">
+      		<script type="text/javascript"> 
+      		  GA_googleFillSlot("smarty_footer");
+      		</script>
+      	</div>
+        <div class="clear"></div>
+      </div>
+      <div id="nav">
+        <ul class="nav navHorz">
+		  		  		  		  		  		              		<li><a href="/" accesskey="1">Home</a></li>
+					  		              		<li><a href="/download" >Download</a></li>
+					  		              		<li><a href="/documentation" accesskey="6">Documentation</a></li>
+					  		              		<li><a href="http://smarty.incutio.com/?page=SmartyFrequentlyAskedQuestions" >FAQ</a></li>
+					  		              		<li><a href="/forums/" >Forum</a></li>
+					  		              		<li><a href="/mailinglists" >Mailing Lists</a></li>
+					          </ul>
+        
+        <form action="/search" method="get">
+          <p>
+            <input type="text" name="q" size="30" value="Search..." accesskey="4" class="field" onclick="smarty.removeDefaultValue(this, 'Search...');" onfocus="smarty.removeDefaultValue(this, 'Search...');" onblur="smarty.restoreDefaultValue(this, 'Search...');">
+            in
+            <select name="show" class="field">
+              <optgroup label="Documentation">
+                <option value="manual-en">English</option>
+                <option value="manual-de">German</option>
+                <option value="manual-es">Spanish</option>
+                <option value="manual-fr">French</option>
+                <option value="manual-it">Italian</option>
+                <option value="manual-ja">Japanese</option>
+                <option value="manual-pt_BR">Portuguese</option>
+                <option value="manual-ru">Russian</option>
+              </optgroup>
+              <optgroup label="Mailing Lists">
+                <option value="smarty-general-list">General</option>
+                <option value="smarty-dev-list">Development</option>
+              </optgroup>
+            </select>
+            <input type="image" src="/images/search.png" alt="Submit Search" class="button">
+          </p>
+        </form>
+        <div class="clear"></div>
+      </div>
+     
+      <div class="col colSecondary">
+        <div class="box box1">
+          <h1 class="boxHead">Get Smarty</h1>
+          <ul class="nav navVert"
+            ><li><a href="/download">Download</a></li
+          ></ul>
+        </div>
+        
+        <div class="box box1">
+          <h1 class="boxHead">About Smarty</h1>
+          <ul class="nav navVert"
+          ><li><a href="/about_smarty">All About Smarty</a></li
+            ><li><a href="/why_use">Why use it?</a></li
+              ><li><a href="/use_cases">Use Cases and Work Flow</a></li
+            ><li><a href="/syntax_comparison">Syntax Comparison</a></li
+            ><li><a href="/inheritance">Template Inheritance</a></li
+            ><li><a href="/best_practices">Best Practices</a></li
+            ><li><a href="/crash_course">Crash Course</a></li
+            ><li><a href="/v3_overview">Version 3 Overview</a></li
+            ><li><a href="/forums/viewforum.php?f=12">Testimonials</a></li
+              ><li><a href="http://smarty.incutio.com/?page=SitesUsingSmarty">Sites Using Smarty</a></li
+          ></ul>
+        </div>
+        
+        <div class="box box1">
+          <h1 class="boxHead">Resources</h1>
+          <ul class="nav navVert"
+          ><li><a href="http://smarty-php.googlecode.com/svn/trunk/distribution/SMARTY_2_BC_NOTES.txt">Smarty 2-&gt;3 upgrade notes</a></li
+            ><li><a href="http://smarty-php.googlecode.com/svn/trunk/distribution/README">README (from distro)</a></li
+          ><li><a href="/quick_install">Quick Install</a></li
+	      ><li><a href="/documentation">Documentation</a></li
+		  ><li><a href="/forums/">Discussion Forums</a></li
+	      ><li><a href="/sampleapp1">Example App</a></li
+          ><li><a href="irc://irc.freenode.net/smarty">IRC (chat)</a></li
+          ><li><a href="/mailinglists">Mailing Lists</a></li
+          ><li><a href="http://smarty.incutio.com/">Community Wiki</a></li
+          ><li><a href="http://smarty.incutio.com/?page=SmartyFrequentlyAskedQuestions">FAQ (wiki)</a></li
+          ><li><a href="http://www.smarty.net/forums/viewforum.php?f=23" accesskey="5">FAQ (forums)</a></li
+          ><li><a href="http://www.jdoqocy.com/click-4355642-10718312?url=http%3A%2F%2Fwww.odesk.com%2Fcontractors%2Fskill%2Fsmarty%2Ffb%2F4.5-5.0-stars.4.0-4.5-stars%2Fsort%2Fadjusted-score%2Bdesc?vt_cmp=smarty">Hire Smarty Developers</a></li
+          ></ul>
+        </div>
+        <div class="box box1">
+          <h1 class="boxHead">Links</h1>
+          <ul class="nav navVert"
+          ><li><a href="http://www.php.net/">www.php.net</a></li
+            ><li><a href="http://www.phpinsider.com/">www.phpinsider.com</a></li
+            ><li><a href="http://www.ellysdirectory.com/">www.ellysdirectory.com</a></li
+              
+              
+          ></ul>
+        </div>
+        <div class="box box1" id="bitcoin">
+          <h1 class="boxHead">Donate</h1>
+          <div align="center" class="boxContent">
+            <div>
+            <a href="javascript:void(0);" onclick="javascript:window.prompt ('Copy and paste address to your bitcoin software:', '19fEr3YYkGoHrT2zu4e2GBasdrJu6wwAze');"><img src="/images/bitcoin.png" width="25" height="25" alt="Donate Bitcoin" style="vertical-align:middle"> Bitcoin</a>
+            </div>
+            <div>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="AK2ZWFVSNJEDE">
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal Donate" style="vertical-align:middle"> Paypal
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
+            </div>
+          </div>
+        </div>
+        <div class="box box1" id="smartyIcons">
+          <h1 class="boxHead">Smarty Icon</h1>
+          <div align="center" class="boxContent">
+            <p style="text-align: left">You may use the Smarty logo according to the <a href="/copyright">trademark notice</a>.</p>
+            <p>
+              <img src="/images/icons/smarty_icon.gif" width="88" height="31" alt="Smarty Template Engine">
+              <img src="/images/icons/smarty-80x15.png" width="80" height="15" alt="Smarty Template Engine">
+            </p>
+            <p style="text-align: left">
+              For sponsorship, advertising, news or other inquiries, contact us at: <script type="text/javascript" language="javascript">
+{document.write(String.fromCharCode(60,97,32,104,114,101,102,61,34,109,97,105,108,116,111,58,119,101,98,109,97,115,116,101,114,64,115,109,97,114,116,121,46,110,101,116,34,32,62,119,101,98,109,97,115,116,101,114,64,115,109,97,114,116,121,46,110,101,116,60,47,97,62))}
+</script>
+
+            </p>
+          </div>
+        </div>        
+        <div class="box box1" id="sitesUsingSmarty">
+          <h1 class="boxHead">Sites Using Smarty</h1>
+          <div align="center" class="boxContent">
+               <p>Largest classified with thousands of ads at <a href="http://www.shoppok.com">Shoppok</a></p>
+			   <p>Buy <a href="http://www.cheapglasses123.com/">cheap eyeglasses</a> from <a href="http://www.cheapglasses123.com/">Cheapglasses123.com</a> and save up to 80%.</p>
+			   <p>Buy wedding dresses on SiteSteer.com - <a href="http://www.sitesteer.com/">Best Online Wedding Dress Store</a></p>
+      			<p>
+      			  Buy <a href="http://www.australiaglasses.com/">prescription glasses</a> from <a href="http://www.australiaglasses.com/">www.australiaglasses.com</a> and save.
+				</p>
+				<p>
+  					<a href="http://www.glassespeople.com/">Cheap Glasses</a> Now On Sale at <a href="http://www.glassespeople.com/">GlassesPeople.com</a>. Starts At $7.95.
+      			</p>
+      			<p>
+      			Where to buy <a href="http://www.weddingdresstrend.com/">discount wedding dresses</a> and cheap smart dresses free shipping - <a href="http://www.weddingdresstrend.com/">Weddingdresstrend.com</a>
+      			</p>
+      			<p>
+                	<script type="text/javascript"> 
+      			  GA_googleFillSlot("smarty_left_box");
+      			</script>
+      			</p>
+          </div>
+        </div>        
+
+      </div><!-- end colSecondary -->
+      
+      <div class="col colMain" id="mainContent">
+      
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Part III. Smarty For Programmers</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="chapter.debugging.console.tpl">Prev</a> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="smarty.constants.tpl">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="part" title="Part III. Smarty For Programmers">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="smarty.for.programmers"></a>Part III. Smarty For Programmers</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="chapter"><a href="smarty.constants.tpl">11. Constantes</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="smarty.constants.tpl#constant.smarty.dir">SMARTY_DIR</a></span></dt>
+<dt><span class="sect1"><a href="constant.smarty.core.dir.tpl">SMARTY_CORE_DIR</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="api.variables.tpl">12. Clase Variables de Smarty</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="api.variables.tpl#variable.template.dir">$template_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.dir.tpl">$compile_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.dir.tpl">$config_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.plugins.dir.tpl">$plugins_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.debugging.tpl">$debugging</a></span></dt>
+<dt><span class="sect1"><a href="variable.debug.tpl.tpl">$debug_tpl</a></span></dt>
+<dt><span class="sect1"><a href="variable.debugging.ctrl.tpl">$debugging_ctrl</a></span></dt>
+<dt><span class="sect1"><a href="variable.autoload.filters.tpl">$autoload_filters</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.check.tpl">$compile_check</a></span></dt>
+<dt><span class="sect1"><a href="variable.force.compile.tpl">$force_compile</a></span></dt>
+<dt><span class="sect1"><a href="variable.caching.tpl">$caching</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.dir.tpl">$cache_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.lifetime.tpl">$cache_lifetime</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.handler.func.tpl">$cache_handler_func</a></span></dt>
+<dt><span class="sect1"><a href="variable.cache.modified.check.tpl">$cache_modified_check</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.overwrite.tpl">$config_overwrite</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.booleanize.tpl">$config_booleanize</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.read.hidden.tpl">$config_read_hidden</a></span></dt>
+<dt><span class="sect1"><a href="variable.config.fix.newlines.tpl">$config_fix_newlines</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.template.handler.func.tpl">$default_template_handler_func</a></span></dt>
+<dt><span class="sect1"><a href="variable.php.handling.tpl">$php_handling</a></span></dt>
+<dt><span class="sect1"><a href="variable.security.tpl">$security</a></span></dt>
+<dt><span class="sect1"><a href="variable.secure.dir.tpl">$secure_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.security.settings.tpl">$security_settings</a></span></dt>
+<dt><span class="sect1"><a href="variable.trusted.dir.tpl">$trusted_dir</a></span></dt>
+<dt><span class="sect1"><a href="variable.left.delimiter.tpl">$left_delimiter</a></span></dt>
+<dt><span class="sect1"><a href="variable.right.delimiter.tpl">$right_delimiter</a></span></dt>
+<dt><span class="sect1"><a href="variable.compiler.class.tpl">$compiler_class</a></span></dt>
+<dt><span class="sect1"><a href="variable.request.vars.order.tpl">$request_vars_order</a></span></dt>
+<dt><span class="sect1"><a href="variable.request.use.auto.globals.tpl">$request_use_auto_globals</a></span></dt>
+<dt><span class="sect1"><a href="variable.error.reporting.tpl">$error_reporting</a></span></dt>
+<dt><span class="sect1"><a href="variable.compile.id.tpl">$compile_id</a></span></dt>
+<dt><span class="sect1"><a href="variable.use.sub.dirs.tpl">$use_sub_dirs</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.modifiers.tpl">$default_modifiers</a></span></dt>
+<dt><span class="sect1"><a href="variable.default.resource.type.tpl">$default_resource_type</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="api.functions.tpl">13. La clase Methods() de Smarty</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="api.append.tpl">append()</a></span><span class="refpurpose"> — agregando elementos a una matriz asignada</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.append.by.ref.tpl">append_by_ref</a></span><span class="refpurpose"> — pasando valores por referencia</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.assign.tpl">assign()</a></span><span class="refpurpose"> — pasando valores para el template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.assign.by.ref.tpl">assign_by_ref</a></span><span class="refpurpose"> — pasando valores por referencia</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.all.assign.tpl">clear_all_assign()</a></span><span class="refpurpose"> — &gt;limpia el valor de todas las variables asignadas</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.all.cache.tpl">clear_all_cache</a></span><span class="refpurpose"> — limpia completamente el cache del template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.assign.tpl">clear_assign()</a></span><span class="refpurpose"> — limpia el valor de una variable asignada</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.cache.tpl">clear_cache()</a></span><span class="refpurpose"> — Esto limpia el cache de un template especifico</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.compiled.tpl.tpl">clear_compiled_tpl()</a></span><span class="refpurpose"> — Esto limpia la vesion compilada del recurso de un template especifico</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.clear.config.tpl">clear_config()</a></span><span class="refpurpose"> — Esto limpia todas las variables de configuración</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.config.load.tpl">config_load()</a></span><span class="refpurpose"> — Carga el archivo de configuración y lo asigna al template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.display.tpl">display()</a></span><span class="refpurpose"> — Despliega el Template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.fetch.tpl">fetch()</a></span><span class="refpurpose"> — Retorna la salida del template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.config.vars.tpl">get_config_vars()</a></span><span class="refpurpose"> — retorna el valor asignado a la variable de configuración</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.registered.object.tpl">get_registered_object()</a></span><span class="refpurpose"> — Este retorna una referencia para un objeto registrado.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.get.template.vars.tpl">get_template_vars()</a></span><span class="refpurpose"> — Retorna el valor asignado a una variable</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.is.cached.tpl">is_cached()</a></span><span class="refpurpose"> — Retorna true si hay cache valido para ese template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.load.filter.tpl">load_filter()</a></span><span class="refpurpose"> — Carga un filtro de plugin</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.block.tpl">register_block()</a></span><span class="refpurpose"> — Registra dinamicamente bloques de funciones de plugins </span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.compiler.function.tpl">register_compiler_function</a></span><span class="refpurpose"> — Registra dinamicamente un plugin de una funcion compiladora</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.function.tpl">register_function()</a></span><span class="refpurpose"> — Registra dinamicamente un plugin de función para un template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.modifier.tpl">register_modifier()</a></span><span class="refpurpose"> — mofidica dinámicamente plugins registrados</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.object.tpl">register_object()</a></span><span class="refpurpose"> — Registr un objeto para usar en el template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.outputfilter.tpl">register_outputfilter()</a></span><span class="refpurpose"> — Registra dinamicamente filtros de salida</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.postfilter.tpl">register_postfilter()</a></span><span class="refpurpose"> — Resgistr dinamicamente postfiltros</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.prefilter.tpl">register_prefilter()</a></span><span class="refpurpose"> — Registra dinamicamente prefiltros</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.register.resource.tpl">register_resource</a></span><span class="refpurpose"> — Registra dinamicamente un plugin de recurso</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.trigger.error.tpl">trigger_error</a></span><span class="refpurpose"> — Despliega un mensaje de error</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.template.exists.tpl">template_exists()</a></span><span class="refpurpose"> — Verifica si el template especificado existe</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.block.tpl">unregister_block</a></span><span class="refpurpose"> — Des-registra dinamicamente un plugin de bloque de funciones</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.compiler.function.tpl">unregister_compiler_function()</a></span><span class="refpurpose"> — des-registrar dinámicamente una función de compilación</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.function.tpl">unregister_function()</a></span><span class="refpurpose"> — des-registrar dinámicamente una función de plugin del template</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.modifier.tpl">unregister_modifier()</a></span><span class="refpurpose"> — des-registrar dinámicamente un modificador de plugin</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.object.tpl">unregister_object()</a></span><span class="refpurpose"> — Des-registra dinamicamente un objeto</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.outputfilter.tpl">unregister_outputfilter()</a></span><span class="refpurpose"> — des-registra dinámicamente un filtro de salida</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.postfilter.tpl">unregister_postfilter()</a></span><span class="refpurpose"> — Des-registra dinamicamente un postfiltro</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.prefilter.tpl">unregister_prefilter()</a></span><span class="refpurpose"> — Des-registra dinamicamente un prefiltro</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="api.unregister.resource.tpl">unregister_resource()</a></span><span class="refpurpose"> — Des-registra dinamicamente un plugin de recurso</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="caching.tpl">14. Cache</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="caching.tpl#caching.setting.up">Configurando el Cache</a></span></dt>
+<dt><span class="sect1"><a href="caching.multiple.caches.tpl">Multiples caches por pagina</a></span></dt>
+<dt><span class="sect1"><a href="caching.groups.tpl">Cache Groups</a></span></dt>
+<dt><span class="sect1"><a href="caching.cacheable.tpl">Controlando salida de Cacheabilidad de plugins</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="advanced.features.tpl">15. Caracteristicas Avanzadas</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="advanced.features.tpl#advanced.features.objects">Objetos</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.prefilters.tpl">Prefilters</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.postfilters.tpl">Postfilters</a></span></dt>
+<dt><span class="sect1"><a href="advanced.features.outputfilters.tpl">Filtros de salida</a></span></dt>
+<dt><span class="sect1"><a href="section.template.cache.handler.func.tpl">Función manipuladora de cache</a></span></dt>
+<dt><span class="sect1"><a href="template.resources.tpl">Recursos</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="template.resources.tpl#templates.from.template.dir">Templates desde $template_dir</a></span></dt>
+<dt><span class="sect2"><a href="template.resources.tpl#templates.from.any.dir">Templates partiendo de cualquier directorio</a></span></dt>
+<dt><span class="sect2"><a href="template.resources.tpl#templates.from.elsewhere">Templates partiendo de otras fuentes</a></span></dt>
+<dt><span class="sect2"><a href="template.resources.tpl#default.template.handler.function">Función manipuladora de Template por default</a></span></dt>
+</dl></dd>
+</dl></dd>
+<dt><span class="chapter"><a href="plugins.tpl">16. Extendiendo Smarty con plugins</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="plugins.tpl#plugins.howto">Como funcionan los Plugins</a></span></dt>
+<dt><span class="sect1"><a href="plugins.naming.conventions.tpl">Nombres convencionales</a></span></dt>
+<dt><span class="sect1"><a href="plugins.writing.tpl">Escribiendo Plugins</a></span></dt>
+<dt><span class="sect1"><a href="plugins.functions.tpl">Funciones de Template</a></span></dt>
+<dt><span class="sect1"><a href="plugins.modifiers.tpl">Modificadores</a></span></dt>
+<dt><span class="sect1"><a href="plugins.block.functions.tpl">Block Functions</a></span></dt>
+<dt><span class="sect1"><a href="plugins.compiler.functions.tpl">Funciones Compiladoras</a></span></dt>
+<dt><span class="sect1"><a href="plugins.prefilters.postfilters.tpl">Prefiltros/Postfiltros</a></span></dt>
+<dt><span class="sect1"><a href="plugins.outputfilters.tpl">Filtros de Salida</a></span></dt>
+<dt><span class="sect1"><a href="plugins.resources.tpl">Fuentes</a></span></dt>
+<dt><span class="sect1"><a href="plugins.inserts.tpl">Inserts</a></span></dt>
+</dl></dd>
+</dl>
+</div>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="chapter.debugging.console.tpl">Prev</a> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="smarty.constants.tpl">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Chapter 10. Debugging Console </td>
+<td width="20%" align="center"><a accesskey="h" href="index.tpl">Home</a></td>
+<td width="40%" align="right" valign="top"> Chapter 11. Constantes</td>
+</tr>
+</table>
+</div>
+
+		
+		  <div class="comments">
+      
+                  <div id="commentHeader"><strong>Comments</strong></div>
+          <div class="commentInfo">
+          
+                                <div class="commentWrapperEven">
+              <div class="commentBody"><emphasis>No comments for this page.</emphasis></div>
+            </div>          
+                    </div>
+          <div id="commentFormWrapper">
+            <div id="commentFormHeader"><strong>Post a Comment</strong></div>
+            <div id="commentFormElements">
+            <form id="commentForm" method="post" action="/comments/post">
+              <div id="commentText" style="font-style: italic; color:#f00">All comments are moderated. Support questions are ignored, use the <a href="/forums/">forums</a> instead.</div>
+              <div id="commentFormAuthor">Author: <input id="commentFormAuthorText" type="text" name="author" size="40" value="anonymous" style="color: grey" onFocus="clearDefaultandCSS(this)"></div>
+              <div id="commentFormEmail">Email: <input id="commentFormEmailText" type="text" name="email" size="30" value="your@email.com" style="color: grey" onFocus="clearDefaultandCSS(this)"> <span style="font-style: italic">(not shown)</span></div>
+              
+              <div id="commentFormChallenge">What is 9 plus 20? <input id="commentFormChallengeText" type="text" name="challenge" size="30" value="" style="color: grey"> <span style="font-style: italic">(Are you human?)</span></div>
+              <input id="commentFormChallengeObf" type="hidden" name="obf" value="bcd36beb535342e517a475503e90f68f">
+              <div id="commentFormBody"><textarea id="commentFormBodyText" name="body" rows="8" cols="60"></textarea></div>
+              <div id="commentFormSubmitButtons">
+                <input id="commentFormPostButton" type="submit" value="Post Comment">
+                <input id="commentFormPreviewButton" type="submit" value="Preview">
+                <img id="commentBusyIcon" src="/images/busy.gif">
+              </div>
+              <input id="commentFormPageID" type="hidden" name="page_id" value="docsv2/es/smarty.for.programmers.tpl">
+            </form>
+            </div>
+          </div>
+          <div id="commentPreviewText">
+          </div>
+          <div id="commentPostedText">
+          </div>
+              
+      </div>
+      
+      </div><!-- end colMain -->
+      
+      <div class="col colAdditional" align="left">
+        <div id="skyscraper">
+    		<script type="text/javascript"> 
+    		  GA_googleFillSlot("smarty_right_skyscraper");
+    		</script>
+    		</div>
+  		  <div class="box box1" id="smartySponsors">
+          <h1 class="boxHead">Sponsors <a href="/sponsors">[info]</a></h1>
+          <div class="boxContent">
+						  <a href="http://www.webhost.uk.net/">UK Web Hosting</a> <span style="font-size: .7em">@webhost.uk.net</span><br>
+						  <a href="http://www.rshosting.com/">Best Web Hosting</a> <span style="font-size: .7em">@rshosting.com</span><br>
+						  <a href="http://www.webhostinguk.com/">Web Hosting UK</a> <span style="font-size: .7em">@webhostinguk.com</span><br>
+						  <a href="http://www.infrenion.com/">Unlimited Web Hosting</a> <span style="font-size: .7em">@infrenion.com</span><br>
+						  <a href="http://www.morphodo.com/de/app-entwicklung.html">App Entwicklung</a> <span style="font-size: .7em">@morphodo.com</span><br>
+						  <a href="http://www.dhgate.com/">Buy from China</a> <span style="font-size: .7em">@dhgate.com</span><br>
+						  <a href="http://www.fcinternetmarketing.com/">First Click Internet Marketing</a> <span style="font-size: .7em">@fcinternetmarketing.com</span><br>
+						
+			
+          </div>
+        </div>
+  		  <div class="box box1" id="smartyAds">
+  		    <h1 class="boxHead">Using Smarty</h1>
+          <div class="boxContent">
+			      <a href="http://www.dissertationteam.com/">dissertationteam.com</a><br>
+			      <a href="http://jackpot4me.com/super-lig/galatasaray_istanbul.html">galatasaray</a><br>
+			      <a href="http://www.dresses1000.com/">Quinceanera Dresses</a><br>
+			      <a href="http://www.magicquinceanera.com/">quinceanera gowns</a><br>
+			      <a href="http://www.besthochzeit.com/Bridesmaid-Dresses-c7/">Dresses for Bridesmaid</a><br>
+			      <a href="http://www.dressfirst.fr/Robes-De-Bal-c18/">robes de bal</a><br>
+			      <a href="http://skincareinsight.com/">skin care</a><br>
+      			
+      			
+          </div>
+  		    <h1 class="boxHead">I.T Certifications</h1>
+          <div class="boxContent">
+			      <a href="http://www.pass-guaranteed.com/">I.T Certification Exams</a><br>
+			      <a href="http://www.firsttrycertify.com/">Certification Practice Tests</a><br>
+          </div>
+        </div>
+      </div><!-- end colAdditional -->    
+      <div class="clear"></div>
+    </div><!-- end wrapper -->
+
+  <div id="footer">
+    <div id="colTopFooter">
+      <a href="/credits" class="rightMar">credits</a>
+      <a href="/copyright" accesskey="8" class="rightMar">copyright</a>
+      <a href="/accessibility" accesskey="0">accessibility</a>
+    </div>
+    <p>Smarty Copyright &copy; 2002 &ndash; 2014 New Digital Group, Inc. All rights reserved.</p>
+    <p>This page generated in 0.02255 secs with <a href="http://www.tinymvc.com/">TinyMVC</a> and Smarty 3.</p>
+  </div>    
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"> 
+</script> 
+<script type="text/javascript"> 
+_uacct = "UA-638513-4";
+urchinTracker();
+</script>
+<script type="text/javascript">
+    var GoSquared={};
+    GoSquared.acct = "GSN-138769-Y";
+    (function(w){
+        function gs(){
+            w._gstc_lt=+(new Date); var d=document;
+            var g = d.createElement("script"); g.type = "text/javascript"; g.async = true; g.src = "//d1l6p2sc9645hc.cloudfront.net/tracker.js";
+            var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(g, s);
+        }
+        w.addEventListener?w.addEventListener("load",gs,false):w.attachEvent("onload",gs);
+    })(window);
+</script>
+</body>
+</html>
+

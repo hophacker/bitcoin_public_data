@@ -1,0 +1,850 @@
+http://woboq.com/blog/utf-8-processing-using-simd.html
+HTTP/1.1 200 OK
+Server: nginx/1.4.1
+Date: Tue, 22 Jul 2014 09:17:39 GMT
+Content-Type: text/html
+Last-Modified: Fri, 16 May 2014 09:36:30 GMT
+Connection: close
+Vary: Accept-Encoding
+Expires: Tue, 22 Jul 2014 10:17:39 GMT
+Cache-Control: max-age=3600
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>UTF-8 processing using SIMD (SSE4)</title>
+<meta property="og:title" content="UTF-8 processing using SIMD (SSE4)" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+<link rel="alternate" type="application/rss+xml" title="feed" href="http://feeds.woboq.com/woboq" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<meta name="ttw" content="fx0x1hr" />
+<meta name="readability-verification" content="8cVtwR4m8tLdt48rULfdRczTnXVgTEzcyL9sufwX"/>
+<meta name="google-site-verification" content="wW70cT0EDInE-bqP2hzyzJuMafIheUVmy2jpreJmim8" />
+<style type="text/css">
+/* <![CDATA[ */
+body { background-color: #d8d8d8; color: #282828; font-family: Helvetica,sans-serif; padding: 0 1ex; font-size: 115%;}
+a { color: #037; border: none; text-decoration: none }
+a:hover{  text-decoration: underline }
+h1, h3, h2 { color: #050505; }
+h2 { margin-top: 2.5ex; }
+img { border:none; }
+ul { padding-left: 1ex; list-style-position: inside }
+code, tt { background-color: #fbfbfb; border: 1px dashed #f1f1f1;  }
+.syntaxhighlighter code { background-color:transparent; border:none }
+span.sm { border:1px solid #ccc; padding: 15px; margin: 15px; min-width: 180px; min-height: 60px; display:block; text-align: center }
+#woboqlogo { text-align:center; display:block; margin:0px auto; }
+div#main { margin:1em auto; max-width:100ex;  padding: 1px 2.5em;
+        border-left: 1px solid #aaa; border-right: 1px solid #aaa; background-color: white;
+        box-shadow: 0px 0px 5px #037; border-radius: 14px;
+}
+div#main p { text-align:justify; }
+#woboq_header { text-align:center; font-size:x-large; margin-bottom: 4ex; margin-top:2ex;}
+#woboq_header a { margin:8px;  padding:5px 8px;   }
+#imprint-footer { margin-top:2em; line-height: 2 }
+#imprint-footer a { padding:.2ex .5ex; margin: 0 0.5ex }
+#imprint-text { font-size:x-small; }
+#imprint-links { text-align: center; padding-top:1em;padding-bottom:1em;}
+
+#woboq_header a, #imprint-links a { background-color:#D8D8D8; color: #151515; border-radius: 6px; box-shadow: 1px 2px 1px #678; }
+#woboq_header a:hover, #imprint-links a:hover { text-decoration:none; box-shadow: 1px 1px 1px #678; 
+                                                 position: relative; top: 1px; color: #333; background-color: #cfcfcf }
+
+
+.blog-index-entry h2 { font-size: larger; font-weight: normal; margin-bottom:0px; padding-bottom:0px; }
+.blog-index-entry h3, .blog-entry > h3 { font-size: smaller; margin: 0 0 .5ex 0; font-weight:normal; color:#444 }
+.blog-index-entry p:last-child { text-align: right; }
+#blog-subscribe-call { margin:20px 0;}
+#blog-navigation {font-size: smaller; text-align: center; margin: 6ex;}
+#blog-subscribe-call img { vertical-align: middle; margin: 0 0.5ex; }
+#adv { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px }
+#adv2 { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px;
+    float: right;  position: relative; left: 200px; margin: 1ex 1ex 1ex -200px;}
+
+.side_box { background-color:#D8D8D8; float:right; padding:1ex; border-radius:6px; margin:2ex; margin-left: 2em; text-align: center; box-shadow: 1px 2px 2px #678;}
+
+pre.code { font-size:95%; }
+
+
+#logo_container
+{
+    height:194px;
+    width:508px;
+    position:relative;
+    text-align:center; display:block; margin:0px auto;
+}
+#logo_container a {
+  color: inherit;
+}
+#woboqlogo_subtitle
+{
+    z-index:100;
+    position:absolute;
+    font-size:24px;
+    /*font-weight:bold;*/
+    left:20px;
+    top:140px;
+    font-style:italic;
+    color: #111;
+}
+
+.product-small-screenshot {
+    float:right; margin:1em;
+    box-shadow: 1px 2px 2px #678;
+}
+.screenshot { margin:0.5ex; box-shadow: 1px 1px 2px 2px #ccc; }
+
+/* ]]> */
+</style>
+<link href="/shThemeDefault.css" rel="stylesheet" type="text/css" /><link rel="canonical" href="http://woboq.com/blog/utf-8-processing-using-simd.html"/>
+</head>
+
+<body>
+<div id="main">
+
+<div id="logo_container">
+<a href="/"><img id="woboqlogo" src="/woboq.png" alt="Woboq Logo" width="508" height="194" />
+<p id="woboqlogo_subtitle">We create software.</p>
+</a>
+</div>
+
+<div id="woboq_header">
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Hire Us</a>
+<a href="/products.html">Products</a>
+
+<a href="/blog/">Blog</a>
+<!--<a href="/imprint.html">Imprint</a> -->
+</div>
+
+
+<div id="adv2">
+    <script type="text/javascript">//<!--
+		google_ad_client = "ca-pub-5892035981328708";
+		/* Woboq blog vertical */
+		google_ad_slot = "2526105442";
+		google_ad_width = 120;
+		google_ad_height = 600;
+		//-->
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">/* */</script>
+</div>
+<div class="blog-entry">
+    <h1>
+        UTF-8 processing using SIMD (SSE4)
+    </h1>
+    <h3>Posted by Olivier Goffart
+ on 26 July 2012
+    </h3>
+    <div class="blog-body">
+        
+<div class = "intro">
+<p>
+<a href="http://en.wikipedia.org/wiki/SIMD">SIMD</a>: "Single instruction, multiple data"
+is a class of instructions present in many CPUs today.
+For example, on the Intel CPU they are known under the <a href="http://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">SSE</a> acronym.
+Those instructions enable more parallelism by operating simultaneously on multiple data.
+</p>
+<p>In this blog post I will present a method for converting UTF-8 text to UTF-16 using SSE4 compiler intrinsics.
+My goal is also to introduce you to the SIMD intrinsics, if you are not familiar with them yet.</p>
+</div>
+
+
+<h2>About Intrinsics</h2>
+
+<p>
+CPUs can parallelize computations by using specials instructions that operate simultaneously
+on multiples values.
+There are large registers that contain <em>vectors</em> of values.
+For example, the SSE registers are 128 bits vectors
+that can  contain either 2 double, 4 float, 4 int, 8 short or up to 16 char values.
+Then, one single instruction can add, substract, multiply, ... all those values and put the
+result in another vector register.
+<br />
+This is called <em>SIMD</em> for Single Instruction Multiple Data.
+</p>
+
+<p>Compilers can sometimes automatically vectorize the contents of a simple loop,
+but they are not really good at it. If the loop is too complex
+or if it depends on the previous iteration, the compiler will fail to vectorize.
+(Even if it would be obvious for an human). The vectorization therefore has to be done manually.</p>
+<p>
+This is where <a href="http://en.wikipedia.org/wiki/Intrinsic_function">compiler intrinsics</a>
+help us. They are special functions handled directly in the compiler who will emit the instruction we want.
+</p>
+<p>The problem with intrinsics is that they are not really portable. They target a specific architecture.
+This means you need to write your algorithms for the different CPU architectures you target.
+Fortunately, the main compilers use the same intrinsics
+ so they are portable across compilers and operating systems.
+</p>
+<p>You are supposed to detect the support of the instruction set at run-time.
+What is usually done is to write several variants of the function for the different target architecture
+ and have a function pointer that is set to the best variant for the running architecture.
+</p>
+
+ <p>The best documentation I could find is
+ <a href="http://msdn.microsoft.com/en-us/library/26td21ds">the reference on MSDN</a>.
+ You will have to browse it a bit to see what the available intrinsics are. </p>
+
+
+<h2>The Task: Converting UTF-8 to UTF-16</h2>
+
+<p>I got interested in SIMD when <a href="http://www.linkedin.com/in/benjaminpoulain">Benjamin</a> was using them to speed up
+ <a href="http://code.woboq.org/kde/qt4/src/corelib/tools/qstring.cpp.html#_ZN7QString17fromLatin1_helperEPKci">QString::fromLatin1</a>,
+ which  converts a <code>char*</code> encoded in
+ <a href="http://en.wikipedia.org/wiki/Latin1">Latin-1</a> to
+ <a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a> (QString's internal encoding).
+ After he explained to me how it works, I was able to speed up some of the drawing code inside Qt.
+ <br/>
+ However in Qt5, we
+ <a href="http://www.macieira.org/blog/2012/05/source-code-must-be-utf-8-and-qstring-wants-it/">
+ changed the default string encoding</a> from Latin-1 to UTF-8.
+</p><p>
+ <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a> can represent all of Unicode
+ while  Latin-1 can only represent the alphabet of a few latin based languages.
+     UTF-8 parsing is much more difficult to vectorize because
+     a single code point can be encoded by a variable number of bytes.</p>
+
+
+ <p>
+This table explains the correspondence between the bits in UTF-8 and UTF-16:
+</p>
+
+<table border="1">
+<tr><th></th><th>UTF-8</th><th>UTF-16</th></tr>
+<tr><td>ASCII (1 byte)</td>
+                  <td><code>0<span style="color:#d00">aaaaaaa</span></code></td>
+                  <td><code>00000000 0<span style="color:#d00">aaaaaaa</span></code></td>
+</tr>
+
+<tr><td rowspan="2">Basic Multilingual Plane<br/>(2 or 3 bytes)</td>
+                <td><code>110<span style="color:#070">bbb</span><span style="color:#0c0">bb</span>
+                              10<span style="color:#d00">aaaaaa</span></code></td>
+                  <td><code>00000<span style="color:#070">bbb</span>
+                            <span style="color:#0c0">bb</span><span style="color:#d00">aaaaaa</span></code></td>
+
+</tr>
+<tr>
+                <td><code>1110<span style="color:#00d">cccc</span>
+                              10<span style="color:#070">bbbb</span><span style="color:#0c0">bb</span>
+                              10<span style="color:#d00">aaaaaa</span></code></td>
+                  <td><code><span style="color:#00d">cccc</span><span style="color:#070">bbbb</span>
+                            <span style="color:#0c0">bb</span><span style="color:#d00">aaaaaa</span></code></td>   
+</tr>
+<tr><td>Supplementary Planes <br/> (4 bytes)</td>
+                 <td><code>11110<span style="color:#d0d">ddd</span>
+                              10<span style="color:#d0d">dd</span><span style="color:#00d">cccc</span>
+                              10<span style="color:#0a8">bb</span><span style="color:#070">bb</span><span style="color:#0c0">bb</span>
+                              10<span style="color:#d00">aaaaaa</span></code> <br/>
+                              <code><span style="color:#ba0">uuuu</span> = <span style="color:#d0d">ddddd</span> - 1</code> </td>
+                  <td><code>110110<span style="color:#ba0">uu uu</span><span style="color:#00d">cccc</span><span style="color:#0a8">bb</span> <br/>
+                            110111<span style="color:#070">bb</span>
+                            <span style="color:#0c0">bb</span><span style="color:#d00">aaaaaa</span></code></td>
+</tr>
+</table>
+
+
+ <p>I was wondering if we could improve QString::fromUtf8 using SIMD. <br/>
+ 
+Most of the strings are just ASCII which is easy to vectorize,
+but I wanted to also try to go ahead and vectorize the more complicated cases as well.<br/>
+However, the 4 bytes sequences (Supplementary Planes) are very rarely used
+(most used languages and useful symbols are already in the Basic Multilingual Plane)
+and also more complicated so I did not vectorize that case for
+the scope of this blog post.
+This is left as an exercise for the reader ;-)</p>
+
+<h2>Previous work</h2>
+
+<p>UTF-8 processing is a very common task. I was expecting that the problem would be already solved.
+Currently however most libraries and applications still have a scalar implementation.
+Few  use vectorization, but only for ASCII.</p>
+<p>There is a library called <a href="http://u8u16.costar.sfu.ca/">u8u16</a>.
+It uses a clever technique by separating the bits in individual vectors.
+It is processing 128 char at the time in 8 different vectors.<br/>
+I wanted to try a different approach and work directly on one vector.
+   Working with 16 char at the time allows speeding up the processing of
+    smaller strings.</p>
+
+
+<h2>The Easy Case: ASCII</h2>
+
+<p>I'm going to start by explaining the simple case when we only
+have ASCII. This is very easy to vectorize because for ASCII one byte in UTF-8
+is always one byte in UTF-16 with <code>\0</code> bytes in between.<br/>
+ASCII is also a very common encoding so it make sense to have a special case for it.</p>
+
+<p>I will start by showing the code and then explaining it</p>
+
+<p>Our function takes a pointer <code>src</code> to the UTF-8 buffer of length <code>len</code>,
+   and a pointer <code>dst</code> to a buffer of size at least <code>len*2</code>
+   where we will store the UTF-16 output. The function returns the size of the UTF-16 output.
+   </p>
+
+<pre class="brush: cpp">
+int fromUtf8(const char *src, int len, unsigned short *dst) {
+  /* We will process the input 16 bytes at a time,
+     so the length must be at least 16. */
+    while(len &gt;= 16) {
+
+        /* Load 128 bit into a vector register. We use the 'loadu' intrinsic
+           where 'u' stands for unaligned. Loading aligned data is much faster,
+           but here we don't know if the source is aligned */
+        __m128i chunk = _mm_loadu_si128(reinterpret_cast&lt;const __m128i*&gt;(src));
+
+        /* Detect if it is ASCII by looking if one byte has the high bit set. */
+        if (!_mm_movemask_epi8(chunk)) {
+
+            // unpack the first 8 bytes, padding with zeros
+            __m128i firstHalf = _mm_unpacklo_epi8(chunk, _mm_set1_epi8(0));
+            // and store to the destination
+            _mm_storeu_si128(reinterpret_cast&lt;__m128i*&gt;(dst), firstHalf); 
+
+            // do the same with the last 8 bytes
+            __m128i secondHalf = _mm_unpackhi_epi8 (chunk, _mm_set1_epi8(0));
+            _mm_storeu_si128(reinterpret_cast&lt;__m128i*&gt;(dst+8), secondHalf);
+
+            // Advance
+            dst += 16;
+            src += 16;
+            len -= 16;
+            continue;
+        }
+
+        // handle the more complicated case when the chunk contains multi-bytes
+        // ...
+    }
+    // handle the few remaining bytes using a classical serial algorith
+    // ...
+}
+</pre>
+
+<p>The type <code>__m128i</code> represents a vector of 128 bits.
+It is most likely going to be stored in a SSE register.<br/>
+Since we don't know the alignment, we load the data with
+<code><a href="http://msdn.microsoft.com/en-us/library/f4k12ae8(v=vs.100).aspx">_mm_loadu_si128</a></code>.
+There is also the
+<code><a href="http://msdn.microsoft.com/en-us/library/atzzad1h.aspx">_mm_load_si128</a></code>
+that assumes the memory
+is aligned on 16 bytes. Because it is faster to operate on aligned data, some algorithms
+sometimes start with a prologue to handle the first bytes until the rest is aligned.
+I did not do that here but we could optimize the ASCII processing further by doing so.
+</p>
+
+<p>Once we have loaded 16 bytes of data into <code>chunk</code>, we need to check if
+it only contains ASCII. Each ASCII byte should have its most significant bit set to 0.
+<code><a href="http://msdn.microsoft.com/en-us/library/s090c8fk(v=vs.100).aspx">_mm_movemask_epi8</a></code>
+creates a 16bit mask out of most significant bits of our 16 bytes in the vector.
+If that mask is 0 we only have ASCII in that vector.</p>
+
+<p>The next operation is to expand with zeroes. We will do what is called <em>unpacking</em>.
+The instructions
+<code><a href="http://msdn.microsoft.com/en-us/library/t5h7783k">_mm_unpackhi_epi8</a></code>
+and <code><a href="http://msdn.microsoft.com/en-us/library/xf7k860c">_mm_unpacklo_epi8</a></code>
+are going to interleave two vectors.
+Because the result of an unpack is on 32 bytes, there is two operations:
+one to get the first 16 high bytes,
+and the other to get the low bytes.<br/>
+<code><a href="http://msdn.microsoft.com/en-us/library/x0cx8zd3.aspx">_mm_set1_epi8(0)</a></code> creates a vector filled with zeroes.</p>
+
+<img src="utf-8-processing-using-simd/unpack.png" />
+
+<p>Note that vectors are in little endian, so I show the least significant bytes first</p>
+
+<p>Now, we can just store the result with
+<code><a href="http://msdn.microsoft.com/en-us/library/w1k1k29t">_mm_storeu_si128</a></code>.
+We use the unaligned operation again.</p>
+
+<h2>General Algorithm</h2>
+
+<p>Now that I have introduced you to the ASCII decoding process, we can move on to the general case,
+in which we might have multiple bytes for one character. </p>
+
+<p>The algorithm proceeds with the following steps:</p>
+
+<ol>
+<li>First, we will <b>classify</b> each bytes so we know where the values in the sequence are and
+    how long they are.  This information will be stored in vectors that we can use to mask
+    so operations we do later operate only on a certain category of bytes.    
+</li>
+<li>Then, we will <b>operate on the data</b> to to find the actual Unicode value behind
+    each character.  They will be stored at the location of the last byte of a sequence,
+    into two different vectors: one for the low bits and one for the high bits.
+    </li>
+<li>Then we need to <b>shuffle</b> the vectors to remove the
+  possible "gaps" left by multi-bytes sequences.
+  </li>
+<li> Finally, we can store the result and <b>advance</b> the pointers.</li>
+</ol>
+
+<p>I will explain every step in more detail.</p>
+
+<p>In our example, I will decode the string
+<em>x<span
+style="color:#070">≤</span>(<span
+style="color:#800">α</span>+<span
+style="color:#800">β</span>)<span style="color:#009">²</span><span
+style="color:#800">γ</span><span style="color:#009">²</span></em>,
+which is represented in UTF-8 as
+<code>x<span
+style="color:#070">\e2\89\a4</span>(<span style="color:#800">\ce\b1</span>+<span
+style="color:#800">\ce\b2</span>)<span
+style="color:#009">\c2\b2</span><span style="color:#800">\ce\b3</span><span
+style="color:#009">\c2\b2</span></code>.
+The "≤" is represented by 3 bytes, the Greek letters by two bytes,
+and the "²" also by two bytes. The total length is 17 bytes, so the last byte
+will be truncated when loaded into the vector</p>
+<h2>Classification</h2>
+
+
+<p>At the end of this step, we will have the following vectors:</p>
+<ul>
+<li><b><code>mask</code></b> tells which bit needs to be set to 0 in order to only keep the bits
+   that are going to end up in the Unicode value.
+   Bits of mask that are set will be unset from the data.</li>
+<li><b><code>count</code></b> is zero if the corresponding byte is ASCII or a continuation byte.
+ If the corresponding byte is starting a sequence, then it is the number of bytes in that sequence.
+ </li>
+
+ <li><b><code>counts</code></b> represents (for each byte) how many bytes are remaining in this sequence.
+ It is 0 for ASCII, 1 for the last byte in a sequence, and so on.</li>
+</ul>
+
+
+<p>We start by finding <code>count</code> and <code>mask</code>.
+ I do that by computing a vector
+  that I called <code>state</code>, in which the 5 higher bits are the mask and the
+   3 lower bits represent the count.
+</p>
+
+<img src="utf-8-processing-using-simd/classification.png" />
+
+<p>We will use the
+<code><a href="http://msdn.microsoft.com/en-us/library/9s46csht">_mm_cmplt_epi8</a></code> instruction.
+It compares two vectors of 16 signed char,
+and returns a mask vector where each byte is equal to <code>0xff</code>
+ or <code>0x00</code> depending of the result of the comparison between
+ the corresponding chars.
+ <br/>We can then use this mask as input to the
+ <code><a href="http://msdn.microsoft.com/en-us/library/bb514064">_mm_blendv_epi8</a></code>
+  SSE4 instruction.
+ It takes 3 input arguments: two vectors and a mask. It returns a vector that has
+  the bytes of the second input where the most significant bit of the corresponding byte of the mask is one
+  and the bytes of the first input otherwise.
+  In other words, for each 16 bytes of the vectors, we have: <br/>
+ <code>output[i] = mask[i] &amp; 0x80 ? input2[i] : input1[i]</code></p>
+
+<p>The problem of <code>_mm_cmplt_epi8</code> is that it only works on signed bytes.
+That is why we add <code>0x80</code> to everything simulate unsigned comparison.</p>
+
+
+
+<pre class="brush: cpp">
+    // The state for ascii or contiuation bit: mask the most significant bit.
+    __m128i state = _mm_set1_epi8(0x0 | 0x80);
+
+    // Add an offset of 0x80 to work around the fact that we don't have
+    // unsigned comparison
+    __m128i chunk_signed = _mm_add_epi8(chunk, _mm_set1_epi8(0x80));
+
+    // If the bytes are greater or equal than 0xc0, we have the start of a
+    // multi-bytes sequence of at least 2.
+    // We use 0xc2 for error detection, see later.
+    __m128i cond2 = _mm_cmplt_epi8( _mm_set1_epi8(0xc2-1 -0x80), chunk_signed);
+
+    state = _mm_blendv_epi8(state , _mm_set1_epi8(0x2 | 0xc0),  cond2);
+
+    __m128i cond3 = _mm_cmplt_epi8( _mm_set1_epi8(0xe0-1 -0x80), chunk_signed);
+
+    // We could optimize the case when there is no sequence logner than 2 bytes.
+    // But i did not do it in this version.
+    //if (!_mm_movemask_epi8(cond3)) { /* process max 2 bytes sequences */ }
+
+    state = _mm_blendv_epi8(state , _mm_set1_epi8(0x3 | 0xe0),  cond3);
+    __m128i mask3 = _mm_slli_si128(cond3, 1);
+
+    // In this version I do not handle sequences of 4 bytes. So if there is one
+    // we break and do a classic processing byte per byte.
+    __m128i cond4 = _mm_cmplt_epi8(_mm_set1_epi8(0xf0-1 -0x80), chunk_signed);
+    if (_mm_movemask_epi8(cond4)) { break; }
+
+    // separate the count and mask from the state vector
+    __m128i count =  _mm_and_si128(state, _mm_set1_epi8(0x7));
+    __m128i mask = _mm_and_si128(state, _mm_set1_epi8(0xf8));
+
+</pre>
+
+<p>From <code>count</code> I will be able to compute <code>counts</code>.
+I will use <code><a href="http://msdn.microsoft.com/en-us/library/yadkxc18">_mm_subs_epu8</a></code> which substracts
+two vector of unsigned bytes and saturate (so if you underflow, it sets 0).
+Then I shift that result, and add it to the count.
+Then we do the same, but we substract 2 and shift the result two bytes.</p>
+<p><code><a href="http://msdn.microsoft.com/en-us/library/34d3k2kt.aspx">_mm_slli_si128</a></code> shifts a vector on the left by the given number of bytes.
+Notice again that we work on little endian.
+So that is why I shifted right on the picture, but left in the code.
+</p>
+
+<img src="utf-8-processing-using-simd/counts.png" />
+
+
+<pre class="brush: cpp">
+    //substract 1, shift 1 byte and add
+    __m128i count_subs1 = _mm_subs_epu8(count, _mm_set1_epi8(0x1));
+    __m128i counts = _mm_add_epi8(count, _mm_slli_si128(count_subs1, 1));
+
+    //substract 2, shift 2 bytes and add
+    counts = _mm_add_epi8(counts, _mm_slli_si128(
+                    _mm_subs_epu8(counts, _mm_set1_epi8(0x2)), 2));
+</pre>
+
+<h2>Processing</h2>
+
+<p>The goal of this step is to end up with the final unicode bytes values.
+They will be split into two vectors (one for the high bytes and one for the low bytes).
+We keep them in the location of the last byte of a sequence,
+which means that there will be "gaps" in the vector.
+</p>
+
+<img src="utf-8-processing-using-simd/processing.png" />
+
+<p>There is no instructions that shift the whole vector by an arbitrary
+number of bits. It is only possible to shift by an integer number of bytes with
+<code>_mm_slli_si128</code> or <code>_mm_srli_si128</code>.
+The instructions that shift by an abitrary number of bits only work on vector
+with elements of 16 or 32 bits. No 8 bits elements.
+We will use what we have and will first shift by one byte (in
+<code>chunk_right</code>) and then shift and mask to get what we want.</p>
+
+
+<pre class="brush: cpp">
+    // Mask away our control bits with ~mask (and not)
+    chunk = _mm_andnot_si128(mask , chunk);
+    // from now on, we only have usefull bits
+
+    // shift by one byte on the left
+    __m128i chunk_right = _mm_slli_si128(chunk, 1);
+
+    // If counts == 1,  compute the low byte using 2 bits from chunk_right
+    __m128i chunk_low = _mm_blendv_epi8(chunk,
+                _mm_or_si128(chunk, _mm_and_si128(
+                    _mm_slli_epi16(chunk_right, 6), _mm_set1_epi8(0xc0))),
+                _mm_cmpeq_epi8(counts, _mm_set1_epi8(1)) );
+
+    // in chunk_high, only keep the bits if counts == 2
+    __m128i chunk_high = _mm_and_si128(chunk ,
+                                       _mm_cmpeq_epi8(counts, _mm_set1_epi8(2)));
+    // and shift that by 2 bits on the right.
+    // (no unwanted bits are comming because of the previous mask)
+    chunk_high = _mm_srli_epi32(chunk_high, 2);
+
+    // Add the bits from the bytes for which counts == 3
+    __m128i mask3 = _mm_slli_si128(cond3, 1); //re-use cond3 (shifted)
+    chunk_high = _mm_or_si128(chunk_high, _mm_and_si128(
+        _mm_and_si128(_mm_slli_epi32(chunk_right, 4), _mm_set1_epi8(0xf0)),
+                              mask3));
+</pre>
+
+
+<h2>Shuffle</h2>
+
+<p>Now, we need to get rid of the gaps in our strings.
+We will start by computing, for each byte, the number of bytes we need to shift.
+
+We notice that <code>count_subs1</code>is the number of bytes we need to skip
+for a given sequence.
+We will then accumulate all those number in order to get the number of bytes
+we need to shift each bytes. Then we reset to zero all the bytes that are supposed
+to go away.
+</p>
+<img src="utf-8-processing-using-simd/accumulate.png" />
+
+<pre class="brush: cpp">
+    __m128i shifts = count_subs1;
+    shifts = _mm_add_epi8(shifts, _mm_slli_si128(shifts, 2));
+    shifts = _mm_add_epi8(shifts, _mm_slli_si128(shifts, 4));
+    shifts = _mm_add_epi8(shifts, _mm_slli_si128(shifts, 8));
+
+    // keep only if the corresponding byte should stay
+    // that is, if counts is 1 or 0  (so &lt; 2)
+    shifts  = _mm_and_si128 (shifts , _mm_cmplt_epi8(counts, _mm_set1_epi8(2)));
+</pre>
+
+<p>We will shift the <code>shift</code> vector so the meaning of it becomes
+the number of bytes that are separating a byte in its final location from
+the byte in its original location.
+</p>
+<p> The maximum we can shift is 10 (if everything is a 3 bytes sequence).
+We can then compute in 4 steps.<br/>
+We will shift the interesting bit of the vector <code>shift</code>, so it can be used
+to control the blend operation.</p>
+
+<pre class="brush: cpp">
+
+        shifts = _mm_blendv_epi8(shifts, _mm_srli_si128(shifts, 1),
+                                 _mm_srli_si128(_mm_slli_epi16(shifts, 7) , 1));
+
+        shifts = _mm_blendv_epi8(shifts, _mm_srli_si128(shifts, 2),
+                                 _mm_srli_si128(_mm_slli_epi16(shifts, 6) , 2));
+
+        shifts = _mm_blendv_epi8(shifts, _mm_srli_si128(shifts, 4),
+                                _mm_srli_si128(_mm_slli_epi16(shifts, 5) , 4));
+
+        shifts = _mm_blendv_epi8(shifts, _mm_srli_si128(shifts, 8),
+                                 _mm_srli_si128(_mm_slli_epi16(shifts, 4) , 8));
+
+</pre>
+
+<img src="utf-8-processing-using-simd/shift.png" />
+
+<p>Then we can then know, for each byte in the final vector, its
+   location in the original vector.  With that information, we can use
+   <code><a href="http://msdn.microsoft.com/en-us/library/bb531427.aspx">_mm_shuffle_epi8</a></code>
+    (SSSE3) to shuffle the vector and remove the
+   "gaps".  Then we can unpack the result and store it, and we are almost done.</p>
+
+<img src="utf-8-processing-using-simd/shuffle.png" />
+
+<img src="utf-8-processing-using-simd/shuffle2.png" />
+
+<pre class="brush: cpp">
+    __m128i shuf = _mm_add_epi8(shifts,
+            _mm_set_epi8(15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0));
+
+    // Remove the gaps by shuffling
+    shuffled_low = _mm_shuffle_epi8(chunk_low, shuf);
+    shuffled_high = _mm_shuffle_epi8(chunk_high, shuf);
+
+    // Now we can unpack and store
+    __m128i utf16_low = _mm_unpacklo_epi8(shuffled_low, shuffled_high);
+    __m128i utf16_high = _mm_unpackhi_epi8(shuffled_low, shuffled_high);
+    _mm_storeu_si128(reinterpret_cast&lt;__m128i*&gt;(dst), utf16_low);
+    _mm_storeu_si128(reinterpret_cast&lt;__m128i*&gt;(dst+8) , utf16_high);
+</pre>
+
+<h2>Error Detection</h2>
+<p>So far we have only considered valid UTF-8.  But a conform UTF-8 decoder
+ should also handle broken UTF-8. It should detect the following error cases:</p>
+
+ <ol><li>Not enough, misplaced or too many continuation characters.</li>
+
+    <li>Overlong forms: If a sequence decodes to a value that could have been encoded in a shorter sequence.
+        For example the quote must be encoded in its ASCII form (<code>\22</code>)
+        and not in a multi-byte sequence (<code>\c0\a2</code> or <code>\e0\80\a2</code>).
+        Not forbidding those forms could lead to security problems,
+        e.g. if the the quote where escaped in the utf-8 input string, but appears again later when decoded.
+        </li>
+
+    <li>Invalid or reserved Unicode code point
+    (for example, the one reserved for UTF-16 surrogates)</li>
+    </ol>
+
+  
+<p>Since error is not the common case, what I do in that case is to break, and let
+ the rest be handled by the sequential algorithm (Just like when we have 4 bytes sequences).</p>
+
+
+<pre class="brush: cpp">
+
+    // ASCII characters (and only them) should have the
+    // corresponding byte of counts equal 0.
+    if (asciiMask ^ _mm_movemask_epi8(_mm_cmpgt_epi8(counts, _mm_set1_epi8(0))))
+            break;
+
+    // The difference between a byte in counts and the next one should be negative,
+    // zero, or one. Any other value means there is not enough continuation bytes.
+    if (_mm_movemask_epi8(_mm_cmpgt_epi8(_mm_sub_epi8(_mm_slli_si128(counts, 1),
+                counts), _mm_set1_epi8(1))))
+            break;
+
+    // For the 3 bytes sequences we check the high byte to prevent
+    // the over long sequence (0x00-0x07) or the UTF-16 surrogate (0xd8-0xdf)
+    __m128i high_bits = _mm_and_si128(chunk_high, _mm_set1_epi8(0xf8));
+    if (!_mm_testz_si128(mask3,
+                _mm_or_si128(_mm_cmpeq_epi8(high_bits,_mm_set1_epi8(0x00)) ,
+                            _mm_cmpeq_epi8(high_bits,_mm_set1_epi8(0xd8))) ))
+        break;
+
+    // Check for a few more invalid unicode using range comparison and _mm_cmpestrc
+    const int check_mode = _SIDD_UWORD_OPS | _SIDD_CMP_RANGES;
+    if (_mm_cmpestrc( _mm_cvtsi64_si128(0xfdeffdd0fffffffe), 4,
+                     utf16_high, 8, check_mode) |
+        _mm_cmpestrc( _mm_cvtsi64_si128(0xfdeffdd0fffffffe), 4,
+                      utf16_low, 8, check_mode))
+            break;
+</pre>
+
+<h2>Advance Pointers</h2>
+
+<p>Now we are almost done.  We just need to advance the source and destination pointers.
+The source pointer usually advance by 16, unless it ends in the middle of a sequence.
+In that case, we need to roll back 1 or 2 chars. For that,  we look at the end of the
+<code>counts</code> vector.<br/>
+Then we can see how much we need to advance the destination by looking at the
+end of the shift vector.
+</p>
+<img src="utf-8-processing-using-simd/advance.png" />
+
+<pre class="brush: cpp">
+    int s = _mm_extract_epi32(shifts, 3);
+    int dst_advance = source_advance - (0xff &amp; (s &gt;&gt; 8*(3 - 16 + source_advance)));
+
+    int c = _mm_extract_epi16(counts, 7);
+    int source_advance = !(c &amp; 0x0200) ? 16 : !(c &amp; 0x02) ? 15 : 14;
+
+    dst += dst_advance;
+    src += source_advance;
+</pre>
+
+
+<h2>Putting it all together</h2>
+<p>Now we are done, you can see the result
+<a href="https://github.com/woboq/utf8sse4/blob/master/fromutf8-sse.cc">
+ there</a>
+</p>
+<p>I mixed all the operations to limit the dependencies between the operations that are
+next to each other to achieve better pipeline performance.
+I am surprised that the compiler did not do that for me.</p>
+
+<h2>Benchmarks Results</h2>
+
+
+<table border="1">
+<tr><th/><th>Long Chinese text (8KiB)</th><th>36 bytes of chinese text</th>
+                                                         <th>Long ASCII (24KiB)</th>  <th>20 ASCII bytes</th></tr>
+<tr><th>Iconv</th> <td>62000ns</td> <td>380ns</td>         <td>165000ns</td>       <td>230ns</td>   </tr>
+<tr><th>Qt (scalar)</th> <td>43000ns</td>  <td>180ns</td> <td>55000ns</td>      <td>67ns</td></tr>
+<tr><th>u8u16</th>  <td>20000ns</td>  <td>300ns</td>     <td>8000ns</td>          <td>37ns</td> </tr>
+<tr><th>This solution (SSE4.1)</th> <td>22000ns</td><td>110ns</td>  <td>15000ns</td>  <td>40ns</td></tr>   </table>
+
+<img src="utf-8-processing-using-simd/graph.png" />
+
+<p>We beat u8u16 on small strings but it is better on large strings because
+it processes more bytes at the same time. We are still better than any
+scalar processing. 
+</p>
+
+
+<p>I added some debug output in the implementation of <code>QString::fromUtf8</code>
+in Qt 4.8 and ran few KDE applications translated in French.
+The average size of strings that goes through this function is 9 characters.
+More than 50% of the string are less than 2 character long, 85% are less than 16,
+and 13% are between 16 and 128 characters long.
+98% of the strings where only composed of ASCII. The rest was mainly having
+2 bytes sequences and very few 3 bytes sequences.  There is no sequence of 4 bytes.<br/>
+Also consider that the processing of UTF-8 is probably far from being the bottleneck
+of any application that does something useful.</p>
+<p>So was my exercise useless? Maybe in practice, but I think there is still
+something to learn from this that can be applied to another algorithm that might
+be a bottleneck.</p>
+
+
+    </div>
+    <div id="blog-subscribe-call">
+        <p>
+            <a title="Submit on reddit" rel="nofollow" href="http://www.reddit.com/submit?url=http://woboq.com/blog/utf-8-processing-using-simd.html">
+                <img width="19" height="15" alt="Submit on reddit" src="/button_reddit.gif"/>
+            </a>
+            <a title="Submit on hackernews" rel="nofollow" href="https://news.ycombinator.com/submitlink?u=http://woboq.com/blog/utf-8-processing-using-simd.html">
+                <img width="20" height="20" alt="Submit on reddit" src="/button_hn.gif"/>
+            </a>
+            <a title="Tweet about it" rel="nofollow" href="http://twitter.com/home?status=http://woboq.com/blog/utf-8-processing-using-simd.html">
+                <img width="20" height="20" alt="Tweet about it" src="/button_twitter.png"/>
+            </a>
+            <a title="Share on Facebook" href="http://www.facebook.com/share.php?u=http://woboq.com/blog/utf-8-processing-using-simd.html">
+                <img width="20" height="20" alt="Share on Facebook" src="/button_facebook.png"/>
+            </a>
+            <a title="Post on Google+" rel="nofollow" href="https://plus.google.com/share?url=http://woboq.com/blog/utf-8-processing-using-simd.html">
+                <img width="16" height="16" alt="Post on Google+" src="/button_gp.png"/>
+            </a>
+        </p>
+        <p>If you like this blog and want to read similar articles, consider <b>subscribing</b>
+            <a href="http://feeds.woboq.com/woboq">via our RSS feed</a>,
+<a href="http://feedburner.google.com/fb/a/mailverify?uri=woboq">by e-mail</a>
+or <a href="http://twitter.com/woboq">follow us on twitter</a>
+or <a href="https://plus.google.com/102813873464455130791">add us on G+</a>..
+</p>
+        <p>
+You can also <a href="http://flattr.com/thing/452314/Woboq-Blog" target="_blank">
+                <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"/>
+            </a>
+blog posting or 
+<a href="http://tiptheweb.org/tip/">
+                <img src="data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%3D%00%00%00%18%08%02%00%00%00%C6ab%3B%00%00%04%ECIDATX%85%D5%97Kl%13W%14%86%CF%F5%83%F8%11'%8E%3D8c3~%90%97%D4%E2%08H%00))q%14Z7-U%9D%80%8A%40%20%D1M%BBa%DF%8A%15%CB%EE%8A%84%D8%B4%CB%2C*Pi%17%05J%1B%A4%24M(%10%A0%8Ab%0A8%A4%40mjl%E3%0C%89%ED%C4%B1g%3A%F7%DE.%26Ll%C7qy%A94%BF%EE%E2%BE%CE9%DF%3DsF3%17%09%82%00kP%AA%D7%0D%F0%82%D2(%BDyaa%E4%AF%E1%B1%F8%A5%D7HSA%3E%7BW%8Fs%97%A9%AAZ%1E%22%A5N%CE%DE%3B%5B%AD%D7%F7x%7C%AF%8F%AD%92F%C2c%0B%B9%5C%A0)%20%0F%97%EBd%2C~%C9%E7%DE%89)%F9%7F6%9F%7Bga-h%0A%CFD(%5Ey%D0%A9%3B%D3%B7o%86%FE%B8%7B%FF%C9%CC%13e%D2%E9%E668%1D%DBvlu7%B8%5Eqb%9FM%C5%DC%84%14%0E%EF%DE%99%FE%E1%FB%1F%81%A0%DE%DE%DE%EE%B7z%3C%1E%8F%B2%14%0E%87%83%C1%E0%A9%81%EF%0C%D5%BA%7D%87%F6%D6%B3%B6%FF%06WQ%117.%C8wp%E2%D6%B93%17%02%81%40ww7%C68%1E%8FOMM%C9K%94RQ%14%FD~%7F__%DF%E0%E0%E0%F1%2FN%EE%FF%F8%A3%CDm%DE%E7%0A%9C%13s%D1%B9G%F6Z%7B%B5%CE%F8%B2%DC%84.%E5%7B%3At%EF%DC%99%0BG%8F%1E%B5X%2C%18%E3d2%B9%B0%B0%20%13%03%00B%E8%FA%F5%EB%2C%CB%CE%CD%CDutt%B4%B5%B5%1D%3Bv%CC%C62%F5%F62Y%3F%7D%F5%CC%95%7BWJ%26%BD%1BZ%DF%D9%D4s%E2%E2%C9O%BB%3FiumzYn%FC%94%7B%E8%A7_%0E%1E%3CXWW%97%CDf%8DF%23%C6K%CF%01!%24%D3%3B%1C%8EX%2Cf%B1X%92%C9%A4%D5j%ED%EF%EF%1F%B98%B6%EF%F0%DE%95%01%F6%B4%F7%F7m%ED%03%80%AF%87%BFJ%E7%E7%3F%DF%FD%99%ECG%A3U%7Fy%E08RQ%25%E8Kp%93%25%BEG%0Fc%ED%ED%ED%B3%B3%B3%1A%8DF%10%84%BA%BA%BA%C2%7C%8B%A2%18%8DF%1B%1A%1A%E4%CD%3C%CFwvv%0E%5E%FCY1%2F%94J%8DTj%15%00%A8%D5j%15Rk%B4j%00%00%A0%0F%F9%C87WN%ED%DD%B6%A7%D9%DEt%FA%EA%B7y1%B7q%FD%C6%B1%BB%97%9A%D9f%BF%F7m%AB%C9Z%99%BB%E8%7B%89%81%C8M%1Ef2%99X%2C%861F%08%99%CDfe%5B8%1C%F6%FB%FD555%94RI%920%C6%26%93)%B7%98W%CC%0B%9B%04X%02I%02I%C6%95%FB%12%60%09%E3%99%F9%19%11%8B%18H6%97%9D%8AO%E7%25%E1%C3-%81%C9%877%87n%8F%94u%B5j%BEIq%C2%0C%06%83%C9dR%AB%D5%91H%04!%A4%14wKKK%3A%9DN%A5RN%A7%93RZUUU%D6%BCD%94%16%ED%91%DF%25J%97fl5%F5%BB7%BFO(%FD%ED%C1%8DP%3C%84%89%84%00U%F0V%BE%BE%E5d%5B%2C%16%9E%E7%09!z%BD%3E%9DN%CB%7C2%BDN%A7K%A5R%18c%8E%E3X%96%E5y%BE%C4%7C5re%0F%05%99%9BbJ(P%40%90%95%B2%00%00%08t%1A%3D%A1%14%80V%F0UT'%84%60%B9%E9%0C%BA%89%89%09%95J%C50%0C%C6X%AB%D52%0CC%08%11%04A%AF%D7%8B%A2%98H%248%8E%F3x%3C.%97K%A7%D3%5D%BE%7C%99u%D6%2B%E6e%5BI%08L%97%E8%E5%A5%F9%DC%7C%7C6%F68%FD%F8%3E%FF%C0%CB%B5V%F0P.%DFOkh%9B%AFmhh%88a%18%97%CB%C5%B2%AC%20%08%F9%7C%5E%AB%D5...J%92d%B3%D9%1C%0E%87%D1h4%18%0C%99Lf%7C%7C%7Cxx%F8%83C%EF%95%94%60i%B6%8BCPJ%00%80P%8A%81PJU%08%8D%86~%0D%C5B%D6jfGc%7BeW%A5%DC%CA%99%DA%7D%5B%D2%B3%A9%81%81%81%DE%DE%5E%8F%C7c6%9B%CDfsmm%AD%B2S%92%A4T*%95H%24%82%C1%E0%E8%E8%E8%F6%5Dm%AEf%AEr%7D%1F%F1%1FA%A0%9A%13xy%E8d%B8%13%87Nd%C4%8CH%F2%00%60%AC2%1E%EE%3AL0Y%A7%D1%A6%C5TeW%A5%DC%B8%E0%3B%DF%1D%F0Y%ED%B7%CF_8%CFX%98%C6%C6F%8E%E3%18%86%91%DFN%84P4%1A%9D%99%99%99%9C%9CD%1Axw%FF.w%8B%1B%93%7F%C9%D0%93%1C_%1C%2B%9F%97%12r%9F%02%A5%00%A9%FC%2C%02%A0%7FWvS%8E%9B%14%3F%9D7%B7%BF%D1%D4%DA%14%99%8E%FC%19%8A%5C%BBqM%C8-%DF%8Cl%1B%D63%0EkW%7F%A7%BB%C5%B5%D2%F0yu%A0%E3%00%20%24B%FE%D9MJ%F2-%95%2C%AB%D7%A1%06%AF%A7%C1%EBY%CD~%A5%C9%0BH%40%04(*%FB7%BA%9A%96%B9%7D%F6%AE%E0%E3%DF%BD%B6%E7%FB%3Dz%25%C2%CF%40%7C%2By%CBg%EFR%86%CB%F7%9D%B5zO%5B%5BZ%AB%F7%F9%7F%00%D7%BFl9%8C%F4i%22%00%00%00%00IEND%AEB%60%82"/>
+            </a>
+it
+or <a href="bitcoin:1En85shTXaVMt7FAVawq6qSXijjEUT89EU">
+                <img src="/banner_bitcoin_donate.png"/>
+            </a>!</p>
+    </div>
+    <div id="blog-navigation">
+        &laquo; Previous: <a href="quasselcore-hosting-by-woboq.html">We are now offering Quassel IRC Hosting</a> | Next: <a href="codebrowser-introduction.html">Browsing C++ Source Code on the Web</a> &raquo;
+    </div>
+    <div id="adv">
+        <script type="text/javascript">
+            <!--
+google_ad_client = "ca-pub-5892035981328708";
+/* woboq blog above comments */
+google_ad_slot = "0806550814";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+        </script>
+        <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+//
+</script>
+    </div>
+    <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'woboq'; 
+    var disqus_url = 'http://woboq.com/blog/utf-8-processing-using-simd.html';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the comments</noscript>
+
+</div>
+
+
+<div id="imprint-footer" >
+<div id="imprint-links"> 
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Services</a>
+<a href="/products.html">Products</a>
+
+<a href="/quassel.html">Quassel&nbsp;Hosting</a>
+<a href="/codebrowser.html">Code&nbsp;Browser</a>
+<a href="/blog/">Blog</a>
+<a href="/imprint.html">Imprint</a>
+</div>
+
+</div>
+
+</div>
+
+<script src="/syntax.js" type="text/javascript"></script>
+<script>SyntaxHighlighter.defaults['auto-links']=false;SyntaxHighlighter.defaults['toolbar']=false;SyntaxHighlighter.defaults['smart-tabs']=false;SyntaxHighlighter.defaults['gutter']=false;SyntaxHighlighter.all();</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-221649-10']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>
+

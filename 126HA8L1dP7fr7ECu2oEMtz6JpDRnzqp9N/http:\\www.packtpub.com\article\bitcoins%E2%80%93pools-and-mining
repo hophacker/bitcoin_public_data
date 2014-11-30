@@ -1,0 +1,981 @@
+http://www.packtpub.com/article/bitcoins%E2%80%93pools-and-mining
+HTTP/1.1 200 OK
+Server: Apache
+Expires: Sun, 19 Nov 1978 05:00:00 GMT
+Cache-Control: store, no-cache, must-revalidate, post-check=0, pre-check=0
+X-Packt-Clean: 1
+Content-Type: text/html; charset=utf-8
+X-Backend: app2_apache
+X-Cache-Version: 1
+Content-Encoding: gzip
+Date: Thu, 24 Jul 2014 13:58:24 GMT
+X-Varnish: 58899084
+Age: 0
+Via: 1.1 varnish
+Connection: close
+X-Packt-V: 0
+X-Packt-Location: UK
+X-Country-Code: US
+X-Debug: 
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" >
+<head>
+    <title>Bitcoins – Pools and Mining | Packt Publishing</title>
+    <link type="text/css" rel="stylesheet" media="all" href="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/css/1406110786/72ad479e4d0cf54b8d683a7aa446997f.css" />
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="//dgdsbygo8mp3h.cloudfront.net/misc/favicon.ico" type="image/x-icon" />
+<meta name="description" content="This article by Piotr J. Kula, author of the book Raspberry Pi Server Essentials, will illustrate the concept of cryptographic currencies, and we will try and understand what Bitcoin is. We will set up a wallet and learn how to send and receive coins" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+    
+  <!--[if IE]>
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/packt_new/ie.css" >
+  <![endif]-->
+  <!--[if IE 6]>
+	<link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/packt_new/packt-ie6.css" >
+	<script type="text/javascript" src="/sites/default/files/pp/iepngfix_tilebg.js"></script>
+  <![endif]--> 
+  
+  <script type="text/javascript" src="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/js/1406110786/7ec3b3cf674f4f1d23e9d30c89426cce.js"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, { "basePath": "/", "dhtmlMenu": [ "doubleclick", "clone" ], "googleanalytics": { "trackOutgoing": 1, "trackMailto": 1, "trackDownload": 1, "trackDownloadExtensions": "7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip" }, "lightbox2": { "rtl": 0, "file_path": "/(\\w\\w/)sites/default/files", "default_image": "/sites/all/modules/lightbox2/images/brokenimage.jpg", "border_size": "10", "font_color": "000", "box_color": "fff", "top_position": "", "overlay_opacity": "0.8", "overlay_color": "000", "disable_close_click": 1, "resize_sequence": "0", "resize_speed": 400, "fade_in_speed": 400, "slide_down_speed": 600, "use_alt_layout": 0, "disable_resize": 0, "disable_zoom": 0, "force_show_nav": 0, "loop_items": 1, "node_link_text": "View Image Details", "node_link_target": 0, "image_count": "Image !current of !total", "video_count": "Video !current of !total", "page_count": "Page !current of !total", "lite_press_x_close": "press \x3ca href=\"#\" onclick=\"hideLightbox(); return FALSE;\"\x3e\x3ckbd\x3ex\x3c/kbd\x3e\x3c/a\x3e to close", "download_link_text": "", "enable_login": false, "enable_contact": false, "keys_close": "c x 27", "keys_previous": "p 37", "keys_next": "n 39", "keys_zoom": "z", "keys_play_pause": "32", "display_image_size": "", "image_node_sizes": "()", "trigger_lightbox_classes": "img.inline,img.image-img_assist_custom", "trigger_lightbox_group_classes": "", "trigger_slideshow_classes": "", "trigger_lightframe_classes": "", "trigger_lightframe_group_classes": "", "custom_class_handler": "lightbox_ungrouped", "custom_trigger_classes": "", "disable_for_gallery_lists": 1, "disable_for_acidfree_gallery_lists": true, "enable_acidfree_videos": true, "slideshow_interval": 5000, "slideshow_automatic_start": true, "slideshow_automatic_exit": true, "show_play_pause": true, "pause_on_next_click": false, "pause_on_previous_click": true, "loop_slides": false, "iframe_width": 600, "iframe_height": 400, "iframe_border": 1, "enable_video": 0 }, "addthis": { "config_default": { "services_toolbox": "facebook,twitter,linkedin,reddit,google_plusone", "services_compact": "", "services_expanded": "", "ui_cobrand": "", "ui_header_color": "#000000", "ui_header_background": "#FFFFFF", "ui_click": true, "ui_delay": "", "ui_use_addressbook": 0, "pubid": "xa-4e2cfd1147868c4e", "data_track_clickback": 0, "data_ga_tracker": "pageTracker", "ui_use_css": true, "data_use_cookies": false, "ui_language": "en", "data_use_flash": false }, "share_default": { "templates": { "twitter": "" } } }, "viewscarousel": [  ] });
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+$(document).ready(function()
+			{
+				$(".views-field-discounted-price").each(function()
+					{
+						var self = $(this);
+						var content = self.find(".field-content:first");
+						if ( (content.size() > 0) && ($.trim( content.html() ).length == 0) )
+							return true;
+						else if ($.trim( self.html() ).length == 0)
+							return true;
+
+						self.parent().find(".views-field-sell-price:not(th)")
+							.addClass("original-sell-price");
+					});
+				$(".uc-price-sell:not(.original-sell-price)").each(function()
+					{
+						var self = $(this);
+						self.addClass("original-sell-price")
+							.after(	$( ".field-type-discounted-price:first", self.parent() )	);
+					});
+				//Legacy
+				$(".sell-price:not(.original-sell-price)").each(function()
+					{
+						var self = $(this);
+						self.addClass("original-sell-price")
+							.after(	$( ".field-type-discounted-price:first", self.parent() )	);
+					});
+			});
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _paq = _paq || [];_paq.push(["_setAccount", "UA-284627-1"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+
+  <script type="text/javascript">Drupal.uid = 0;</script>  <script type="text/javascript">
+        var _prum = [['id', '5167068de6e53dd405000002'],
+                     ['mark', 'firstbyte', (new Date()).getTime()]];
+        (function() {
+            var s = document.getElementsByTagName('script')[0]
+              , p = document.createElement('script');
+            p.async = 'async';
+            p.src = '//rum-static.pingdom.net/prum.min.js';
+            s.parentNode.insertBefore(p, s);
+        })();
+	</script>
+	
+	<script type="text/javascript">
+			try {
+			  var s = window.location.search.substring(1).split("&");
+			  var qs = "";
+			  for (var c = 0; c < s.length; c++) {
+			  	var k = s[c].split("=");
+			  	if (k[0] === 'keys') {
+			  	 qs = "?" + s[c];
+			  	 break;
+			  	}
+			  }			
+			  _paq.push(['_setSiteSpeedSampleRate', 100]);
+			  _paq.push(["_trackPageview", "/article/bitcoins&acirc;��pools-and-mining" + qs]);	
+			} catch(err) {
+			
+			}
+				</script>
+	
+    
+  <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="Packt Publishing News" >
+</head>
+
+<body id="pixture-reloaded" class="not-front not-logged-in page-node node-type-article two-sidebars page-article-bitcoins-pools-and-mining section-article node-full-view with-logo  ">
+	<div id="page">
+				<div id="shadow-left">
+					<div id="shadow-right">
+						<div id="page-background">
+															<div id="header">
+									<div id="head-elements">
+																				<div id="page-top">
+											<div id="primary-links" class="block block-block region-odd odd region-count-1 count-1 collapsiblock-processed">
+								  				<div class="block-inner">
+													<div class="block-content">
+												        												          <!-- Primary || Superfish -->
+												              <div class="links"><span class="menu-1082 first plinks"><a href='http://www.packtpub.com'><div id='packtpub-logo'>Packt Publishing</div></a></span>
+<span class='menu-sep'></span><span class="menu-2234 plinks"><a href="/books/all" title="">Product Categories ▼</a></span>
+<span class='menu-sep'></span><span class="menu-2347 plinks"><a href="/support" title="">Support ▼</a></span>
+<span class='menu-sep'></span><span class="menu-1187 plinks"><a href="/article-network" title="Articles">Article Network</a></span>
+<span class='menu-sep'></span><span class="menu-1630 plinks"><a href="/authors" title="">Authors</a></span>
+<span class='menu-sep'></span><span class="menu-1663 plinks"><a href="/news-center" title="">News</a></span>
+<span class='menu-sep'></span><span class="menu-10175 plinks"><a href="https://careers.packtpub.com" title="">Careers</a></span>
+<span class='menu-sep'></span><span class="menu-27973 last plinks"><a href='http://packtlib.packtpub.com'><div id='packtlib-logo'>PacktLib</div></a></span>
+<div class='clear'></div></div>												        												   	</div>
+												</div>
+											</div>  
+					                    </div>  
+																			    <div style="clear: both;"></div>
+							        </div>
+							        <!-- /div#head_elements -->
+							        
+							        <!-- Packt book image header -->
+								    <div id="top-banner"  class="">
+								    
+																		
+																        	<div id="login-box">
+											<form action='https://www.packtpub.com/article/bitcoins–pools-and-mining' accept-charset='UTF-8' method='post' id='packt-login-form-header'><div><div class='form-item' id='login-name-wrapper'><input type='text' maxlength='128' name='email' id='login-name' size='60' value='' class='form-text form-text login-name test' placeholder='email' onclick='clearIf(this, &quot;Username&quot;)'></div><div class='form-item' id='login-password-wrapper'><input type='password' name='password' id='login-password' maxlength='128' size='60' class='form-text form-text login-name' placeholder='password'></div><div class='login-button'><input type='submit' name='op' id='edit-submit-1' value='Login' class=' form-submit'></div><div class='forgot-password'><a href='/account/password'>Forgot login?</a></div><div class='register'><a href='/login'>New to Packt?</a></div><input type='hidden' name='form_id' id='edit-packt-login-form-header' value='packt_login_form_header'></div></form>            
+											<div style="width:262px; clear: both"></div>
+								        </div>
+							        							        
+																			<div id="search-bar-box">
+							                <div class="search-bar-inner">
+							                	<form action="/search"  accept-charset="UTF-8" method="get" id="packt-libraries-main-search-form">
+<div><div class="form-item" id="edit-keys-wrapper">
+ <input type="text" name="keys" id="edit-keys" size="49" value="" placeholder="Search..." class="form-text form-autocomplete" />
+</div>
+<input class="autocomplete" type="hidden" id="edit-keys-autocomplete" value="/searchsolr/autocomplete" disabled="disabled" /><input type="hidden" name="sort" id="edit-sort" value="0"  />
+<input type="hidden" name="types" id="edit-types" value="0"  />
+<input type="hidden" name="forthcoming" id="edit-forthcoming" value="1"  />
+<input type="hidden" name="available" id="edit-available" value="1"  />
+<input type="hidden" name="count" id="edit-count" value="20"  />
+<input type="submit" name="op" id="edit-submit-1" value="Go"  class=" form-submit" />
+
+</div></form>
+																		                </div>
+								        </div>
+							        									</div>
+									<!-- /#top_banner -->
+		   					 	</div>
+		   					 	<!--/#header -->		   					 	
+		   					 			   					 	
+																<div id="breadcrumb">
+									<div class="inner">
+																					<div class="breadcrumb"><a href="/">Home</a>  >  <a href="/article-network">Articles</a>  >  <a href="/Networking%20%2526amp%3B%20Telephony">Networking &amp; Telephony</a>  >  <a href="/article/bitcoins%E2%80%93pools-and-mining" class="active">Bitcoins – Pools and Mining</a></div>												
+									</div>
+								</div>
+														
+														<div id="secondary">
+					            <div class="inner">
+									
+
+
+<div id="block-block-27" class="block block-block region-odd odd region-count-1 count-1 ">
+  <div class="block-inner">
+    
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <a href="/account">My Account</a> | 
+<a href="/newsletters">Newsletters</a> |
+<a href="/user-groups">User Groups</a> | 
+<a href="/contact">Contact</a> | 
+<a href="/about">About Us</a>      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+								</div> 
+				            </div>
+				            				            
+				            <div class='clear'></div>
+	
+														    						    						
+						    	
+													<div id="main-container">
+						
+														<div id="sidebar-left" class="region region-left">
+								
+
+
+<div id="block-block-2" class="block block-block region-odd even region-count-1 count-2 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+		<a href="/books" class="block-header-link">	
+		Book Categories		</a>		</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <p><a href='/books-a-z'>A-Z List Of Books + eBooks</a><br /></p><p><a href='/books/open-source'>Open Source Books + eBooks</a><br /></p><p><a href='/books/enterprise'>Enterprise Books + eBooks</a><br /></p><hr /><p><a href='/recently-published-books'>Latest Books + eBooks</a><br /></p><p><a href='/forthcoming-titles'>Future Books + eBooks</a><br /></p><p><a href='http://www.packtpub.com/lite-editions?utm_source=lite_edition_campaign&utm_medium=campaign_page&utm_campaign=lite_edition'>eBooks under $10</a></p><p><a href='http://www.packtpub.com/article/packt-classics'>Packt Classics</a></p><hr /><p><a href="/books">All Books <span class='category-count'>(2266)</span><br /></a></p><p><a href="/books/application-development">Application Development <span class='category-count'>(318)</span><br /></a></p><p><a href="/books/big-data-and-business-intelligence">Big Data and Business Intelligence <span class='category-count'>(187)</span><br /></a></p><p><a href="/books/business-skills">Business Skills <span class='category-count'>(13)</span><br /></a></p><p><a href="/books/cms-and-ecommerce">CMS and eCommerce <span class='category-count'>(242)</span><br /></a></p><p><a href="/books/enterprise-products-and-platforms">Enterprise Products and Platforms <span class='category-count'>(366)</span><br /></a></p><p><a href="/books/game-development">Game Development <span class='category-count'>(131)</span><br /></a></p><p><a href="/books/instant">Instant <span class='category-count'>(228)</span><br /></a></p><p><a href="/books/mobile-application-development">Mobile Application Development <span class='category-count'>(104)</span><br /></a></p><p><a href="/books/networking-and-servers">Networking and Servers <span class='category-count'>(167)</span><br /></a></p><p><a href="/books/other">Other <span class='category-count'>(304)</span><br /></a></p><p><a href="/books/virtualization-and-cloud">Virtualization and Cloud <span class='category-count'>(85)</span><br /></a></p><p><a href="/books/web-development">Web Development <span class='category-count'>(418)</span><br /></a></p>      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-packt_subscribe-0" class="block block-packt_subscribe region-even odd region-count-2 count-3 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Packt Updates				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        Join now and receive free downloads, offers and updates.
+<div class="block-form-newsletters"><form action="newsletters?justloggedin=1"  accept-charset="UTF-8" method="post" id="packt-subscribe-block-form-function">
+<div><input type="hidden" name="nologin" id="edit-nologin" value="0"  />
+<input type="hidden" name="first" id="edit-first" value="first name"  title="first name" />
+<input type="hidden" name="last" id="edit-last" value="last name"  title="last name" />
+<div class="form-item" id="edit-mail-wrapper">
+ <input type="text" maxlength="128" name="mail" id="edit-mail" size="20" value="email address" title="email address" class="form-text required" />
+</div>
+<input type="hidden" name="pass" id="edit-pass" value=""  />
+<input type="hidden" name="confirm_password" id="edit-confirm-password" value=""  />
+<input type="hidden" name="unsubscribe" id="edit-unsubscribe" value=""  />
+<input type="hidden" name="form_build_id" id="form-78e2234e53a0ca0ca57b5bc654afe714" value="form-78e2234e53a0ca0ca57b5bc654afe714"  />
+<input type="hidden" name="form_id" id="edit-packt-subscribe-block-form-function" value="packt_subscribe_block_form_function"  />
+<input type="submit" name="op" id="edit-submit" value="Subscribe"  class="subscribe-form-submit form-submit" />
+<input type="hidden" name="upgrade" id="edit-upgrade" value="Upgrade"  />
+
+</div></form>
+</div>      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-views-accordion-block_3" class="block block-views region-odd even region-count-3 count-4 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Hot pre-orders				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <div class="view view-accordion view-id-accordion view-display-id-block_3 view-dom-id-2 block-views">
+    
+      <div class="view-filters">
+          </div>
+  
+  
+      <div class="view-content">
+      <div class="item-list">
+    <ul>
+          <li class="views-row views-row-1 views-row-odd views-row-first">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/9714OS_mockupcover_normal_1.jpg" alt="Moodle 2.7 LTS Administration [Third Edition]" title="Moodle 2.7 LTS Administration [Third Edition]"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/moodle-2-7-lts-administration-third-edition/book">Moodle 2.7 LTS Administration</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-2 views-row-even">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/3643OS_mockupcover_normal_0.jpg" alt="Mastering Hadoop: RAW" title="Mastering Hadoop: RAW"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/mastering-hadoop/book">Mastering Hadoop: RAW</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-3 views-row-odd">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/9324OS_mockupcover_normal.jpg" alt="Mastering Python Design Patterns" title="Mastering Python Design Patterns"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/mastering-python-design-patterns/book">Mastering Python Design Patterns</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-4 views-row-even">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/9503OT_Mockup_cb.jpg" alt="ArcGIS for Desktop Cookbook" title="ArcGIS for Desktop Cookbook"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/arcgis-for-desktop-cookbook/book">ArcGIS for Desktop Cookbook</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-5 views-row-odd views-row-last">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/4219EN_mockupcover_normal_0.jpg" alt="Mastering ServiceNow Administration: RAW" title="Mastering ServiceNow Administration: RAW"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/mastering-servicenow-administration/book">Mastering ServiceNow Administration: RAW</a></span>
+  </div>
+  <div class="clear"></div></li>
+      </ul>
+</div>    </div>
+  
+  
+  
+  
+  
+  
+</div>       </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-block-48" class="block block-block region-even odd region-count-4 count-5 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Subscribe to PacktLib				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <p align="center">
+<div class="packtlib-subscribe-logo"></div>
+</p>
+<p align="center">PacktLib is Packt’s online digital book library. PacktLib provides you with the opportunity to view and search across every single book Packt publishes, within seven days after publication.</p>
+<p align="center"><a href="http://PacktLib.PacktPub.com" target="_blank" style="color:#F68C23">Click here</a></p>
+      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+							</div> 
+							<!-- /#sidebar-left -->
+													
+													
+							<div id="main" class="no-header-blocks">
+							
+															   	<div id="content">
+									<div id="content-inner">
+									
+																				
+										<div id="content-inner-inner">
+										
+						
+																					
+																			        	<div id="content-header">
+								        		<a name="main-content" id="main-content"></a>
+						          										          					<h1 class="title">Bitcoins – Pools and Mining</h1>
+						          										        			</div>
+											<!-- /#content-header -->
+																						
+									        <div id="content-area">
+																																														        
+<div class="article-summary version-b">
+	
+								<div class="article-book-block">
+		<div class="article-book-header">Exclusive offer: get <b>50%</b> off this eBook here</div>
+		<div class="article-book-image">
+			
+			<a title="Raspberry Pi Server Essentials" href="/raspberry-pi-server-essentials/book"><img src="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/productview/4696OS_Raspberry Pi_cov.jpg" alt="Raspberry Pi Server Essentials" title="Raspberry Pi Server Essentials"  class="bookimage" /></a>
+		</div>
+		<div class="article-book-info">
+			<h3>Raspberry Pi Server Essentials <span class="discount"> &#8212; Save 50%</span></h3>
+			<p class="article-book-summary">
+				Transform your Raspberry Pi into a server for hosting websites, games, or even your Bitcoin network with this book and ebook			</p>
+			<div class="article-book-price-container">
+				<span class="old-book-price">
+					$17.99				</span>&nbsp;&nbsp;
+				<span class="new-book-price">
+					$9.00				</span>
+				<div style="clear:both"></div>
+				</div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="cta-container">
+	
+					<div style="position: relative;">
+						<form action="/add_to_cart/16250" method="post" id="article_conversion_form">
+							<input type="hidden" name="nids" value="16250" />
+							<input type="hidden" name="fa" value="true" />
+							<input type="button" class="form-submit cta-button" name='go' value="Buy Now" onclick="_paq.push(['_trackEvent', 'Article Conversion', 'eBook', 'Raspberry Pi Server Essentials']); setTimeout(function() { $('#article_conversion_form').submit(); }, 1000); return false;">
+						</form>
+						<!-- <a href="/add_to_cart_upsell/16250?fa=1" class="cta-button">Buy</a>-->
+											</div>			
+					<div style="clear:both"></div>
+					
+		</div>
+	</div>
+	
+	
+	
+
+	<div class="custom-subtitle">
+	by
+	 Piotr J. Kula  | <span class="date-display-single">February 2014</span> |
+	Networking & Telephony Open Source Web Development 	</div>
+<p>This article by <b>Piotr J. Kula</b>, author of the book <a target="_blank" href="http://www.packtpub.com/raspberry-pi-server-essentials/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Raspberry Pi Server Essentials</a>, will illustrate the concept of cryptographic currencies, and we will try and understand what Bitcoin is. We will set up a wallet and learn how to send and receive coins.</p>
+<p>In this article, we will cover the following topics:</p>
+<ul>
+<li>Installing Bitcoind</li>
+<li>Bitcoin wallet</li>
+<li>Creating a Bitcoin address</li>
+<li>Mining for Bitcoins</li>
+<li>Mining with ASICMiner</li>
+</ul>
+
+</div>
+<div class='clear'></div>
+
+<p style="margin-left: 40px; margin-right: 40px;" align="center"><i>(For more resources related to this topic, see <a href="#more">here</a>.)</i></p>
+<h1>Installing Bitcoind</h1>
+<p>Bitcoind is the software that connects you to other nodes in the network. There is no single point of failure, and the more nodes there are the faster and more secure the network becomes. Peers are rewarded with a transaction fee for the first validation of a transaction and are assigned randomly.</p>
+<p>After installing Bitcoind by using the following command, we have to synchronize it with the network, which means downloading millions of transactions exceeding a gigabyte in size to your Pi.</p>
+<pre style="margin-left: 40px;"><p style="white-space: pre;"><b>sudo apt-get install bitcoind</b></p></pre><p>Before running the background daemon, you need to consider changing the data directory as the database files can take up many gigabytes of space. Mount a new storage place and always start Bitcoind with the following line:</p>
+<pre style="margin-left: 40px;"><p style="white-space: pre;"><b>bitcoind &ndash;datadir /mnt/HDD/bitcoin &ndash;daemon</b></p></pre><p>After a few minutes, you can type in the following basic commands. You will need to wait until the entire block chain data is downloaded before you can do anything useful. During this time, the Pi might become less responsive, use a lot of bandwidth, and create a large amount of data in the data directory. This can take up to 12 hours.</p>
+<pre style="margin-left: 40px;"><p style="white-space: pre;"><b>bitcoind getinfo<br />bitcoind getblockcount</b></p></pre><p style="margin-left:40px;margin-right:40px"><i>If you already have most of the block chain data downloaded on another computer, you can just copy all the data to the Pi. You can even have the same wallet and addresses in both locations. It is not recommended though, as that means it's twice as easy for hackers to get your wallet. Always encrypt your wallet with a very strong password and keep the password and wallet backup in a safe, offline place&mdash;like CDs or USB drives. If you lose the password, you lose access to the wallet, forever.</i></p>
+<h1>Bitcoin wallet</h1>
+<p>You need to generate addresses where other people can send you funds. Theoretically, you can generate an unlimited number of addresses, but practically managing all those addresses would become difficult. Bitcoin, by default, allows you to have a hundred addresses. You always get a default wallet address, which counts as the first address, and this address will receive network fees if you process any transactions for the first time.</p>
+<p style="margin-left:40px;margin-right:40px"><i>Cryptocurrency transactions cannot be reversed. Sending coins to the incorrect address means your coins will be lost forever. On the other hand, it also protects you if you are receiving coins from somebody else, as they cannot reverse the transaction.</i></p>
+<p>These addresses are globally unique, and can never be generated by anybody else in the universe or beyond it. It can get stolen by hackers or viruses, though. Imagine losing your wallet in real life. Unless a kind person returns it to you, the contents of that wallet will be lost forever.</p>
+<p style="margin-left:40px;margin-right:40px"><i>You can back up your wallet file, but you should store it on any two USB flash drives or CDs, and store it in a safety deposit box at home or in the bank. You should never be tempted to copy your wallet to any kind of online storage or backup services, especially if it's unencrypted.</i></p>
+<h1>Creating a Bitcoin address</h1>
+<p>These examples will work with the command line, as you can re-use them to display data on your web server. All online wallets use the Bitcoind API to generate addresses and manage your wallet. As a word of warning, you should never use online wallet services as almost all of them have been hacked, resulting in massive numbers of coins getting stolen.</p>
+<p style="margin-left:40px;margin-right:40px"><i>You can download the Bitcoin-QT client and run it in X if you prefer an easy way to manage your wallet.</i></p>
+<p>The following command lines will create a new receiving address and then list all your addresses:</p>
+<pre style="margin-left: 40px;"><p style="white-space: pre;"><b>bitcoind getnewaddress<br />bitcoind listaccounts</b></p></pre><h2></h2>
+<h2>Receiving Bitcoins</h2>
+<p>As long as you know your address, people can send you Bitcoins. You do not need to have Bitcoind running all the time as the transactions are processes and are stored in the network. It is just very important to keep a backup of your wallet.dat file if you want to send the Bitcoins somewhere else, like an online exchange.</p>
+<h2>Sending Bitcoins</h2>
+<p>As long as you have coins in your wallet, you can easily send coins to another address by using the sendtoaddress command followed by the address and the amount. Here is an example sending 0.01 Bitcoins to the author's tip jar:</p>
+<pre style="margin-left: 40px;"><p style="white-space: pre;"><b>bitcoind sendtoaddress 126HA8L1dP7fr7ECu2oEMtz6JpDRnzqp9N 0.01</b></p></pre><p>You will get a response, which is a transaction ID. If you do not, the transaction has failed. You need to have at least 0.0001 Bitcoins reserved for the transaction fees. If you are sending large amounts of coins, this transaction fee will also become more expensive.</p>
+<h2>The value of Bitcoins</h2>
+<p>In July 2010, the value of Bitcoin was below 1 USD. Investing in Bitcoins was very controversial and a huge risk, since it was difficult to predict if the currency would be accepted or rejected by the community. As of writing this article, the Bitcoin value has exceeded 1100 USD.</p>
+<p>You can search the Internet and find interesting articles on early adopters mining Bitcoins, or buying a few hundred dollars and leaving their wallets lying around. Just like one person in the UK who threw away his hard drive with 7500 BTC stored on it. After going public, thousands of people flocked to the public dump ground to search for the hard drive. Other stories include a student who invested a few hundred dollars in 2010, and sold them for hundreds of thousands of dollars. With such large amounts, it is important to consult your local TAX authority or council.</p>
+<p>The trend seems to be that the more people find out about Bitcoins and the more media publicity it gets, the higher the value of the currency rises. This also looks like it applies to alternative currencies such as Litecoin.</p>
+<h1>Summary</h1>
+<p>We have seen what Bitcoin is. We have seen what are the uses of Bitcoins and also it's value. We have also seen how to send and receive Bitcoins. I hope this has given you a better idea about what Bitcoins really are.</p>
+<h2>Resources for Article:</h2>
+<hr size="1" noshade="noshade" />
+<p><b><a name="more"><span style="color: #000000;">Further resources on this subject:</span></a></b></p>
+<ul>
+<li><a href="http://www.packtpub.com/article/clusters-parallel-computing-and-raspberry-pi-%E2%80%93-brief-background" target="_blank">Clusters, Parallel Computing, and Raspberry Pi &ndash; A Brief Background</a> [Article]</li>
+<li><a href="http://www.packtpub.com/article/creating-a-file-server-samba" target="_blank">Creating a file server (Samba)</a> [Article]</li>
+<li><a href="http://www.packtpub.com/article/our-first-project-basic-thermometer" target="_blank">Our First Project &ndash; A Basic Thermometer</a> [Article]</li>
+</ul>
+<hr size="1" noshade="noshade" />
+
+
+<div class="book-ad">
+<table style= border="0" width="100%" cellspacing="0" cellpadding="5">
+<tbody>
+<tr>
+<td width="100" valign="center">
+<a href="/raspberry-pi-server-essentials/book"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/productview/4696OS_Raspberry Pi_cov.jpg" alt="Raspberry Pi Server Essentials" title="Raspberry Pi Server Essentials"  class="imagecache imagecache-productview" width="125" height="151" /></a></td>
+
+<td style="margin-left: 5px" valign="top" >
+Transform your Raspberry Pi into a server for hosting websites, games, or even your Bitcoin network with this book and ebook 
+</td>
+</tr>
+</tbody>
+</table>	<div style="position: absolute; right: 1px; margin-top: -110px; background-color: white; margin-right: 0px; width: 463px;">
+		Published: February 2014 <br />
+		eBook Price: $17.99<br />
+					Book Price: $29.99<br />
+			
+				<a href="/raspberry-pi-server-essentials/book">See more</a>
+		<div style="position: relative; margin-left: 136px; margin-top: -50px;">
+			<a href="/raspberry-pi-server-essentials/book" onclick="$('.buynow-dialogue-outerp').hide(); $('#buynow-dialogue-16251').show(); return false;">
+			<img src="/sites/all/themes/packt_new/images/pp/buy-button.png" alt="Buy It Now" class="buynow"></a>
+		</div>
+	</div>		 
+	<div id="buynow-dialogue-16251" class="buynow-dialogue-outerp" style="position:relative; margin-top: -250px; margin-left: 44px; height: 250px;">
+		<div class="buynow-dialogue">
+			<a name="p-16251"></a>
+			<div style="float: right">
+			<a style="color: #111; font-size: smaller; text-decoration: none;" href="#" onclick="$('#buynow-dialogue-16251').hide(); return false;">
+			close <img src="/sites/default/files/dialogueclose.gif" alt="x" style="margin-top: 2px;">
+			</a>
+		</div> 
+		<div style="clear:both"></div>
+		<div class="dialogue-text">
+			Select your format and quantity:
+		</div> 
+		<div style="clear:both"></div> 
+	
+		<form id="buynow-16251" type="POST">
+	
+				<label class="dialogue-label" for="select-ebook-16251">Book</label>
+		<select id="select-book-16251" name="book-qty" class="book-qty dialogue-select">
+			<option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>		</select>	
+			<div style="clear:both"></div>
+			<label class="dialogue-label" for="select-ebook-16251">eBook</label>
+		<select id="select-ebook-16251" name="ebook-qty" class="ebook-qty dialogue-select">
+			<option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>		</select>
+		<div style="clear:both"></div>
+			<div class="dialogue-addtocart">
+			<a href="#page" onclick="_paq.push(['_trackEvent', 'FromArticlePage', 'ArticleContinue']); $('.buynow-dialogue-outerp').hide(); return packt_ajax_add_multi(16251,true);">
+				<img src="/sites/default/files/addandcontinue.png" alt="Add and continue">
+			</a>
+			<div style='width:1px; height: 0.5em;'></div>
+			<a href="#page" onclick="_paq.push(['_trackEvent', 'FromArticlePage', 'ArticleCheckout']); $('.buynow-dialogue-outerp').hide(); return packt_ajax_add_multi(16251);">
+				<img src="/sites/default/files/addandcheckout.png" alt="Add and checkout">
+			</a>
+		</div>
+		<input type="hidden" class="nid" value="16251">
+		</form>
+	
+		</div>
+	
+		<div class="buynow-dialogue-bottom"></div>
+	</div>
+
+
+
+</div>
+
+
+
+
+<h2>About the Author : </h2><br /><div class="node node-type-profiles front-node" id="node-16245">
+  <div class="node-inner-0"><div class="node-inner-1">
+    <div class="node-inner-2"><div class="node-inner-3">
+
+              <h2 class="title"><a href="/authors/profiles/piotr-kula">Piotr J. Kula</a></h2>
+      
+      
+      
+      
+
+      
+      <div class="content clearfix">
+        <p>Piotr J. Kula developed an interest in computers when he was six years old. He was introduced to the world of technology by his father who came from an electronics engineering background. Piotr has lived, studied, and gained experience in three countries. Today, he is a Microsoft Certified Professional and works with reputed companies offering complex software solutions. In his spare time, he enjoys working on electrical engineering projects and also enjoys doing some home improvement projects with his wife.</p>
+      </div>
+
+      
+
+    </div></div>
+  </div></div>
+</div> <!-- /node -->
+
+
+
+<h2>Books From Packt </h2>
+<hr />
+<table style="border-collapse: collapse;" border="0" cellpadding="3" width="588">
+<tbody>
+<tr>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-networking-cookbook/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/4605OT_Raspberry%20Pi%20Networking%20Cookbook_cov.jpg" border="0" alt="Raspberry Pi Networking Cookbook" title="Raspberry Pi Networking Cookbook" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-networking-cookbook/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Raspberry Pi Networking Cookbook</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-home-automation-with-arduino/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/5862OT_Raspberry%20Pi%20Home%20Automation_Mini_cov.jpg" border="0" alt="Raspberry Pi Home Automation with Arduino" title="Raspberry Pi Home Automation with Arduino" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-home-automation-with-arduino/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Raspberry Pi Home Automation with Arduino</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-gaming/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/3231OS_cov.jpg" border="0" alt="Instant Raspberry Pi Gaming [Instant]" title="Instant Raspberry Pi Gaming [Instant]" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-gaming/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Instant Raspberry Pi Gaming [Instant]</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-cookbook-for-python-programmers/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/6623OT_Mockup_cb_0.jpg" border="0" alt="Raspberry Pi Cookbook for Python Programmers" title="Raspberry Pi Cookbook for Python Programmers" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-cookbook-for-python-programmers/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Raspberry Pi Cookbook for Python Programmers</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-super-cluster/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/6195OS.jpg" border="0" alt="Raspberry Pi Super Cluster" title=" Raspberry Pi Super Cluster" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-super-cluster/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> Raspberry Pi Super Cluster</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-for-secret-agents/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/5787OT.jpg" border="0" alt=" Raspberry Pi for Secret Agents" title=" Raspberry Pi for Secret Agents" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-for-secret-agents/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> Raspberry Pi for Secret Agents</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/raspberry-pi-media-center/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/3022OS.jpg" border="0" alt="Raspberry Pi Media Center" title="Raspberry Pi Media Center" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/raspberry-pi-media-center/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Raspberry Pi Media Center</a> </span></p>
+</td>
+<td valign="top" width="68">
+<p align="center"><span style="font-family: Verdana; font-size: xx-small;"> <a href="http://www.packtpub.com/learning-fuelphp-for-effective-php-development/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima"> <img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/0366OS_Mini.jpg" border="0" alt="Learning FuelPHP for Effective PHP Development" title="Learning FuelPHP for Effective PHP Development" width="49" height="61" /></a> <br /> <a href="http://www.packtpub.com/learning-fuelphp-for-effective-php-development/book/ps/raspberrypiserver-abr1/0214?utm_source=ps_raspberrypiserver_abr1_0214&amp;utm_medium=content&amp;utm_campaign=paurnima">Learning FuelPHP for Effective PHP Development</a> </span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+
+									        </div>
+									        <!-- /#content -->
+									
+
+									        									
+									        									        
+									    </div>
+								  		<!-- /#content-inner-inner -->
+							  		</div>
+							  		<!-- /#content-inner -->
+								</div> 
+								<!-- /#content -->
+							</div> 
+							<!-- #main -->
+						
+						    					        <div id="sidebar-right" class="region region-right">
+					        	
+<div id="block-addthis-0" class="block block-addthis region-odd even region-count-1 count-6 chromeless">
+  <div class="block-inner">  
+    <div class="block-content">
+      <div class="block-content-inner">
+      	<p class='large'>Share this page:</p>
+        <div class='addthis_toolbox addthis_default_style ' ><a class='addthis_toolbox_item addthis_button_facebook'></a><a class='addthis_toolbox_item addthis_button_twitter'></a><a class='addthis_toolbox_item addthis_button_linkedin'></a><a class='addthis_toolbox_item addthis_button_reddit'></a><a class='addthis_toolbox_item addthis_button_google_plusone'></a></div>      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-block-117" class="block block-block region-even odd region-count-2 count-7 chromeless">
+  <div class="block-inner">
+    
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <p><a href="https://www.entrust.net/customer/profile.cfm?domain=www.packtpub.com" target="_blank" class="buy-with-confidence" /></a></p>
+      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+<div id='block-uc_cart-0' class='block block-uc_cart region-odd odd region-count-1 count-1'><div class='block-inner'><div class='block-heading'><h2 class='block-title'><a href='/cart' class='block-header-link'>Your Shopping Cart</a></h2></div><div class='block-content'><div class='block-content-inner'><div id='cart-block-contents'><div class='no-items'>There are no items in your cart.</div></div><div class='links'><span class='cart-block-checkout first last plinks'><a href='/cart/checkout' rel='nofollow'>Checkout</a></span><div class='clear'></div></div></div></div></div></div>
+
+
+<div id="block-views-test_view-block_1" class="block block-views region-odd even region-count-3 count-8 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Bestsellers				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <div class="view view-test-view view-id-test_view view-display-id-block_1 view-dom-id-1 block-views">
+    
+      <div class="view-filters">
+          </div>
+  
+  
+      <div class="view-content">
+      <div class="item-list">
+    <ul>
+          <li class="views-row views-row-1 views-row-odd views-row-first">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/4828OS_Moodle 2.0 Course Conversion.jpg" alt="Moodle 2.0 Course Conversion Beginner&#039;s Guide" title="Moodle 2.0 Course Conversion Beginner&#039;s Guide"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/moodle-2-0-course-conversion/book">Moodle 2.0 Course Conversion Beginner&#039;s Guide</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-2 views-row-even">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/1840EXP_Unity 3 3D Game Development by Example Beginners Guide_1.jpg" alt="Unity 3.x Game Development by Example Beginner&#039;s Guide" title="Unity 3.x Game Development by Example Beginner&#039;s Guide"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/unity-3-x-game-development-by-example-beginners-guide/book">Unity 3.x Game Development by Example Beginner&#039;s Guide</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-3 views-row-odd">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/5248OS.jpg" alt="Backbone.js Testing" title="Backbone.js Testing"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/backbonejs-testing/book">Backbone.js Testing</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-4 views-row-even">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/8642EN_Microsoft BizTalk ESB Toolkit 2.1_MINI_0.jpg" alt="Microsoft BizTalk ESB Toolkit 2.1" title="Microsoft BizTalk ESB Toolkit 2.1"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="34" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/microsoft-biztalk-esb-toolkit-2-1/book">Microsoft BizTalk ESB Toolkit 2.1</a></span>
+  </div>
+  <div class="clear"></div></li>
+          <li class="views-row views-row-5 views-row-odd views-row-last">  
+  <div class="views-field-field-image-fid">
+                <div class="field-content"><img src='//dgdsbygo8mp3h.cloudfront.net/sites/default/files/blank.gif' data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/imagecache/uc_thumbnail/5442OT.jpg" alt="HTML5 and CSS3 Responsive Web Design Cookbook" title="HTML5 and CSS3 Responsive Web Design Cookbook"  class="imagecache imagecache-uc_thumbnail imagecache-default imagecache-uc_thumbnail_default" width="33" height="41" />
+</div>
+  </div>
+    
+  <div class="views-field-title">
+                <span class="field-content"><a href="/html5-and-css3-responsive-web-design-cookbook/book">HTML5 and CSS3 Responsive Web Design Cookbook</a></span>
+  </div>
+  <div class="clear"></div></li>
+      </ul>
+</div>    </div>
+  
+  
+  
+  
+  
+  
+</div>       </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-block-136" class="block block-block region-even odd region-count-4 count-9 ">
+  <div class="block-inner">
+    
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <p align="center"><a href="http://www.packtpub.com/title-idea-submission-form?utm_source=title_idea_submission&amp;utm_medium=homepage_block&amp;utm_campaign=new_title_ideas"><img src="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/os_mockupcover_cb.jpg" data-original="//dgdsbygo8mp3h.cloudfront.net/sites/default/files/os_mockupcover_cb.jpg" height="93" width="75" alt="Cover Image" class='lazy' /><br />
+<p align="center"><font size="2">Click here to tell us your idea for a new book, and you may see it published</font></p></a></p>
+
+      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+
+
+
+<div id="block-views-article_faq-block_1" class="block block-views region-odd even region-count-5 count-10 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Article Network FAQ				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <div class="view view-article-faq view-id-article_faq view-display-id-block_1 view-dom-id-2 block-views">
+    
+      <div class="view-filters">
+          </div>
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field-field-article-summary-value">
+                <div class="field-content"><p>Want to know more about Packt's Article Network? Interested in contributing your article ideas?</p>
+<p>Please visit our FAQ for more information.</p>
+</div>
+  </div>
+  
+  <div class="views-field-view-node">
+                <span class="field-content"><a href="/article/article-network-faq">See more</a></span>
+  </div>
+  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>       </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+					        </div>
+					        <!-- /#sidebar-right -->
+						  							  	
+							<div style="clear: both;"></div>
+						</div>
+						<!-- /#main-container -->
+						
+						
+												</div>
+					
+												<div id="footer" class="region region-footer">
+							
+
+
+<div id="block-block-30" class="block block-block region-odd odd region-count-1 count-11 ">
+  <div class="block-inner">
+    
+    	<div class="block-heading">
+	    <h2 class="block-title">
+			
+		Footer Copyright				</h2>
+	</div>
+  
+    <div class="block-content">
+      <div class="block-content-inner">
+        <div><a href="/article/faq" class="packt-new-footer">FAQ</a> | <a href="/contact" class="packt-new-footer">Contact Us</a> | <a href="/about" class="packt-new-footer">About Us</a> | <a href="/ordering" class="packt-new-footer">Ordering Information</a> | <a href="/article/links"  class="packt-new-footer">Recommended Links</a> | <a href="/article/packtpubcom_terms_and_conditions_of_use" class="packt-new-footer">Terms &amp; Conditions</a> | <a href="/about-us" class="packt-new-footer">Our Address</a></div>
+<p class="packt-new-footer2">This site requires cookies to be enabled in your browser. View Packt's cookie policy <a href="/page/packts-cookie-policy">here</a>. View Packt's privacy policy <a href="/article/packtpubcom_privacy_policy">here</a>.</p>
+      </div>
+    </div>
+  </div> 
+</div> <!-- /block -->
+							<div style="width:992px; clear: both; height: 340px"></div>
+						</div>
+												<!-- /#footer -->		
+				</div>
+			</div>
+			<div id="shadow-bottom"></div>
+	</div> 
+	<!--/#page -->
+
+	<div id="support-menu" style="left: 307px;">
+		<div id="support-overlay"></div>
+		<div style="width: 220px;float:left;margin-bottom:10px;">
+			<a href="/support">Code Download and Errata</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;">
+			<a href="/account/title/upgrade-terms-and-conditions" style="font-weight: bold;">Packt Anytime, Anywhere</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;margin-left:15px;">
+			<a href="/account/title/register">Register Books</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;margin-left:15px;">
+			<a href="/account/title/upgrade">Print Upgrades</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;margin-left:15px;">
+			<a href="/account/files">eBook Downloads</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;">
+			<a href="/support-complaints-and-feedback">Video Support</a>
+		</div>
+		<div style="width: 220px;float:left;margin-bottom:10px;">
+			<a href="/contact">Contact Us</a>
+		</div>
+	</div>
+
+	<div id="awards-menu">
+		<div class="lower">
+			<div id="tab-overlay"></div>
+			<div style="width:120px;float:left">
+				<a href="/open-source-awards-home" class="title">Awards</a>
+				<a href="/open-source-awards-home/voting-stage">Voting</a>
+				<a href="/open-source-awards-home/nominations">Nominations</a>
+				<a href="/article/open-source-cms-award-previous-winners">Previous Winners</a>
+			</div>
+			<div style="width:180px;float:left">
+				<a href="/open-source-awards-home/open-source-awards-judges" class="title">Judges</a>
+				<a href="/open-source-awards-home/open-source-cms-award-judges">Open Source CMS</a>
+				<a href="/open-source-awards-home/hall-fame-judges">Hall Of Fame CMS</a>
+				<a href="/open-source-awards-home/most-promising-open-source-project-award-judges">Most Promising Open Source Project</a>
+				<a href="/open-source-awards-home/open-source-ecommerce-applications-judges">Open Source E-Commerce Applications</a>
+				<a href="/open-source-awards-home/open-source-javascript-library-judges">Open Source JavaScript Library</a>
+				<a href="/open-source-awards-home/open-source-graphics-software-judges">Open Source Graphics Software</a>
+			</div>
+	        <div style="width:180px;float:left">
+	            <div class="title">Resources</div>
+	            <a href="/open-source-awards-home/open-source-cms-resources">Open Source CMS</a>
+	            <a href="/open-source-awards-home/hall-of-fame-cms-resources">Hall Of Fame CMS</a>
+	            <a href="/open-source-awards-home/most-promising-open-source-project-resources">Most Promising Open Source Project</a>
+	            <a href="/open-source-awards-home/open-source-ecommerce-applications-resources">Open Source E-Commerce Applications</a>
+	            <a href="/open-source-awards-home/open-source-javascript-libraries-resources">Open Source JavaScript Library</a>
+	            <a href="/open-source-awards-home/open-source-graphic-software-resources">Open Source Graphics Software</a>
+	        </div>
+        </div>
+	</div>
+	
+	
+	<div style="width:980px;margin:0px auto">
+		<div id="books-menu">
+			<div class="lower">
+				<div id="tab-overlay"></div>
+				
+<div class='books-menu-column '>
+<div class='inner'>
+	<p><a href="/books"><b>All Books</b> <span class='category-count'>(2292)</span><br /></a></p>
+	<p><a href="/recently-published"><b>Latest Releases</b> <span class='category-count'></span><br /></a></p>
+	<p><a href="/books/video"><b>Video</b> <span class='category-count'>(73)</span><br /></a></p>
+	<p><a href="/books/application-development">Application Development <span class='category-count'>(321)</span><br /></a></p>
+</div>
+</div>
+<div class='books-menu-column '>
+<div class='inner'>
+	<p><a href="/books/big-data-and-business-intelligence">Big Data and Business Intelligence <span class='category-count'>(190)</span><br /></a></p>
+	<p><a href="/books/business-skills">Business Skills <span class='category-count'>(13)</span><br /></a></p>
+	<p><a href="/books/cms-and-ecommerce">CMS and eCommerce <span class='category-count'>(244)</span><br /></a></p>
+	<p><a href="/books/enterprise-products-and-platforms">Enterprise Products and Platforms <span class='category-count'>(372)</span><br /></a></p>
+</div>
+</div>
+<div class='books-menu-column '>
+<div class='inner'>
+	<p><a href="/books/game-development">Game Development <span class='category-count'>(139)</span><br /></a></p>
+	<p><a href="/books/instant">Instant <span class='category-count'>(228)</span><br /></a></p>
+	<p><a href="/books/mobile-application-development">Mobile Application Development <span class='category-count'>(104)</span><br /></a></p>
+	<p><a href="/books/networking-and-servers">Networking and Servers <span class='category-count'>(172)</span><br /></a></p>
+</div>
+</div>
+<div class='books-menu-column last'>
+<div class='inner'>
+	<p><a href="/books/other">Other <span class='category-count'>(308)</span><br /></a></p>
+	<p><a href="/books/virtualization-and-cloud">Virtualization and Cloud <span class='category-count'>(85)</span><br /></a></p>
+	<p><a href="/books/web-development">Web Development <span class='category-count'>(422)</span><br /></a></p>
+</div>
+</div>				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+
+	
+		
+	<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+$(document).ready(function(){ 
+					_paq.push(['_trackEvent', 'Article Journey B', 'Bitcoins – Pools and Mining', Drupal.uid.toString() ]);
+					$('.book-ad .node a').click(function(){
+						_paq.push(['_trackEvent', 'Article Book Click Through', 'Bitcoins – Pools and Mining', Drupal.uid.toString() ]);
+						var url = $(this).attr('href');
+						setTimeout(function() { window.location = url; },100);
+						return false;
+					});
+					$('a#view-book').click(function(){
+						_paq.push(['_trackEvent', 'Article Book Click Through', 'Bitcoins – Pools and Mining', Drupal.uid.toString() ]);
+						var url = $(this).attr('href');
+						setTimeout(function() { window.location = url; },100);
+						return false;
+					});
+				});
+//--><!]]>
+</script>
+
+	<script type="text/javascript">
+		$(window).load(function() {
+        	$("img[data-original]").addClass("lazy");
+	        $("img.lazy").lazyload();
+			setTimeout(function() {
+				addthis_config = Drupal.settings.addthis.config_default; addthis_share = Drupal.settings.addthis.share_default;
+				if (typeof pageTracker != "undefined") {addthis_config.data_ga_tracker = pageTracker;}
+				var at = document.createElement("script"); at.type = "text/javascript"; at.async = true;
+				at.src = "//dgdsbygo8mp3h.cloudfront.net/sites/default/files/addthis/addthis_widget.js";
+				var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(at, s);
+			}, 5);
+			
+			
+			
+					});
+	</script>
+		
+		
+</body>
+</html>

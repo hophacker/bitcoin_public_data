@@ -1,0 +1,265 @@
+http://blog.nerdbank.net/2011/06/what-is-2-legged-oauth.html
+JMPInline: What is 2-legged OAuth?
+JMPInline
+Read up on .NET news, tips, cautions... and other areas of technological interest.
+Monday, June 13, 2011
+What is 2-legged OAuth?
+Although there is an official spec for OAuth 1.0, the spec only outlines what the community refers to as "3-legged OAuth". An alternative form of OAuth is loosely referred to as "2-legged OAuth", and there are far too many variants of this and not a single finalized spec to conform to. As a result, there are various ways and forms to achieve what people, correctly or incorrectly, refer to as 2-legged OAuth. In this post, I will attempt to clarify what (at least in my mind) 2-legged OAuth really means.
+I will not delve into the gritty details of the spec, but I will outline the flows and explain a bit. 3-legged OAuth
+First, let's start with the spec's description of the OAuth flow (3-legged). Here is an illustration:
+You can clearly see the 3 "legs" of this flow:
+The consumer (the application that wants to access data) creates an OAuth session by obtaining an unauthorized request token from the Service Provider (the host of the data).
+The consumer directs the user to the service provider, with the unauthorized request token in hand, so the service provider can ask the user to release the protected data to the consumer. The user logs in as necessary, and grants the requested permission. The service provider redirects the user back to the consumer.
+The same request token the consumer held before is now authorized. The consumer submits it to the service provider in a direct web request to exchange it for an access token. The access token may now be used by the consumer to submit requests to the service provider that will access the user's private data.
+By the way: notably absent from this 3-legged flow is the consumer obtaining its own "consumer key" and "consumer secret". The process of obtaining these is explicitly outside the scope of the OAuth spec altogether, and is therefore defined by each service provider. This process is only completed once per application, usually by the application developer him/herself, and is not considered one of the legs of OAuth.
+2-legged OAuth
+In 2-legged OAuth, the consumer tends to be installed on the user's machine, or is perhaps a widget embedded in a web page. The key scenario difference as you step into 2-legged OAuth is that the consumer is not requesting access to any user data. Instead, it is merely establishing an account with the service provider with no previous data in it at all, which it can subsequently use to store and later retrieve data. However, since this particular installation or widget has its own "space" on the service provider to store data, the consumer can obtain user data directly from the user him/herself, and send that to the service provider, and later retrieve it. So we see that although 2-legged OAuth doesn't start with any user data, it may end up with user data that the consumer itself puts there.
+Because no pre-existing user data is ever shared with the consumer, there is no need for the service provider to obtain authorization from the user. Therefore the second of the three legs can be entirely skipped. The modified flow is illustrated here:
+Note that the "6.2" section is absent, and the User role has absolutely no interaction, leaving only two legs. Section 6.1 is also slightly different: instead of the service provider issuing the consumer with an unauthorized request token, this request token is pre-authorized. The consumer can then immediately exchange it for an access token and discard the request token.
+At this point you may be saying to yourself: "That's silly -- why doesn't the service provider just issue the access token instead of a request token, and save another leg?" Well, it could, but then that wouldn't be OAuth any more. You could make the case that the above 2-legged flow is still OAuth because all the existing APIs and flows work as spec'd... the skipped legs doesn't alter the remaining legs so it requires little or no changes in a standard OAuth implementation to support 2-legged as well.
+What's not 2-legged OAuth
+I've recently seen a list of links that all claim to describe "2 legged OAuth", but are nothing like what I just described. Instead, what they describe is what I would refer to as 0 legged OAuth. That's right: none of the 3 legs are preserved in the flow they describe. Here is what they describe, in a nutshell:
+The consumer's developer obtains a consumer key and secret.
+(skips the entire OAuth 3-legged flow here)
+Consumer accesses protected resources by submitting OAuth signed requests for resources using its consumer key, an empty access token, and signs the request with the consumer secret and an empty access token secret.
+Remember from the 3-legged discussion above, that #1 in this list is not considered one of the three legs: it's a one-time step taken by the app developer. Nor is #3 in this list considered one of the 3 legs, as it is simply the actual request for the protected resource, and is alone repeated at each request.
+Also consider that whereas genuine 2-legged OAuth can end up with the consumer storing user data in a private consumer-user data store at the service provider, this 0-legged OAuth cannot end up with user data in its service provider account, because all instances of the consumer share exactly the same account, and that would mix all the users' data together.
+This 0-legged OAuth should look remarkably similar to username/password authentication, and in flow that's exactly what it is, where the consumer app is the owner of the username/password instead of the user. Why would someone go to the trouble of using/inventing 0-legged OAuth instead of just using username/password then? Two reasons: 1) it may be easier to leverage existing OAuth-supporting code than adding support for username/password, and 2) OAuth provides signatures that mitigates against replay attacks that HTTP basic authentication can be vulnerable to.
+What's else is not 2-legged OAuth
+Twitter has an interesting special case of OAuth as well, which also entirely skips the 3-legged flow, yet it is still per user. The user navigates his/her browser to twitter.com, and obtains an access token directly, with no request token preliminary step. The user copies and pastes (manually!) this access token into the consumer app, which then simply access the user's private data without ever going through any of the 3-legged flow. This also has been (incorrectly) referred to by some as "2 legged OAuth", but I hope this discussion can help you see this is a misconception.
+Summary
+Let's summarize terms and use cases then:
+3-legged OAuth: includes user authorization through a web browser for the consumer to access the end user's previously established private user data with a service provider.
+2-legged OAuth: skips user authorization, but still has non-empty request and access tokens. Consumers gain access to an empty account that they may then fill with user data the consumer obtains directly from the user.
+0-legged OAuth: skips all three legs by having consumers simply access their own protected resources at the service provider using OAuth signatures based on a private consumer key and secret. Analogous to username/password for the consumer app.
+Twitter access token option: also skips all three legs, but still provides access to a user's pre-existing data via a non-empty, manually obtained access token.
+Please comment with your thoughts, and indicate whether you agree or disagree. With so many application-specific half-specs out there claiming to describe "2-legged OAuth", I expect some comments to this post telling me I'm wrong. That's fine. I'd be interested in hearing you make a logical case for how you reduce OAuth 3-legs to 2-legs then. And to reiterate, I'm not invalidating the use cases of what these 0-legged flows are doing, I'm merely suggesting we call it like it is: "0-legged OAuth". Labels:
+OAuth
+20 comments:
+jondot8:54 AMHi Andrew,Thanks for the swift blog post. I'd like to hear more about the pre-authorized request token, it's interesting to me what is its purpose as opposed to handing out an access token directly.ReplyDeleteAndrew9:00 AM@jondot, handing out an access token directly wouldn't be OAuth any more. Suddenly both the service provider and consumer need a new contract saying "I'll ask for an access token without a request token and you'll give me one". There is no spec for that. By retaining the request token to access token flow, we reuse existing code paths, where the only special bit is the consumer doesn't take the user authorization step, and the service provider proactively authorizes the request token in a newly provisioned account. So it "fits" within the existing OAuth flow.ReplyDeleteDave9:01 AMSo how does Yelp's v2 fit into these models? Yelp gives you both a consumer key/secret AND token/secret pair.Details: http://www.yelp.com/developers/documentation/v2/authenticationReplyDeleteAndrew9:03 AM@Dave, I can't tell for sure because I don't have a yelp account, but from the link you included it looks like it's following Twitter's "skip to the access token" model.ReplyDeletejondot9:11 AM@Andrew, i understand. However, what I was referring to is having client key+secret, access token+secret in my hand, before coming to the service provider.Call it 0-leg -- but i'm trying to understand academically what does exchanging a request token gives. To me it looks like a null operation, however if there is any reason in terms of security i'd love to understand.ReplyDeleteAndrew9:19 AM@jondat, let's pick this discussion up here: Google WaveReplyDeleteBrett Grosvenor11:20 AMJust an interesting note, ING Direct seems to have taken Twitter's approach. I now no longer provide my customerId and pin to mint.com, but instead copy and paste a generated code from ING Direct's website. Perhaps it take's less work on the client side to implement, instead of going with a redirect solution.ReplyDeleteiaineh7:49 AM@Andrew, thanks again for a great piece of work. Do you have a sample of implementing 2-legged with DNOA? Presumably I need to reply a new token type from the the UnauthorizedTokenRequest. Is this included in DNOA?ReplyDeleteAndrew8:26 AM@iaineh, 2-legged OAuth support exists in DotNetOpenAuth for Service Providers. You simply need to authorize the request token at the time you issue it. 2-legged OAuth support at the consumer side is not entirely proven, but is tracked here https://github.com/AArnott/dotnetopenid/issues/20ReplyDeleteiaineh8:30 AMterrific, I'll have a good play just now. I'll chip in on the consumer side as I'll need this for testing too :) as always, cheers.ReplyDeleteVelLes3:44 PMGreat Article, I have been looking for 2-legged oauth2 description everywhere. So there are no official Protocol Drafts For this?ReplyDeleteMoin Ahmed11:22 AMHi Andrew,Thanks for a great explanation of 2-legged oAuth.According to oAuth 2.0 description here: http://hueniverse.com/2010/05/introducing-oauth-2-0/6 new flows have been added to oAuth 2.0 and 2-legged flow is among them as well.Could you share your thoughts on this?ReplyDeleteAndrew Arnott5:52 PMSure, @Moin. The 2-legged flow (Client Credentials) that Eran mentions in OAuth 2 is equivalent to what I consider 2-legged OAuth in this post.ReplyDeleteJake2:52 PMI think your post is perhaps confusing to people who are trying to implement oAuth. There seems to be no official spec, but there are major service providers and popular libraries that all seem to agree on what 2-legged oAuth is and it does not jive with what you write here.I should say first that I would actually like to see 2-legged oAuth implemented the way you describe because it would be handy to have a permanent consumer token and an auth token that might need to be periodically re-obtained. Also all access requests would be verified the same, regardless of whether you use 2 or 3 legged approach. But, as things have panned out I don't think any provider does that and so for people who simply want to just be as "standard" as possible in their implementation, the info on this page is not helpful.I had understood that 3-Legged oAuth refers to the three parties involved, not the three steps in the workflow. 2-Legged thus refers to two parties. So if that is the case then your idea of 0-Legged oAuth makes no sense. There are not zero parties involved. Perhaps the numbers do refer to the steps in the workflow, but I haven't found anything that says definitely one way or the other.Suggesting that a consumer key/secret is the same security as a username/password combo is just incorrect in my opinion. Username/password are sent to the server for authentication. With key/secret the secret is never sent to the server, it's used only for signing. That is not the same concept as username/password authentication.I can't find any libraries or services or code examples that implement (or even support at all) 2-Legged oAuth the way that you describe. They all use only a consumer key and secret. If you would link to any such libraries or services I would be interested to read more about it.ReplyDeleteAndrew Arnott2:33 PMHi @Jake,An insightful comment. Thanks. And I agree that the content of my post disagrees with much of the thought out there, which is why I felt it was time to shout out that "a spade is a spade" regardless of what other's are calling it.Regarding whether consumer key/secret is more secure than username+password, they're equivalent. You asserted that passwords are sent to the server. That's often *not* the case. Passwords have been hashed, or used to sign challenges from the server to avoid actually transmitting the password for decades. OAuth 1.0 happens to mandate that the secret not be transmitted, which is great, but passwords don't need to be (and arguably shouldn't be) either. As for libraries or services that support 2-legged OAuth the way I describe, yes they exist. DotNetOpenAuth is one such library that supports this. I've *never* seen a flow diagram or read a spec that referred to "parties" as "legs". Legs have always (AFAIK) been used to refer to flows of information. So while I respect your experience and interpretation, I disagree with it.ReplyDeleteJake6:52 PMLike everything with 2-legged oAuth there seems to be debate/confusion as to whether the legs refer to parties or workflow steps, judging from here http://stackoverflow.com/questions/2880659/what-is-meant-by-two-legged-authenticationI actually would like to see things implemented the way you describe. But for lack of a formal standard, I felt more comfortable going with what at least one major service provider is doing (at least what i could find - google apps).ReplyDeleteMadhawa Bandara10:44 PMThis is the best explanation on OAuth I have found so far.Anyway I don't get the difference between unauthorized and pre-authorized tokens. Can you please explain.ReplyDeleteAndrew Arnott6:12 AM@Madhawa, a preauthorized token is a request token that the service provider marks as authorized in its database as soon as the token is created, so that when the consumer receives it, the consumer may immediately exchange it for an access token. In the normal case, the request token isn't pre-authorized, so before the consumer can exchange it for an access token, the consumer must direct the user to the authorization page.ReplyDeleteUnknown1:24 PMThanks for the post.Can you add an example from the "real life" for using the 2-legged OAuth ?ReplyDeleteWarren2:34 PMWe use Xero's (xero.com) 2-legged 'Private' oAuth. However, as far as I'm concerned, it's more in line with your definition of 0-legged. This is a great explanation of the different types of oAuth.Xero is a perfect "real life" example. Let's say there's an App, owned by companyX, and companyX also has a Xero account for its accounting. The App (owned solely by companyX), only needs access to companyX's xero account.In the Xero portal, you register the app and xero provides you the consumer key and secret. When registering the App, it is tied to a specific account (in this case companyX's xero account).On the application side, the client can simple make requests with a signed consumer key/secret to access protected resources. As the article says, 0-legged and Xero's 'private' implementation are analogous with username/password workflow.Hope that helps ReplyDeleteAdd commentLoad more...
+Newer Post
+Older Post
+Home
+Subscribe to:
+Post Comments (Atom)
+Labels
+.NET
+(63)
+Android
+(1)
+ASP.NET
+(57)
+Async
+(3)
+DotNetOpenAuth
+(3)
+Far sighted
+(1)
+GC
+(2)
+Hardware
+(1)
+Immutability
+(1)
+InfoCard
+(6)
+Javascript
+(1)
+Linux
+(5)
+Mono
+(2)
+MSBuild
+(1)
+NHibernate
+(7)
+OAuth
+(15)
+OpenID
+(58)
+Performance
+(2)
+Privacy
+(1)
+Reviews
+(2)
+Ruby
+(4)
+Silverlight
+(1)
+Smart devices
+(7)
+WCF
+(4)
+Windows
+(3)
+Windows Phone
+(1)
+Windows.Forms
+(1)
+WPF
+(5)
+About Me
+Andrew Arnott
+View my complete profile
+Or send your bitcoins to 13JSvfkcLH66nHZihNVSqL6K8HMcqjFXMd
+Disclaimer
+All posts on this blog are provided "AS IS" with no warranties, and confer no rights.
+Blog Archive
+► 2014
+(2)
+► March
+(1)
+► January
+(1)
+► 2013
+(1)
+► June
+(1)
+► 2012
+(5)
+► December
+(1)
+► July
+(1)
+► June
+(2)
+► May
+(1)
+▼ 2011
+(6)
+► October
+(1)
+► August
+(2)
+► July
+(2)
+▼ June
+(1)
+What is 2-legged OAuth?
+► 2010
+(6)
+► October
+(1)
+► July
+(1)
+► April
+(1)
+► March
+(1)
+► January
+(2)
+► 2009
+(26)
+► December
+(2)
+► October
+(3)
+► September
+(2)
+► June
+(4)
+► May
+(2)
+► April
+(2)
+► March
+(5)
+► February
+(4)
+► January
+(2)
+► 2008
+(40)
+► November
+(1)
+► October
+(4)
+► September
+(4)
+► August
+(3)
+► July
+(8)
+► June
+(2)
+► April
+(11)
+► March
+(2)
+► January
+(5)
+► 2007
+(18)
+► November
+(3)
+► October
+(1)
+► September
+(3)
+► August
+(1)
+► July
+(3)
+► March
+(2)
+► February
+(3)
+► January
+(2)
+► 2006
+(22)
+► December
+(1)
+► October
+(1)
+► September
+(4)
+► August
+(1)
+► July
+(2)
+► June
+(1)
+► May
+(1)
+► March
+(1)
+► February
+(3)
+► January
+(7)
+► 2005
+(21)
+► December
+(3)
+► November
+(4)
+► October
+(4)
+► September
+(3)
+► August
+(1)
+► July
+(1)
+► June
+(1)
+► May
+(3)
+► January
+(1)
+► 2004
+(9)
+► October
+(1)
+► June
+(6)
+► May
+(2)
+Links
+My Microsoft blog
+Personal blog
+The Family: A Proclamation to the World
+Simple template. Powered by Blogger.
+

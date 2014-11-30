@@ -1,0 +1,1746 @@
+http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 02:34:13 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 24-Jul-2015 02:34:13 GMT; path=/
+Set-Cookie: lw_user_sid=0519a9f6b0f8449083bce9602eb6ff04; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-24T04:34:13Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Fixing one-to-many relationships in SugarCRM 5.1 - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/" class="entry-title">Fixing one-to-many relationships in SugarCRM 5.1</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p><strong>Updated 2008-12-12.</strong> With the release of SugarCRM 5.0 came the new Module Builder that allows administrators to easily create new custom modules. But it was quite buggy and there was no way to create one-to-many relationships between custom modules. Then came SugarCRM 5.1 that promised to resolve the issues. Besides the Relationship Editor in the Module Builder there are also the &ldquo;Relate&rdquo; and &ldquo;Flex Relate&rdquo; fields. Two different (and incompatible ways) to create relationships. Not to mention that the Relationship Editor in the Module Builder works differently from the same editor in Studio. The former creates relationships in code, the latter in the database. And there are still <a id="bugs" href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#footnote1">heaps of bugs<sup>*</sup></a>.</p>
+
+<p>The biggest problem I have had is with one-to-many relationships, the most common relationship type when you&#8217;re creating modules. If you use &ldquo;Relate&rdquo; fields then no real relationship is created and you won&#8217;t get a subpanel in the parent module. If you use relationships created in the Module Builder then the related fields show up badly in the Edit and Detail views, and you cannot use them at all in the List view, subpanel or search panels.</p>
+
+<p>There are four main problems when you create a one-to-many relationship in the Module Builder: The Edit and Detail view do not properly contain the related fields in the child module, the related fields are not available in the List view, are not available in the subpanel and are not available on the Search panel. Here is how to fix all these issues.</p>
+
+<h4 id="0"><a href="#0">0: Table of contents</a></h4>
+
+<ul class="toc">
+<li><a href="#setup">1: Module setup</a></li>
+<li><a href="#detailview">2: Fixing the Edit and Detail views</a></li>
+<li><a href="#listview">3: Adding the related field to the list view</a></li>
+<li><a href="#subpanel">4: Adding the related field to the subpanel</a></li>
+<li><a href="#searchpanel">5: Adding the related field to the search panel</a></li>
+<li><a href="#footnotes">6: Footnotes</a></li>
+</ul>
+
+<h4 id="setup"><a href="#setup">1: Module setup</a></h4>
+
+<p>In this article I will assume that you are creating two custom modules: A Computer module and an Application module. Each Computer can have one or more Applications. Simply create the two modules in the Module Builder, go to the Computers module and add a one-to-many relation to Applications.</p>
+
+<img src="/images/articles/sugar-relations/sugar-relationship-640.png" alt="The relationship in SugarCRM" />
+
+<h4 id="detailview"><a href="#detailview">2: Fixing the Edit and Detail views</a></h4>
+
+<p>If you now go to the Applications module and open the Edit view layout, you can see that the field that is supposed to point to the Computer parent module is not labeled.</p>
+
+<img src="/images/articles/sugar-relations/sugar-layout-640.png" alt="The bug in the module layout" />
+
+<p>Luckily this is quite easy to fix, before the package is deployed. First open up the <tt>en_us.lang.php</tt> file for the Applications mode. You can find it under the <tt>custom/modulebuilder</tt> directory. Add a label for the computer as shown below:</p>
+
+<tt>custom/modulebuilder/packages/ComputerShop/modules/Applications/languages/en_us.lang.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&nbsp; <span class="co1">// Beginning of file snipped</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'LBL_ACTIVITIES_SUBPANEL_TITLE'</span> <span class="sy2">=&gt;</span> <span class="st_h">'Activities'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'LBL_SHOP_APPLICATIONS_SUBPANEL_TITLE'</span> <span class="sy2">=&gt;</span> <span class="st_h">'Applications'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'LBL_NEW_FORM_TITLE'</span> <span class="sy2">=&gt;</span> <span class="st_h">'New Applications'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'LBL_COMPUTER'</span> <span class="sy2">=&gt;</span> <span class="st_h">'Computer'</span><span class="sy3">,</span> <span class="co1">// New label</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+</ol></div></div>
+
+<p>Now you can add this label in the <tt>editviewdefs.php</tt> and <tt>detailviewdefs.php</tt> files. Look for the relationship and add the label as shown below:</p>
+
+<tt>custom/modulebuilder/packages/ComputerShop/modules/Applications/metadata/editviewdefs.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="nu0">1</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_computers_shop_applications_name'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'label'</span> <span class="sy2">=&gt;</span> <span class="st_h">'LBL_COMPUTER'</span><span class="sy3">,</span> <span class="co1">// New label</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1"><span class="sy3">...</span></div></li>
+</ol></div></div>
+
+<p>Save your changes and reload the layout in the layout editor. Now the label appears correctly. You can freely rearrange the layout after this. The Module Builder will not remove your added labels.</p>
+
+<h4 id="listview"><a href="#listview">3: Adding the Computer field to the Applications list view</a></h4>
+
+<p>Before you can fix the list view and the subpanel, you will first need to deploy your package. That&#8217;s because Sugar does not really build the relations until the package is installed. During this process all kinds of tables and variables are created and we need these. So, go ahead and deploy your package. Then create a Computer entry, an Application entry and relate the Application to the Computer. Now we will add the Computer field to the Applications list view. It is quite useful to turn on &ldquo;Developer mode&rdquo; during the next steps, so you can immediately see the results.</p>
+
+<p><strong>Update:</strong> Note that I do no longer deploy the package. I have the module builder generate the installable zip package. I unzip it, import it into Subversion, edit the code and then re-zip it. Please see my two part article about SugarCRM and Subversion:</p>
+
+<ul>
+<li><a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/">Keeping SugarCRM under Subversion control</a></li>
+<li><a href="http://www.jejik.com/articles/2008/12/build_custom_sugarcrm_modules_in_subversion/">Build custom SugarCRM modules in Subversion</a></li>
+</ul>
+
+<p>First we need to look up the name of the module and the field names associated with the relationship. We will need these later. You can find the module name easily by looking at the <tt>modules</tt> directory. It will have been prefixed with the value you set when creating the package. In this case it is <tt>shop_Applications</tt>. Now open up the relationship definition and note down the field names for the relationships. There will be three fields, as show in the example below.</p>
+
+<tt>custom/Extensions/modules/shop_Applications/Ext/Vardefs/ComputerShop.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="re0">$dictionary</span><span class="br0">&#91;</span><span class="st0">&quot;shop_Applications&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;fields&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;shop_computers_shop_applications&quot;</span><span class="br0">&#93;</span> <span class="sy2">=</span> <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_computers_shop_applications'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="re0">$dictionary</span><span class="br0">&#91;</span><span class="st0">&quot;shop_Applications&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;fields&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;shop_computers_shop_applications_name&quot;</span><span class="br0">&#93;</span> <span class="sy2">=</span> <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_computers_shop_applications_name'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="re0">$dictionary</span><span class="br0">&#91;</span><span class="st0">&quot;shop_Applications&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;fields&quot;</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">&quot;shop_comput_computers_ida&quot;</span><span class="br0">&#93;</span> <span class="sy2">=</span> <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_comput_computers_ida'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+</ol></div></div>
+
+<p>The contents of the first &ldquo;name&rdquo; field is the relationship itself, the second one is the name of the Computer that the Application is associated with and the third one is the ID of the Computer. Now we can edit the <tt>listviewdefs.php</tt> for the Applications module and add the Computer field, as shown below.</p>
+
+<tt>modules/shop_Applications/metadata/listviewdefs.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="re0">$module_name</span> <span class="sy2">=</span> <span class="st_h">'shop_Applications'</span><span class="sy3">;</span></div></li>
+<li class="li1"><div class="de1"><span class="re0">$listViewDefs</span> <span class="br0">&#91;</span><span class="re0">$module_name</span><span class="br0">&#93;</span> <span class="sy2">=</span> </div></li>
+<li class="li1"><div class="de1"><span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'NAME'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="co1">// The new column begins here</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'SHOP_COMPUTERS_SHOP_APPLICATIONS_NAME'</span> <span class="sy2">=&gt;</span> <span class="co1">// Name of the field that holds the Computer name, in ALL CAPS</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'width'</span> <span class="sy2">=&gt;</span> <span class="st_h">'32%'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// Pick a suitable width</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'label'</span> <span class="sy2">=&gt;</span> <span class="st_h">'LBL_COMPUTER'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// The label you created when fixing the Edit and Detail view</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'default'</span> <span class="sy2">=&gt;</span> <span class="kw2">true</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'link'</span> <span class="sy2">=&gt;</span> <span class="kw2">true</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// Make it a link to the Computer Detailview</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'module'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_Computers'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// The parent module name</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'id'</span> <span class="sy2">=&gt;</span> <span class="st_h">'SHOP_COMPUT_COMPUTERS_IDA'</span><span class="sy3">,</span> &nbsp; &nbsp; <span class="co1">// The field that contains the Computer ID, in ALL CAPS</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="co1">// End of the new column</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'ASSIGNED_USER_NAME'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'TEAM_NAME'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+</ol></div></div>
+
+<p>Save it, and take a look at the Applications tab in Sugar.</p>
+
+<img src="/images/articles/sugar-relations/sugar-listview.png" alt="The fixed listview" />
+
+<h4 id="subpanel"><a href="#subpanel">4: Adding the Computer field to the Applications subpanel</a></h4>
+
+<p>Fixing the subpanel is very similar to fixing the list view. Open up <tt>subpanels/default.php</tt> and modify it according to the example below.</p>
+
+<tt>modules/shop_Applications/metadata/subpanels/default.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="re0">$module_name</span><span class="sy2">=</span><span class="st_h">'shop_Applications'</span><span class="sy3">;</span></div></li>
+<li class="li1"><div class="de1"><span class="re0">$subpanel_layout</span> <span class="sy2">=</span> <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'top_buttons'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'where'</span> <span class="sy2">=&gt;</span> <span class="st_h">''</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'list_fields'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="co1">// The new column begins here</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'shop_computers_shop_applications_name'</span> <span class="sy2">=&gt;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// Name of the field that holds the Computer name, not in caps this time</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'widget_class'</span> <span class="sy2">=&gt;</span> <span class="st_h">'SubPanelDetailViewLink'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// We want to make it a link to the computer</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'width'</span> <span class="sy2">=&gt;</span> <span class="st_h">'35%'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// Pick a suitable width</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'default'</span> <span class="sy2">=&gt;</span> <span class="kw2">true</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'vname'</span> <span class="sy2">=&gt;</span> <span class="st_h">'LBL_COMPUTER'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// The label you created when fixing the Edit and Detail view</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'target_module'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_Applications'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// The parent module name</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'target_record_key'</span> <span class="sy2">=&gt;</span> <span class="st_h">'SHOP_COMPUT_COMPUTERS_IDA'</span><span class="sy3">,</span> &nbsp;<span class="co1">// The field that contains the Computer ID, in ALL CAPS</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="co1">// End of the new column</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'edit_button'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'remove_button'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+</ol></div></div>
+
+<p>Save your changes and take a look at the Detailview for the Computer.</p>
+
+<img src="/images/articles/sugar-relations/sugar-subpanel.png" alt="The fixed subpanel" />
+
+<h4 id="searchpanel"><a href="#searchpanel">5: Adding the Computer field to the Applications search panel</a></h4>
+
+<p>The last fix we need to make is to add the Computer field to the Basic and Advanced search pages. Luckily, these are a lot simpler. Open up <tt>metadata/searchdefs.php</tt> and make the changes according to the example below.</p>
+
+<tt>modules/shop_Applications/metadata/searchdefs.php</tt>
+<div class="geshi-wrap"><div class="php geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="re0">$module_name</span> <span class="sy2">=</span> <span class="st_h">'shop_Applications'</span><span class="sy3">;</span></div></li>
+<li class="li1"><div class="de1"><span class="re0">$searchdefs</span> <span class="br0">&#91;</span><span class="re0">$module_name</span><span class="br0">&#93;</span> <span class="sy2">=</span> </div></li>
+<li class="li1"><div class="de1"><span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="st_h">'layout'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'basic_search'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="co1">// Start of the new search field</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'computer'</span> <span class="sy2">=&gt;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// You can put any name you want here</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_computers_shop_applications_name'</span><span class="sy3">,</span> <span class="co1">// Name of the field that holds the Computer name</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'width'</span> <span class="sy2">=&gt;</span> <span class="st_h">'10%'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1">// Pick a suitable width</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'default'</span> <span class="sy2">=&gt;</span> <span class="kw2">true</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'label'</span> <span class="sy2">=&gt;</span> <span class="st_h">'LBL_COMPUTER'</span><span class="sy3">,</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// The label you created when fixing the Edit and Detail view</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="co1">// End of the new search field</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="st_h">'advanced_search'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="co1">// Start of the new search field</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="co1">// This is identical to the search field above</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="st_h">'computer'</span> <span class="sy2">=&gt;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="kw3">array</span> <span class="br0">&#40;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'name'</span> <span class="sy2">=&gt;</span> <span class="st_h">'shop_computers_shop_applications_name'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'width'</span> <span class="sy2">=&gt;</span> <span class="st_h">'10%'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'default'</span> <span class="sy2">=&gt;</span> <span class="kw2">true</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="st_h">'label'</span> <span class="sy2">=&gt;</span> <span class="st_h">'LBL_COMPUTER'</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="co1">// End of the new search field</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="br0">&#41;</span><span class="sy3">,</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy3">...</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#41;</span><span class="sy3">;</span></div></li>
+</ol></div></div>
+
+<p>And now your search box will look like this.</p>
+
+<img src="/images/articles/sugar-relations/sugar-search.png" alt="The fixed search panel" />
+
+<p>I hope this spares someone from the agony, hair-pulling and cursing I did, trying to figure this all out.</p>
+
+<h4 id="footnotes"><a href="#footnotes">6: Footnotes</a></h4>
+
+<p><a id="footnote1" href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#bugs">&hellip;heaps of bugs<sup>*</sup></a>. The enormous amount of bugs in SugarCRM is a real problem. Their bugtracker is choke-full of bugs of which only few ever seem to get solved. I have waded through quite a bit of the SugarCRM source code and I am not surprised there are so many bugs. It&#8217;s quite a mess, typical of their closed development model. There is no peer review and no decent way for the community to contribute back changes. They release SugarCRM under GPLv3 but I don&#8217;t think they have really understood how FOSS works: FOSS creates superior software because development is totally open and transparent. Many eyes make all bugs shallow and there are plenty of people to fix things and review changes before they are merged in. A FOSS license like the GPLv3 is only a means to that end; A required item for the FOSS development process to happen. The SugarCRM development model is as closed as that of any proprietary shop, so the quality of the code that flows out of SugarCRM is of equal low quality as most proprietary software is.</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-10-15T12:13:00Z">2008-10-15@12:13</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/php" rel="tag">php</a>
+															&nbsp;<a href="http://www.jejik.com/tag/sugarcrm" rel="tag">sugarcrm</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c1" class="number" id="c1">#1</a>
+																			puneet kumar singh
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-21@07:13
+																																			</div>
+																hi boss,<br />
+your conversation for building the new module is good but i don't understand how we manage to advance search and saved search and layouts.<br />
+<br />
+thanx
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-21@13:47
+																																			</div>
+																@puneet kumar singh:<br />
+<br />
+The module builder creates them for you. Just create a module in the module builder and fix the labels on the relationships as in step 1. Then publish your module and install it. After that you can edit the layouts and search panels as shown in step 2, 3 and 4.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c3" class="number" id="c3">#3</a>
+																			<a href="http://jimbarnes.info" class="name">Jim Barnes<small> (http://jimbarnes.info)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-11@04:05
+																																			</div>
+																Sander ; Greetings, found you on a google<br />
+<br />
+just wrestling with the many bugs myself looking for an easy fix to adding custom subpanels to existing layouts without creating new modules.<br />
+<br />
+Your comment regarding having waded through the code is of interest as i would like to discuss with someone ideas related to a re-gen of it and an inclusion of it with other similar gpl3 systems to create something that is of industrial strength with cms, erp, crm, voip etc integrated<br />
+<br />
+please contact my email if your interested
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c4" class="number" id="c4">#4</a>
+																			<a href="http://jimbarnes.info" class="name">Jim Barnes<small> (http://jimbarnes.info)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-11@04:11
+																																			</div>
+																Sander ; Greetings again,<br />
+<br />
+basic question can i add field editing capability to a subpanel, so a tick box can be checked and the record saved without having to pull up the edit screen for the record
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-11@14:32
+																																			</div>
+																<blockquote>i would like to discuss with someone ideas related to a re-gen of it and an inclusion of it with other similar gpl3 systems to create something that is of industrial strength with cms, erp, crm, voip etc integrated</blockquote><br />
+<br />
+I am interested in tossing some ideas around but I do not have the time to participate in such a project myself. My general idea on the matter is simply this: Don't.<br />
+<br />
+SugarCRM is rotten at it's core. It's developed behind closed doors by programmers who focus on features rather than quality. The best thing you can do is <em>start from scratch</em> with a solid base and see if there is anything salvageable after you got the core <em>right</em>.<br />
+<br />
+Toss out SugarBean, Link and vardefs, pick a tried and proven base MVC like <a href="http://cakephp.org/" rel="nofollow">Cake PHP</a>, <a href="http://www.symfony-project.org/" rel="nofollow">Symfony</a> or the <a href="http://framework.zend.com/" rel="nofollow">Zend framework</a> and work from there. Use as many external components as you can. That's one problem that SugarCRM and other so-called "commercial open source" packages have. They sell proprietary enterprise editions so they cannot use GPL code. They can only use zlib/bsd-style code to build on. A true free/open-source CMS system can build on the wealth of other copyleft software out there and should be able to build something relatively quickly.<br />
+<br />
+<blockquote>Can i add field editing capability to a subpanel, so a tick box can be checked and the record saved without having to pull up the edit screen for the record?</blockquote><br />
+<br />
+I have no idea on how to do this without a lot of custom code. It's not a problem I had to face with SugarCRM so far.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c6" class="number" id="c6">#6</a>
+																			Jesse
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-13@20:38
+																																			</div>
+																I think that sugar is buggy and loaded with bugs because the paying customers crave more features and it makes its way into the system.  Then it doesn't get updated or fixed until the customer has a problem with it. Sugar is a dream to work with compared to others like Vtiger.  That one is really a mess its codebase is so buggy and hard to follow.  I have found sugar useful for prototyping a database. Then using an external application framework like cakephp I can produce a more customized application quickly.  The only reason I result to this is because I hate developing on the database side.  Also you could try http://www.wavemaker.com/ which make's ajax apps with a point and click interface.<br />
+<br />
+I do agree sugarcrm is buggy and slow, but it also gives you a lot of features in "mostly free" software that you would have to pay for otherwise.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c7" class="number" id="c7">#7</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-14@00:58
+																																			</div>
+																I haven't used many of the other "open source" CRM systems so I can't really compare that. I have used the big brand closed ones in the past (e.g. SAP) and know quite a lot of non-CRM open source web applications. Sugar doesn't compare too well to either of them.<br />
+<br />
+You're absolutely right that featuritis is the problem. It matches what I said in the footnote of the article. Sugar releases it's software both as closed source and a less featureful open source variant. They call it "commercial open source" which is a misnomer in my opinion. Like I said, the true power of open source code does n't come from the license but from the open development model. It is that development model that makes open source code so much better: Enough eyes make all bugs shallow.<br />
+<br />
+SugarCRM derives its income from people who have the closed source version. It must keep adding new features to the closed source version or people will not pay for it anymore (because open source programmers implement those same features as extensions to the open source version). Their developers are so busy building features that they do not have time to solve the bugs.<br />
+<br />
+And that is a problem. The development process at SugarCRM is also closed. It has to be, or you cannot make a closed source enterprise version. So, there is no peer code review and the community can not prevent bugs from being committed to the repository. All we can do is write patches and submit them, but the programmers at SugarCRM are too busy to review and commit them all.<br />
+<br />
+In short, the so-called "commercial open source" marries the worst of two worlds in my opinion. I really hope that some day they understand this at SugarCRM and open up their development process. They have a lot of potential but they need to let go of this "enterprise" mentality.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c8" class="number" id="c8">#8</a>
+																			omer121
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-04@11:47
+																																			</div>
+																Hi Sander and Thanks for your fix that helped me for detail and edit view.<br />
+<br />
+I have not yet managed to get listview working and don't understand what I am mistaking.<br />
+<br />
+Here is my case:<br />
+<br />
+The first module is HMR_Employees (Because I can't ad custom fields to User table)<br />
+The second is HRM_Incomes<br />
+<br />
+I just want to show the employee that is linked to the income in listview.<br />
+<br />
+The Employee Subpanel (detailview) is OK and shows all Incomes records<br />
+The Income Subpanel (detailvew) is OK and shows the Employee Name<br />
+<br />
+My problem is that Incomes listview shows the colomn with the right label but without Employee name (Empty)....<br />
+<br />
+The HTML code generated is : <br /><br /><code>&lt;a href="http://#" rel="nofollow"   &gt;&lt;/a&gt;&lt;br /&gt;
+</code></br /><br /><br />
+The id (deabfaec-10bf-59fb-ae8a-4937adc30d92) is the right one bud nothing is displayed<br />
+<br />
+custom/Extension/modules/HMR_Incomes/Ext/Vardefs/HRM.php<br />
+<code><br />
+...<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employees_hmr_incomes"] = array (<br />
+'name' =&gt; 'hmr_employees_hmr_incomes',<br />
+....<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employees_hmr_incomes_name"] = array (<br />
+'name' =&gt; 'hmr_employees_hmr_incomes_name',<br />
+....<br />
+'name' =&gt; 'hmr_employe_employees_ida',<br />
+....<br />
+</code><br />
+<br />
+custom/modulebuilder/packages/HRM/modules/Incomes/metadata/listviewdefs.php<br />
+<code><br />
+.....<br />
+&lt;?php<br />
+// created: 2008-12-04 10:48:13<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employe_employees_ida"] = array (<br />
+  'name' =&gt; 'hmr_employe_employees_ida',<br />
+  'type' =&gt; 'link',<br />
+  'relationship' =&gt; 'hmr_employees_hmr_incomes',<br />
+  'source' =&gt; 'non-db',<br />
+);<br />
+?&gt;<br />
+.....<br />
+</code><br />
+<br />
+Do you have any clue to display Employee name?<br />
+<br />
+Regards <br />
+Ga�l
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c9" class="number" id="c9">#9</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-04@12:39
+																																			</div>
+																Hi Ga�l,<br />
+<br />
+I think you made an error in your post above. Your code snippet for custom/modulebuilder/packages/HRM/modules/Incomes/metadata/listviewdefs.php seems to be a bit of the vardefs file, not the listviewdefs file.<br />
+<br />
+Can you post the correct bit from the listviewdefs file?<br />
+<br />
+Can you also post the full array of $dictionary["HMR_Incomes"]["fields"]["hmr_employees_hmr_incomes_name"] from the file custom/Extension/modules/HMR_Incomes/Ext/Vardefs/HRM.php please?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c10" class="number" id="c10">#10</a>
+																			omer121
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-04@14:05
+																																			</div>
+																Oups, You are right ....<br />
+<br />
+Here is the correct file and the comple array for the relationship.<br />
+<br />
+custom/modulebuilder/packages/HRM/modules/Incomes/metadata/listviewdefs.php<br />
+<code><br />
+....<br />
+  'DATE_MODIFIED' =&gt;<br />
+  array (<br />
+    'width' =&gt; '10%',<br />
+    'label' =&gt; 'LBL_DATE_MODIFIED',<br />
+    'default' =&gt; true,<br />
+  ),<br />
+  'HRM_EMPLOYEES_HRM_INCOMES_NAME' =&gt; <br />
+  array (<br />
+    'width' =&gt; '30%',<br />
+    'label' =&gt; 'LBL_EMPLOYEE',<br />
+    'default' =&gt; true,<br />
+    'link' =&gt; true,<br />
+    'module' =&gt; 'HMR_Employees',<br />
+    'id' =&gt; 'HRM_EMPLOYE_EMPLOYEES_IDA',<br />
+  ),<br />
+  'DESCRIPTION' =&gt;<br />
+  array (<br />
+    'width' =&gt; '10%',<br />
+    'label' =&gt; 'LBL_DESCRIPTION',<br />
+    'sortable' =&gt; false,<br />
+    'default' =&gt; true,<br />
+  ),<br />
+.....<br />
+</code><br />
+<br />
+custom/Extension/modules/HMR_Incomes/Ext/Vardefs/HRM.php<br />
+<br />
+<code><br />
+......<br />
+&lt;?php<br />
+// created: 2008-12-04 12:22:38<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employees_hmr_incomes"] = array (<br />
+  'name' =&gt; 'hmr_employees_hmr_incomes',<br />
+  'type' =&gt; 'link',<br />
+  'relationship' =&gt; 'hmr_employees_hmr_incomes',<br />
+  'source' =&gt; 'non-db',<br />
+);<br />
+?&gt;<br />
+&lt;?php<br />
+// created: 2008-12-04 12:22:38<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employees_hmr_incomes_name"] = array (<br />
+  'name' =&gt; 'hmr_employees_hmr_incomes_name',<br />
+  'type' =&gt; 'relate',<br />
+  'source' =&gt; 'non-db',<br />
+  'vname' =&gt; 'LBL_HMR_EMPLOYEES_HMR_INCOMES_FROM_HMR_EMPLOYEES_TITLE',<br />
+  'save' =&gt; true,<br />
+  'id_name' =&gt; 'hmr_employe_employees_ida',<br />
+  'link' =&gt; 'hmr_employees_hmr_incomes',<br />
+  'table' =&gt; 'hmr_employees',<br />
+  'module' =&gt; 'HMR_Employees',<br />
+  'rname' =&gt; 'name',<br />
+);<br />
+?&gt;<br />
+&lt;?php<br />
+// created: 2008-12-04 12:22:38<br />
+$dictionary["HMR_Incomes"]["fields"]["hmr_employe_employees_ida"] = array (<br />
+  'name' =&gt; 'hmr_employe_employees_ida',<br />
+  'type' =&gt; 'link',<br />
+  'relationship' =&gt; 'hmr_employees_hmr_incomes',<br />
+  'source' =&gt; 'non-db',<br />
+);<br />
+?&gt;<br />
+.....<br />
+</code><br />
+<br />
+Thanks for your help<br />
+<br />
+Ga�l
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c11" class="number" id="c11">#11</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-05@10:33
+																																			</div>
+																I see it!<br />
+<br />
+In the listview you refer to HRM_* but in the vardefs it says hmr (last two letters swapped). Change the listviewdef to use HMR_* instead and it should work :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c12" class="number" id="c12">#12</a>
+																			omer121
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-05@11:57
+																																			</div>
+																F***g Dyslexia!<br />
+<br />
+Thanks for your help.<br />
+<br />
+I have changed it but still doesn't work.<br />
+<br />
+I have build a new module for Employees that is not  'person' type but 'basic' and all went OK... May be my pb comes from the 'person' preconfigured module.<br />
+<br />
+However I will just start from standard for my Human Ressource package.<br />
+<br />
+Thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c13" class="number" id="c13">#13</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-05@15:54
+																																			</div>
+																<blockquote>I have changed it but still doesn't work.</blockquote><br />
+<br />
+Did you change all the HRMs to HMR? There are three in the listviewdefs. It is <em>twice</em> in the word HRM_EMPLOYEES_HRM_INCOMES_NAME and once more in HRM_EMPLOYE_EMPLOYEES_IDA.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c14" class="number" id="c14">#14</a>
+																			omer121
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-05@17:07
+																																			</div>
+																Yes I did. <br />
+<br />
+I also tried to make a brand new package with different name and the pb is the same. When I make a standard ('Basic' Not 'preson') module for employees, all is OK.<br />
+This is not a big deal. I will just rebuild a 'person' module from 'basic'...<br />
+<br />
+Thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c15" class="number" id="c15">#15</a>
+																			Igor Vitorac
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-11@18:22
+																																			</div>
+																Hello Sander,<br />
+Nice post! I was preparing to post this to sugar forum, but unfortunately I didn't have time to prepare such nice post. <br />
+I have to add that you don't have to deploy module, but you can do another thing. You can publish module, then go to that zip file and make appropriate changes. After that you install that module (modified zip). Of course, this is the longer way, but more elegant. Once you prepare package, you can distribute it. There is no need for changing the sugar after deploying the package.<br />
+I am using one PC for developing, the second for installing and testing, because I have notice some problems when developing and deploying on the same computer.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c16" class="number" id="c16">#16</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-11@23:14
+																																			</div>
+																Hi Igor,<br />
+<br />
+I know about editing the installable zip before installing it. I started doing that a short while after writing this post. See my two-part series about this:<br />
+<br />
+<a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/" rel="nofollow">Keeping SugarCRM under Subversion control</a><br />
+<a href="http://www.jejik.com/articles/2008/12/build_custom_sugarcrm_modules_in_subversion/" rel="nofollow">Build custom SugarCRM modules in Subversion</a><br />
+<br />
+<blockquote>I have notice some problems when developing and deploying on the same computer.</blockquote><br />
+<br />
+I have set up Apache in such a way that I can run many different Sugar instances on one computer. That way it does work. Use the module builder in one instance and install the package on another. See my article <a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/" rel="nofollow">Easily develop and deploy web applications from subversion</a> for this. Basically I setup Apache with a wildcard hostname.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c17" class="number" id="c17">#17</a>
+																			vishwasrao salunkhe
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-17@04:39
+																																			</div>
+																Hi boss ,<br />
+        Thanx for fixing these bugs .I was lookig for these only since last few days .I got it ,u solved my problem.<br />
+ Thanx once again.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c18" class="number" id="c18">#18</a>
+																			kelie
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-05@06:20
+																																			</div>
+																I have a customer interested in building a custom module in sugar 5.1.  We have just migrated them from 4.20 - 5.0 and then to 5.1.  This was a painful process.  There was also some customizations that took place in 4.20 those did not make the migration.  Did anyone do custom modules in 5.0 and when they upgraded to 5.1 was it smooth and did they still work after the upgrade?  This is what 5.0 is supposed to do make upgrading easier even after customizations.  Please let me know your thoughts.<br />
+<br />
+Thanks<br />
+Kelie
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c19" class="number" id="c19">#19</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-05@07:31
+																																			</div>
+																Hi Kelie. I have not done any 5.0 to 5.1 migrations. But I have a few custom modules that I created for 5.1 that I upgraded to 5.2. They worked flawlessly and did not require any changes.<br />
+<br />
+Note that these modules were not very complex. If your custom modules are very complex then you may run into some trouble. Sugar keeps changing on the inside and there are plenty of bugs that can trip you up. Beware the "currency" field if you use non-US decimal and thousands separators!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c20" class="number" id="c20">#20</a>
+																			Julie
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-15@12:59
+																																			</div>
+																How do I display other fields from the parent module on the child module ?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c21" class="number" id="c21">#21</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-15@14:57
+																																			</div>
+																Hi Julie. You display them the same way that you display the name of the parent field. In the vardefs file of the child module, simply copy/paste the field that displays the "name" field of the parent and make it display another field. You can do this my adding the "rname" parameter. If the "rname" is not set then it defaults to "name", but you can point it to any field in the parent module. The id_name, table, link and module fields should all stay the same. So:<br />
+<br />
+<pre>
+...
+  'parent_whatever' = array(
+    'name' =&gt; 'parent_whatever',
+    'type' =&gt; 'relate',
+    ...
+    'module' =&gt; 'ParentModule',
+    'rname' =&gt; 'some_field',
+  ),
+...
+</pre>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c22" class="number" id="c22">#22</a>
+																			Julie
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-16@12:46
+																																			</div>
+																Hi <br />
+<br />
+Thanks for above I tried it but no luck - any ideas what I am doing wrong ?<br />
+I have 2 modules <br />
+products ->> Ipallocations<br />
+<br />
+parent name field from vardefs ( in modules/IPallocations directory )<br />
+ <br />
+  'suite_products_id_c' =><br />
+  array (<br />
+    'required' => false,<br />
+    'name' => 'suite_products_id_c',<br />
+    'vname' => '',<br />
+    'type' => 'id',<br />
+    'massupdate' => 0,<br />
+    'comments' => '',<br />
+    'help' => '',<br />
+    'importable' => 'true',<br />
+    'duplicate_merge' => 'disabled',<br />
+    'duplicate_merge_dom_value' => 0,<br />
+    'audited' => 0,<br />
+    'reportable' => 0,<br />
+    'len' => 36,<br />
+  ),<br />
+Copy and amended field<br />
+  'suite_products_location' =><br />
+  array (<br />
+    'required' => false,<br />
+    'name' => 'suite_products_location',<br />
+    'module' => 'Products',<br />
+    'rname' => 'location'<br />
+    'vname' => 'LBL_DMZ',<br />
+    'type' => 'relate',<br />
+    'massupdate' => 0,<br />
+    'comments' => '',<br />
+    'help' => '',<br />
+    'importable' => 'true',<br />
+    'duplicate_merge' => 'disabled',<br />
+    'duplicate_merge_dom_value' => 0,<br />
+    'audited' => 0,<br />
+    'reportable' => 0,<br />
+    'len' => 36,<br />
+  ),<br />
+<br />
+Also if the field from the parent field is a related field how do I manage this. I want the customer field ( Which is a related field eg customer from accounts table)from my products table displayed when entering my ipalloaction details. <br />
+<br />
+Many Thanks in advance.<br />
+<br />
+Julie
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c23" class="number" id="c23">#23</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-16@13:00
+																																			</div>
+																Hi Julie. You seem to me missing a few fields in your suite_products_location definition. Try this instead:<br />
+<br />
+<pre>
+'suite_products_location' =&gt;
+  'name' =&gt; 'suite_products_location',
+  'type' =&gt; 'relate',
+  'source' =&gt; 'non-db',
+  'vname' =&gt; 'LBL_DMZ',
+  'save' =&gt; false,
+  'id_name' =&gt; 'suite_products_id_c',
+  'table' =&gt; 'products', // database table that stores the products
+  'module' =&gt; 'Products',
+  'rname' =&gt; 'location',
+),</pre>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c24" class="number" id="c24">#24</a>
+																			spaps
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-19@17:58
+																																			</div>
+																Hi Sander<br />
+<br />
+I don't know which version of 5.1 this solution is written for, I suspect it is for 5.1.0a.<br />
+<br />
+I am now using 5.1.0b.<br />
+When I create the same two modules as in your example, I get the same problems as you have described, and they could be solved the way you shows,<br />
+but I get another serious problem: the Applications submodule does not show up at all.<br />
+<br />
+You wouldn't have guidelines for how to solve that would you?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c25" class="number" id="c25">#25</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-19@21:24
+																																			</div>
+																spaps, are you sure that you set-up your modules correctly? Sure that they both are displayed with a tab and all that? Are you allowed access th the modules?<br />
+<br />
+The above has been tested with 5.1.0 GA, 5.1.0a and 5.1.0b.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c26" class="number" id="c26">#26</a>
+																			spaps
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-20@08:28
+																																			</div>
+																Oh...<br />
+now I'm blushing...<br />
+thanks Sander for reminding me!<br />
+I hadn't Configured the tabs and set the new modules to displayed.<br />
+It works fine now!<br />
+<br />
+Thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c27" class="number" id="c27">#27</a>
+																			Julie
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-20@14:22
+																																			</div>
+																Sorry to keep coming back on this question.<br />
+<br />
+I think I am moving forward .<br />
+<br />
+I sometimes have to use repair database to clear cache and align database with vardefs.<br />
+<br />
+When I use create from my products module I get the following on the create screen for the IPAllocation<br />
+<br />
+Location displayed as the Node Name from the products table. Then if I use the select button it will pull back the location from the products table. I want this displayed as default .<br />
+My definition in vardefs  (and I changed the field in editview to point to suite_products_location ) is as follows<br />
+  'suite_products_location' =><br />
+  array (<br />
+    'name' => 'suite_products_location',<br />
+    'vname' => 'LBL_LOCATION',<br />
+    'module' => 'Suite_Products',<br />
+    'link' => 'suite_products',<br />
+    'table' => 'suite_products',<br />
+    'rname' => 'location',<br />
+    'id_name' => 'suite_produe_products_ida',<br />
+    'type' => 'relate',<br />
+    'dbtype' => 'id',<br />
+)<br />
+<br />
+When I try to save I get error message No match for field location.<br />
+<br />
+Apologies for asking for help again as I am sure it is just my inexperience.<br />
+<br />
+Thanks for your patience.<br />
+<br />
+Julie
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c28" class="number" id="c28">#28</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-20@17:04
+																																			</div>
+																Try setting "'save' => false" and/or "'source' => 'non-db'" on the above field. After all, you don't want to save the location itself but just the associated product ID field that points to the proper product.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c29" class="number" id="c29">#29</a>
+																			Vishwasrao
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-13@07:46
+																																			</div>
+																Hi This is great solution but not complete one.I faced problem with this.Let i created custom modules A,B,C,D with module builder,When i create relationship between A & B,It works as u said but when i am going to create relationship between B & C,it is not working that field is not appearing in the B's editview without label.<br />
+<br />
+Are you getting me . Plz reply me as soon as possible.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c30" class="number" id="c30">#30</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-13@08:03
+																																			</div>
+																Are you using the relationship editor or the "Relate to" field? My solution only works for relationships created in the relationships tab, not with "relate to" fields.<br />
+<br />
+But you can always add the field to the vardefs and edit views yourself. Just look at the source code for the other modules. It's not that hard.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c31" class="number" id="c31">#31</a>
+																			Vishwasrao
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-13@09:06
+																																			</div>
+																Hi <br />
+    thanx for your reply.<br />
+ It worked for me also.<br />
+Thanx once again it worked great for me.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c32" class="number" id="c32">#32</a>
+																			<a href="http://nezil.vox.com" class="name">Neil Robinson<small> (http://nezil.vox.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-13@05:12
+																																			</div>
+																I've gone through your tutorial, which was a massive help - thanks for that.<br />
+<br />
+Now most things work fine, but even though the edit and details feilds seem to work fine (data is stored in the field OK, and shown in the details view), as soon as I add the feild to the list view, all of my records disappear. If I don't add the coloumn to the list view, but select something in the related field search box, then again, everything disappears.<br />
+<br />
+I should explain that the relationship is between documents and users. I needed to assign a user to each document, so that I can see not just who uploaded, but who has been assigned for managing that file.<br />
+<br />
+Hoping you can help...<br />
+<br />
+Neil.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c33" class="number" id="c33">#33</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-13@08:19
+																																			</div>
+																Neil, that's a tough call. This tutorial is aimed at custom modules. You seem to be creating a new relation between two standard modules. These usually work differently because of all the customisations that SugarCRM makes.<br />
+<br />
+You probably didn't create this relation using the module builder but using the relationship editor in Studio. These relationships are different than the relationships that the module builder creates. SugarCRM has three different (and incompatible) ways of relating modules: Using "Relate" fields, using the Module Builder and using Studio. Don't ask me why they did that. It makes no sense at all.<br />
+<br />
+For added complexity there already is a relation between these two standard modules. I'm afraid I can't help you much with this.<br />
+<br />
+When data disappears from a list view then this usually indicates that the SQL query failed. The fisrt thing you should do is look at your sugarcrm.log and look at the failed query. Perhaps the cause of the failure is obvious. If not then I suggest you install XDebug on the server and attach a proper PHP debugger. Open the list view, start the debugger and then click "refresh" on the list and start debugging. Just step through the code and try to understand why the query is being built to fail. Hopefully that will help you to understand how you can fix it.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c34" class="number" id="c34">#34</a>
+																			Calvin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-17@21:57
+																																			</div>
+																I am new to SugarCRM and I am not sure what is the best way to do this.  It's good to know (or bad I suppose) that there are 3 different ways to relate modules.  What I want to accomplish is to create a few 1 to many relationships between Accounts and my custom module.  Any help is much appreciated!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c35" class="number" id="c35">#35</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-17@23:31
+																																			</div>
+																Calvin, it depends on what module is the "one" and what module is the "many". If you want to relate item in your custom module to multiple Accounts, use the relationship editor in the Module Builder to do that, then read this article to fix the last few bugs.<br />
+<br />
+The other way around (one Account having multiple of your custom items) is harder. There are two possible ways to do it. The first is to add a "Relate to" field to your custom module that points to Accounts. It works, but has various bugs such as the lack of a subpanel on the Accounts module. I don't know how to solve that, but you can probably find the answer to that on the SugarCRM forums.<br />
+<br />
+The second way to create such a relationship is manually, using the same method as the Relationship Editor in the Module Builder uses. This method is described in my article "<a href="http://www.jejik.com/articles/2008/12/sugarcrm_many-to-one_relations_to_standard_modules/" rel="nofollow">SugarCRM many-to-one relations to standard modules</a>".
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c36" class="number" id="c36">#36</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-18@20:31
+																																			</div>
+																You should write a book about customizing Sugar, your articles are higher quality then the documentation or any commercial literature currently available
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c37" class="number" id="c37">#37</a>
+																			joeb
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-23@23:02
+																																			</div>
+																I am using Sugar 5.2 CE and I can't seem to get the field to show in listview (Step 3 above).  I have two custom modules (FCM_Firms and FCM_Reps) and I was able to fix the Edit and Detail views as described.<br />
+<br />
+Would it be possible to tell me what I may be missing here?  <br />
+<br />
+custom/Extensions/modules/acm_FCM_Reps/Ext/Vardefs/ACM_Firms.php:<br />
+<br />
+$dictionary["acm_FCM_Reps"]["fields"]["acm_fcm_firms_acm_fcm_reps"] = array (<br />
+  'name' => 'acm_fcm_firms_acm_fcm_reps',<br />
+  'type' => 'link',<br />
+  'relationship' => 'acm_fcm_firms_acm_fcm_reps',<br />
+  'source' => 'non-db',<br />
+  'side' => 'right',<br />
+);<br />
+<br />
+$dictionary["acm_FCM_Reps"]["fields"]["acm_fcm_firms_acm_fcm_reps_name"] = array (<br />
+  'name' => 'acm_fcm_firms_acm_fcm_reps_name',<br />
+  'type' => 'relate',<br />
+  'source' => 'non-db',<br />
+  'vname' => 'LBL_ACM_FCM_FIRMS_ACM_FCM_REPS_FROM_ACM_FCM_FIRMS_TITLE',<br />
+  'save' => true,<br />
+  'id_name' => 'acm_fcm_fi53c6m_firms_ida',<br />
+  'link' => 'acm_fcm_firms_acm_fcm_reps',<br />
+  'table' => 'acm_fcm_firms',<br />
+  'module' => 'acm_FCM_Firms',<br />
+  'rname' => 'name',<br />
+);<br />
+<br />
+$dictionary["acm_FCM_Reps"]["fields"]["acm_fcm_fi53c6m_firms_ida"] = array (<br />
+  'name' => 'acm_fcm_fi53c6m_firms_ida',<br />
+  'type' => 'link',<br />
+  'relationship' => 'acm_fcm_firms_acm_fcm_reps',<br />
+  'source' => 'non-db',<br />
+  'side' => 'right',<br />
+);<br />
+<br />
+modules/acm_FCM_Reps/metadata/listviewdefs.php:<br />
+<br />
+  'ACM_FCM_FIRMS_ACM_FCM_REPS_NAME' => <br />
+  array (<br />
+    'width' => '15%',<br />
+    'label' => 'LBL_FCM_FIRM',<br />
+    'default' => true,<br />
+    'link' => true, <br />
+    'module' => 'acm_FCM_Firms',<br />
+    'id' => 'ACM_FCM_FI53C6M_FIRMS_IDA',<br />
+  ),
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c38" class="number" id="c38">#38</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-24@11:03
+																																			</div>
+																It's hard to say joeb. Apart from the "'side' => 'right'" bits your code looks identical to mine and I can't see any typos. It should work. Are you sure you're not overriding the listviewdef through Studio or something? Are both module's tabs visible/accessible (you can't show fields for modules you don't have access to)? Did you do "admin -> repair -> quick rebuild and repair"? As I said, turning on developer mode really helps here because things won't get cached that aggressively.<br />
+<br />
+Other than that, I'd have to see/test/debug the source myself to find the problem.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c39" class="number" id="c39">#39</a>
+																			Gregm
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-30@18:09
+																																			</div>
+																I have the same problem as Joeb<br />
+<br />
+except I had sucessfully used your techniques previously and got the related info to display in list view.<br />
+<br />
+But now in 5.2 those same settings do not work.<br />
+<br />
+I am not clear on exactly which sugar patch broke things as it was for something I was working on over time.<br />
+<br />
+I wonder if some recent change to the requirement of detail or capitalization in the listviewdefs.php field is causing this to be a problem.<br />
+<br />
+If someone knows how to get listviews to display in 5.2.0d can you please post your syntax?<br />
+<br />
+I have been using the following sort of code:<br />
+  'BRD_B15ISO_BRD_B20TSOCASES_NAME' => <br />
+  array (<br />
+    'width' => '25%',<br />
+    'label' => 'LBL_B15ISO',<br />
+    'id' => 'BRD_B15ISODD8B_B15ISO_IDA',<br />
+    'module' => 'brd_B15ISO',<br />
+    'link' => true,<br />
+    'default' => true,<br />
+    'sortable' => true,<br />
+  ),
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c40" class="number" id="c40">#40</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-31@00:11
+																																			</div>
+																Perhaps it's a specific issue for 5.2.0d? I just upgraded my test installation to 5.2.0h and both my parent fields as well as my grandparent fields are working fine. Here's the parent and grandparent field in the InvoiceLines listviewdef.php (modules: Accounts -> Invoices -> InvoiceLines):<br />
+<br />
+<pre>
+        'INV_INVOICES_INV_INVOICELINES_NAME' =&gt; array (
+                'width' =&gt; '32%',
+                'label' =&gt; 'LBL_INV_INVOICES_INV_INVOICELINES_FROM_INV_INVOICES_TITLE',
+                'default' =&gt; true,
+                'link' =&gt; true,
+                'module' =&gt; 'inv_Invoices',
+                'id' =&gt; 'INV_INVOICEV_INVOICES_IDA',
+        ),
+        'ACCOUNT_NAME' =&gt; array (
+                'width' =&gt; '32%',
+                'label' =&gt; 'LBL_ACCOUNT',
+                'default' =&gt; true,
+                'link' =&gt; true,
+                'module' =&gt; 'Accounts',
+                'id' =&gt; 'ACCOUNT_ID',
+        ),
+</pre>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c41" class="number" id="c41">#41</a>
+																			<a href="http://pixelhum.com/blog" class="name">Dan<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-19@16:04
+																																			</div>
+																Hi, I've tried setting up a parent field in the listview in the way that you described but for some reason I get 0 records displayed. As soon as I remove the code for the field it reverts to showing me all the records.<br />
+<br />
+Here's the code that I've added:<br />
+<br />
+<code>  'STDNT_STUDENTS_STDNT_QUALIFICATIONS_NAME' =&gt;<br />
+  array (<br />
+    'width' =&gt; '10%',<br />
+    'label' =&gt; 'LBL_STUDENT',<br />
+    'default' =&gt; true,<br />
+    'link' =&gt; true,<br />
+    'module' =&gt; 'stdnt_Students',<br />
+    'id' =&gt; 'STDNT_STUDFE42TUDENTS_IDA',<br />
+  ),</code>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c42" class="number" id="c42">#42</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-19@22:45
+																																			</div>
+																@Dan: WHich version of Sugar are you on? Comments #37 and #39 seem to have the same problem on 5.2.0d. I tested my changes with 5.2.0b and 5.2.0h and it worked on both.<br />
+<br />
+Let me know if you have 5.2.0h or something that I tested and I'll dive in deeper.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c43" class="number" id="c43">#43</a>
+																			<a href="http://pixelhum.com/blog" class="name">Dan<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-20@15:44
+																																			</div>
+																@Sander: Thanks for your reply. I'm running 5.2.0f. Do you think it would be worth trying an upgrade to 5.2.0h or 5.2.0i?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c44" class="number" id="c44">#44</a>
+																			Daniel
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@04:59
+																																			</div>
+																Sanders,<br />
+<br />
+I've tried making this work on 5.2.0h and 5.2.0i. No luck. It seems like 5.2 adds those random hex digits to *_IDA names. I followed the steps exactly and the SHOP_COMPUTERS_SHOP_APPLICATIONS_NAME never works in listview.<br />
+<br />
+I tried defining another field in vardefs for application module with the same definition as SHOP_COMPUTERS_SHOP_APPLICATIONS_NAME but a different name. Placing thin into list view produces desired result. It is as if relationship fields are not loaded for listview.<br />
+<br />
+I'd appreciate if you could get back to me about this one. How did you make this work on 5.2.0h/i?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c45" class="number" id="c45">#45</a>
+																			Daniel
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@05:07
+																																			</div>
+																I think this is a bug/feature in 5.2. Where it doesn't load relationships fields for listview. I fixed your sample by modifying SugarBean:<br />
+<br />
+	function fill_in_additional_list_fields(){<br />
+	    $this->fill_in_relationship_fields();<br />
+		if(!empty($this->field_defs['parent_name']) && empty($this->parent_name)){<br />
+			$this->fill_in_additional_parent_fields();<br />
+		}<br />
+	}<br />
+<br />
+I added $this->fill_in_relationship_fields(); in fill_in_additional_list_fields(). I'm pretty sure this isn't the best fix, and I don't know why was the code changed not to load relationship fields.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c46" class="number" id="c46">#46</a>
+																			Daniel
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@08:05
+																																			</div>
+																for this article to work on 5.2.0h/i you would have to override bean file for applications module. I had to add this<br />
+<br />
+    function fill_in_additional_list_fields ()<br />
+    {<br />
+        $this->fill_in_relationship_fields();        <br />
+        return parent::fill_in_additional_list_fields();<br />
+    }<br />
+<br />
+for fields to be populated with data
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c47" class="number" id="c47">#47</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@09:23
+																																			</div>
+																Thanks Daniel. I see now why it didn't work for you but did work for me. My custom modules have custom fill_in_link_fields() functions for my grandparent fields (see <a href="http://www.jejik.com/articles/2008/12/add_grandparent_fields_to_your_sugarcrm_modules/" rel="nofollow">this article</a>). I think it does the same trick as your changes to make the listviews work.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c48" class="number" id="c48">#48</a>
+																			<a href="http://pixelhum.com/blog" class="name">Dan<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@12:25
+																																			</div>
+																Ok, I think I've worked out why it's not working for me. I analyzed the query that SugarCRM is running to get the list of records and it's trying to get the name field from the parent. The trouble is, the parent table does not have a name field. How can I change this so it's getting first_name and last_name instead?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c49" class="number" id="c49">#49</a>
+																			<a href="http://www.fothcorp.com" class="name">CrashHD<small> (http://www.fothcorp.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@13:11
+																																			</div>
+																Sander, thank you for some of the great insights you have provided via blog about sugarcrm. I have found them quite refreshing.<br />
+<br />
+For anyone who may be interested, here is a quick patch to get the labels working correctly for the editviews (so you don't have to manually add the label each time  you create a new one to many relationship).<br />
+<br />
+Let me know if you found this at all helpful.<br />
+<br />
+<pre>
+### Eclipse Workspace Patch 1.0
+#P sugarcrm_sandbox
+Index: modules/ModuleBuilder/parsers/relationships/UndeployedRelationships.php
+===================================================================
+--- modules/ModuleBuilder/parsers/relationships/UndeployedRelationships.php	(revision 36)
++++ modules/ModuleBuilder/parsers/relationships/UndeployedRelationships.php	(working copy)
+@@ -356,7 +356,7 @@
+                     $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . ": " . (($actionAdd) ? "adding" : "removing") . " $fieldName on $view layout for undeployed module {$parsedName [ 'moduleName' ]} in package {$parsedName [ 'packageName' ]}" ) ;
+                     $parser = new GridLayoutMetaDataParser ( $view, $parsedName [ 'moduleName' ], $parsedName [ 'packageName' ] ) ;
+                     
+-                    if (($actionAdd) ? $parser->addField ( array ( 'name' => $fieldName ) ) : $parser->removeField ( $fieldName ))
++                    if (($actionAdd) ? $parser->addField ( array ( 'name' => $fieldName, 'label' => $_REQUEST['rhs_label'] ) ) : $parser->removeField ( $fieldName ))
+                     {
+                         $parser->handleSave ( false ) ;
+                     }
+</pre>
+
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c50" class="number" id="c50">#50</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@14:07
+																																			</div>
+																@Dan: In the vardefs where your stdnt_students_stdnt_qualifications_name is defined (not in the listdefs, but the vardefs) you can set the "rname". The rname tells Sugar what field to read from the parent module. If it's not set it will default to "name" as in your case.<br />
+<br />
+@CrashHD: Thanks for that. I have taken the liberty to modify your post a bit and wrap your patch in pre tags.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c51" class="number" id="c51">#51</a>
+																			<a href="http://pixelhum.com/blog" class="name">danbee<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@15:32
+																																			</div>
+																Hi Sander, I did see that and tried changing it to first_name in what I thought was the correct file (custom/Extension/modules/stdnt_Qualifications/Vardefs/dBsStudents.php), but the query is still trying to get the data from the name field. The vardefs for the students module (the parent) pull in the person template which defines a name field as being the first_name and last_name fields concatenated.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c52" class="number" id="c52">#52</a>
+																			<a href="http://pixelhum.com/blog" class="name">danbee<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@16:47
+																																			</div>
+																Ok, I've modified the correct file now and gotten it to work showing the first_name column. Do you know how I can get it to show the students full name?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c53" class="number" id="c53">#53</a>
+																			<a href="http://pixelhum.com/blog" class="name">Dan<small> (http://pixelhum.com/blog)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@16:57
+																																			</div>
+																Fixed! I added the following lines to the vardefs.ext.php file for the module:<br />
+<br />
+<pre>  'fields' =&gt; array('first_name', 'last_name'),
+  'db_concat_fields'=&gt; array(0=&gt;'first_name', 1=&gt;'last_name'),
+</pre><br />
+<br />
+Sander, thanks for your help and patience! I only wish the SugarCRM forums were as responsive as you've been.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c54" class="number" id="c54">#54</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-08-24@23:56
+																																			</div>
+																Good to hear!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c55" class="number" id="c55">#55</a>
+																			<a href="http://www.fothcorp.com" class="name">CrashHD<small> (http://www.fothcorp.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-03@22:30
+																																			</div>
+																Do we know if the sugarcrm bugtracker is even used any more? I've posted a couple of fixes and have yet to even get a response. It definitely discourages me from wanting to implement this solution to our clients....<br />
+<br />
+Sander any other CRM recommendations you have?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c56" class="number" id="c56">#56</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-04@07:25
+																																			</div>
+																The bugtracker is used, but they are very, very slow to respond.<br />
+<br />
+I haven't used any other open source CRM systems so I cannot recommend any. But there are other options around. There is v-tiger, which is a fork of SugarCRM. There's also Centric and Compiere. <a href="http://www.insidecrm.com/features/top-open-source-solutions-121307/" rel="nofollow">Here's a list of open sourec CRM systems</a>. Google will probably turn up even more.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c57" class="number" id="c57">#57</a>
+																			cristian
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-09@09:21
+																																			</div>
+																Hi Sander,<br />
+<br />
+How do I import decimal values in a field in a custom module?<br />
+<br />
+When completed the process of importing the data in decimal format: 1000.58, stores it as Sugarcrm 10,005,800<br />
+<br />
+How can I fix this? <br />
+<br />
+Thanks
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c58" class="number" id="c58">#58</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-09-12@15:17
+																																			</div>
+																Cristian, I believe that's a know bug in SugarCRM. It doesn't just affect the import either. I have the exact same problem with monetary amounts in opportunities when I choose European-style decimal and thousand separators (i.e. a dot for thousand and a comma for decimal).<br />
+<br />
+I've been waiting on a fix for nearly a year...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c59" class="number" id="c59">#59</a>
+																			ldebaets
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-10-20@17:24
+																																			</div>
+																Sander, Thank you for sharing this very informative and helpful knowledge.  I see the problem still exists in version 6.0.1 of SugarCRM which I am working in.   Do you know if the solution would work if the modules are in separate packages?  As well, do you know any limit on the number of modules or relationships the modulebuilder can handle in sugar?  When building a package of up to 6 modules with inter-relationships, when I got to the 4th or 5th module, the moduelbuilder seemed to choke when I tried to deploy.  It simply said there was an internal error and the package probably did not deploy properly.  I suspected the amount of data it had to manage exeeded an internal limit but there was nothing in the logs to indicate what happened.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c60" class="number" id="c60">#60</a>
+																			<a href="http://familion.ru" class="name">akuba<small> (http://familion.ru)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-10-21@14:37
+																																			</div>
+																I have problem with data import - sugar not correct imported data with .(dot) decimal separator.<br />
+Any ideas?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c61" class="number" id="c61">#61</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-10-27@17:36
+																																			</div>
+																@ldebaets: I don't see why this should not work with separate packages.<br />
+<br />
+As for the number of modules installed, I don't know if a hard upper limit in SugarCRM. What may be happening is that you are getting naming conflicts. SugarCRM auto-generates names for relationships and fields when you are working in the module builder. But, the naming scheme it uses does not guarantee uniqueness (at least not in 5.1CE/Pro). Especially with long module names there was a high probability of conflicts. This may be what is biting you.<br />
+<br />
+To solve this, you can manually edit the files  generated by the module builder to rename relationships and associated fields. But, I have no idea if you can still load them back in the module builder after that. Likely not, if it expects the names to be in the (wrong) scheme.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c62" class="number" id="c62">#62</a>
+																			layman99
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-08@08:19
+																																			</div>
+																I want to autofill fuctionality of dropdown list and relate fields of a subpanel in account module. i have created one -to -many relationship b/w account & contacts. Could anybody help me on this...... Thanks in advance for your efforts...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c63" class="number" id="c63">#63</a>
+																			<a href="http://www.ayuda.ca" class="name">Ramblin<small> (http://www.ayuda.ca)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-04-26@09:23
+																																			</div>
+																I am using SugarCRM 6.1.14 and have (so far) found Module Builder to produce decent baseline code, which I can then customize as required.<br />
+<br />
+But it sounds like Module Builder is not something to rely on in v5.x of SugarCRM<br />
+<br />
+Has anyone tried Module Builder in v6.x of SugarCRM and if so, what are your impressions?<br />
+<br />
+I am trying to create a new module with Module Builder but then add a couple of fields into the relationship table - but I want to do so in a way that is both upgrade and redeploy safe (ie make customizations that will not be undone if I re-Publish in Module Builder).  Is this feasible?<br />
+<br />
+I originally posted this question in the SugarCRM Forum at<br />
+http://www.sugarcrm.com/forums/showthread.php?t=69667<br />
+but to-date have not received an answer I can work with<br />
+<br />
+Any ideas?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c64" class="number" id="c64">#64</a>
+																			<a href="http://www.mjvn.com" class="name">Marnus van Niekerk<small> (http://www.mjvn.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-06-29@11:00
+																																			</div>
+																I have built some tools that can automatically create subpanels for relate fields and fix the bad many to many relationships created by studio.<br />
+You can download these for free from http://www.mjvn.com/index.php/sugarcrm-tools/<br />
+<br />
+M
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c65" class="number" id="c65">#65</a>
+																			Mat as
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-09-18@21:46
+																																			</div>
+																Hi,<br />
+<br />
+I want to create a link to an other module in the subpanel of a custom module. I  add this lines in custom\modules\fide2_Items\metadata\subpanels<br />
+<br />
+		'fide1_produde2_items_name'=>array(<br />
+	 		'vname' => 'LBL_NAME',<br />
+			'widget_class' => 'SubPanelDetailViewLink',<br />
+	 		'width' => '45%',<br />
+			'target_module' => 'fide1_productos',<br />
+			'default' => true,<br />
+			'target_record_key' => 'fide1_prod9889oductos_ida',<br />
+			),<br />
+<br />
+When I click on the link I have this error :<br />
+<br />
+"Fatal error: Call to a member function get_summary_text() on a non-object in C:\AppServ\www\fidemar\include\MVC\View\SugarView.php on line 1088"<br />
+<br />
+Please help,<br />
+<br />
+Thank you,<br />
+<br />
+Mat�as
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c66" class="number" id="c66">#66</a>
+																			<a href="http://www.nissigroup.com.ar" class="name">Pablo A<small> (http://www.nissigroup.com.ar)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-04-04@01:48
+																																			</div>
+																I've wrote a bible, but the spam filter kicks me away :(<br />
+<br />
+Basically ... this is the problem (Sugar 6.4.2)<br />
+<br />
+Contacts --&lt; Inscripciones &gt;-- Eventos<br />
+<br />
+The subpanel "Inscripciones" shows everything ok but the Eventos name is empty.<br />
+I have worked with the studio.<br />
+<br />
+This is the Sugar forum post. Please advice! anything!<br />
+http://www.sugarcrm.com/forums/showthread.php?t=79065
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#c67" class="number" id="c67">#67</a>
+																			<a href="http://www.ybo.com.sg" class="name">Arnaud Kleinveld<small> (http://www.ybo.com.sg)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-11-22@05:43
+																																			</div>
+																We have been using the Module builder from version 6.2 to 6.4.5 without major problems. It seems to be relatively bug free lately.<br />
+<br />
+It's important to know however that when you develop in one system and then export and import into another, for example from development to production, every customization has to go through the same process. And as far as we know data has to be restored every time an update using that process is being applied to production. Maybe we are missing something here.<br />
+<br />
+Finally we built, tested and did the UAT on one system and then continued doing small customizations on production later on. For as long we were prototyping at least. Like Jess said, Sugar is perfect for prototyping you data structure. Once you have that done and your staff has loaded your database with data is time to look at another system with more business intelligence and quality and speed at it's core...
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/10/fixing_one-to-many_relationships_in_sugarcrm_5_1/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="c8fc99644af7d7a412246e6a8a7a16a7" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F10%2Ffixing_one-to-many_relationships_in_sugarcrm_5_1%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://www.jejik.com/articles/2008/12/build_custom_sugarcrm_modules_in_subversion/">www.jejik.com/articles/2008...</a></li>
+															<li><a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/">www.jejik.com/articles/2008...</a></li>
+															<li><a href="http://www.jejik.com/articles/2008/12/sugarcrm_many-to-one_relations_to_standard_modules/">www.jejik.com/articles/2008...</a></li>
+															<li><a href="http://www.jejik.com/articles/2008/12/add_grandparent_fields_to_your_sugarcrm_modules/">www.jejik.com/articles/2008...</a></li>
+															<li><a href="http://www.swstrategies.com/blog/?p=12">www.swstrategies.com/blog/?...</a></li>
+															<li><a href="http://www.sdlc20.com/blog/?p=39">www.sdlc20.com/blog/?p=39</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

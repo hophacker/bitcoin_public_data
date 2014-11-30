@@ -1,0 +1,1412 @@
+http://www.jveweb.net/archivo/2011/03/manejando-mysql-desde-la-linea-de-comandos.html
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 03:58:28 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Juan Valencia Escalante" />
+	<title>Manejando MySQL desde la linea de comandos - Sitio web de Juan Valencia</title>
+	<link rel="alternate" href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html" hreflang="en" lang="en" title="English Version" />
+	<link rel="alternate" type="application/rss+xml" title="Suscripci&oacute;n RSS 2.0" href="http://www.jveweb.net/rss.xml" />
+    
+    <meta name="keywords" content="MySQL, PHP, EDITOR, edit, export, show tables, show table status, alter table, drop, count(), sum(), select, where, between, and, or, xor, from, insert into, values, update, set, NOW(), LAST_INSERT_ID(), order by, asc, desc, limit, create table" />
+    <meta name="description" content="Una guía sobre manejar una base de datos MySQL desde la linea de comandos, incluyendo muchas peticiones de MySQL para referencia." />
+    
+	<!-- style START -->
+	<!-- default style -->
+	<link rel="stylesheet" type="text/css" href="http://www.jveweb.net/style.css" media="screen" />
+	<!-- for translations -->
+		<!--[if IE 6]>
+		<link rel="stylesheet" href="http://www.jveweb.net/ie6.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+	<!-- script START -->
+	<script type="text/javascript" src="http://www.jveweb.net//js/util.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+  {lang: 'es-419'}
+	</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>
+		<!-- script END -->
+</head>
+<body>
+<!-- wrap START -->
+<div id="wrap">
+<!-- container START -->
+<div id="container">
+<!-- header START -->
+<div id="header">
+	<div id="caption">
+		<h1 id="title"><a href="http://www.jveweb.net/index.html">Sitio web de Juan Valencia</a></h1>
+		<div id="tagline">Linux, Software Libre y de Código Abierto, Programación y algunos pensamientos.</div>
+	</div>
+	<!-- navigation START -->
+	<div id="navigation">
+		<ul id="menus">
+			<li class="page_item page-item-1"><a class="home" title="Página Principal" href="http://www.jveweb.net/index.html">Página Principal</a></li>
+			<li class="page_item page-item-2"><a href="http://www.jveweb.net/linux_foss.html" title="Linux / FOSS">Linux / FOSS</a></li>
+			<li class="page_item page-item-3"><a href="http://www.jveweb.net/programacion.html" title="Programación">Programación</a></li>
+			<li class="page_item page-item-4"><a href="http://www.jveweb.net/pensamientos.html" title="Pensamientos y Opinión">Pensamientos y Opinión</a></li>
+			<li class="page_item page-item-5"><a href="http://www.jveweb.net/fotografia.html" title="Fotografía">Fotografía</a></li>
+			<li class="page_item page-item-6"><a href="http://www.jveweb.net/contacto.html" title="Contacto y Acerca de mi">Contacto y Acerca de mi</a></li>
+			<li class="page_item page-item-7"><a href="http://www.jveweb.net/mapa.html" title="Mapa del Sitio">Mapa del Sitio</a></li>
+			<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+		</ul>
+		<div class="fixed"></div>
+	</div>
+	<!-- navigation END -->
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+<!-- content START -->
+<div id="content">
+	<!-- main START -->
+	<div id="main">
+
+			<div class="post">
+			<h2><a class="title" href="http://www.jveweb.net/archivo/2011/03/manejando-mysql-desde-la-linea-de-comandos.html" rel="bookmark">Manejando MySQL desde la linea de comandos</a></h2>
+			<div class="info">
+				<span class="date">viernes 18 marzo 2011 | <a href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html" rel="alternate">In English</a></span>
+				<div class="fixed"></div>
+			</div>
+			<div class="info">
+        <p>
+          <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;"
+href="http://www.jveweb.net/archivo/2011/03/manejando-mysql-desde-la-linea-de-comandos.html"></a> <g:plusone size="medium"></g:plusone>
+        </p>
+			</div>
+			<div class="content">
+<p>
+  Si nuestro servicio de hospedaje nos ofrece un shell <code>SSH</code> y 
+  tiene <code>MySQL</code> instalado, o si tenemos <code>MySQL</code> 
+  instalado en nuestra computadora, podemos administrar una base de datos 
+  desde la interfase de linea de comandos. Si desarrollamos programas que 
+  requieres del uso de una base de datos <code>MySQL</code>, es muy 
+  probable que ya estemos familiarizado con las peticiones de <code>SQL</code>. 
+  Utilizando el comando <code>mysql</code> podemos enviar estas peticiones 
+  a la base de datos.
+</p>
+<p>
+  Temas<br /><a href="#jveweb_es_029_01">Conect&#225;ndose a la base de datos</a><br /><a href="#jveweb_es_029_02">Enviando 
+  peticiones al shell de MySQL</a><br /><a href="#jveweb_es_029_03">Usando 
+  el editor</a><br /><a href="#jveweb_es_029_04">Procesando un archivo por 
+  lotes</a> <a href="#jveweb_es_029_05">Peticiones MySQL para manipular 
+  tablas</a>
+</p>
+<ul>
+  <li>
+<a href="#jveweb_es_029_06">Listar tablas existentes en la base de 
+datos</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_07">Mostrar informaci&#243;n de las tablas en la 
+base de datos</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_08">Crear una nueva tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_09">Listar los campos en una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_10">Cambiar el nombre de un campo en una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_11">Agregar un campo a una tabla y hacerlo un 
+&#237;ndice</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_12">Quitar un &#237;ndice de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_13">Quitar un campo de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_14">Agregar campos despu&#233;s de un campo 
+especificado</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_15">Agregar campos al comienzo de la tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_16">Agregar m&#250;ltiples campos a la tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_17">Borrar campos en una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_18">Renombrar una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_19">Cambiar el comentario de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_20">Cambiar el valor de auto incremento de una 
+tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_21">Reparar una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_22">Optimizar una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_23">Borrar todos los registros en una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_24">Borrar una tabla</a>
+  </li>
+</ul>
+<p>
+  <a href="#jveweb_es_029_25">Peticiones MySQL para manipular registros en 
+  una tabla</a>
+</p>
+<ul>
+  <li>
+<a href="#jveweb_es_029_26">Mostrar los registros de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_27">Contar los registros de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_28">Sumar los registros de una tabla</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_29">Insertar un registro</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_30">Actualizar un registro</a>
+  </li>
+  <li>
+<a href="#jveweb_es_029_31">Borrar un registro</a>
+  </li>
+</ul>
+<p>
+  <a href="#jveweb_es_029_32">Peticiones MySQL preparadas</a><br /><a href="#jveweb_es_029_33">Notas 
+  al pie</a><br /><a href="#jveweb_es_029_34">Recursos adicionales</a>
+</p>
+<p>
+  Podemos enviar peticiones directamente al shell de <code>MySQL</code>, 
+  editar estas peticiones en un editor de texto separado que definimos con 
+  la variable de entorno EDITOR, o podemos utilizar un archivo con 
+  peticiones de <code>MySQL</code> (un script o lote) a ser ejecutadas por 
+  el interprete de <code>MySQL</code>.
+</p>
+<h3 id="jveweb_es_029_01">
+  Conect&#225;ndose a la base de datos
+</h3>
+<p>
+  Esta gu&#237;a asume que ya tienes creada una base de datos, as&#237; como un 
+  usuario con los privilegios necesarios para hacer las operaciones que se 
+  requieren en la base de datos.
+</p>
+<p>
+  Los cuatro par&#225;metros que necesitamos para establecer una conexi&#243;n a la 
+  base de datos es el host donde reside la base de datos, el nombre de 
+  usuario, la contrase&#241;a y el nombre de la base de datos que vamos a 
+  manipular.
+</p>
+<p>
+  <code class="snippet">mysql -h [host] -D 
+  [base de datos] -u [usuario] -p</code>
+</p>
+<p>
+	Esto te pedir&#225; la contrase&#241;a, para que no sea guardada en el historial,
+	por ejemplo:
+</p>
+<p>
+  <code class="snippet">mysql -h servidor.jveweb.net -D nombre_base_de_datos -u juan -p</code>
+</p>
+<p>
+  Puedes especificar la contraseña en el comando agregando la contraseña junto a <code>-p</code>,
+  no dejes un espacio entre <code>-p</code> y la contrase&#241;a para conectarte de esta manera,
+  aunque no usar la contraseña en el comando es recomendable, por ejemplo:
+</p>
+<p>
+  <code class="snippet">mysql -h servidor.jveweb.net
+  -D nombre_base_de_datos -u juan -punacontrase&#241;a</code>
+</p>
+<p>
+	El parámetro <code>-D</code> para especificar la base de datos a usar desde que
+	nos conectamos también es opcional, si no lo usas puedes ver una lista de las
+	bases de datos disponibles usando <code>show databases;</code> y seleccionar la
+	base de datos a usar con <code>use [nombre base de datos];</code> en la linea de
+	comandos de mysql, por ejemplo: <code>use <b>usuarios</b>;</code>
+</p>
+<p>
+  Si funcion&#243;, obtendremos un resultado similar a este:
+</p>
+<pre><code class="console">Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6324623
+Server version: 5.1.39-log MySQL Server
+
+Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+This software comes with ABSOLUTELY NO WARRANTY. This is free software,
+and you are welcome to modify and redistribute it under the GPL v2 license
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input 
+statement.
+
+mysql&gt;</code></pre>
+<p>
+  Para terminar la sesi&#243;n escribe <code>quit</code>. Si te est&#225;s 
+  conectando a una base de datos ubicada en un host externo, es 
+  recomendable el uso de <code>SSL</code> al conectarse a la base de 
+  datos, para hacer esto usa el par&#225;metro <code>--ssl</code>
+</p>
+<h3 id="jveweb_es_029_02">
+  Enviando peticiones al shell de MySQL
+</h3>
+<p>
+  Una vez que estamos en el shell de <code>MySQL</code>, podemos enviar 
+  peticiones de MySQL. Para ejecutarlas tenemos que terminarlas con un 
+  punto y coma (<code>;</code>), o con <code>\g</code>, por ejemplo:
+</p>
+<p>
+  <code class="snippet">show tables;</code>
+</p>
+<p>
+  La petici&#243;n no es ejecutada hasta que el punto y coma es encontrado, 
+  esto nos permite escribir peticiones de <code>MySQL</code> en lineas 
+  m&#250;ltiples, por ejemplo:
+</p>
+<p>
+  <code class="snippet">show<br />tables<br />;</code>
+</p>
+<p>
+  Si queremos presentar los resultados verticalmente, necesitamos terminar 
+  las peticiones con <code>\G</code> en vez de un punto y coma o <code>\g</code>
+</p>
+<h3 id="jveweb_es_029_03">
+  Usando el editor
+</h3>
+<p>
+  En sistemas basados en Unix como Linux, el comando <code>edit</code> 
+  desde dentro del shell de <code>mysql</code> lanza el editor que est&#225; 
+  definido en la variable de entorno EDITOR. Cuando usamos el comando <code>edit</code>, 
+  si hab&#237;amos hecho una petici&#243;n previamente, el editor ser&#225; abierto con 
+  esta petici&#243;n, esto es muy &#250;til para hacer correcciones a la &#250;ltima 
+  petici&#243;n, de otra manera solo obtendremos un editor vac&#237;o para escribir 
+  lo que necesitemos. Una vez que terminemos de editar la petici&#243;n, 
+  guardamos, salimos del editor, y entonces usamos un punto y coma o <code>\g</code> 
+  para ejecutar la petici&#243;n(es) que acabamos de escribir.
+</p>
+<p>
+  Para configurar la variable de entorno <code>EDITOR</code>, usamos <code>export</code>, 
+  en este ejemplo yo configuro <code>vim</code> ya que es mi editor 
+  preferido, pero puedes utilizar uno m&#225;s f&#225;cil como <code>nano</code>. 
+  El editor por default es <code>vi</code>:
+</p>
+<p>
+  <code class="snippet">export EDITOR=vim</code>
+</p>
+<p>
+  Para revisar el valor de la variable de entorno <code>EDITOR</code>, 
+  podemos utilizar:
+</p>
+<p>
+  <code class="snippet">echo $EDITOR</code>
+</p>
+<h3 id="jveweb_es_029_04">
+  Procesando un archivo por lotes
+</h3>
+<p>
+  Podemos ejecutar un archivo por lotes de peticiones <code>MySQL</code> 
+  utilizando:
+</p>
+<p>
+  <code class="snippet">mysql -u usuario -pcontrase&#241;a -h host -D 
+  nombre_base_de_datos &lt; archivo_lotes.sql</code>
+</p>
+<p>
+  O, si estamos dentro de el shell de <code>mysql</code>, podemos usar:
+</p>
+<p>
+  <code class="snippet">source archivo_lotes.sql</code>
+</p>
+<h3 id="jveweb_es_029_05">
+  Peticiones MySQL para manipular tablas
+</h3>
+<p>
+  Quien tenga el trabajo de crear scripts y programas que interact&#250;an con <code>MySQL</code> 
+  seguramente est&#225; familiarizado con estas peticiones, pero ya que utilizo 
+  mi propio sitio web como referencia pondr&#233; aqu&#237; algunas peticiones 
+  comunes.
+</p>
+<p id="jveweb_es_029_06">
+  <b>Listar tablas existentes en la base de datos</b>
+</p>
+<p>
+  <code class="snippet">show tables;</code>
+</p>
+<p id="jveweb_es_029_07">
+  <b>Mostrar informaci&#243;n de las tablas en la base de datos</b>
+</p>
+<p>
+  <code>show tables</code> solo nos mostrar&#225; los nombres de las tablas en 
+  la base de datos, para ver toda la informaci&#243;n sobre las tablas, usa:
+</p>
+<p>
+  <code class="snippet">show table status;</code>
+</p>
+<p>
+  La informaci&#243;n presentada sobre la tabla es:
+</p>
+<ul>
+  <li>
+Name - El nombre de la tabla
+  </li>
+  <li>
+Engine - Mecanismo de la tabla (MyISAM, InnoDB, Memory, CVS, etc.)
+  </li>
+  <li>
+Version - N&#250;mero de versi&#243;n del archivo .frm de la tabla
+  </li>
+  <li>
+Row_format - El formato de almacenamiento de las filas (Din&#225;mico, 
+Redundante, etc.)
+  </li>
+  <li>
+Rows - N&#250;mero de filas en la tabla
+  </li>
+  <li>
+Avg_row_length - Longitud promedio de las filas
+  </li>
+  <li>
+Data_length - Longitud del archivo de datos
+  </li>
+  <li>
+Max_data_length - La m&#225;xima longitud del archivo de datos
+  </li>
+  <li>
+Index_length - La longitud del archivo &#237;ndice
+  </li>
+  <li>
+Data_free - N&#250;mero de bytes asignados pero no usados
+  </li>
+  <li>
+Auto_increment - El pr&#243;ximo valor de auto-incremento
+  </li>
+  <li>
+Create_time - Cuando fue creada la tabla
+  </li>
+  <li>
+Update_time - Cuando fue actualizado el archivo de datos por &#250;ltima vez
+  </li>
+  <li>
+Check_time - Cuando fue revisada la tabla por &#250;ltima vez
+  </li>
+  <li>
+Collation - El set de caracteres y la colaci&#243;n de la tabla
+  </li>
+  <li>
+Checksum - El checksum vivo
+  </li>
+  <li>
+Create_options - Opciones extras utilizadas cuando fue creada la tabla
+  </li>
+  <li>
+Comment - El comentario de la tabla
+  </li>
+</ul>
+<p>
+  Podemos especificar de que tabla queremos ver la informaci&#243;n utilizando:
+</p>
+<p>
+  <code class="snippet">show table status like 'nombre_de_la_tabla';</code>
+</p>
+<p>
+  Y podemos buscar en otro campo por cierto valor, por ejemplo, para 
+  mostrar todas las tablas que usan el mecanismo de almacenamiento MyISAM, 
+  podemos utilizar:
+</p>
+<p>
+  <code class="snippet">show table status where `Engine` like 'MyISAM';</code>
+</p>
+<p id="jveweb_es_029_08">
+  <b>Crear una nueva tabla</b>
+</p>
+<p>
+  Este es un ejemplo del comando para crear una tabla, agregu&#233; muchos 
+  campos diferentes para la referencia de como declararlos.
+</p>
+<p>
+  <code class="snippet">create table 
+  `nombre_base_de_datos`.`tabla_de_prueba` (<br />`campo_id` int( 11 ) 
+  unsigned not null auto_increment comment 'clave primaria',<br />`campo_indice1` 
+  int( 11 ) unsigned not null comment 'un &#237;ndice',<br />`campo_indice2` 
+  int( 11 ) unsigned not null comment 'un &#237;ndice',<br />`campo_indice3` 
+  int( 11 ) unsigned not null comment 'un &#237;ndice',<br />`campo_unico1` 
+  int( 11 ) unsigned not null comment 'un campo &#250;nico',<br />`campo_unico2` 
+  int( 11 ) unsigned not null comment 'un campo &#250;nico',<br />`campo_unico3` 
+  int( 11 ) unsigned not null comment 'un campo &#250;nico',<br />`campo_varchar` 
+  varchar( 100 ) not null comment 'un campo varchar',<br />`campo_date` date 
+  not null comment 'un campo date',<br />`campo_datetime` datetime not null 
+  comment 'un campo datetime',<br />`campo_float` float not null comment 'un 
+  campo float',<br />`campo_longtext` longtext not null comment 'un campo 
+  longtext',<br />`campo_bool` bool not null comment 'un campo bool',<br />`campo_char` 
+  char( 1 ) not null comment 'un campo char',<br />`campo_tinyint` tinyint 
+  not null comment 'un campo tinyint',<br />primary key ( `campo_id` ) ,<br />index 
+  ( `campo_indice1` , `campo_indice2`, `campo_indice3` ) ,<br />unique ( 
+  `campo_unico1` , `campo_unico2`, `campo_unico3`)<br />) engine = myisam 
+  character set utf8 collate utf8_general_ci comment =<br />'comentarios de 
+  tabla';</code>
+</p>
+<p id="jveweb_es_029_09">
+  <b>Listar los campos en una tabla</b>
+</p>
+<p>
+  <code class="snippet">show columns from `tabla_de_prueba`;</code>
+</p>
+<p id="jveweb_es_029_10">
+  <b>Cambiar el nombre de un campo en una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` change 
+  `campo_indice_1` `nuevo_nombre_campo` int(11) unsigned not null;</code>
+</p>
+<p id="jveweb_es_029_11">
+  <b>Agregar un campo a una tabla y hacerlo un &#237;ndice</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` add 
+  `nuevo_campo_indice` int(11) unsigned not null, add 
+  index(`nuevo_campo_indice`);</code>
+</p>
+<p id="jveweb_es_029_12">
+  <b>Quitar un &#237;ndice de una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` drop index 
+  `nuevo_campo_indice`;</code>
+</p>
+<p id="jveweb_es_029_13">
+  <b>Quitar un campo de una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` drop 
+  `nuevo_campo_indice`;</code>
+</p>
+<p id="jveweb_es_029_14">
+  <b>Agregar campos despu&#233;s de un campo especificado</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` add `a_borrar` 
+  varchar(12) not null after `campo_date`;</code>
+</p>
+<p id="jveweb_es_029_15">
+  <b>Agregar campos al comienzo de la tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` add `a_borrar_2` 
+  varchar(12) not null first;</code>
+</p>
+<p id="jveweb_es_029_16">
+  <b>Agregar m&#250;ltiples campos a la tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` add `a_borrar_3` 
+  varchar(12) not null after `a_borrar`, add `a_borrar_4` varchar(12) not 
+  null after `a_borrar_3`;</code>
+</p>
+<p id="jveweb_es_029_17">
+  <b>Borrar campos en una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` drop `a_borrar`, 
+  drop `a_borrar_2`, drop `a_borrar_3`, drop `a_borrar_4`; </code>
+</p>
+<p id="jveweb_es_029_18">
+  <b>Renombrar una tabla</b>
+</p>
+<p>
+  <code class="snippet">rename table 
+  `nombre_base_de_datos`.`nombre_original` to 
+  `nombre_base_de_datos`.`nuevo_nombre`;</code>
+</p>
+<p id="jveweb_es_029_19">
+  <b>Cambiar el comentario de una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` comment='Los 
+  comentarios';</code>
+</p>
+<p id="jveweb_es_029_20">
+  <b>Cambiar el valor de auto incremento de una tabla</b>
+</p>
+<p>
+  <code class="snippet">alter table `tabla_de_prueba` auto_increment=3;</code>
+</p>
+<p id="jveweb_es_029_21">
+  <b>Reparar una tabla</b>
+</p>
+<p>
+  <code class="snippet">repair table `tabla_de_prueba`;</code>
+</p>
+<p id="jveweb_es_029_22">
+  <b>Optimizar una tabla</b>
+</p>
+<p>
+  <code class="snippet">optimize table `tabla_de_prueba`;</code>
+</p>
+<p id="jveweb_es_029_23">
+  <b>Borrar todos los registros en una tabla</b>
+</p>
+<p>
+  <code class="snippet">truncate table `tabla_de_prueba`;</code>
+</p>
+<p id="jveweb_es_029_24">
+  <b>Borrar una tabla</b>
+</p>
+<p>
+  <code class="snippet">drop table `tabla_de_prueba`;</code>
+</p>
+<h3 id="jveweb_es_029_25">
+  Peticiones MySQL para manipular registros en una tabla
+</h3>
+<p>
+  Voy a utilizar las siguientes dos tablas ficticias para los ejemplos que 
+  voy a estar utilizando referentes a la manipulaci&#243;n de registros.
+</p>
+<table summary="Esta es una tabla de ejemplo que contiene estados" cellpadding="0" cellspacing="0">
+  <caption>
+Tabla de estados (estados) 
+  </caption>
+  <tr>
+<th>
+  estado_id
+</th>
+<th>
+  estado_nombre
+</th>
+  </tr>
+  <tr>
+<td>
+  1
+</td>
+<td>
+  Jalisco
+</td>
+  </tr>
+  <tr>
+<td>
+  2
+</td>
+<td>
+  Guanajuato
+</td>
+  </tr>
+  <tr>
+<td>
+  3
+</td>
+<td>
+  Hidalgo
+</td>
+  </tr>
+</table>
+<table summary="Esta es una tabla de ejemplo que contiene ciudades" cellpadding="0" cellspacing="0">
+  <caption>
+Tabla de ciudades (ciudades) 
+  </caption>
+  <tr>
+<th>
+  ciudad_id
+</th>
+<th>
+  ciudad_nombre
+</th>
+<th>
+  ciudad_poblacion
+</th>
+<th>
+  estado_id
+</th>
+  </tr>
+  <tr>
+<td>
+  1
+</td>
+<td>
+  Guadalajara
+</td>
+<td>
+  1494134
+</td>
+<td>
+  1
+</td>
+  </tr>
+  <tr>
+<td>
+  2
+</td>
+<td>
+  Tequila
+</td>
+<td>
+  33155
+</td>
+<td>
+  1
+</td>
+  </tr>
+  <tr>
+<td>
+  3
+</td>
+<td>
+  Zapopan
+</td>
+<td>
+  1243538
+</td>
+<td>
+  1
+</td>
+  </tr>
+  <tr>
+<td>
+  4
+</td>
+<td>
+  Tonal&#225;
+</td>
+<td>
+  408729
+</td>
+<td>
+  1
+</td>
+  </tr>
+  <tr>
+<td>
+  5
+</td>
+<td>
+  Tlaquepaque
+</td>
+<td>
+  563006
+</td>
+<td>
+  1
+</td>
+  </tr>
+  <tr>
+<td>
+  6
+</td>
+<td>
+  Guanajuato
+</td>
+<td>
+  171709
+</td>
+<td>
+  2
+</td>
+  </tr>
+  <tr>
+<td>
+  7
+</td>
+<td>
+  Celaya
+</td>
+<td>
+  468064
+</td>
+<td>
+  2
+</td>
+  </tr>
+  <tr>
+<td>
+  8
+</td>
+<td>
+  Le&#243;n
+</td>
+<td>
+  1436733
+</td>
+<td>
+  2
+</td>
+  </tr>
+  <tr>
+<td>
+  9
+</td>
+<td>
+  Pachuca
+</td>
+<td>
+  275578
+</td>
+<td>
+  3
+</td>
+  </tr>
+  <tr>
+<td>
+  10
+</td>
+<td>
+  Tizayuca
+</td>
+<td>
+  100562
+</td>
+<td>
+  3
+</td>
+  </tr>
+</table>
+<p id="jveweb_es_029_26">
+  <b>Mostrar los registros de una tabla</b>
+</p>
+<p>
+  <code class="snippet">select [campos] from `tabla_nombre` [where 
+  condiciones] [order by orden1 asc/desc,orden2 asc/desc] [limit 
+  inicio,limite];<br /><br />select [x.campo,y.campo] from `tabla1` x, 
+  `tabla2` y where y.`id`=x.`indice` [condiciones extras] [order by 
+  x.campo,y.campo] [limit inicio,limite];</code>
+</p>
+<p>
+  El n&#250;mero de combinaciones que podemos hacer con el comando <code>select</code> 
+  es enorme, as&#237; que tratar&#233; de cubrir algunos usos comunes en los 
+  siguientes ejemplos. Los campos que usamos siguiendo el <code>select</code> 
+  son los campos que ser&#225;n mostrados, y el orden en que los especificamos 
+  es el orden en el que ser&#225;n mostrados. Despu&#233;s de esto especificamos la 
+  tabla o tablas donde estamos buscando.
+</p>
+<p>
+  Definiendo el <code>where</code> podemos especificar m&#250;ltiples 
+  condiciones separadas por espacios. Si estamos utilizando m&#225;s de una 
+  tabla en la b&#250;squeda, necesitamos hacer una comparaci&#243;n de igual entre 
+  los campos que ligan ambas tablas. Los &#250;ltimos ejemplos son sobre hacer 
+  estas peticiones en m&#225;s de una tabla.
+</p>
+<p>
+  Las condiciones pueden ser dadas con operadores de comparaci&#243;n, como <code>=</code>, 
+  <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, 
+  <code>&lt;&gt;</code> or <code>!=</code>. La expresi&#243;n <code>LIKE</code> 
+  nos permite hacer comparaciones simple de patrones, podemos utilizar <code>%</code> 
+  como car&#225;cter comod&#237;n. <code>between ... and ...</code> nos 
+  permite especificar un rango de valores. Y podemos especificar m&#225;s de 
+  una condici&#243;n utilizando los operadores l&#243;gicos <code>AND</code> 
+  o <code>&amp;&amp;</code>, <code>OR</code> o <code>||</code>, <code>NOT</code> 
+  o <code>!</code>, o <code>XOR</code>.
+</p>
+<p>
+  Podemos ordenar el resultado utilizando <code>order by</code> y 
+  especificando el campo que queremos utilizar para ordenar, y si queremos 
+  que el orden sea ascendente (<code>asc</code>) o descendente (<code>desc</code>), 
+  podemos usar m&#225;s de un campo para hacer el ordenamiento, en cuyo caso el 
+  primer campo ser&#225; usado primariamente para el orden, y el segundo campo 
+  ser&#225; usado cuando el primer campo tenga m&#225;s de una instancia.
+</p>
+<p>
+  Y finalmente, el valor <code>limit</code> define desde que registro 
+  comenzaremos a mostrar, y cuantos registros ser&#225;n mostrados.
+</p>
+<p>
+  Espero que en los pr&#243;ximos ejemplos esto se volver&#225; mucho m&#225;s claro, 
+  toma las dos tablas como referencia para ver los resultados de cada 
+  comando.
+</p>
+<p>
+  <code class="snippet">select * from `estados`;</code>
+</p>
+<pre><code class="console">+-----------+---------------+
+| estado_id | estado_nombre |
++-----------+---------------+
+|         1 | Jalisco       |
+|         2 | Guanajuato    |
+|         3 | Hidalgo       |
++-----------+---------------+
+3 rows in set (5.14 sec)</code></pre>
+<p>
+  <code class="snippet">select * from `ciudades` where `ciudad_id` = '3';</code>
+</p>
+<pre><code class="console">+-----------+---------------+------------------+-----------+
+| ciudad_id | ciudad_nombre | ciudad_poblacion | estado_id |
++-----------+---------------+------------------+-----------+
+|         3 | Zapopan       |          1243538 |         1 |
++-----------+---------------+------------------+-----------+
+1 row in set (0.90 sec)</code></pre>
+<p>
+  <code class="snippet">select `ciudad_nombre`,`ciudad_poblacion` from 
+  `ciudades` order by `ciudad_poblacion` asc;</code>
+</p>
+<pre><code class="console">+---------------+------------------+
+| ciudad_nombre | ciudad_poblacion |
++---------------+------------------+
+| Tequila       |            33155 |
+| Tizayuca      |           100562 |
+| Guanajuato    |           171709 |
+| Pachuca       |           275578 |
+| Tonal&#225;        |           408729 |
+| Celaya        |           468064 |
+| Tlaquepaque   |           563006 |
+| Zapopan       |          1243538 |
+| Le&#243;n          |          1436733 |
+| Guadalajara   |          1494134 |
++---------------+------------------+
+10 rows in set (0.04 sec)</code></pre>
+<p>
+  <code class="snippet">select `ciudad_nombre` from `ciudades` where 
+  `estado_id` = '2' order by `ciudad_nombre` desc;</code>
+</p>
+<pre><code class="console">+---------------+
+| ciudad_nombre |
++---------------+
+| Le&#243;n          |
+| Guanajuato    |
+| Celaya        |
++---------------+
+3 rows in set (0.85 sec)</code></pre>
+<p>
+  <code class="snippet">select * from `ciudades` limit 2,3;</code>
+</p>
+<pre><code class="console">+-----------+---------------+------------------+-----------+
+| ciudad_id | ciudad_nombre | ciudad_poblacion | estado_id |
++-----------+---------------+------------------+-----------+
+|         3 | Zapopan       |          1243538 |         1 |
+|         4 | Tonal&#225;        |           408729 |         1 |
+|         5 | Tlaquepaque   |           563006 |         1 |
++-----------+---------------+------------------+-----------+
+3 rows in set (0.06 sec)</code></pre>
+<p>
+  <code class="snippet">select `ciudad_nombre` from `ciudades` where 
+  `ciudad_nombre` like 'G%';</code>
+</p>
+<pre><code class="console">+---------------+
+| ciudad_nombre |
++---------------+
+| Guadalajara   |
+| Guanajuato    |
++---------------+
+2 rows in set (0.04 sec)</code></pre>
+<p>
+  <code class="snippet">select * from `ciudades` where `ciudad_poblacion` 
+  between '500000' and '1000000';<br /><br />select * from `ciudades` where 
+  `ciudad_poblacion`&gt;='500000' and `ciudad_poblacion`&lt;='1000000';</code>
+</p>
+<pre><code class="console">+-----------+---------------+------------------+-----------+
+| ciudad_id | ciudad_nombre | ciudad_poblacion | estado_id |
++-----------+---------------+------------------+-----------+
+|         5 | Tlaquepaque   |           563006 |         1 |
++-----------+-------------+--------------------+-----------+
+1 row in set (0.04 sec)</code></pre>
+<p>
+  Nota: Mientras que ambas peticiones regresar&#237;an los mismos registros, 
+  utilizar <code>between</code> es m&#225;s r&#225;pido que utilizar dos 
+  comparaciones, as&#237; que si est&#225;s lidiando con un rango de valores, 
+  siempre utiliza <code>between</code>.
+</p>
+<p>
+  <code class="snippet">select c.`ciudad_nombre`,s.`estado_nombre` from 
+  `estados` s, `ciudades` c where c.`estado_id`=s.`estado_id` order by 
+  c.`ciudad_nombre`;</code>
+</p>
+<pre><code class="console">+---------------+---------------+
+| ciudad_nombre | estado_nombre |
++---------------+---------------+
+| Celaya        | Guanajuato    |
+| Guadalajara   | Jalisco       |
+| Guanajuato    | Guanajuato    |
+| Le&#243;n          | Guanajuato    |
+| Pachuca       | Hidalgo       |
+| Tequila       | Jalisco       |
+| Tizayuca      | Hidalgo       |
+| Tlaquepaque   | Jalisco       |
+| Tonal&#225;        | Jalisco       |
+| Zapopan       | Jalisco       |
++---------------+---------------+
+10 rows in set (0.06 sec)</code></pre>
+<p>
+  <code class="snippet">select c.`ciudad_nombre`,s.`estado_nombre` from 
+  `estados` s, `ciudades` c where c.`estado_id`=s.`estado_id` and 
+  c.`ciudad_nombre` like 'G%';</code>
+</p>
+<pre><code class="console">+---------------+---------------+
+| ciudad_nombre | estado_nombre |
++---------------+---------------+
+| Guadalajara   | Jalisco       |
+| Guanajuato    | Guanajuato    |
++---------------+---------------+
+2 rows in set (0.05 sec)</code></pre>
+<p>
+  <code class="snippet">select 
+  c.`ciudad_nombre`,s.`estado_nombre`,c.`ciudad_poblacion` from `estados` 
+  s,`ciudades` c where s.`estado_id`=c.`estado_id`;</code>
+</p>
+<pre><code class="console">+---------------+---------------+------------------+
+| ciudad_nombre | estado_nombre | ciudad_poblacion |
++---------------+---------------+------------------+
+| Guadalajara   | Jalisco       |          1494134 |
+| Tequila       | Jalisco       |            33155 |
+| Zapopan       | Jalisco       |          1243538 |
+| Tonal&#225;        | Jalisco       |           408729 |
+| Tlaquepaque   | Jalisco       |           563006 |
+| Guanajuato    | Guanajuato    |           171709 |
+| Celaya        | Guanajuato    |           468064 |
+| Le&#243;n          | Guanajuato    |          1436733 |
+| Pachuca       | Hidalgo       |           275578 |
+| Tizayuca      | Hidalgo       |           100562 |
++---------------+---------------+------------------+
+10 rows in set (0.05 sec)</code></pre>
+<p>
+  <code class="snippet">select 
+  c.`ciudad_nombre`,s.`estado_nombre`,c.`ciudad_poblacion` from `estados` 
+  s, `ciudades` c where s.`estado_id`=c.`estado_id` order by 
+  s.`estado_nombre` desc,c.`ciudad_poblacion` asc;</code>
+</p>
+<pre><code class="console">+---------------+---------------+------------------+
+| ciudad_nombre | estado_nombre | ciudad_poblacion |
++---------------+---------------+------------------+
+| Tequila       | Jalisco       |            33155 |
+| Tonal&#225;        | Jalisco       |           408729 |
+| Tlaquepaque   | Jalisco       |           563006 |
+| Zapopan       | Jalisco       |          1243538 |
+| Guadalajara   | Jalisco       |          1494134 |
+| Tizayuca      | Hidalgo       |           100562 |
+| Pachuca       | Hidalgo       |           275578 |
+| Guanajuato    | Guanajuato    |           171709 |
+| Celaya        | Guanajuato    |           468064 |
+| Le&#243;n          | Guanajuato    |          1436733 |
++---------------+---------------+------------------+
+10 rows in set (0.15 sec)</code></pre>
+<p id="jveweb_es_029_27">
+  <b>Contar los registros de una tabla</b>
+</p>
+<p>
+  <code class="snippet">select count(*) from `tabla_nombre` [where 
+  condiciones];</code>
+</p>
+<p>
+  Las condiciones son opcionales, y pueden tener el mismo formato de las 
+  condiciones que utilizamos en peticiones <code>select</code>, esto 
+  simplemente nos devuelve el n&#250;mero de registros, por ejemplo:
+</p>
+<p>
+  <code class="snippet">select count(*) from `ciudades`;</code>
+</p>
+<pre><code class="console">+----------+
+| count(*) |
++----------+
+|       10 |
++----------+
+1 row in set (0.06 sec)</code></pre>
+<p id="jveweb_es_029_28">
+  <b>Sumar los registros de una tabla</b>
+</p>
+<p>
+  <code class="snippet">select sum(`ciudad_poblacion`) from `ciudades`;</code>
+</p>
+<pre><code class="console">+-------------------------+
+| sum(`ciudad_poblacion`) |
++-------------------------+
+|                 6453216 |
++-------------------------+
+1 row in set (0.05 sec)</code></pre>
+<p id="jveweb_es_029_29">
+  <b>Insertar un registro</b>
+</p>
+<p>
+  <code class="snippet">insert into `estados` (`estado_nombre`) values ( 
+  &quot;Oaxaca&quot;);<br /><br />insert into `ciudades` 
+  (`ciudad_nombre`,`ciudad_poblacion`,`estado_id`) values 
+  ('Oaxaca','258008',LAST_INSERT_ID());</code>
+</p>
+<p>
+  En este caso agrego un nuevo estado, y una nueva ciudad, nota que en el 
+  campo estado_id estoy utilizando como valor la funci&#243;n LAST_INSERT_ID(), 
+  que me da el valor de la &#250;ltima ID que fue insertada. Si quisiera 
+  insertar m&#225;s de un registro con esta ID, podemos usar la misma petici&#243;n 
+  de insertar para la inserci&#243;n de m&#225;s de un campo. Voy a tomar la 
+  petici&#243;n pasada e insertar en vez de eso tres registros:
+</p>
+<p>
+  <code class="snippet">insert into `estados` (`estado_nombre`) values( 
+  &quot;Oaxaca&quot;);<br /><br />insert into `ciudades` 
+  (`ciudad_nombre`,`ciudad_poblacion`,`estado_id`) values<br />('Oaxaca','258008',LAST_INSERT_ID()),<br />(`Salina 
+  Cruz`,`76219`,LAST_INSERT_ID()),<br />(`Zaragoza`,`85869`,LAST_INSERT_ID());</code>
+</p>
+<p>
+  Otra funci&#243;n &#250;til que utilizo para llenar un valor es la funci&#243;n <code>NOW()</code> 
+  en campos de tipo datetime, utilizo esto mucho para manejar el tiempo de 
+  creaci&#243;n o modificaci&#243;n de registros. Por ejemplo, asumiendo que 
+  tuvi&#233;ramos un campo llamado tiempo_de_creacion, podr&#237;amos usar:
+</p>
+<p>
+  <code class="snippet">insert into `estados` 
+  (`estado_nombre`,`tiempo_de_creacion`) values ('Sonora', NOW());</code>
+</p>
+<p id="jveweb_es_029_30">
+  <b>Actualizar un registro</b>
+</p>
+<p>
+  <code class="snippet">update `ciudades` set `ciudad_nombre`='Alg&#250;n 
+  nombre',`ciudad_poblacion`='1000000' where `ciudad_id`='5';</code>
+</p>
+<p>
+  Cuando estamos actualizando un registro, necesitamos especificar que 
+  registro es el que queremos actualizar, usualmente la llave primaria es 
+  utilizada para este prop&#243;sito debido a que es un valor &#250;nico. Por 
+  supuesto, podemos modificar muchos registros en la misma petici&#243;n si m&#225;s 
+  de un registro cumple con la condici&#243;n. Por ejemplo digamos que todos 
+  los registros creados el 12 de Febrero de 2010 se volver&#225;n &quot;activos&quot; 
+  cambiando el valor de un campo llamado <code>activo</code> de '0' a '1', 
+  aqu&#237; est&#225; lo que har&#237;amos:
+</p>
+<p>
+  <code class="snippet">update `cuentas` set `activo`='1' where 
+  `fecha_de_creacion` between '2010-02-12 00:00:00' and '2010-02-12 
+  23:59:59';</code>
+</p>
+<p id="jveweb_es_029_31">
+  <b>Borrar un registro</b>
+</p>
+<p>
+  <code class="snippet">delete from `estados` where `estado_id`='8';</code>
+</p>
+<p>
+  La petici&#243;n <code>delete</code> es m&#225;s sencilla que una petici&#243;n <code>update</code> 
+  pero algo similar, todos y cada uno de los registros que cumplan la 
+  condici&#243;n(es) ser&#225;n borrados. Se muy cuidadoso con esta petici&#243;n, si 
+  est&#225;s apuntando a registros espec&#237;ficos, siempre usa la llave primaria 
+  para no golpear otro registro por accidente.
+</p>
+<h3 id="jveweb_es_029_32">
+  Peticiones MySQL preparadas
+</h3>
+<p>
+  La raz&#243;n por la que aprend&#237; sobre peticiones preparadas fue debido a la 
+  seguridad que ofrecen cuando estoy utilizando <code>PHP</code> para 
+  realizar las peticiones a la base de datos en un sitio web. Sin embargo, 
+  el uso de peticiones preparadas desde la linea de comandos nos ofrece la 
+  habilidad de definir una petici&#243;n una vez y entonces llamarla cuantas 
+  veces queramos, cambiando solamente el par&#225;metro que usamos. Por 
+  ejemplo, para mostrar un registro de la tabla de ciudades, mostrando el 
+  nombre del estado en vez de estado_id, siempre tendr&#237;a el mismo formato:
+</p>
+<p>
+  <code class="snippet">select c.`ciudad_nombre`,s.`estado_nombre` from 
+  `estados` s, `ciudades` c where c.`estado_id`=s.`estado_id` and 
+  c.`ciudad_id` = ?;</code>
+</p>
+<p>
+  En el ejemplo, estamos utilizando el ? como un apartado para la ID de el 
+  registro que queremos mostrar de esta manera. Esto es &#250;til tambi&#233;n 
+  cuando estamos utilizando una petici&#243;n como esta desde <code>PHP</code> 
+  y necesitamos usar un valor que recibimos de alguien m&#225;s. Antes de la 
+  existencia de peticiones preparadas, necesit&#225;bamos filtrar muy 
+  cuidadosamente la entrada de un usuario para poder prevenir un ataque de 
+  inyecci&#243;n de sql que tiene el potencial de borrar nuestra base de datos 
+  o darle acceso a una persona no autorizada. Al separar la l&#243;gica de <code>MySQL</code> 
+  de los datos evitamos este problema, ya que <code>MySQL</code> no 
+  interpreta el par&#225;metro, simplemente lo maneja como datos. Otra ventaja 
+  es que es m&#225;s r&#225;pido utilizar peticiones preparadas de <code>MySQL</code>.
+</p>
+<p>
+  Hasta donde se, las peticiones preparadas solo funcionan con <code>SELECT</code>, 
+  <code>INSERT</code>, <code>UPDATE</code>, <code>REPLACE</code>, <code>DELETE</code> 
+  y <code>CREATE TABLE</code>. Veamos un ejemplo utilizando la petici&#243;n 
+  previa. Primero que nada, creamos la petici&#243;n preparada y la nombramos <code>mostrar_ciudad</code>:
+</p>
+<p>
+  <code class="snippet">prepare mostrar_ciudad from &quot;select 
+  c.`ciudad_nombre`,s.`estado_nombre` from `estados` s, `ciudades` c where 
+  c.`estado_id`=s.`estado_id` and c.`ciudad_id` = ?&quot;;</code>
+</p>
+<p>
+  Despu&#233;s preparamos el par&#225;metro, llamado <code>una_ciudad</code>, 
+  en este caso:
+</p>
+<p>
+  <code class="snippet">set @una_ciudad = &quot;2&quot;;</code>
+</p>
+<p>
+  Y ejecutamos la petici&#243;n preparada <code>mostrar_ciudad</code> 
+  usando el par&#225;metro <code>una_ciudad</code>:
+</p>
+<p>
+  <code class="snippet">execute mostrar_ciudad using @una_ciudad;</code>
+</p>
+<pre><code class="console">+---------------+---------------+
+| ciudad_nombre | estado_nombre |
++---------------+---------------+
+| Tequila       | Jalisco       |
++---------------+---------------+
+1 row in set (0.04 sec)</code></pre>
+<h3 id="jveweb_es_029_33">
+  Notas al pie
+</h3>
+<p>
+  Recuerda marcar como &#237;ndice los campos que planeas usar frecuentemente 
+  para las b&#250;squedas, esto har&#225; m&#225;s r&#225;pidas las peticiones a la base de 
+  datos.
+</p>
+<p>
+  Todos los ejemplos de uso, especialmente las peticiones preparadas al 
+  final, son en preparaci&#243;n para una serie de publicaciones sobre como 
+  utilizar <code>MySQL</code> desde <code>PHP</code> y <code>python</code>, 
+  ya que esos lenguajes son los que he estado utilizando m&#225;s 
+  recientemente, y ash, pero esa es otra historia.
+</p>
+<h3 id="jveweb_es_029_34">
+  Recursos adicionales
+</h3>
+<p>
+  Lista de funciones y operadores de <code>MySQL</code> (En Ingl&#233;s)<br /><a href="http://dev.mysql.com/doc/refman/5.0/en/func-op-summary-ref.html">http://dev.mysql.com/doc/refman/5.0/en/func-op-summary-ref.html</a>
+</p>
+<p>
+  El script usado para crear las tablas usadas como ejemplo.<br />Cambia '<code>nombre_db</code>' 
+  por el nombre de tu base de datos.<br /><a href="http://www.jveweb.net/archivosvarios/crear_ejemplo_01.sql">Descargar 
+  Script</a>
+</p>
+				<p class="under">
+				Categorías: <a href="http://www.jveweb.net/archivo/comandos/index.html">Comandos</a>, <a href="http://www.jveweb.net/archivo/foss/index.html">FOSS</a>, <a href="http://www.jveweb.net/archivo/linux/index.html">Linux</a>, <a href="http://www.jveweb.net/archivo/mysql/index.html">MySQL</a>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+
+<div id="pagenavi">
+			<span class="newer"></span>
+		<span class="older"></span>
+		<div class="fixed"></div>
+</div>
+	</div>
+	<!-- main END -->
+<!-- sidebar START -->
+<div id="sidebar">
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3337979981448667";
+/* jveweb_es_300x250, created 11/7/10 */
+google_ad_slot = "0857293325";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a id="feedrss" title="Suscribirse a este sitio..." href="http://www.jveweb.net/rss.xml"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>
+				<ul id="feed_readers">
+					<li id="google_reader"><a class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://www.jveweb.net/rss.xml" rel="nofollow"><span>Google</span></a></li>
+					<li id="youdao_reader"><a class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>Youdao</span></a></li>
+					<li id="xianguo_reader"><a class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>Xian Guo</span></a></li>
+					<li id="zhuaxia_reader"><a class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>Zhua Xia</span></a></li>
+					<li id="yahoo_reader"><a class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>My Yahoo!</span></a></li>
+					<li id="newsgator_reader"><a class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>newsgator</span></a></li>
+					<li id="bloglines_reader"><a class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://www.jveweb.net/rss.xml" rel="nofollow"><span>Bloglines</span></a></li>
+					<li id="inezha_reader"><a class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://www.jveweb.net/rss.xml" rel="nofollow"><span>iNezha</span></a></li>
+				</ul>
+			</div>
+						<div class="fixed"></div>
+		</div>
+	</div>
+	<!-- showcase -->
+	  <div class="widget">
+				<a href='http://www.jveweb.net/en/' title='jveweb.net in English' class="lonelink">jveweb.net in English</a>
+		</div>	
+<!-- posts -->
+	<div class="widget">
+		<h3>Publicaciones Recientes</h3>
+		<ul>
+<li><a href="http://www.jveweb.net/archivo/2011/12/fantasmas-del-pasado.html">Fantasmas del pasado</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/12/aprendiendo-de-un-error.html">Aprendiendo de un error</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/galeria-de-naturaleza.html">Galería de naturaleza</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/galeria-de-flores.html">Galería de flores</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/chile-trekking-en-pochoco.html">Chile: Trekking en Pochoco</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/santiago-de-chile-santa-lucia.html">Santiago de Chile: Santa Lucía</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/santiago-de-chile-los-dominicos.html">Santiago de Chile: Los Domínicos</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/santiago-de-chile-centro.html">Santiago de Chile: Centro</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/10/aqui-vienen-las-fotografias.html">Aquí vienen las fotografías</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/09/a-chile.html">¡A Chile!</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/09/actualizaciones-del-sitio-sigo-aqui-el-futuro-de-este-sitio-web.html">Actualizaciones del sitio: ¡Sigo aquí! El futuro de este sitio web</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/08/incertidumbre-economica-en-el-mundo.html">Incertidumbre económica en el mundo</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/un-viaje-de-locura.html">Un viaje de locura</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/algunas-expresiones-regulares-y-como-usarlas-en-php.html">Algunas expresiones regulares y como usarlas en PHP</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/comenzando-la-seccion-de-fotografia.html">Comenzando la sección de fotografía</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/cuando-te-estrellas-contra-el-muro-de-la-realidad.html">Cuando te estrellas contra el muro de la realidad</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/esta-es-mala-seguridad-otra-historia-de-sony.html">Esta es mala seguridad (otra historia de Sony)</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/sentencias-preparadas-de-mysql-en-php-ejemplos-orientados-a-objetos.html">Sentencias preparadas de MySQL en PHP (ejemplos orientados a objetos)</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/sentencias-preparadas-de-mysql-en-php-ejemplos-estructurados.html">Sentencias preparadas de MySQL en PHP (ejemplos estructurados)</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/07/un-ataque-de-inyeccion-de-sql.html">Un ataque de inyección de SQL</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/06/dividir-y-juntar-archivos-desde-la-linea-de-comandos.html">Dividir y juntar archivos desde la linea de comandos</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/06/los-prefijos-confusos-para-multiplos-binarios.html">Los prefijos confusos para múltiplos binarios</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/05/configuracion-de-xorgconf-para-un-monitor-de-la-serie-h770.html">Configuración de xorg.conf para un monitor de la serie H770</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/03/manejando-mysql-desde-la-linea-de-comandos.html">Manejando MySQL desde la linea de comandos</a></li>
+<li><a href="http://www.jveweb.net/archivo/2011/02/usando-rsync-y-cron-para-automatizar-respaldos-incrementales.html">Usando rsync y cron para automatizar respaldos incrementales</a></li>
+		</ul>
+	  </div>
+	  <div class="widget">
+			<h3>Categorías</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/archivo/xhtml/index.html' title='(X)HTML'>(X)HTML</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/anuncios/index.html' title='Anuncios'>Anuncios</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/apache/index.html' title='Apache'>Apache</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/comandos/index.html' title='Comandos'>Comandos</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/foss/index.html' title='FOSS'>FOSS</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/fotografia/index.html' title='Fotografía'>Fotografía</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/kde/index.html' title='KDE'>KDE</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/linux/index.html' title='Linux'>Linux</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/manipulacion-de-texto/index.html' title='Manipulación de Texto'>Manipulación de Texto</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/mysql/index.html' title='MySQL'>MySQL</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/pensamientos/index.html' title='Pensamientos'>Pensamientos</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/php/index.html' title='PHP'>PHP</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/programacion/index.html' title='Programación'>Programación</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/rsync/index.html' title='rsync'>rsync</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/slackware/index.html' title='Slackware'>Slackware</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/ssh/index.html' title='SSH'>SSH</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/vim/index.html' title='Vim'>Vim</a></li>
+				
+				</ul>
+		</div>	
+	  <div id="tag_cloud" class="widget">
+			<h3>Archivo</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/12/index.html' title='diciembre 2011'>diciembre 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/10/index.html' title='octubre 2011'>octubre 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/09/index.html' title='septiembre 2011'>septiembre 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/08/index.html' title='agosto 2011'>agosto 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/07/index.html' title='julio 2011'>julio 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/06/index.html' title='junio 2011'>junio 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/05/index.html' title='mayo 2011'>mayo 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/04/index.html' title='abril 2011'>abril 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/03/index.html' title='marzo 2011'>marzo 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/02/index.html' title='febrero 2011'>febrero 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2011/01/index.html' title='enero 2011'>enero 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2010/12/index.html' title='diciembre 2010'>diciembre 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2010/11/index.html' title='noviembre 2010'>noviembre 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2010/10/index.html' title='octubre 2010'>octubre 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2010/09/index.html' title='septiembre 2010'>septiembre 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/archivo/2010/08/index.html' title='agosto 2010'>agosto 2010</a></li>
+				
+				</ul>
+		</div>		
+		<div class="widget">
+			<h3>Propinas</h3>
+			<ul>
+				<li><a href="http://flattr.com/thing/237912/jveweb-on-Flattr">Flattr jveweb.net</a></li>
+				<li>Bitcoin:<br /><small>1RLdfVC9ew1bgs1kxqS2FKTPYq2pQQvVq</small></li>
+				<li>Paypal: paypal@jveweb.net</li>
+				<li>Liberty Reserve: U5664646</li>
+				<li>KoL: #1176202</li>
+				</ul>
+			<p>Las propinas me ayudan a mantener el sitio web casi sin anuncios.</p>
+		</div>	
+		<div class="widget">
+			<h3>Variado</h3>
+			<ul>
+				<li><a href="http://validator.w3.org/check?uri=referer">XHTML 1.0 estricto válido</a><br>
+				<small>Excepto por ese botón de G+ que acabo de agregar =/, lo arreglaré en cuanto tenga oportunidad.</small></li>
+				<li><a href="http://jigsaw.w3.org/css-validator/check/referer">CSS 2.1 válido</a></li>
+				<li><a href="http://lynx.isc.org/">Amigable con Lynx</a></li>
+				<li><a href="http://www.dreamhost.com/green.cgi?jveweb.net">Hospedaje Verde</a></li>
+				<li>Tamaños en <a href="http://www.jveweb.net/archivo/2011/06/los-prefijos-confusos-para-multiplos-binarios.html">KiB, MiB, etc.</a></li>
+				<li>Correo: contacto en jveweb.net</li>
+			</ul>
+		</div>	
+</div>
+<!-- sidebar north END -->
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Ir arriba</a>
+	<div id="copyright">
+		<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.es_MX"><img alt="Licencia Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />Copyright &copy; 2011. Todo el texto, imágenes y recursos en este sitio web que no están atribuidos a alguien más fueron creados por <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/" rel="cc:attributionURL">Juan Valencia Escalante</a> y están bajo la licencia <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Licencia Creative Commons Atribución-CompartirIgual 3.0 Unported</a> a no ser que se especifique lo contrario.<br />Permisos más allá de el alcance de esta licencia podrían estar disponibles contactando al autor en <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/contacto.html" rel="cc:morePermissions">http://www.jveweb.net/contacto.html</a>.
+	</div>	
+	<div id="themeinfo">
+	Tema portado a Thingamablog por <a href="http://www.webdesignwomen.com" rel="nofollow">Web Design Women</a> de <a href="http://www.opensourceresources.org" rel="nofollow">Opensource Resources</a> (aunque abandoné Thingamablog, solo conservo el diseño, por ahora)
+			</div>
+</div>
+<!-- footer END -->
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "http://www.jveweb.net/st/" : "http://www.jveweb.net/st/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://www.jveweb.net/st/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+<!-- End Piwik Tag -->
+</body>
+</html>

@@ -1,0 +1,755 @@
+http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/
+HTTP/1.1 200 OK
+Date: Mon, 14 Jul 2014 11:16:35 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Tue, 14-Jul-2015 11:16:35 GMT; path=/
+Set-Cookie: lw_user_sid=f19c5834fe7035083916decf6fb16e6c; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 15996
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-14T13:16:35Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Benchmarking Linux filesystems on software RAID 1 - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/" class="entry-title">Benchmarking Linux filesystems on software RAID 1</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>A couple of months ago I got a couple of wonderful birthday presents. My lovely geeky girlfriend got me two <a href="http://www.wdc.com/en/products/Products.asp?DriveID=301">Western Digital 500 GB SATA 3.0 drives</a>, which were promptly supplemented with a <a href="http://3ware.com/products/serial_ata2-9000.asp">3ware 9550XS 4-port hardware RAID card</a>. Immediately I came up with the idea for this article. I had just read up on <a href="http://tldp.org/HOWTO/Software-RAID-HOWTO.html">mdadm software RAID</a> (<a href="http://linux-raid.osdl.org/">updated reference</a>) so I though it would be perfect to bench mark the hardware RAID against the software RAID using all kinds of file systems, block sizes, chunk sizes, LVM settings, etcetera.</p>
+
+<p>Or so I though&hellip; As it turns out, my (then) limited understanding of RAID and some trouble with my 3ware RAID cards meant that I had to scale back my benchmark quite a bit. I only have two disks so I was going to test RAID 1. Chunk size is not a factor when using RAID 1 so that axis was dropped from my benchmark. Then I found out that LVM (and the size of the extends it uses) are also not a factor, so I dropped another axis. And to top it off I discovered some nasty problems with 3ware 9550 RAID cards under Linux that quickly made me give up on hardware RAID. See <a href="#3ware">The trouble with 3ware RAID</a> below. I still ended up testing various filesystems using different blocksizes and workloads on an mdadm RAID 1 setup, so the <a href="#results">results</a> should still prove interesting.</p>
+
+<h4>Hardware used</h4>
+
+<p>I ran all of the benchmarks on my home server: A HP ProLiant ML370 G3. Here are the specs:</p>
+
+<ul>
+<li>Dual Intel Xeon 3.2 Ghz with hyperthreading, 512 KiB L2 cache and 1 MiB L3 cache each (giving me four CPUs)</li>
+<li>1 GiB RAM</li>
+<li>Adaptec AIC7XXX SCSI RAID with four 36.4 GiB disks in RAID 5 and two 18.2 GiB disks in RAID 1</li>
+<li>3ware 9550SXU 4-port SATA 3.0 RAID with two 500 GiB disks in JBOD, running in mdadm software RAID 1</li>
+<li>Debian GNU/Linux 4.0 (Etch)</li>
+</ul>
+
+<p>Yes, it's probably a bit overkill for a home server :-) When doing write speed benchmark, the files were read from the RAID5 unit which can read at about 150 MiB/s, much faster than the 3ware mdadm RAID 1 is able to write. That means that the RAID5 read speed should not have affected my benchmarks.</p>
+
+<h5 id="3ware">The trouble with 3ware RAID</h5>
+
+<p>The hardware RAID card has been giving me a fair bit of trouble. I bought it because I needed a SATA card that was compatible with PCI-X. Most of the "cheap" software RAID cards out there only support regular PCI, which is too slow. As soon as you start using three or four drives you hit the limit of the PCI bus. My server supports 64bit PCI-X at 100 Mhz which is more than fast enough. Sadly I couldn't find a simple SATA card with PCI-X support so I bought the expensive but high quality 3ware 9550SXU instead.</p>
+
+<p>My problem with the 3ware card was that I couldn't make it go faster than 5 MiB write speed using its hardware RAID 1 features. As it turned out after contacting their help desk, the cards don't go any faster unless you enable the write cache. I had not enabled that feature because 3ware recommends not using it unless you have a battery backup unit to protect the cache in case of a power failure. When I did enable it, the speed was roughly equal to mdadm software RAID, but you run the risk of loosing data some on a power failure. In short, the cards are useless unless you buy an extra BBU for the cards. Strangely enough if you put the disks in JBOD mode, it does work at full speed. Even stranger, in JBOD mode the disks are roughly 4 MiB per second faster at writing with the write cache disabled (85 MiB/s as opposed to 81 MiB/s with write cache enabled in JBOD mode).</p>
+
+<p>I ran a few tests and there was little difference in speed between using JBOD+mdadm or hardware RAID 1 with write cache enabled. I chose to trust Linux more than the hardware and went with mdadm. I read a nice little trick which makes mdadm very useful. When a disk fails in hardware RAID you need to replace it with an equal sized disk or larger. This can be a problem since not all 500 GiB disks have the exact same block count. It varies. If the new disk is smaller you need to shrink and rebuild the RAID. With mdadm you can create a partition that does not quite fill up the disk. When one disk fails, you can put in another disk, create an equal sized partition and be up and running soon. And variation in block count is absorbed by the unused disk space.</p>
+
+<h4>The benchmark setup</h4>
+
+<p>At first I tried benchmarking my new RAID unit using <a href="http://www.coker.com.au/bonnie++/">Bonnie++</a> and <a href="http://www.iozone.org/">IOzone</a> to determine what the best setup would be for me. I had some problems with both these programs. Bonnie++ only tests the hard drive, not the filesystem. It showed me write speeds of over 80 MiB/sec but these don't come near real-world performance. IOzone is able to test the filesystem as well, but I found it far too complicated to interpret the results. I never found a decent explanation of the "record size" attribute that IOzone tests, and since the results varied widely dependent on that record size, I could not interpret the results correctly. This is not so much a problem with Iozone as it is with my lack of understanding the results. Iozone is an expert tool and I am no expert. It produces vast amounts of data but I don't know how to map that to my typical workload.</p>
+
+<p><strong>Update:</strong> The Iozone team sent me an email explaining the record size attribute:</p>
+
+<blockquote>Record size is the size of the transfer that is being testing. It is the value of the third parameter to the read() and write() system calls.</blockquote>
+
+<p>So, instead of using a standard benchmarking suite I wrote my own benchmark based on real work that is performed by my server. My server mainly does three things:</p>
+<ul>
+<li>It receives and processes my backups, which are mostly made up of many small files (95% of it are source code files).</li>
+<li>It hold my music collection. Occasionally it receives a large batch of new ogg files (whenever I have time to sit down and start ripping my CD collection).</li>
+<li>Occasionally I store some images on it (as in disk-images). These are multi-gigabyte files.</li>
+</ul>
+
+<p>I decided to do four tests:</p>
+
+<ol>
+<li>Reading a number of files, by outputting their contents to /dev/null.</li>
+<li>Writing to the filesystem, by copying files from my primary RAID unit to the filesystem. The average read speed of my primary RAID is much faster than 90 MiB/sec which is the theoretical maximum of my software RAID according to Bonnie++, so there should be no interference.</li>
+<li>Reading and writing at the same time, by copying files from the filesystem to a different location on the same filesystem.</li>
+<li>Deleting the files</li>
+</ol>
+
+<p>I ran all these tests for three collections of files: A collection of 10928 small source code files (maximum size a few KiB each), a collection of 1744 Ogg Vorbis files (around 4 MiB each) and a collection of 3 multi-gigabyte files. Each test was run three times and the results were averaged. In between each test I ran the `sync` and `sleep` commands to make sure that caching would not interfere with the test results. All tests were performed on a 200 GiB mdadm software RAID 1 with the following filesystems:</p>
+
+<ul>
+<li>XFS with 1 KiB blocksize</li>
+<li>XFS with 4 KiB blocksize</li>
+<li>Ext3 with 1 KiB blocksize</li>
+<li>Ext3 with 4 KiB blocksize</li>
+<li>ReiserFS with 1 KiB blocksize</li>
+<li>ReiserFS with 4 KiB blocksize</li>
+<li>JFS with 4 KiB blocksize</li>
+</ul>
+
+<p>It was not possible to create a JFS filesystem with 1 KiB blocksize, so it's missing from the test.</p>
+
+<h4 id="results">Results of the benchmark</h4>
+
+<p>Below are the results for all the filesystems, split out per test and per file collection.</p>
+
+<h5>Benchmarking small files</h5>
+
+<p>The benchmark using 10928 small source code files, maximum a few KiB each</p>
+
+<img src="/images/articles/filesystems/small-read.png" />
+<img src="/images/articles/filesystems/small-write.png" />
+<img src="/images/articles/filesystems/small-readwrite.png" />
+<img src="/images/articles/filesystems/small-delete.png" />
+
+<p>Reading speed is about the same across the board. You can see immediately how slow JFS is writing and deleting all these files. What really strikes me is how slow ReiserFS is. ReiserFS is always touted as well-suited for large amounts of small files, but in my benchmark ReiserFS is outperformed by Ext3. As expected, XFS is a bit slower than ReiserFS and Ext3. XFS is usually touted as well-suited for large files.</p>
+
+<h5>Benchmarking medium-sized files</h5>
+
+<p>The benchmark using 1744 Ogg Vorbis files, on average about 4 MiB each</p>
+
+<img src="/images/articles/filesystems/medium-read.png" />
+<img src="/images/articles/filesystems/medium-write.png" />
+<img src="/images/articles/filesystems/medium-readwrite.png" />
+<img src="/images/articles/filesystems/medium-delete.png" />
+
+<p>From this benchmark you can clearly see that XFS is better suited to larger files. It outperforms all other filesystems on all tests. There are two things that strike me here. First off, Ext3 with a 4 KiB blocksize is much slower reading than Ext3 with a 1 KiB blocksize. You would expect it the other way around. Second, both Ext3 and ReiserFS are very slow to delete these files when they have a 1 KiB blocksize, but their speed is on-par with the rest under a 4 KiB blocksize. I expected some difference, but not this much.</p>
+
+<h5>Benchmarking large files</h5>
+
+<p>The benchmark using 3 multi-gigabyte files</p>
+
+<img src="/images/articles/filesystems/large-read.png" />
+<img src="/images/articles/filesystems/large-write.png" />
+<img src="/images/articles/filesystems/large-readwrite.png" />
+<img src="/images/articles/filesystems/large-delete.png" />
+
+<p>In this test we see again the abysmal poor performance of Ext3 and ReiserFS on a 1 KiB blocksize when deleting files. The rest of this test isn't much of a surprise. 4 KiB blocksizes are faster than 1 KiB blocksizes and at 4 KiB, the filesystems perform about equally. It seems that the advantage of XFS in comparison to Ext3 is lost again with really large files.</p>
+
+<h4>Conclusion</h4>
+
+<p>I'm not going to make any general conclusions from my benchmark. My tests are pretty non-standard and so is my hardware setup. I chose to use XFS with a 4 KiB blocksize after these tests. It's clearly faster when dealing with my Ogg Vorbis collection and not much slower when handling my backups (small files). These are the two tasks that I do most often on my server.</p>
+
+<h4>Future work</h4>
+
+<p>I'm probably going to get comments from some of you why I didn't test Reiser4, Ext4 or some other filesystem. I didn't test these because they are not quickly to set up under Debian Etch. They require work, compiling kernel modules, etcetera. I'd like to test these if they are easily available under Debian Lenny after it is released but I will need to buy some extra hard drives if I am going to do that. There is more data on my software RAID than will fit on my hardware RAID so I can't shuffle the data around to test again with these disks.</p>
+
+<p>One thing I would like to do in the future (when I have more disks) is to re-run these benchmarks on a RAID 5 array and vary the chunk size. As the <a href="http://tldp.org/HOWTO/Software-RAID-HOWTO-9.html">Linux Software RAID HOWTO</a> says, the combination of chunk size and block size matters for your performance. For a RAID 1 array this doesn't matter since there is no chunk size to deal with. Then I could compare those tests with RAID 1+0 and RAID 0+1. But all that is for another time.</p>
+
+<p>I hope these benchmarks were in some way useful for you!</p>
+
+<p>Digg this article: <a href="http://digg.com/linux_unix/Benchmarking_Linux_filesystems_on_software_RAID_1"><img src="http://digg.com/img/digg-it-tiny.gif/" alt="This article on Digg"></a></p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-04-20T02:30:00Z">2008-04-20@02:30</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/linux" rel="tag">linux</a>
+															&nbsp;<a href="http://www.jejik.com/tag/filesystem" rel="tag">filesystem</a>
+															&nbsp;<a href="http://www.jejik.com/tag/benchmark" rel="tag">benchmark</a>
+															&nbsp;<a href="http://www.jejik.com/tag/3ware" rel="tag">3ware</a>
+															&nbsp;<a href="http://www.jejik.com/tag/raid" rel="tag">raid</a>
+															&nbsp;<a href="http://www.jejik.com/tag/mdadm" rel="tag">mdadm</a>
+															&nbsp;<a href="http://www.jejik.com/tag/xfs" rel="tag">xfs</a>
+															&nbsp;<a href="http://www.jejik.com/tag/ext3" rel="tag">ext3</a>
+															&nbsp;<a href="http://www.jejik.com/tag/reiserfs" rel="tag">reiserfs</a>
+															&nbsp;<a href="http://www.jejik.com/tag/jfs" rel="tag">jfs</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-20@05:09
+																																			</div>
+																1. Bonnie++ does test the filesystem.<br />
+<br />
+2. You need to note the mount options.  Some filesystems like ext3 do ordered journaling, whereas XFS does simply meta data journaling.  On most contemporary implementations of Reiserfs, ordered journaling is the default... but it does matter... so need to list that stuff.<br />
+<br />
+Welcome the wondrous world of benchmarks.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-20@12:15
+																																			</div>
+																<blockquote>1. Bonnie++ does test the filesystem.</blockquote><br />
+<br />
+Okay. Then could you perhaps explain why the numbers for bonnie++ were much higher than the numbers I found? Bonnie++ gave me about 85 MiB/s while my own tests peaked out at around 64 MiB/s.<br />
+<br />
+<blockquote>You need to note the mount options.</blockquote><br />
+<br />
+I have used the default mount options on Debian GNU/Linux 4.0 (Etch).
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c3" class="number" id="c3">#3</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@14:01
+																																			</div>
+																It would be nice if you repeated all the tests with noatime mount option. You may get completely different results for small files.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c4" class="number" id="c4">#4</a>
+																			Eric
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@17:02
+																																			</div>
+																Awesome Benchmark man, this is a nice test.  I've benchmarked Ext4 recently by copying and md5 summing massive files and it comes close to xfs, but still can't match up.  I also have chosen XFS but I have a pretty large XFS log (128 MB) and a larger logbuf.  Give these mount options a try and see how it goes if u want :) " users,auto,exec,rw,noatime,nodiratime,logbufs=8 " for a normal xfs fs, and just remove users, exec, and rw if its your root.  Here is a benchmark I conducted a little while ago ALSO concluding XFS as the winner I posted in the sidux forums which is my primary distro:<br />
+<br />
+http://sidux.com/PNphpBB2-viewtopic-t-5275.html<br />
+<br />
+All real world tests, and not graphed... maybe you would like to graph them for content for you?? :) I never really had a chance to make it really public, or care to have a blog, so you can publish my results as a user follow if you like.  I would also quite enjoy seeing my results graphed and published for some use other than my own testing.  To note, the logbufs=8 mount option is a major increase, aswell as using a 128 MB internal/external xfs log when creating the filesystem.<br />
+<br />
+Enjoy !!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c5" class="number" id="c5">#5</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@17:50
+																																			</div>
+																You may run this test again with Deadline I/O Scheduler enabled.<br />
+It is easy to do so via <br />
+#echo deadline > /sys/block/sda/queue/scheduler
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c6" class="number" id="c6">#6</a>
+																			<a href="http://robots.org.uk/" class="name">Sam Morris<small> (http://robots.org.uk/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@17:56
+																																			</div>
+																Decent benchmarks, fantastic! I would like to see the effect of the three different journalling modes on ext3; and also the affect of noatime/relatime if it also makes a measurable difference.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c7" class="number" id="c7">#7</a>
+																			<a href="http://figvam.blogspot.com" class="name">Figvam<small> (http://figvam.blogspot.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@18:40
+																																			</div>
+																> I have used the default mount options on Debian GNU/Linux 4.0 (Etch). <br />
+<br />
+You can include output of "/bin/mount" for the tested partitions to list the mount options for those not having Debian Etch installed.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c8" class="number" id="c8">#8</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@19:07
+																																			</div>
+																Nice work !<br />
+<br />
+It would be awesome if you tested against btrfs as well !!<br />
+<br />
+http://en.wikipedia.org/wiki/Btrfs
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c9" class="number" id="c9">#9</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@20:37
+																																			</div>
+																Have you applied the <a href="http://www.3ware.com/KB/article.aspx?id=11050" rel="nofollow">3ware Linux kernel performance suggestions</a>????
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c10" class="number" id="c10">#10</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-21@22:41
+																																			</div>
+																Sam Morris, Anonymous Cowards #3, #5 and #8: I'd love to re-run these benchmarks with different settings, but it will need to wait until I buy another two 500 GiB drives. The one's I used in this benchmark are now doing what they were bought to do: host my backups and media. I don't have any other drive large enough to hold these so I can't empty the drives and run the benchmarks again.<br />
+<br />
+But, at some points these drives fill fill up and I will get new ones. Then I'll re-run all the tests with all of your recommendations included and also so some RAID5 test for comparison. I hope by that time Ext4 and Reiser4 will also be in Debian so I can test those as well.<br />
+<br />
+Figvam: Here are the default mount options in Debian (as given by /bin/mount):<br />
+<br />
+/dev/mapper/3ware-test on /mnt type xfs (rw)<br />
+/dev/mapper/3ware-test on /mnt type ext3 (rw)<br />
+/dev/mapper/3ware-test on /mnt type reiserfs (rw)<br />
+/dev/mapper/3ware-test on /mnt type jfs (rw)<br />
+<br />
+Anonymous Coward #9: Yes, I have used those when I attempted to solve the 5 MiB/sec issue. I've changed the nr_requests and blockdev settings and changed the scheduler to deadline. None of them made any significant improvements. Enabling write-cache did bring normal performance but you run the risk of data loss on power failure. Afterwards I reset the values.<br />
+<br />
+Eric: Your benchmark seems to correlate my own. The main difference between our tests is that your test doesn't show the same bad JFS performance on small files as I see in my test.<br />
+<br />
+As for writing up your tests: I don't have the time to work it all out now. I'm leaving for a long vacation in Greece in a few days. But if you write (and graph) up an article I'd be happy to host it here as a guest blog post. Alternatively you're also welcome to submit it to <a href="http://lxer.com" rel="nofollow">LXer Linux News</a>. Disclaimer: I'm an editor for LXer. We're always on the lookout for fresh articles there :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c11" class="number" id="c11">#11</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-22@03:02
+																																			</div>
+																Your data center should have battery back-up and generator power.  If it doesn't you have your servers in the wrong place.  Not having a BBU is a non-issue and can be a plus since now you don't have something that could potentially damage your server if it fails.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c12" class="number" id="c12">#12</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-22@07:13
+																																			</div>
+																My "data center" is a largish closet with some holes drilled through the wall to run cat6 and audio cables through. If it's warm in the summer then we need to keep the door ajar to make sure the server doesn't get too hot. As I said, it's a home server :-)<br />
+<br />
+I live in a tiny 35 square meter apartment at the moment so it's all the room I could spare. When I buy a proper house I'll get a proper server room with a proper A/C and a proper UPS. Doing all that now is just a waste of money.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c13" class="number" id="c13">#13</a>
+																			James K. Lowden
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-22@21:44
+																																			</div>
+																A suggestion for next time: choose one scale and stick with it.  Different graphs should be comparable to each other.  (The first time I looked at the first two charts, I thought I misunderstood, because how could reads take longer than writes?)  If you don't believe me or want to know more, I recommend Tufte's Visual Display of Quantitative Information (http://www.edwardtufte.com/tufte/books_vdqi).
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c14" class="number" id="c14">#14</a>
+																			Anonymous Expert
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-23@06:53
+																																			</div>
+																it would have been good for some fun if you had included the vfat & ntfs-3g filesystems!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c15" class="number" id="c15">#15</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-23@07:19
+																																			</div>
+																I think the graphs would have become unreadable if I included vfat. All you'd probably see is a large bar for vfat and a tiny blip on the x-axis for all the other filesystems :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c16" class="number" id="c16">#16</a>
+																			Mark Lord
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-23@19:42
+																																			</div>
+																Interesting about the "Large Files" tests.<br />
+<br />
+I use Linux under MythTV for my PVR box here, and mistakenly used ext3 as the underlying filesystem.<br />
+<br />
+Myth routinely records programs into 30-50GB files -- now those are large!<br />
+<br />
+And ext3 takes 1-3 minutes to delete one of them, whereas XFS apparently can do the same job in 1-3 seconds.<br />
+<br />
+Next time, I'm using XFS for these huge files.<br />
+<br />
+Cheers
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c17" class="number" id="c17">#17</a>
+																			Eric
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-04-30@10:05
+																																			</div>
+																Well hello again, I was just wondering if you needed to have any additional info that I omitted from the sidux forum as critical information considering my benchmark.  Our tests did result in similar results and is proof of the XFS greatness.  I wish I can get it out, but I have lacked a blog since I am no big fan, but I am an occasional poster in forums I enjoy of communities I'm involved in or am affected by.<br />
+<br />
+So whenever you get back, feel free to use it as your content lol, I really don't mind or anything, I'd encourage it if anything since it just helps spread the word on how awesome XFS is for most users and general majority of use cases.<br />
+<br />
+Later, and I'll bookmark this to finally find it easier, is it phased out from my RSS reader, I forgot to mark it as Important...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c18" class="number" id="c18">#18</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-05@10:05
+																																			</div>
+																Nice tests, thanks for sharing the fruits of your labor.  I'm not sure that sync+sleep is really enough to drop filesystem caches though.  sync just writes out pending changes to disk and sleep just sleeps for a designated period of time.  What you want is:<br />
+<br />
+echo 3 > /proc/sys/vm/drop_caches
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c19" class="number" id="c19">#19</a>
+																			<a href="http://dnet.com.ua" class="name">Anonymous Coward<small> (http://dnet.com.ua)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-13@09:23
+																																			</div>
+																thanks for your tests..<br />
+<br />
+I`m also tested my not very good controler ADAPTEC 1430SA and hard drives 2xWD7500AAKS (750 Gb 7200. 16 mb) with ext2,ext3,xfs filesystems on C2D 6420@2.13GHz +i965P<br />
+<br />
+my results (copy 1GB file from sda1 to sdb1):<br />
+<br />
+ext2 to ext3 ~ 60-65 mb/s<br />
+ext3 to ext3 ~ 70 mb/s<br />
+ext3 to xfs ~ 75 mb/s<br />
+xfs to ext3 ~ 75 mb/s<br />
+xfs to xfs ~ 80-85 mb/s
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c20" class="number" id="c20">#20</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-13@23:53
+																																			</div>
+																Did you use RAID? Or were both sda1 and sdb1 on your Adaptec card? What kind of interface does the card have (PCI? PCI-X? How many Mhz?)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c21" class="number" id="c21">#21</a>
+																			<a href="http://dnet.com.ua" class="name">Anonymous Coward<small> (http://dnet.com.ua)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-14@14:45
+																																			</div>
+																> Sander Marechal (http://www.jejik.com)<br />
+Sorry for my English )))<br />
+I`m use Gentoo and not use HARDWARE RAID, because drivers with this controller not open - only .rmp 8(. I patch sata_mv driver from Marvel (chip Marvel 7042 installed in this ADAPTEC).<br />
+Both sda1 and sdb1 use with this card. It have PCI-X interface (4x) and both sda1 and sdb1.. <br />
+when have little free time i`m make some tests whis software raid 8)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c22" class="number" id="c22">#22</a>
+																			Duncan
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-15@22:24
+																																			</div>
+																Your remark on the reiserfs processing of small files appears to lack understanding of what's actually going on, and one of the major ways it differs from ext3.<br />
+<br />
+Unless turned off with the "notail" mount option, reiserfs does "tail-packing", comparable to the XFS inode storage of small files (which I know little about, see below, so mention much below).  Many filesystems, including ext2/3, use a whole number of blocks, the smallest number of blocks the file will fit within, to store the file.  Thus, a 1-byte file will still take a whole block (in the test, 1k or 4k) when written to disk.<br />
+<br />
+Obviously very few files are going to be a precise block size, so with most filesystems there's always going to be some waste.  With particularly small files (&lt;1/2 the block size) the amount of wasted slack-space at the end of the allocated blocks can exceed the actual data size.  In general, the smaller the file and the larger the block size, the  higher the wasted percentage is.<br />
+<br />
+The reiserfs tail-packing feature eliminates this problem by packing multiple file "tails" (the portion of a file smaller than a single block, so the whole file where it's less than a block in size) into a single block, thus wasting very little space.  (A few bytes of a tail block do tend to be wasted due to imprecisely matching tail and block sizes.  As mentioned above, from what I've read, XFS has a different solution with a similar effect.)<br />
+<br />
+A smaller block size is the usual workaround for this problem on non-tail-packing filesystems, ameliorating but not eliminating it.  As a non-packing filesystem, it's thus relatively common to format ext2/3 filesystems with small block sizes, say the 1k you used in your examples as opposed to 4k.<br />
+<br />
+With tail-packing, however, the usual major benefit of smaller blocks is lost on reiserfs, which therefore optimized for the default 4k block size.  That (in addition to the simple fact of the extra overhead) is why 1k reiserfs performed so badly -- there was very little reason to optimize for that case and Namesys in fact didn't optimize for it.<br />
+<br />
+I'd guess that this also explains the difference in performance you noted, which after all isn't that much.  Reiserfs is in its default tail-packing mode and as such, is optimizing actual space used by these files, as opposed to access time only.  Had you mounted the reiserfs volumes with the notail option, I believe you'd have seen somewhat faster results.  You would have also noted the difference in actual space used, had you run a df before and after writing the files, comparing ext3 with reiserfs both with and without tail-packing enabled.<br />
+<br />
+As mentioned twice above, XFS has a similar solution.  However, back when I first considered it, it was infamous for zeroing out recently written data after power outages and the like.  It had been designed for enterprise grade systems, and enterprise grade systems usually have UPS and power redundancy arrangements such that this wasn't a big issue for them.  Thus, on my non-UPS home system, I decided XFS wasn't a good idea and ultimately went with Reiserfs.<br />
+<br />
+However, in a <a href=http://lwn.net/Articles/279036/>comment</a> on the LWN article pointing here, DGC (XFS/kernel dev ?) says they introduced a temporary fix for that back in 2.6.17, and finally fixed it properly with 2.6.22, so the problem shouldn't be an issue any longer.  That was new (but welcome) information to me! =8^)  With future reiserfs maintenance (beyond the basics) now in question, the various distributions and etc that supported it now planning on moving elsewhere, and reiser4 really looking like it may never hit mainline, and a personal issue with unnecessarily wasting all that space even if today's disks ARE so big, I had been wondering where I might eventually end up, so this is welcome news indeed. =8^)<br />
+<br />
+[ I don't see any preview... Hopefully that LWN link posts correctly.  My first posting attempt timed out.  Hopefully hitting post comment again doesn't get this posted twice... ]
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c23" class="number" id="c23">#23</a>
+																			MLS
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-05-20@17:45
+																																			</div>
+																Thanks for the info. I've recently been digging into iozone and am building a 5x500 raid 5. I plan on comparing what software RAID can do with one of our 6x1TB servers with a hardware solution (PERC6) at work. Perhaps I'll do a writeup on my findings as you have.<br />
+<br />
+As far as iozone and record size, from my understanding it's how the application packages it's writes (I/O), for example, Sybase is notorious for it's 2-4k I/O size.  A large file can be sent as a ton of 4k I/Os or a smaller number of 256k I/Os. Of course understanding how your application will be affected by this means understanding how it writes.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c24" class="number" id="c24">#24</a>
+																			Anonymous
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-09@14:48
+																																			</div>
+																TOO many small files make Linux extremely slow.<br />
+<br />
+So I would like to suggest merging small files which may improve performance significantly!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c25" class="number" id="c25">#25</a>
+																			<a href="http://makarevitch.org/rant/raid/" class="name">Nat<small> (http://makarevitch.org/rant/raid/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-01-03@07:37
+																																			</div>
+																Thank you!<br />
+<br />
+Comparing 3ware integrated functions to the 'md' Linux driver: http://makarevitch.org/rant/raid/
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c26" class="number" id="c26">#26</a>
+																			<a href="http://sapfeer.ru" class="name">OpenSuSE<small> (http://sapfeer.ru)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-04-04@01:32
+																																			</div>
+																Thank you so match!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c27" class="number" id="c27">#27</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-09-19@09:12
+																																			</div>
+																Your article makes ti seem as if the 3ware card were slower than software raid, unless you switch it into insecure mode, so software raid is better.<br />
+<br />
+This is of course blatantly wrong - 3ware (which I am not affiliated with) is apparently concerned about the safety of your data, which is why it recommends having the BBU in the first place.<br />
+<br />
+So, the facts: with 3ware writecache enabled, you cna lose data in nasty ways without BBU<br />
+with the BBU, your data is perfetcly safe for short (48 hour) power outages, at maximum speed.<br />
+<br />
+With software raid, you cna lose data in nasty ways - there is no BBU option available either.<br />
+Disabling write caching in the drives as recommended for software raid will reduce performance considerably, just as with 3ware, except your data is still not as safe, as it doesn't do write journaling.<br />
+<br />
+3ware disables the drive write cache in any case, so is safe even at power outages when the controller write cache is enabled, if you use a moderm filesystem using barriers.<br />
+<br />
+software raid is either very slow with the same setup (much slower than 3ware), or simply can't keep the data safe for power outages.<br />
+<br />
+So the choice is between fast and reasonably safe with 3ware (or perfectly safe with bbu), and fast and always unsafe with linux software raid.<br />
+<br />
+Or in other words, you brag about your problems with 3ware as opposed to software raid, when in fact the only difference is that the defaults with 3ware are safe (but you can make it unsafe), while ALL linux softwareraid modes are UNSAFE.<br />
+<br />
+Thats hardly a problem with 3ware...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#c28" class="number" id="c28">#28</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-10-16@17:30
+																																			</div>
+																What about the ext2 filesystem?  Without journaling it should be faster, right?  And with a mirrored disk, maybe you don't need journaling?
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="16f05b77c64f0a635a953d1789dd70b6" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F04%2Fbenchmarking_linux_filesystems_on_software_raid_1%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://opensource.aaanet.ru/2008/04/21/linux-raid/">opensource.aaanet.ru/2008/0...</a></li>
+															<li><a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/">www.jejik.com/articles/2008...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

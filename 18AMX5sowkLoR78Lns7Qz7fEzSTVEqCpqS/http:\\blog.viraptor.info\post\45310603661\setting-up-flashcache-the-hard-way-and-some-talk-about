@@ -1,0 +1,417 @@
+http://blog.viraptor.info/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+P3P: CP="ALL ADM DEV PSAi COM OUR OTRo STP IND ONL"
+X-Tumblr-User: viraptor
+X-Tumblr-Pixel-0: http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoidXJsIiwidXJsIjoiaHR0cDpcL1wvYmxvZy52aXJhcHRvci5pbmZvXC9wb3N0XC80NTMxMDYwMzY2MVwvc2V0dGluZy11cC1mbGFzaGNhY2hlLXRoZS1oYXJkLXdheS1hbmQtc29tZS10YWxrLWFib3V0IiwicmVxdHlwZSI6MCwicm91dGUiOiJcL3Bvc3RcLzppZFwvOnN1bW1hcnkifQ==&U=MECGLNHGKN&K=00a73ae7f5021b8e51a110b630edd5bc41741fe745e84d1af6e1d32067143727--http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoicG9zdCIsInVybCI6Imh0dHA6XC9cL2Jsb2cudmlyYXB0b3IuaW5mb1wvcG9zdFwvNDUzMTA2MDM2NjFc
+X-Tumblr-Pixel-1: L3NldHRpbmctdXAtZmxhc2hjYWNoZS10aGUtaGFyZC13YXktYW5kLXNvbWUtdGFsay1hYm91dCIsInJlcXR5cGUiOjAsInJvdXRlIjoiXC9wb3N0XC86aWRcLzpzdW1tYXJ5IiwicG9zdHMiOlt7InBvc3RpZCI6IjQ1MzEwNjAzNjYxIiwiYmxvZ2lkIjoiOTM3MTkyNjQiLCJzb3VyY2UiOjMzfV19&U=GEKPKJJFHI&K=54b08351c8d6e19d5654d03d091373f77647a9f1492defaaee059d09f1b66169
+X-Tumblr-Pixel: 2
+Link: <http://tmblr.co/ZSPR0tgCkF6D>; rel=shorturl
+Link: <http://assets.tumblr.com/images/default_avatar_128.png>; rel=icon
+X-UA-Compatible: IE=Edge,chrome=1
+Content-Encoding: gzip
+X-UA-Device: desktop
+Vary: X-UA-Device
+Content-Length: 11902
+Accept-Ranges: bytes
+Date: Wed, 23 Jul 2014 23:46:05 GMT
+Connection: close
+
+<!DOCTYPE html>
+<script>var __pbpa = true;</script><script>var translated_warning_string = 'Warning: Never enter your Tumblr password unless \u201chttps://www.tumblr.com/login\u201d\x0ais the address in your web browser.\x0a\x0aYou should also see a green \u201cTumblr, Inc.\u201d identification in the address bar.\x0a\x0aSpammers and other bad guys use fake forms to steal passwords.\x0a\x0aTumblr will never ask you to log in from a user\u2019s blog.\x0a\x0aAre you absolutely sure you want to continue?';</script><script type="text/javascript" language="javascript" src="http://assets.tumblr.com/assets/scripts/pre_tumblelog.js?_v=c65abde67782d19ef9d6ba2e8362ef98"></script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# blog: http://ogp.me/ns/blog#">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta name="text:Google Analytics ID" content=""/>
+		
+		<meta name="text:Twitter Name" content=""/>
+		<meta name="text:Facebook Profile URL" content=""/>
+		<meta name="color:Color1" content="#1DCAC0"/>
+		<meta name="color:Color2" content="#C10000"/>
+
+<!-- For Syntax Highlighting -->
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css"></link>  
+<script src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script>  
+<script>
+    function styleCode() {
+        if (typeof disableStyleCode != 'undefined') { return; }
+        var a = false;
+        $('code').each(function() {
+            if (!$(this).hasClass('prettyprint')) {
+                $(this).addClass('prettyprint');
+                a = true;
+            }
+        });
+        if (a) { prettyPrint(); } 
+    }
+    $(function() {styleCode();});
+</script>
+
+		<title>Wild code | Setting up Flashcache the hard way and some talk about initramfs</title>
+		
+		<link rel="stylesheet" type="text/css" href="http://static.tumblr.com/ts2nqrf/ozylq3ufg/screen.css" />
+		<link rel="stylesheet" type="text/css" href="http://static.tumblr.com/ts2nqrf/qe1lq3uho/bebas.css" />
+		
+		<link rel="shortcut icon" href="http://assets.tumblr.com/images/default_avatar_128.png" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		
+		<style type="text/css">
+			#footer { background-color: #2951d5; }
+ 			#header { background-color: #2951d5; }
+ 			#post a { color: #C10000;}
+ 			#description a { color: #C10000;}
+ 			.name { color: #C10000;}
+ 			.answertags { color: #C10000;}
+ 			.post-color { background-color: #C10000; }
+ 			blockquote { border-color: #C10000; }
+ 			.tagshowing { color: #C10000;}
+ 			h3 a:hover {color: #C10000;}
+			code {
+  display: block;
+  border-left: .25em solid #777;
+  padding-left: 1em;
+  margin-bottom: 2em;
+}
+.post-content p {
+  text-align: justify;
+}
+		</style>
+		
+	<link rel="alternate" href="android-app://com.tumblr/tumblr/x-callback-url/blog?blogName=viraptor&postID=45310603661" />
+<script src="http://assets.tumblr.com/assets/scripts/tumblelog.js?_v=7edb3c3b36e8b351a1249cf33411a3a7"></script>
+<link rel="stylesheet" type="text/css" href="http://assets.tumblr.com/fonts/gibson/stylesheet.css?v=3">
+<meta http-equiv="x-dns-prefetch-control" content="off"/>
+<meta name="keywords" content="linux,arch,initcpio,kernel,ssd" />
+
+<!-- BEGIN TUMBLR FACEBOOK OPENGRAPH TAGS --><!-- If you'd like to specify your own Open Graph tags, define the og:url and og:title tags in your theme's HTML. --><!-- Read more: http://ogp.me/ --><meta property="fb:app_id" content="48119224995" /><meta property="og:site_name" content="" /><meta property="og:title" content="Setting up Flashcache the hard way and some talk about initramfs" /><meta property="og:url" content="http://blog.viraptor.info/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about" /><meta property="og:description" content="If you follow the latest versions of&hellip; everything and tried to install flashcache you probably noticed that none of the current guides are correct regarding how to install it. Or they are mostly..." /><meta property="og:determiner" content="a" /><meta property="og:type" content="tumblr-feed:entry" /><meta property="og:image" content="http://assets.tumblr.com/images/og/text_200.png" /><meta property="al:ios:url" content="tumblr://x-callback-url/blog?blogName=viraptor&amp;postID=45310603661" /><meta property="al:ios:app_name" content="Tumblr" /><meta property="al:ios:app_store_id" content="305343404" /><meta property="al:android:url" content="tumblr://x-callback-url/blog?blogName=viraptor&amp;postID=45310603661" /><meta property="al:android:app_name" content="Tumblr" /><meta property="al:android:package" content="com.tumblr" /><!-- END TUMBLR FACEBOOK OPENGRAPH TAGS -->
+
+
+<!-- TWITTER TAGS --><meta charset="utf-8"><meta name="twitter:card" content="summary" /><meta name="twitter:description" content="If you follow the latest versions of&amp;#8230; everything and tried to install flashcache you probably noticed that none of the current guides are correct regarding how to install it. Or they are mostly correct but with some bits missing. So here&amp;#8217;s an attempt to do a refreshed guide. I&amp;#8217;m using kernel version 3.7.10 and mkinitcpio version 0.13.0 (this actually matters, the interface for adding hooks and modules has changed).
+ Some of the guide is likely to be Arch-specific. I don&amp;#8217;t know how much, so please watch out if you&amp;#8217;re using another system. I&amp;#8217;m going to explain why things are done the way they are, so you can replicate them under other circumstances.
+Why flashcache?
+ First, what do I want to achieve? I&amp;#8217;m setting up a system which has a large spinning disk (300GB) and a rather small SSD (16GB). Why such a weird combination? Lenovo allowed me to add a free 16GB SSD drive to the laptop configuration - couldn&amp;#8217;t say no ;) The small disk is not useful for a filesystem on its own, but if all disk writes/reads were cached on it before writing them back to the platters, it should give my system a huge performance gain without a huge money loss. Flashcache can achieve exactly that. It was written by people working for Facebook to speed up their databases, but it works just as well for many other usage scenarios.
+ Why not other modules like bcache or something else dm-based? Because flashcache does not require kernel modifications. It&amp;#8217;s just a module and a set of utilities. You get a new kernel and they &amp;#8220;just work&amp;#8221; again - no source patching required. I&amp;#8217;m excited about the efforts for making bcache part of the kernel and for the new dm cache target coming in 3.9, but for now flashcache is what&amp;#8217;s available in the easiest way.
+ I&amp;#8217;m going to set up two SSD partitions because I want to cache two real partitions. There has to be a persistent 1:1 mapping between the cache and real storage for flashcache to work. One of the partitions is home (/home), the other is the root (/).
+Preparation
+ Take backups, make sure you have a bootable installer of your system, make sure you really want to try this. Any mistake can cost you all the contents of your harddrive or break your grub configuration, so that you&amp;#8217;ll need an alternative method of accessing your system. Also some of your &amp;#8220;data has been written&amp;#8221; guarantees are going to disappear. You&amp;#8217;ve been warned.
+Building the modules and tools
+ First we need the source. Make sure your git is installed and clone the flashcache repository: https://github.com/facebook/flashcache
+ Then build it, specifying the path where the kernel source is located - in case you&amp;#8217;re in the middle of a version upgrade, this is the version you&amp;#8217;re compiling for, not the one you&amp;#8217;re using now:
+make KERNEL_TREE=/usr/src/linux-3.7.10-1-ARCH KERNEL_SOURCE_VERSION=3.7.10-1-ARCH sudo make KERNEL_TREE=/usr/src/linux-3.7.10-1-ARCH KERNEL_SOURCE_VERSION=3.7.10-1-ARCH install
+ There should be no surprises at all until now. The above should install a couple of things - the module and 4 utilities:
+/usr/lib/modules/&amp;lt;version&amp;gt;/extra/flashcache/flashcache.ko /sbin/flashcache_load /sbin/flashcache_create /sbin/flashcache_destroy /sbin/flashcache_setioctl
+ The module is the most interesting bit at the moment, but to load the cache properly at boot time, we&amp;#8217;ll need to put those binaries on the ramdisk.
+Configuring ramdisk
+ Arch system creates the ramdisk using mkinitcpio (which is a successor to initramfs (which is a successor to initrd)) - you can read some more about it at Ubuntu wiki for example. The way this works is via hooks configured in /etc/mkinitcpio.conf. When the new kernel gets created, all hooks from that file are run in the defined order to build up the contents of what ends up in /boot/initramfs-linux.img (unless you changed the default).
+ The runtime scripts live in /usr/lib/initcpio/hooks while the ramdisk building elements live in /usr/lib/initcpio/install. Now the interesting part starts: first let&amp;#8217;s place all needed bits into the ramdisk, by creating install hook /usr/lib/initcpio/install/flashcache&amp;#160;:
+# vim: set ft=sh: build () { &nbsp;&nbsp;&nbsp; add_module &quot;dm-mod&quot; &nbsp;&nbsp;&nbsp; add_module &quot;flashcache&quot; &nbsp;&nbsp;&nbsp; add_dir &quot;/dev/mapper&quot; &nbsp;&nbsp;&nbsp; add_binary &quot;/usr/sbin/dmsetup&quot; &nbsp;&nbsp;&nbsp; add_binary &quot;/sbin/flashcache_create&quot; &nbsp;&nbsp;&nbsp; add_binary &quot;/sbin/flashcache_load&quot; &nbsp;&nbsp;&nbsp; add_binary &quot;/sbin/flashcache_destroy&quot; &nbsp;&nbsp;&nbsp; add_file &quot;/lib/udev/rules.d/10-dm.rules&quot; &nbsp;&nbsp;&nbsp; add_file &quot;/lib/udev/rules.d/13-dm-disk.rules&quot; &nbsp;&nbsp;&nbsp; add_file &quot;/lib/udev/rules.d/95-dm-notify.rules&quot; &nbsp;&nbsp;&nbsp; add_file &quot;/lib/udev/rules.d/11-dm-lvm.rules&quot; &nbsp;&nbsp;&nbsp; add_runscript } help () { cat&amp;lt;&amp;lt;HELPEOF &nbsp; This hook loads the necessary modules for a flash drive as a cache device for your root device. HELPEOF }
+ This will add the required modules (dm-mod and flashcache), make sure mapper directory is ready, install the tools and add some useful udev disk discovery rules. Same rules are included in the lvm2 hook (I assume you&amp;#8217;re using it anyway), so there is an overlap, but this will not cause any conflicts.
+ The last line of the build function makes sure that the script with runtime hooks will be included too. That&amp;#8217;s the file which needs to ensure everything is loaded at boot time. It should contain function run_hook which runs after the modules are loaded, but before the filesystems are mounted, which is a perfect time for additional device setup. It looks like this and goes into /usr/lib/initcpio/hooks/flashcache:
+#!/usr/bin/ash run_hook () {     if [ ! -e &quot;/dev/mapper/control&quot; ]; then         /bin/mknod &quot;/dev/mapper/control&quot; c &#36;(cat /sys/class/misc/device-mapper/dev | sed &#039;s|:| |&#039;)     fi     [ &quot;&#36;{quiet}&quot; = &quot;y&quot; ] &amp;amp;&amp;amp; LVMQUIET=&quot;&amp;gt;/dev/null&quot;     msg &quot;Activating cache volumes...&quot;     oIFS=&quot;&#36;{IFS}&quot;     IFS=&quot;,&quot;     for disk in &#36;{flashcache_volumes} ; do         eval /usr/sbin/flashcache_load &quot;&#36;{disk}&quot; &#36;LVMQUIET     done     IFS=&quot;&#36;{oIFS}&quot; } # vim:set ft=sh:
+ Why the crazy splitting and where does flashcache_volumes come from? It&amp;#8217;s done so that the values are not hardcoded and adding a volume doesn&amp;#8217;t require rebuilding initramfs. Each variable set as kernel boot parameter is visible in the hook script, so adding a flashcache_volumes=/dev/sdb1,/dev/sdb2 will activate both of those volumes. I just add that to the GRUB_CMDLINE_LINUX_DEFAULT variable in /etc/default/grub.
+ The commands for loading sdb1, sdb2 are in my case the partitions on the SSD drive - but you may need to change those to match your environment.
+ Additionally if you&amp;#8217;re attempting to have your root filesystem handled by flashcache, you&amp;#8217;ll need two more parameters. One is of course root=/dev/mapper/cached_system and the second is lvmwait=/dev/maper/cached_system to make sure the device is mounted before the system starts booting.
+ At this point regenerating the initramfs (sudo mkinitcpio -p linux) should work and print out something about included flashcache. For example:
+==&amp;gt; Building image from preset: &#039;default&#039; &nbsp; -&amp;gt; -k /boot/vmlinuz-linux -c /etc/mkinitcpio.conf -g /boot/initramfs-linux.img ==&amp;gt; Starting build: 3.7.10-1-ARCH &nbsp; -&amp;gt; Running build hook: [base] &nbsp; -&amp;gt; Running build hook: [udev] &nbsp; -&amp;gt; Running build hook: [autodetect] &nbsp; -&amp;gt; Running build hook: [modconf] &nbsp; -&amp;gt; Running build hook: [block] &nbsp; -&amp;gt; Running build hook: [lvm2] &nbsp; -&amp;gt; Running build hook: [flashcache] &nbsp; -&amp;gt; Running build hook: [filesystems] &nbsp; -&amp;gt; Running build hook: [keyboard] &nbsp; -&amp;gt; Running build hook: [fsck] ==&amp;gt; Generating module dependencies ==&amp;gt; Creating gzip initcpio image: /boot/initramfs-linux.img ==&amp;gt; Image generation successful
+Finale - fs preparation and reboot
+ To actually create the initial caching filesystem you&amp;#8217;ll have to prepare the SSD drive. Assuming it&amp;#8217;s already split into partitions - each one for buffering data from a corresponding real partition, you have to run the flashcache_create app. The details of how to run it and available modes are described in the flashcache-sa-guide.txt file in the repository, but the simplest example is (in my case to create the root partition cache:
+flashcache_create -p back cached_system /dev/sdb1 /dev/sda2
+ which creates a devmapper device called cached_system with fast cache on /dev/sdb1 and backing storage on /dev/sda2.
+ Now adjust your /etc/fstab to point at the caching devices where necessary, install grub to include the new parameters and reboot. If things went well you&amp;#8217;ll be running from the cache instead of directly from the spinning disk.
+Was it worth the work?
+ Learning about initramfs and configuring it by hand - of course - it was lots of fun and I got a ramdisk failing to boot the system only 3 times in the process&amp;#8230;
+ Configuring flashcache - OH YES! It&amp;#8217;s a night and day difference. You can check the stats of your cache device by running dmsetup status devicename. In my case after a couple of days of browsing, watching movies, hacking on python and haskell code, I get 92% cache hits on read and 58% on write on the root filesystem. On home it&amp;#8217;s 97% and 91% respectively. Each partition is 50GB HDD with 8GB SDD cache. Since the cache persists across reboots, startup times have also dropped from ~5 minutes to around a minute in total.
+ I worked on SSD-only machines before and honestly can&amp;#8217;t tell the difference between them and one with flashcache during standard usage. The only time when you&amp;#8217;re likely to notice a delay is when loading a new, uncached program and the disk has to spin up for reading.
+ Good luck with your setup." /><meta name="twitter:title" content="Setting up Flashcache the hard way and some talk about initramfs" /><meta name="twitter:url" content="http://blog.viraptor.info/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about" /><meta name="twitter:site" content="tumblr" /><meta name="twitter:app:name:iphone" content="Tumblr" /><meta name="twitter:app:name:ipad" content="Tumblr" /><meta name="twitter:app:name:googleplay" content="Tumblr" /><meta name="twitter:app:id:iphone" content="305343404" /><meta name="twitter:app:id:ipad" content="305343404" /><meta name="twitter:app:id:googleplay" content="com.tumblr" /><meta name="twitter:app:url:iphone" content="tumblr://x-callback-url/blog?blogName=viraptor&amp;postID=45310603661&amp;referrer=twitter-cards" /><meta name="twitter:app:url:ipad" content="tumblr://x-callback-url/blog?blogName=viraptor&amp;postID=45310603661&amp;referrer=twitter-cards" /><meta name="twitter:app:url:googleplay" content="tumblr://x-callback-url/blog?blogName=viraptor&amp;postID=45310603661&amp;referrer=twitter-cards" />
+
+</head>
+	<body>
+	
+	<div id="wrapper">
+        <div id="header">
+        <div id="header-pat">
+           <div id="header-top">
+           		<div id="header-icons">
+           			<div class="btn-rss"><a href="http://blog.viraptor.info/rss">RSS</a></div>
+           			<div class="btn-archive"><a href="/archive">ARCHIVE</a></div>
+           			
+           			
+           			
+			        <div class="btn-twitter"><a href="http://twitter.com/viraptor" target="_blank">Twitter</a></div>
+           		</div>
+           		<h1 class="bebas" title="Wild code"><a href="/">Wild code</a></h1>
+           </div>
+           
+           <div id="header-end">
+           		<div id="header-bot"></div>
+           		<div id="header-cap"></div>
+           </div>
+           
+           <div class="clear"></div>
+        </div>
+        </div>
+        
+        <div id="container" class="clear">
+        
+         
+        
+        
+
+        
+        
+        
+        
+        
+        <div id="post">
+        	<div class="post-header">
+        		<div class="post-color">
+        			<div class="title-texture">
+        				<h2 class="bebas"><a href="http://blog.viraptor.info/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about">Setting up Flashcache the hard way and some talk about initramfs</a></h2>
+        				
+        				
+        				
+        				
+        				
+        				
+        				
+        			</div>
+        			
+        			
+					
+					
+        			
+        			
+        			
+        			<div class="cap-post"><a href="http://blog.viraptor.info/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about">Text</a></div>
+        			
+        			
+        			
+        			<div class="clear"></div>
+        		</div>
+        		<div class="post-spacer"></div>
+        	</div>
+        	<div class="clear"></div>
+        	<div class="post-info bebas">
+        		<div class="parts">1 year ago&nbsp;&nbsp;&nbsp;
+        			|&nbsp;&nbsp;&nbsp;Tags:
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/flashcache">flashcache</a></span>
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/ssd">ssd</a></span>
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/kernel">kernel</a></span>
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/initcpio">initcpio</a></span>
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/linux">linux</a></span>
+	        			
+	        				<span class="tags"><a href="http://blog.viraptor.info/tagged/arch">arch</a></span>
+	        			
+	        			&nbsp;
+        			
+        		
+        		</div>
+        		<div class="clear"></div>
+        	</div>
+        	<div class="post-content">
+        		
+        		
+				
+
+				
+				
+				<p>
+					
+					
+					
+					<p>If you follow the latest versions of&#8230; everything and tried to install flashcache you probably noticed that none of the current guides are correct regarding how to install it. Or they are mostly correct but with some bits missing. So here&#8217;s an attempt to do a refreshed guide. I&#8217;m using kernel version <strong>3.7.10</strong> and mkinitcpio version <strong>0.13.0</strong> (this actually matters, the interface for adding hooks and modules has changed).</p>
+<p>Some of the guide is likely to be Arch-specific. I don&#8217;t know how much, so please watch out if you&#8217;re using another system. I&#8217;m going to explain why things are done the way they are, so you can replicate them under other circumstances.</p>
+<h3>Why flashcache?</h3>
+<p>First, what do I want to achieve? I&#8217;m setting up a system which has a large spinning disk (300GB) and a rather small SSD (16GB). Why such a weird combination? Lenovo allowed me to add a free 16GB SSD drive to the laptop configuration - couldn&#8217;t say no ;) The small disk is not useful for a filesystem on its own, but if all disk writes/reads were cached on it before writing them back to the platters, it should give my system a huge performance gain without a huge money loss. Flashcache can achieve exactly that. It was written by people working for Facebook to speed up their databases, but it works just as well for many other usage scenarios.</p>
+<p>Why not other modules like bcache or something else dm-based? Because flashcache does not require kernel modifications. It&#8217;s just a module and a set of utilities. You get a new kernel and they &#8220;just work&#8221; again - no source patching required. I&#8217;m excited about the efforts for making <a href="http://bcache.evilpiepirate.org/">bcache</a> part of the kernel and for the new <a href="http://www.mail-archive.com/stable@vger.kernel.org/msg33526.html">dm cache target</a> coming in 3.9, but for now flashcache is what&#8217;s available in the easiest way.</p>
+<p>I&#8217;m going to set up two SSD partitions because I want to cache two real partitions. There has to be a persistent 1:1 mapping between the cache and real storage for flashcache to work. One of the partitions is home (/home), the other is the root (/).</p>
+<h3>Preparation</h3>
+<p>Take backups, make sure you have a bootable installer of your system, make sure you really want to try this. Any mistake can cost you all the contents of your harddrive or break your grub configuration, so that you&#8217;ll need an alternative method of accessing your system. Also some of your &#8220;data has been written&#8221; guarantees are going to disappear. You&#8217;ve been warned.</p>
+<h3>Building the modules and tools</h3>
+<p>First we need the source. Make sure your git is installed and clone the flashcache repository: <a href="https://github.com/facebook/flashcache">https://github.com/facebook/flashcache</a></p>
+<p>Then build it, specifying the path where the kernel source is located - in case you&#8217;re in the middle of a version upgrade, this is the version you&#8217;re compiling for, not the one you&#8217;re using now:</p>
+<pre><code>make KERNEL_TREE=/usr/src/linux-3.7.10-1-ARCH KERNEL_SOURCE_VERSION=3.7.10-1-ARCH<br/>sudo make KERNEL_TREE=/usr/src/linux-3.7.10-1-ARCH KERNEL_SOURCE_VERSION=3.7.10-1-ARCH install</code></pre>
+<p>There should be no surprises at all until now. The above should install a couple of things - the module and 4 utilities:</p>
+<pre><code>/usr/lib/modules/&lt;version&gt;/extra/flashcache/flashcache.ko<br/>/sbin/flashcache_load<br/>/sbin/flashcache_create<br/>/sbin/flashcache_destroy<br/>/sbin/flashcache_setioctl</code></pre>
+<p>The module is the most interesting bit at the moment, but to load the cache properly at boot time, we&#8217;ll need to put those binaries on the ramdisk.</p>
+<h3>Configuring ramdisk</h3>
+<p>Arch system creates the ramdisk using <strong>mkinitcpio</strong> (which is a successor to initramfs (which is a successor to initrd)) - you can read some more about it at <a href="https://wiki.ubuntu.com/Initramfs" title="Initramfs">Ubuntu wiki</a> for example. The way this works is via hooks configured in <strong>/etc/mkinitcpio.conf</strong>. When the new kernel gets created, all hooks from that file are run in the defined order to build up the contents of what ends up in /boot/initramfs-linux.img (unless you changed the default).</p>
+<p>The runtime scripts live in /usr/lib/initcpio/hooks while the ramdisk building elements live in <strong>/usr/lib/initcpio/install</strong>. Now the interesting part starts: first let&#8217;s place all needed bits into the ramdisk, by creating install hook <strong>/usr/lib/initcpio/install/flashcache</strong>&#160;:</p>
+<pre><code># vim: set ft=sh:<br/><br/>build ()<br/>{<br/>    add_module "dm-mod"<br/>    add_module "flashcache"<br/><br/>    add_dir "/dev/mapper"<br/>    add_binary "/usr/sbin/dmsetup"<br/>    add_binary "/sbin/flashcache_create"<br/>    add_binary "/sbin/flashcache_load"<br/>    add_binary "/sbin/flashcache_destroy"<br/>    add_file "/lib/udev/rules.d/10-dm.rules"<br/>    add_file "/lib/udev/rules.d/13-dm-disk.rules"<br/>    add_file "/lib/udev/rules.d/95-dm-notify.rules"<br/>    add_file "/lib/udev/rules.d/11-dm-lvm.rules"<br/><br/>    add_runscript<br/>}<br/><br/>help ()<br/>{<br/>cat&lt;&lt;HELPEOF<br/>  This hook loads the necessary modules for a flash drive as a cache device for your root device.<br/>HELPEOF<br/>}</code></pre>
+<p>This will add the required modules (<strong>dm-mod</strong> and <strong>flashcache</strong>), make sure mapper directory is ready, install the tools and add some useful udev disk discovery rules. Same rules are included in the lvm2 hook (I assume you&#8217;re using it anyway), so there is an overlap, but this will not cause any conflicts.</p>
+<p>The last line of the build function makes sure that the script with runtime hooks will be included too. That&#8217;s the file which needs to ensure everything is loaded at boot time. It should contain function run_hook which runs after the modules are loaded, but before the filesystems are mounted, which is a perfect time for additional device setup. It looks like this and goes into <strong>/usr/lib/initcpio/hooks/flashcache</strong>:</p>
+<pre><code>#!/usr/bin/ash<br/><br/>run_hook ()<br/>{<br/>    if [ ! -e "/dev/mapper/control" ]; then<br/>        /bin/mknod "/dev/mapper/control" c $(cat /sys/class/misc/device-mapper/dev | sed 's|:| |')<br/>    fi<br/><br/>    [ "${quiet}" = "y" ] &amp;&amp; LVMQUIET="&gt;/dev/null"<br/><br/>    msg "Activating cache volumes..."<br/>    oIFS="${IFS}"<br/>    IFS=","<br/>    for disk in ${flashcache_volumes} ; do<br/>        eval /usr/sbin/flashcache_load "${disk}" $LVMQUIET<br/>    done<br/>    IFS="${oIFS}"<br/>}<br/><br/># vim:set ft=sh:</code></pre>
+<p>Why the crazy splitting and where does flashcache_volumes come from? It&#8217;s done so that the values are not hardcoded and adding a volume doesn&#8217;t require rebuilding initramfs. Each variable set as kernel boot parameter is visible in the hook script, so adding a <strong>flashcache_volumes=/dev/sdb1,/dev/sdb2</strong> will activate both of those volumes. I just add that to the GRUB_CMDLINE_LINUX_DEFAULT variable in /etc/default/grub.</p>
+<p>The commands for loading sdb1, sdb2 are in my case the partitions on the SSD drive - but you may need to change those to match your environment.</p>
+<p>Additionally if you&#8217;re attempting to have your root filesystem handled by flashcache, you&#8217;ll need two more parameters. One is of course <strong>root=/dev/mapper/cached_system</strong> and the second is <strong>lvmwait=/dev/maper/cached_system</strong> to make sure the device is mounted before the system starts booting.</p>
+<p>At this point regenerating the initramfs (<strong>sudo mkinitcpio -p linux</strong>) should work and print out something about included flashcache. For example:</p>
+<pre><code>==&gt; Building image from preset: 'default'<br/>  -&gt; -k /boot/vmlinuz-linux -c /etc/mkinitcpio.conf -g /boot/initramfs-linux.img<br/>==&gt; Starting build: 3.7.10-1-ARCH<br/>  -&gt; Running build hook: [base]<br/>  -&gt; Running build hook: [udev]<br/>  -&gt; Running build hook: [autodetect]<br/>  -&gt; Running build hook: [modconf]<br/>  -&gt; Running build hook: [block]<br/>  -&gt; Running build hook: [lvm2]<br/>  -&gt; Running build hook: [flashcache]<br/>  -&gt; Running build hook: [filesystems]<br/>  -&gt; Running build hook: [keyboard]<br/>  -&gt; Running build hook: [fsck]<br/>==&gt; Generating module dependencies<br/>==&gt; Creating gzip initcpio image: /boot/initramfs-linux.img<br/>==&gt; Image generation successful</code></pre>
+<h3>Finale - fs preparation and reboot</h3>
+<p>To actually create the initial caching filesystem you&#8217;ll have to prepare the SSD drive. Assuming it&#8217;s already split into partitions - each one for buffering data from a corresponding real partition, you have to run the <strong>flashcache_create</strong> app. The details of how to run it and available modes are described in the <a href="https://github.com/facebook/flashcache/blob/master/doc/flashcache-sa-guide.txt">flashcache-sa-guide.txt</a> file in the repository, but the simplest example is (in my case to create the root partition cache:</p>
+<pre><code>flashcache_create -p back cached_system /dev/sdb1 /dev/sda2</code></pre>
+<p>which creates a devmapper device called cached_system with fast cache on /dev/sdb1 and backing storage on /dev/sda2.</p>
+<p>Now adjust your /etc/fstab to point at the caching devices where necessary, install grub to include the new parameters and reboot. If things went well you&#8217;ll be running from the cache instead of directly from the spinning disk.</p>
+<h3>Was it worth the work?</h3>
+<p>Learning about initramfs and configuring it by hand - of course - it was lots of fun and I got a ramdisk failing to boot the system only 3 times in the process&#8230;</p>
+<p>Configuring flashcache - OH YES! It&#8217;s a night and day difference. You can check the stats of your cache device by running dmsetup status devicename. In my case after a couple of days of browsing, watching movies, hacking on python and haskell code, I get 92% cache hits on read and 58% on write on the root filesystem. On home it&#8217;s 97% and 91% respectively. Each partition is 50GB HDD with 8GB SDD cache. Since the cache persists across reboots, startup times have also dropped from ~5 minutes to around a minute in total.</p>
+<p>I worked on SSD-only machines before and honestly can&#8217;t tell the difference between them and one with flashcache during standard usage. The only time when you&#8217;re likely to notice a delay is when loading a new, uncached program and the disk has to spin up for reading.</p>
+<p>Good luck with your setup.</p>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+				</p>
+			</div>
+			
+        </div>
+        
+        
+        <p id="addresses" class="post-content">
+            <em>
+            Was it useful?<br>
+            BTC: <a href="bitcoin:18AMX5sowkLoR78Lns7Qz7fEzSTVEqCpqS">18AMX5sowkLoR78Lns7Qz7fEzSTVEqCpqS</a><br>
+            DOGE: <a href="dogecoin:DDYKHC6EBRxR7Ac2ByVLEuxmrhwo3xV3kk">DDYKHC6EBRxR7Ac2ByVLEuxmrhwo3xV3kk</a>
+            </em>
+        </p>
+		</div><!--- End Container --->
+		
+    </div><!--- End Wrapper --->
+    
+	<div id="footer">
+		<div id="footer-pat">
+			<div id="header-end">
+				<div id="footer-top"></div>
+			</div>
+			<div id="footer-bot">
+				
+				
+				<div class="btn-prev"><a href="javascript:javascript:history.go(-1)">Back</a></div>
+				
+				<a href="http://www.goroboto.com" target="_blank" class="attribution bebas">A THEME BY GOROBOTO</a>
+			</div>
+		</div>
+	</div>
+	
+	
+    
+    <script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+		<script type="text/javascript">
+		try {
+		var pageTracker = _gat._getTracker("UA-260586-9");
+		pageTracker._trackPageview();
+		} catch(err) {}
+	</script>
+	
+	
+
+<!-- BEGIN TUMBLR CODE --><iframe scrolling="no" width="1" height="1" frameborder="0" style="background-color:transparent; overflow:hidden; position:absolute; top:0; left:0; z-index:9999;" id="ga_target"></iframe><script type="text/javascript">
+    (function(){
+        var analytics_frame = document.getElementById('ga_target');
+        var analytics_iframe_loaded;
+        var user_logged_in;
+        var blog_is_nsfw = 'No';
+
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+        eventer(messageEvent,function(e) {
+            var message = (e.data && e.data.split) ? e.data.split(';') : '';
+            switch (message[0]) {
+                case 'analytics_iframe_loaded':
+                    analytics_iframe_loaded = true;
+                    postCSMessage();
+                    postGAMessage();
+                    break;
+                case 'user_logged_in':
+                    user_logged_in = message[1];
+                    postGAMessage();
+                    break;
+            }
+        }, false);
+
+        analytics_frame.src = "http://assets.tumblr.com/analytics.html?3e91d63d5994bffc6ac211967f138b2c#http://blog.viraptor.info";
+        function postGAMessage() {
+            if (analytics_iframe_loaded && user_logged_in) {
+                var is_ajax = false;
+                analytics_frame.contentWindow.postMessage(['tick_google_analytics', is_ajax, user_logged_in, blog_is_nsfw, '/post/45310603661/setting-up-flashcache-the-hard-way-and-some-talk-about?route=%2Fpost%2F%3Aid%2F%3Asummary'].join(';'), analytics_frame.src.split('/analytics.html')[0]);
+            }
+        }
+        function postCSMessage() {
+            COMSCORE = true;
+            analytics_frame.contentWindow.postMessage('enable_comscore;' + window.location, analytics_frame.src.split('/analytics.html')[0]);
+        }
+    })();
+</script><script>
+            var _qevents = _qevents || [];
+            (function() {
+                var s = document.createElement('script');
+                var el = document.getElementsByTagName('script')[0];
+                s.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+                el.parentNode.insertBefore(s, el);
+            })();
+        </script><script type="text/javascript">
+            _qevents.push( { qacct: 'p-19UtqE8ngoZbM' } );
+        </script><noscript><div style="display: none;"><img src="//pixel.quantserve.com/pixel/'p-19UtqE8ngoZbM'.gif" height="1" width="1" alt="Quantcast"/></div></noscript><script type="text/javascript">!function(s){s.src='http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoidXJsIiwidXJsIjoiaHR0cDpcL1wvYmxvZy52aXJhcHRvci5pbmZvXC9wb3N0XC80NTMxMDYwMzY2MVwvc2V0dGluZy11cC1mbGFzaGNhY2hlLXRoZS1oYXJkLXdheS1hbmQtc29tZS10YWxrLWFib3V0IiwicmVxdHlwZSI6MCwicm91dGUiOiJcL3Bvc3RcLzppZFwvOnN1bW1hcnkifQ==&U=CABMHGKPMA&K=3d7f37bfb1d70b2c28deaaf5da5eb92097b400f5c9fef845391b1d46d53aea0d&R='.replace(/&R=[^&$]*/,'').concat('&R='+escape(document.referrer)).slice(0,2000).replace(/%.?.?$/,'');}(new Image());</script><noscript><img style="position:absolute;z-index:-3334;top:0px;left:0px;visibility:hidden;" src="http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoidXJsIiwidXJsIjoiaHR0cDpcL1wvYmxvZy52aXJhcHRvci5pbmZvXC9wb3N0XC80NTMxMDYwMzY2MVwvc2V0dGluZy11cC1mbGFzaGNhY2hlLXRoZS1oYXJkLXdheS1hbmQtc29tZS10YWxrLWFib3V0IiwicmVxdHlwZSI6MCwicm91dGUiOiJcL3Bvc3RcLzppZFwvOnN1bW1hcnkiLCJub3NjcmlwdCI6MX0=&U=CABMHGKPMA&K=2f2656cd4e39bad092f8ab3ef5202763aac97c4bb3f3ff5b2404bf0152177d00&R="></noscript><script type="text/javascript">!function(s){s.src='http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoicG9zdCIsInVybCI6Imh0dHA6XC9cL2Jsb2cudmlyYXB0b3IuaW5mb1wvcG9zdFwvNDUzMTA2MDM2NjFcL3NldHRpbmctdXAtZmxhc2hjYWNoZS10aGUtaGFyZC13YXktYW5kLXNvbWUtdGFsay1hYm91dCIsInJlcXR5cGUiOjAsInJvdXRlIjoiXC9wb3N0XC86aWRcLzpzdW1tYXJ5IiwicG9zdHMiOlt7InBvc3RpZCI6IjQ1MzEwNjAzNjYxIiwiYmxvZ2lkIjoiOTM3MTkyNjQiLCJzb3VyY2UiOjMzfV19&U=HPLAJCJHCN&K=4250161ab6a0d7eb1b4e25ffe7cbe096da59ded68a1c373e2cff6ab308a4d0a1&R='.replace(/&R=[^&$]*/,'').concat('&R='+escape(document.referrer)).slice(0,2000).replace(/%.?.?$/,'');}(new Image());</script><noscript><img style="position:absolute;z-index:-3334;top:0px;left:0px;visibility:hidden;" src="http://www.tumblr.com/impixu?T=1406159165&J=eyJ0eXBlIjoicG9zdCIsInVybCI6Imh0dHA6XC9cL2Jsb2cudmlyYXB0b3IuaW5mb1wvcG9zdFwvNDUzMTA2MDM2NjFcL3NldHRpbmctdXAtZmxhc2hjYWNoZS10aGUtaGFyZC13YXktYW5kLXNvbWUtdGFsay1hYm91dCIsInJlcXR5cGUiOjAsInJvdXRlIjoiXC9wb3N0XC86aWRcLzpzdW1tYXJ5IiwicG9zdHMiOlt7InBvc3RpZCI6IjQ1MzEwNjAzNjYxIiwiYmxvZ2lkIjoiOTM3MTkyNjQiLCJzb3VyY2UiOjMzfV0sIm5vc2NyaXB0IjoxfQ==&U=HPLAJCJHCN&K=57f6a103c905b0f411fe8a99ce6f6247cda117e9b09701502e03c9a5936baa21&R="></noscript><script>
+                    (function() {
+                        var s = document.createElement('script');
+                        var el = document.getElementsByTagName('script')[0];
+                        s.src = ('https:' == document.location.protocol ? 'https://s' : 'http://l') + '.yimg.com/ss/rapid-3.18.1.js';
+                        s.onload = function(){
+                            var YAHOO = window.YAHOO;
+                            if (YAHOO) {
+                                var keys = {
+                                    pd:'/post/:id/:summary',
+                                    _li:0,
+                                    b_id:93719264,
+                                    i_rad:0,
+                                    i_strm:0
+                                };
+                                var conf = {
+                                                                        spaceid:1197716038,
+                                    client_only:1,
+                                    yql_enabled:false,
+                                    keys:keys,
+                                    nol:1
+                                };
+                                YAHOO.rapid = new YAHOO.i13n.Rapid(conf);
+                            }
+                        };
+                        el.parentNode.insertBefore(s, el);
+                    })();
+                </script><iframe id="tumblr_controls" class="tumblr_controls" width="1" height="1" frameborder="0" scrolling="no" src="http://assets.tumblr.com/assets/html/iframe/o.html?_v=9e17aad297935c7fb478643c59604364#src=http%3A%2F%2Fblog.viraptor.info%2Fpost%2F45310603661%2Fsetting-up-flashcache-the-hard-way-and-some-talk-about&amp;pid=45310603661&amp;rk=Or9Sx6Ca&amp;lang=en_US&amp;name=viraptor&amp;avatar=http%3A%2F%2Fassets.tumblr.com%2Fimages%2Fdefault_avatar_64.png&amp;title=Wild+code&amp;url=http%3A%2F%2Fblog.viraptor.info%2F&amp;page_slide=slide"></iframe><div id="teaser_iframe_container" style="display:none;"><iframe scrolling="no" frameborder="0" src="http://www.tumblr.com/assets/html/iframe/teaser.html?_v=bfe495a8395cc4648dc91acfefafee5c#src=http%3A%2F%2Fblog.viraptor.info%2Fpost%2F45310603661%2Fsetting-up-flashcache-the-hard-way-and-some-talk-about&amp;pid=45310603661&amp;rk=Or9Sx6Ca&amp;lang=en_US&amp;name=viraptor&amp;avatar=http%3A%2F%2Fassets.tumblr.com%2Fimages%2Fdefault_avatar_64.png&amp;title=Wild+code&amp;url=http%3A%2F%2Fblog.viraptor.info%2F&amp;page_slide=slide" id="teaser_iframe" width="1" height="1"></iframe></div><script type="text/javascript">
+    (function(Tumblr){
+        var follow_iframe_initialized = false;
+        if (Tumblr.FollowTeaser && Tumblr.PostMessageListener) {
+            // Don't do anything until the first initialize event
+            Tumblr.PostMessageListener.initialize(function(message, origin) {
+                if (follow_iframe_initialized || message.length < 2) return;
+
+                if (message[0] === 'follow_iframe' && message[1] === 'enable') {
+                    Tumblr.FollowTeaser.current_page = 1;
+                    Tumblr.FollowTeaser.infer_infinite_scroll = true;
+                    Tumblr.FollowTeaser.create_from_tumblr_controls("http:\/\/assets.tumblr.com\/assets\/html\/iframe\/follow.html?_v=a52b0a29bf82ebeec459a1f647a24914");
+                    Tumblr.FollowTeaser.scroll_listener(true);
+                    follow_iframe_initialized = true;
+                }
+            });
+        }
+    })(this.Tumblr || (this.Tumblr = {}));
+</script><!--[if IE]><script type="text/javascript">document.getElementById('tumblr_controls').allowTransparency=true;</script><![endif]--><!-- END TUMBLR CODE -->
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+http://thomassileo.com/blog/2012/10/24/getting-started-with-boto-and-glacier/
+HTTP/1.1 200 OK
+Server: nginx/1.2.7
+Date: Tue, 22 Jul 2014 09:14:31 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 25859
+Last-Modified: Fri, 16 May 2014 12:50:17 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/style.css">
+  <!-- <link rel="stylesheet/less" type="text/css" href="/theme/css/style.less">
+  <script src="/theme/js/less-1.3.3.min.js" type="text/javascript"></script> -->
+  <link rel="stylesheet" type="text/css" href="//thomassileo.s3.amazonaws.com/pygments.min.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,600italic">
+  <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/cosmic-sans-neue-mono" rel="stylesheet" type="text/css"/>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@trucsdedev">
+  <meta name="twitter:creator" content="@trucsdedev">
+  <meta name="twitter:domain" content="thomassileo.com">
+  <link rel="canonical" href="http://thomassileo.com/blog/2012/10/24/getting-started-with-boto-and-glacier/">
+<meta name="twitter:title" content="Getting started with boto and Glacier">
+<meta name="twitter:description" content="Amazon recently released Glacier, a new web service designed to store rarely accessed data. Thanks to boto, a Python interface to Amazon Web ...">
+  <meta charset="utf-8" />
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0">
+  <meta name="author" content="Thomas Sileo">
+
+    <link href="http://thomassileo.com/atom.xml" type="application/atom+xml" rel="alternate" title="Thomas Sileo Full Atom Feed" />
+    
+  <meta name="date" contents="2012-10-24 15:58:00" />
+<meta name="description" content="Amazon recently released Glacier, a new web service designed to store rarely accessed data. Thanks to boto, a Python interface to Amazon Web ...">
+
+  <title>
+    Getting started with boto and Glacier - Thomas Sileo  </title>
+</head>
+
+<body>
+  <aside>
+    <div id="user_meta">
+      <a href="http://thomassileo.com">
+        <img src="http://thomassileo.s3.amazonaws.com/logo.jpg" alt="logo" class="user_logo">
+      </a>
+      <h2><a href="http://thomassileo.com">Thomas Sileo</a></h2>
+      <p>/home/thomas</p>
+      <ul>
+                                <li><a href="http://thomassileo.com/about/">About</a></li>                                        <li><a href="http://thomassileo.com/search/">Search</a></li>                        <li><a href="/archives.html">Archives</a></li>
+                        <li><a href="https://github.com/tsileo"><i class="icon-large icon-github"></i> GitHub</a></li>
+                <li><a href="https://twitter.com/trucsdedev"><i class="icon-large icon-twitter"></i> Twitter</a></li>
+              </ul>
+    </div>
+  </aside>
+
+  <main>
+        <article>
+  <div id="article_title">
+<h1><a href="http://thomassileo.com/blog/2012/10/24/getting-started-with-boto-and-glacier/" rel="bookmark" title="Permalink to Getting started with boto and Glacier">Getting started with boto and Glacier</a></h1>
+
+    <p class="article_meta">Updated <time datetime="2013-07-16 08:58">Tue 16 Jul 2013</time> | <time datetime="2012-10-24T15:58:00" pubdate>Wed 24 October 2012</time> by <a rel="author" href="https://plus.google.com/105383704566845547994">Thomas Sileo</a></p>
+  </div>
+  <div id="article_text">
+    <p>Amazon recently released <a href="http://aws.amazon.com/glacier/">Glacier</a>, a new web service designed to store rarely accessed data. Thanks to <a href="https://github.com/boto/boto">boto</a>, a Python interface to Amazon Web Services, it's very easy to store/retrieve archives from Glacier.</p>
+<p>If you have never heard about <a href="http://aws.amazon.com/glacier/">Amazon Glacier</a> you should read the <a href="http://aws.amazon.com/glacier/faqs/">Amazon Glacier FAQ</a> and the <a href="http://docs.amazonwebservices.com/amazonglacier/latest/dev/amazon-glacier-getting-started.html">Amazon Glacier developer guide</a>.</p>
+<h2>The basics</h2>
+<p>With Glacier, a backuped file is an <strong>archive</strong> stored in a <strong>vault</strong>. 
+To make an analogy with <a href="http://aws.amazon.com/s3/">Amazon S3</a>, an <strong>archive</strong> is like a <strong>key</strong> and a <strong>vault</strong> is like a <strong>bucket</strong>.</p>
+<p>To download an archive, and even to get the <strong>inventory</strong>, you must first initiate a job that will complete <strong>within 3-5 hours</strong>, you can optionally get notified via the Amazon Simple Notification Service, then you can download the result.</p>
+<p>Also, <a href="http://aws.amazon.com/glacier/faqs/#Can_I_see_what_archives_I_have_stored_in_Amazon_Glacier">Amazon specify that you should maintain your own inventory</a>.</p>
+<h2>Getting started with boto</h2>
+<p>Here is the strict minimum to store/retrieve an archive. You should also check the <a href="http://docs.pythonboto.org/en/latest/ref/glacier.html">API Reference</a>.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">boto</span>
+
+<span class="n">ACCESS_KEY_ID</span> <span class="o">=</span> <span class="s">&quot;XXXXX&quot;</span>
+<span class="n">SECRET_ACCESS_KEY</span> <span class="o">=</span> <span class="s">&quot;XXXXX&quot;</span>
+
+<span class="c"># boto.connect_glacier is a shortcut return a Layer2 instance </span>
+<span class="n">glacier_connection</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_glacier</span><span class="p">(</span><span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">ACCESS_KEY_ID</span><span class="p">,</span>
+                                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">SECRET_ACCESS_KEY</span><span class="p">)</span>
+
+<span class="n">vault</span> <span class="o">=</span> <span class="n">glacier_connection</span><span class="o">.</span><span class="n">create_vault</span><span class="p">(</span><span class="s">&quot;myvault&quot;</span><span class="p">)</span>
+
+<span class="c"># Uploading an archive</span>
+<span class="c"># ====================</span>
+
+<span class="c"># You must keep track of the archive_id</span>
+<span class="n">archive_id</span> <span class="o">=</span> <span class="n">vault</span><span class="o">.</span><span class="n">upload_archive</span><span class="p">(</span><span class="s">&quot;mybackup.tgz&quot;</span><span class="p">)</span>
+
+<span class="c"># Retrieving an archive</span>
+<span class="c"># =====================</span>
+
+<span class="c"># You must initiate a job to retrieve the archive</span>
+<span class="n">retrieve_job</span> <span class="o">=</span> <span class="n">vault</span><span class="o">.</span><span class="n">retrieve_archive</span><span class="p">(</span><span class="n">archive_id</span><span class="p">)</span>
+
+<span class="c"># or if the job is pending (with job_id = retrieve_job.id)</span>
+<span class="c"># retrieve_job = vault.get_job(job_id)</span>
+
+<span class="c"># You can check if the job is completed either manually, or via Amazon SNS</span>
+<span class="k">if</span> <span class="n">retrieve_job</span><span class="o">.</span><span class="n">completed</span><span class="p">:</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">download_to_file</span><span class="p">(</span><span class="s">&quot;mybackup.tgz&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>That's it !</p>
+<h2>Keeping track of the inventory</h2>
+<p>I chosed to use <a href="http://docs.python.org/library/shelve.html">shelve</a> to store both the inventory and waiting jobs. </p>
+<p>Here is a simple class that can help you getting started:</p>
+<p><a href="https://gist.github.com/3907846">(gist available here)</a></p>
+<div class="highlight"><pre><span class="c"># encoding: utf-8</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shelve</span>
+<span class="kn">import</span> <span class="nn">boto.glacier</span>
+<span class="kn">import</span> <span class="nn">boto</span>
+<span class="kn">from</span> <span class="nn">boto.glacier.exceptions</span> <span class="kn">import</span> <span class="n">UnexpectedHTTPResponseError</span>
+
+<span class="n">ACCESS_KEY_ID</span> <span class="o">=</span> <span class="s">&quot;XXXXXXXXXXXXX&quot;</span>
+<span class="n">SECRET_ACCESS_KEY</span> <span class="o">=</span> <span class="s">&quot;XXXXXXXXXXX&quot;</span>
+<span class="n">SHELVE_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&quot;~/.glaciervault.db&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">glacier_shelve</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager for shelve</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shelve</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">SHELVE_FILE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shelve</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shelve</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">GlacierVault</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper for uploading/download archive to/from Amazon Glacier Vault</span>
+<span class="sd">    Makes use of shelve to store archive id corresponding to filename and waiting jobs.</span>
+
+<span class="sd">    Backup:</span>
+<span class="sd">    &gt;&gt;&gt; GlacierVault(&quot;myvault&quot;)upload(&quot;myfile&quot;)</span>
+<span class="sd">    </span>
+<span class="sd">    Restore:</span>
+<span class="sd">    &gt;&gt;&gt; GlacierVault(&quot;myvault&quot;)retrieve(&quot;myfile&quot;)</span>
+
+<span class="sd">    or to wait until the job is ready:</span>
+<span class="sd">    &gt;&gt;&gt; GlacierVault(&quot;myvault&quot;)retrieve(&quot;serverhealth2.py&quot;, True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vault_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the vault</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">layer2</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_glacier</span><span class="p">(</span><span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">ACCESS_KEY_ID</span><span class="p">,</span>
+                                    <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">SECRET_ACCESS_KEY</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vault</span> <span class="o">=</span> <span class="n">layer2</span><span class="o">.</span><span class="n">get_vault</span><span class="p">(</span><span class="n">vault_name</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upload filename and store the archive id for future retrieval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">archive_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vault</span><span class="o">.</span><span class="n">create_archive_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c"># Storing the filename =&gt; archive_id data.</span>
+        <span class="k">with</span> <span class="n">glacier_shelve</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;archives&quot;</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s">&quot;archives&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+            <span class="n">archives</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&quot;archives&quot;</span><span class="p">]</span>
+            <span class="n">archives</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">archive_id</span>
+            <span class="n">d</span><span class="p">[</span><span class="s">&quot;archives&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">archives</span>
+
+    <span class="k">def</span> <span class="nf">get_archive_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the archive_id corresponding to the filename</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">glacier_shelve</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;archives&quot;</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s">&quot;archives&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+            <span class="n">archives</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&quot;archives&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">archives</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">archives</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">wait_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initiate a Job, check its status, and download the archive when it&#39;s completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">archive_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_archive_id</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">archive_id</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="k">with</span> <span class="n">glacier_shelve</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;jobs&quot;</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s">&quot;jobs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+            <span class="n">jobs</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&quot;jobs&quot;</span><span class="p">]</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">:</span>
+                <span class="c"># The job is already in shelve</span>
+                <span class="n">job_id</span> <span class="o">=</span> <span class="n">jobs</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vault</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">UnexpectedHTTPResponseError</span><span class="p">:</span> <span class="c"># Return a 404 if the job is no more available</span>
+                    <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="p">:</span>
+                <span class="c"># Job initialization</span>
+                <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vault</span><span class="o">.</span><span class="n">retrieve_archive</span><span class="p">(</span><span class="n">archive_id</span><span class="p">)</span>
+                <span class="n">jobs</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">job_id</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span>
+
+            <span class="c"># Commiting changes in shelve</span>
+            <span class="n">d</span><span class="p">[</span><span class="s">&quot;jobs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jobs</span>
+
+        <span class="k">print</span> <span class="s">&quot;Job {action}: {status_code} ({creation_date}/{completion_date})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">job</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+        <span class="c"># checking manually if job is completed every 10 secondes instead of using Amazon SNS</span>
+        <span class="k">if</span> <span class="n">wait_mode</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">time</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vault</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">completed</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">completed</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Downloading...&quot;</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">download_to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Not completed yet&quot;</span>
+</pre></div>
+
+<h2>Bakthat</h2>
+<p>You may also want to check out <a href="https://github.com/tsileo/bakthat">bakthat</a>, a Python tool I wrote, that allow you to compress, encrypt (symmetric encryption) and upload files directly to Amazon S3/Glacier, you can use it either via command line, or as a python module.</p>
+<h2>Your feedback</h2>
+<p>Don't hesitate if you have any questions !</p>
+  </div>
+
+  <div id="sharing">
+<p><i class="icon-large icon-share-alt"></i> Share this article</p>
+
+<div class="share"></div>
+ 
+  </div>
+
+<div id="btc-tip">
+  <p style="font-weight: 600;"><i class="icon-large icon-btc" style="color:#2595c5;"></i> Tip with Bitcoin</p>
+  <div id="btc-system">
+  <p>Tip me with Bitcoin and vote for this post!</p>
+  <p><strong><a href="bitcoin:1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2">1FKdaZ75Ck8Bfc3LgQ8cKA8W7B86fzZBe2</a></strong></p>
+  </div>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://panzi.github.io/SocialSharePrivacy/javascripts/jquery.socialshareprivacy.min.js"></script>
+
+<script async data-isso="/isso/" data-isso-lang="en" src="/isso/js/embed.min.js"></script>
+<section id="isso-thread" data-title="Getting started with boto and Glacier"></section>
+<noscript>Please enable JavaScript to view the comments.</noscript>
+
+    <script>
+    var tip_system_api = 'http://thomassileo.com:5100';
+    var tip_system_url = 'http://thomassileo.com/blog/2012/10/24/getting-started-with-boto-and-glacier/';
+      (function() {
+    var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true;
+    s.src = 'http://thomassileo.s3.amazonaws.com/tip.min.js'
+    document.body.appendChild(s);
+  })();
+    </script>
+<script type="application/x-social-share-privacy-settings">{"title":"Getting started with boto and Glacier","path_prefix":"http://panzi.github.io/SocialSharePrivacy/","layout":"line","services":{"buffer":{"status":false},"delicious":{"status":false},"disqus":{"status":false},"facebook":{"status":false},"fbshare":{"status":false},"linkedin":{"status":false},"mail":{"status":false},"pinterest":{"status":false},"stumbleupon":{"status":false},"tumblr":{"status":false},"xing":{"status":false},"hackernews":{"status":false},"flattr":{"uid":"tsileo"},"twitter":{"via":"trucsdedev"}}}</script>
+
+    <script type="text/javascript">
+$(document).ready(function () {
+    $('.share').socialSharePrivacy();
+});
+</script>
+
+</article>
+
+    <footer>
+      <p><a href="http://thomassileo.com/" class="button_accent">&larr; Back to Index</a></p>
+    </footer>
+
+    <div id="ending_message">
+      <p>&copy <strong>Thomas Sileo</strong>. Powered by <a href="http://getpelican.com">Pelican</a>.</p>
+    </div>
+  </main>
+<script type="text/javascript">
+var clicky_site_ids = clicky_site_ids || [];
+clicky_site_ids.push(66561091);
+(function() {
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = '//static.getclicky.com/js';
+  ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+})();
+</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66561091ns.gif" /></p></noscript><script>
+(function(){var a=document.TSanalytics_id,d=0,c=1;if(-1==document.cookie.indexOf("TSanalytics_u=")){var d=1,b=new Date;b.setTime(b.getTime()+864E5);document.cookie="TSanalytics_u=1; expires="+b.toGMTString()+"; path=/"}-1==document.cookie.indexOf("TSanalytics_r=")&&(c=0,document.cookie="TSanalytics_r=1; expires=Sun, 18 Jan 2038 00:00:00 GMT; path=/");b=encodeURIComponent;a="?id="+a+("&nv="+d);a+="&rv="+c;a+="&location="+b(document.location);a+="&width="+screen.width;a+="&height="+screen.height;a+=
+"&hl="+("undefined"!=typeof history&&"undefined"!=typeof history.length)?0:history.length;a+="&ua="+b(navigator.userAgent);a+="&referrer="+b("undefined"==typeof document.referrer?"":document.referrer);c="na";"undefined"!=typeof navigator.cookieEnabled&&(c=navigator.cookieEnabled?"y":"n");a+="&cookie="+c;(new Image(1,1)).src="http://tomt0m.noip.me/"+a})();
+</script>
+  </body>
+</html>

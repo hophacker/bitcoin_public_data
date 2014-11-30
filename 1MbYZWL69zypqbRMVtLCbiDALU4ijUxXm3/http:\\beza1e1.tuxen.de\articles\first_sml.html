@@ -1,0 +1,185 @@
+http://beza1e1.tuxen.de/articles/first_sml.html
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 14:47:59 GMT
+Server: Apache/2.2.14 (Ubuntu)
+Last-Modified: Mon, 27 May 2013 08:05:52 GMT
+ETag: "108f78-24a0-4ddae9e04b800"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3335
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>First step with SML ― Andreas Zwinkau</title>
+
+<link rel="stylesheet" href="../style.css" type="text/css" />
+<link rel="stylesheet" href="../local.css" type="text/css" />
+
+<meta name="date" content="2010-01-17" />
+</head>
+<body>
+
+<header>
+<div id="header">
+<h1>First step with SML</h1>
+</div>
+</header>
+
+<div id="content">
+<article>
+<p>I learned a little SML recently.
+The SML programming language is special and interesting
+for the following reasons:</p>
+
+<ul>
+<li>It compiles to fast executables (unlike Python, Lisp, Ruby)</li>
+<li>It is strongly typed (unlike C, C++)</li>
+<li>It does not need a VM (no startup overhead unlike Java, C#)</li>
+<li>It is minimalistic (unlike OCaML)</li>
+<li>It is strictly evaluated (unlike Haskell)</li>
+<li>It has formal semantics</li>
+<li>It has an advanced module system (though <a href="http://gbracha.blogspot.com/2009/07/ban-on-imports-continued.html">not perfect</a>)</li>
+</ul>
+
+
+<p>Unfortunately there are some downsides as well,
+because it is not a main&shy;stream language.
+Little documentation,
+few users,
+marginal tool support,
+many different compilers (though they are pretty much inter&shy;change&shy;able unlike Scheme interpreters)
+and quite academic tutorials
+make it hard to learn SML.
+Maybe documenting my first steps helps other interested people.</p>
+
+<p>The first program was HelloWorld,
+but after some playing around the following code remained,
+which implements a factorial command line program:</p>
+
+<pre class="vim-export">
+<span class="Comment">(* simple factorial function defined with IntInf for big number support *)</span>
+<span class="Statement">exception</span> <span class="Constant">Undefined</span><span class="Statement">;</span>
+<span class="Statement">fun</span> factorial n:<span class="PreProc">IntInf</span>.<span class="Type">int</span> <span class="Statement">=</span>
+    <span class="Statement">if</span> n&lt;<span class="Constant">0</span> <span class="Statement">then</span> <span class="Statement">raise</span> <span class="Constant">Undefined</span> <span class="Statement">else</span>
+        <span class="Statement">if</span> n&lt;<span class="Constant">2</span> <span class="Statement">then</span> <span class="Constant">1</span> <span class="Statement">else</span> n <span class="Statement">*</span> <span class="Statement">(</span>factorial <span class="Statement">(</span>n - <span class="Constant">1</span><span class="Statement">))</span><span class="Statement">;</span>
+
+<span class="Comment">(* factorial function on strings *)</span>
+<span class="Statement">fun</span> str_fac n <span class="Statement">=</span>
+    <span class="Statement">case</span> <span class="Statement">(</span><span class="PreProc">IntInf</span>.fromString n<span class="Statement">)</span>
+        <span class="Statement">of</span> <span class="Constant">NONE</span> <span class="Statement">=</span>&gt; <span class="Constant">&quot;Argument is not a number.&quot;</span>
+         <span class="Statement">|</span> <span class="Constant">SOME</span> m <span class="Statement">=</span>&gt; n <span class="Statement">^</span> <span class="Constant">&quot;! = &quot;</span> <span class="Statement">^</span> <span class="Statement">(</span><span class="PreProc">IntInf</span>.toString <span class="Statement">(</span>factorial m<span class="Statement">))</span><span class="Statement">;</span>
+
+<span class="Comment">(* calculate factorial of first argument or error message *)</span>
+<span class="Statement">val</span> msg <span class="Statement">=</span> str_fac <span class="Statement">(</span>hd <span class="Statement">(</span><span class="PreProc">CommandLine</span>.arguments <span class="Constant">()</span><span class="Statement">))</span>
+    <span class="Statement">handle</span> <span class="Constant">Undefined</span> <span class="Statement">=</span>&gt; <span class="Constant">&quot;Undefined for negative numbers.&quot;</span>
+         <span class="Statement">|</span> <span class="Constant">Empty</span> <span class="Statement">=</span>&gt; <span class="Constant">&quot;Need a number as an argument.&quot;</span><span class="Statement">;</span>
+
+print <span class="Statement">(</span>msg <span class="Statement">^</span> <span class="Constant">&quot;\n&quot;</span><span class="Statement">)</span><span class="Statement">;</span>
+</pre>
+
+
+<p>Save that code as <code>factorial.sml</code>
+and compile it (for example using the <a href="http://mlton.org/">mlton compiler</a>).
+Calling it like <code>./factorial 5</code>
+will output <code>5! = 120</code>.
+It will also output various error messages,
+if it is not treated correctly.
+The binary is very fast with mlton and
+it seems to optimize the (naive) factorial function into a loop.
+At least big numbers do not produce a stack overflow.</p>
+
+<p>The factorial function will raise an <code>Undefined</code> exception,
+if called with a negative parameter.
+This exception is handled by printing the
+<code>"Undefined for negative numbers."</code> message.
+The <code>Empty</code> exception is raised by <code>hd</code>,
+if the argument list is empty.
+Note that SML exception are not <em>checked</em> like Java exceptions,
+so they pass right through <code>str_fac</code>,
+which is <a href="http://radio.weblogs.com/0122027/stories/2003/04/01/JavasCheckedExceptionsWereAMistake.html">a Good Thing™</a>.
+I particularly like the expression-based syntax
+for exception handling in SML,
+which is more concise than try/throw/catch statements.</p>
+
+<p>The case that the argument can not be parsed as an integer
+is handled via the <a href="http://www.standardml.org/Basis/option.html">Option structure</a>
+(equivalent to the Maybe Monad in Haskell).
+This is an alternative to exceptions,
+which enforces the programmer to think about the failure case.
+With pattern matching SML provides an elegant syntax
+to handle the two cases <code>NONE</code> and <code>SOME m</code>.</p>
+
+<p>My opinion about the various <code>IntInf</code> occurences is divided.
+They make SML use integers of infinite precision,
+instead of using <code>int</code> and raising an <code>Overflow</code> exception
+with bigger factorials.
+On the one hand they seem unnecessary
+and using <code>IntInf</code> instead of <code>int</code> seems to be a better default in my eyes.
+On the other hand the programmer has to think about the tradeoff now
+and the type inference makes it tolerable.</p>
+
+<p>All in all I am pleased with SML so far.
+The code is concise
+and the type checker makes me think about the corner cases.</p>
+
+</article>
+
+<div id="signed">
+<!--<a href="../index.html"><img src="../images/signature.png" alt="Andreas Zwinkau"/></a><br />-->
+© <span class="date">2010-01-17</span></div>
+
+<div>
+	<a class="social" href="http://delicious.com/save" onclick="window.open('http://delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=550,height=550'); return false;"><img src="../images/social_icons/delicious.png" height="10" width="10" alt="delicious" /></a>
+
+	<a class="social" href="http://www.reddit.com/submit" onclick="window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="../images/social_icons/reddit.png" alt="reddit" border="0" /></a>
+
+	<a class="social" href="http://digg.com/submit" onclick="window.location = 'http://www.digg.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="../images/social_icons/digg.png" alt="digg" border="0" /></a>
+</div>
+</div><!--content-->
+
+<footer>
+<div id="footer">
+<div id="navigation">
+<a href="../index.html">homepage</a>
+<a href="../articles.html">essays</a>
+<a href="../tumblelog.html">tumblelog</a>
+<a href="../publications.html">publications</a>
+</div>
+
+<div id="subtext">
+<p>Andreas Zwinkau appreciates <a href="mailto:qznc@web.de">email to qznc@web.de</a>,
+if you have a comment.</p>
+<p>If you want to thank me,
+send <a href="http://en.wikipedia.org/wiki/Bitcoin">bitcoins</a>
+to <span class="bitcoin">1MbYZWL69zypqbRMVtLCbiDALU4ijUxXm3</span>
+or <a class="FlattrButton" href="https://flattr.com/submit/auto?user_id=qznc&url=http://beza1e1.tuxen.de&title=Blog of qznc&description=Blog of qznc&tags=blog,compiler&category=text">
+flattr me</a>.
+</div><!--subtext-->
+
+<div id="searchbox">
+   <form method="get" action="http://google.com/search"> <p>
+   <input type="search" name="q" placeholder="search this site with Google" />
+   <input type="hidden" name="sitesearch" value="beza1e1.tuxen.de" />
+   <input type="submit" value="search this site" />
+   </p> </form>
+</div><!-- searchbox -->
+
+<div style="clear:both"> </div>
+</div><!-- #footer -->
+</footer>
+
+<!-- Clicky Analytics -->
+<a title="Google Analytics Alternative" href="http://getclicky.com/149685"><img alt="Google Analytics Alternative" src="http://static.getclicky.com/media/links/badge.gif" border="0" /></a>
+<script src="http://static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">clicky.init(149685);</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="http://static.getclicky.com/149685ns.gif" /></p></noscript>
+<a href="/qznc.html">qznc</a>
+
+</body>
+</html>
+

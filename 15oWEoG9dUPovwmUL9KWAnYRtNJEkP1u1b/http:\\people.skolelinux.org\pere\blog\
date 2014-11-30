@@ -1,0 +1,1313 @@
+http://people.skolelinux.org/pere/blog/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 08:27:01 GMT
+Server: Apache/2.2.16 (Debian)
+Last-Modified: Wed, 23 Jul 2014 20:44:43 GMT
+ETag: "446cb-e99d-4fee268e8e4c0"
+Accept-Ranges: bytes
+Content-Length: 59805
+Connection: close
+Content-Type: text/html; charset=UTF-8
+Content-Language: en-US
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>Petter Reinholdtsen</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="http://people.skolelinux.org/pere/blog/style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://people.skolelinux.org/pere/blog/vim.css" />
+    <link rel="alternate" title="RSS Feed" href="http://people.skolelinux.org/pere/blog/index.rss" type="application/rss+xml" />
+  </head>
+  <body>
+    <div class="title">
+ <h1>
+     <a href="http://people.skolelinux.org/pere/blog/">Petter Reinholdtsen</a>
+     
+ </h1>
+ 
+</div>
+
+
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/98_6_percent_done_with_the_Norwegian_draft_translation_of_Free_Culture.html">98.6 percent done with the Norwegian draft translation of Free Culture</a></div>
+      <div class="date">23rd July 2014</div>
+      <div class="body"><p>This summer I finally had time to continue working on the Norwegian
+<a href="http://www.docbook.org/">docbook</a> version of the 2004 book
+<a href="http://free-culture.cc/">Free Culture</a> by Lawrence Lessig,
+to get a Norwegian text explaining the problems with todays copyright
+law.  Yesterday, I finally completed translated the book text.  There
+are still some foot/end notes left to translate, the colophon page
+need to be rewritten, and a few words and phrases still need to be
+translated, but the Norwegian text is ready for the first proof
+reading. :) More spell checking is needed, and several illustrations
+need to be cleaned up.  The work stopped up because I had to give
+priority to other projects the last year, and the progress graph of
+the translation show this very well:</p>
+
+<p><img width="80%" align="center" src="https://github.com/petterreinholdtsen/free-culture-lessig/raw/master/progress.png"></p>
+
+<p>If you want to read the result, check out the 
+<a href="https://github.com/petterreinholdtsen/free-culture-lessig">github</a>
+project pages and the
+<a href="https://github.com/petterreinholdtsen/free-culture-lessig/blob/master/archive/freeculture.nb.pdf?raw=true">PDF</a>,
+<a href="https://github.com/petterreinholdtsen/free-culture-lessig/blob/master/archive/freeculture.nb.epub?raw=true">EPUB</a>
+and HTML version available in the
+<a href="https://github.com/petterreinholdtsen/free-culture-lessig/tree/master/archive">archive
+directory</a>.</p>
+
+<p>Please report typos, bugs and improvements to the github project if
+you find any.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/docbook">docbook</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/freeculture">freeculture</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/From_English_wiki_to_translated_PDF_and_epub_via_Docbook.html">From English wiki to translated PDF and epub via Docbook</a></div>
+      <div class="date">17th June 2014</div>
+      <div class="body"><p>The <a href="http://www.skolelinux.org/">Debian Edu / Skolelinux
+project</a> provide an instruction manual for teachers, system
+administrators and other users that contain useful tips for setting up
+and maintaining a Debian Edu installation.  This text is about how the
+text processing of this manual is handled in the project.</p>
+
+<p>One goal of the project is to provide information in the native
+language of its users, and for this we need to handle translations.
+But we also want to make sure each language contain the same
+information, so for this we need a good way to keep the translations
+in sync.  And we want it to be easy for our users to improve the
+documentation, avoiding the need to learn special formats or tools to
+contribute, and the obvious way to do this is to make it possible to
+edit the documentation using a web browser.  We also want it to be
+easy for translators to keep the translation up to date, and give them
+help in figuring out what need to be translated. Here is the list of
+tools and the process we have found trying to reach all these
+goals.</p>
+
+<p>We maintain the authoritative source of our manual in the
+<a href="https://wiki.debian.org/DebianEdu/Documentation/Wheezy/">Debian
+wiki</a>, as several wiki pages written in English.  It consist of one
+front page with references to the different chapters, several pages
+for each chapter, and finally one "collection page" gluing all the
+chapters together into one large web page (aka
+<a href="https://wiki.debian.org/DebianEdu/Documentation/Wheezy/AllInOne">the
+AllInOne page</a>).  The AllInOne page is the one used for further
+processing and translations.  Thanks to the fact that the
+<a href="http://moinmo.in/">MoinMoin</a> installation on
+wiki.debian.org support exporting pages in
+<a href="http://www.docbook.org/">the Docbook format</a>, we can fetch
+the list of pages to export using the raw version of the AllInOne
+page, loop over each of them to generate a Docbook XML version of the
+manual.  This process also download images and transform image
+references to use the locally downloaded images.  The generated
+Docbook XML files are slightly broken, so some post-processing is done
+using the <tt>documentation/scripts/get_manual</tt> program, and the
+result is a nice Docbook XML file (debian-edu-wheezy-manual.xml) and
+a handfull of images.  The XML file can now be used to generate PDF, HTML
+and epub versions of the English manual.  This is the basic step of
+our process, making PDF (using dblatex), HTML (using xsltproc) and
+epub (using dbtoepub) version from Docbook XML, and the resulting files
+are placed in the debian-edu-doc-en binary package.</p>
+
+<p>But English documentation is not enough for us.  We want translated
+documentation too, and we want to make it easy for translators to
+track the English original.  For this we use the
+<a href="http://packages.qa.debian.org/p/poxml.html">poxml</a> package,
+which allow us to transform the English Docbook XML file into a
+translation file (a .pot file), usable with the normal gettext based
+translation tools used by those translating free software.  The pot
+file is used to create and maintain translation files (several .po
+files), which the translations update with the native language
+translations of all titles, paragraphs and blocks of text in the
+original.  The next step is combining the original English Docbook XML
+and the translation file (say debian-edu-wheezy-manual.nb.po), to
+create a translated Docbook XML file (in this case
+debian-edu-wheezy-manual.nb.xml).  This translated (or partly
+translated, if the translation is not complete) Docbook XML file can
+then be used like the original to create a PDF, HTML and epub version
+of the documentation.</p>
+
+<p>The translators use different tools to edit the .po files.  We
+recommend using
+<a href="http://www.kde.org/applications/development/lokalize/">lokalize</a>,
+while some use emacs and vi, others can use web based editors like
+<a href="http://pootle.translatehouse.org/">Poodle</a> or
+<a href="https://www.transifex.com/">Transifex</a>.  All we care about
+is where the .po file end up, in our git repository.  Updated
+translations can either be committed directly to git, or submitted as
+<a href="https://bugs.debian.org/src:debian-edu-doc">bug reports
+against the debian-edu-doc package</a>.</p>
+
+<p>One challenge is images, which both might need to be translated (if
+they show translated user applications), and are needed in different
+formats when creating PDF and HTML versions (epub is a HTML version in
+this regard).  For this we transform the original PNG images to the
+needed density and format during build, and have a way to provide
+translated images by storing translated versions in
+images/$LANGUAGECODE/.  I am a bit unsure about the details here.  The
+package maintainers know more.</p>
+
+<p>If you wonder what the result look like, we provide
+<a href="http://maintainer.skolelinux.org/debian-edu-doc/">the content
+of the documentation packages on the web</a>.  See for example the
+<a href="http://maintainer.skolelinux.org/debian-edu-doc/it/debian-edu-wheezy-manual.pdf">Italian
+PDF version</a> or the
+<a href="http://maintainer.skolelinux.org/debian-edu-doc/de/debian-edu-wheezy-manual.html">German
+HTML version</a>.  We do not yet build the epub version by default,
+but perhaps it will be done in the future.</p>
+
+<p>To learn more, check out
+<a href="http://packages.qa.debian.org/d/debian-edu-doc.html">the
+debian-edu-doc package</a>,
+<a href="https://wiki.debian.org/DebianEdu/Documentation/Wheezy/">the
+manual on the wiki</a> and
+<a href="https://wiki.debian.org/DebianEdu/Documentation/Wheezy/Translations">the
+translation instructions</a> in the manual.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/debian">debian</a>, <a href="http://people.skolelinux.org/pere/blog/tags/debian edu">debian edu</a>, <a href="http://people.skolelinux.org/pere/blog/tags/docbook">docbook</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/Hvordan_enkelt_laste_ned_filmer_fra_NRK_med_den__nye__l_sningen.html">Hvordan enkelt laste ned filmer fra NRK med den "nye" løsningen</a></div>
+      <div class="date">16th June 2014</div>
+      <div class="body"><p>Jeg har fortsatt behov for å kunne laste ned innslag fra NRKs
+nettsted av og til for å se senere når jeg ikke er på nett, men
+<a href="http://people.skolelinux.org/pere/blog/Hvordan_enkelt_laste_ned_filmer_fra_NRK.html">min
+oppskrift fra 2011</a> sluttet å fungere da NRK byttet
+avspillermetode.  I dag fikk jeg endelig lett etter oppdatert løsning,
+og jeg er veldig glad for å fortelle at den enkleste måten å laste ned
+innslag er å bruke siste versjon 2014.06.07 av
+<a href="http://rg3.github.io/youtube-dl/">youtube-dl</a>.  Støtten i
+youtube-dl <a href="https://github.com/rg3/youtube-dl/issues/2980">kom
+inn for 23 dager siden</a> og
+<a href="http://packages.qa.debian.org/y/youtube-dl.html">versjonen i
+Debian</a> fungerer fint også som backport til Debian Wheezy.  Det er
+et lite problem, det håndterer kun URLer med små bokstaver, men hvis
+en har en URL med store bokstaver kan en bare gjøre alle store om til
+små bokstaver for å få youtube-dl til å laste ned.  Rapporterte
+nettopp
+<a href="https://github.com/rg3/youtube-dl/issues/2980">problemet til
+utviklerne</a>, og antar de får fikset det snart.</p>
+
+<p>Dermed er alt klart til å laste ned dokumentarene om
+<a href="http://tv.nrk.no/program/KOID23005014/usas-hemmelige-avlytting">USAs
+hemmelige avlytting</a> og
+<a href="http://tv.nrk.no/program/KOID23005114/selskapene-bak-usas-avlytting">Selskapene
+bak USAs avlytting</a>, i tillegg til
+<a href="http://tv.nrk.no/program/KOID20005814/et-moete-med-edward-snowden">intervjuet
+med Edward Snowden gjort av den tyske tv-kanalen ARD</a>.  Anbefaler
+alle å se disse, sammen med
+<a href="http://media.ccc.de/browse/congress/2013/30C3_-_5713_-_en_-_saal_2_-_201312301130_-_to_protect_and_infect_part_2_-_jacob.html">foredraget
+til Jacob Appelbaum på siste CCC-konferanse</a>, for å forstå mer om
+hvordan overvåkningen av borgerne brer om seg.</p>
+
+<p>Takk til gode venner på foreningen NUUGs IRC-kanal
+<a href="irc://irc.freenode.net/%23nuug">#nuug på irc.freenode.net</a>
+for tipsene som fikk meg i mål</a>.</p>
+
+<p><strong>Oppdatering 2014-06-17</strong>: Etter at jeg publiserte
+denne, ble jeg tipset om bloggposten
+"<a href="http://ingvar.blog.redpill-linpro.com/2012/05/31/downloading-hd-content-from-tv-nrk-no/">Downloading
+HD content from tv.nrk.no</a>" av Ingvar Hagelund, som har alternativ
+implementasjon og tips for å lage mkv-fil med undertekstene inkludert.
+Kanskje den passer bedre for deg?  I tillegg ble feilen i youtube-dl
+ble fikset litt senere ut på dagen i går, samt at youtube-dl fikk
+støtte for å laste ned undertitler.  Takk til Anders Einar Hilden for
+god innsats og youtube-dl-utviklerne for rask respons.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/multimedia">multimedia</a>, <a href="http://people.skolelinux.org/pere/blog/tags/norsk">norsk</a>, <a href="http://people.skolelinux.org/pere/blog/tags/video">video</a>, <a href="http://people.skolelinux.org/pere/blog/tags/web">web</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/Free_software_car_computer_solution_.html">Free software car computer solution?</a></div>
+      <div class="date">29th May 2014</div>
+      <div class="body"><p>Dear lazyweb.  I'm planning to set up a small Raspberry Pi computer
+in my car, connected to
+<a href="http://www.dx.com/p/400a-4-0-tft-lcd-digital-monitor-for-vehicle-parking-reverse-camera-1440x272-12v-dc-57776">a
+small screen</a> next to the rear mirror.  I plan to hook it up with a
+GPS and a USB wifi card too.  The idea is to get my own
+"<a href="http://en.wikipedia.org/wiki/Carputer">Carputer</a>".  But I
+wonder if someone already created a good free software solution for
+such car computer.</p>
+
+<p>This is my current wish list for such system:</p>
+
+<ul>
+
+ <li>Work on Raspberry Pi.</li>
+
+ <li>Show current speed limit based on location, and warn if going too
+   fast (for example using color codes yellow and red on the screen,
+   or make a sound).  This could be done either using either data from
+   <a href="http://www.openstreetmap.org/">Openstreetmap</a> or OCR
+   info gathered from a dashboard camera.</li>
+
+ <li>Track automatic toll road passes and their cost, show total spent
+   and make it possible to calculate toll costs for planned
+   route.</li>
+
+ <li>Collect GPX tracks for use with OpenStreetMap.</li>
+
+ <li>Automatically detect and use any wireless connection to connect
+   to home server.  Try IP over DNS
+   (<a href="http://dev.kryo.se/iodine/">iodine</a>) or ICMP
+   (<a href="http://code.gerade.org/hans/">Hans</a>) if direct
+   connection do not work.</li>
+
+ <li>Set up mesh network to talk to other cars with the same system,
+   or some standard car mesh protocol.</li>
+
+ <li>Warn when approaching speed cameras and speed camera ranges
+   (speed calculated between two cameras).</li>
+
+ <li>Suport dashboard/front facing camera to discover speed limits and
+   run OCR to track registration number of passing cars.</li>
+
+</ul>
+
+<p>If you know of any free software car computer system supporting
+some or all of these features, please let me know.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/Half_the_Coverity_issues_in_Gnash_fixed_in_the_next_release.html">Half the Coverity issues in Gnash fixed in the next release</a></div>
+      <div class="date">29th April 2014</div>
+      <div class="body"><p>I've been following <a href="http://www.getgnash.org/">the Gnash
+project</a> for quite a while now.  It is a free software
+implementation of Adobe Flash, both a standalone player and a browser
+plugin.  Gnash implement support for the AVM1 format (and not the
+newer AVM2 format - see
+<a href="http://lightspark.github.io/">Lightspark</a> for that one),
+allowing several flash based sites to work.  Thanks to the friendly
+developers at Youtube, it also work with Youtube videos, because the
+Javascript code at Youtube detect Gnash and serve a AVM1 player to
+those users. :) Would be great if someone found time to implement AVM2
+support, but it has not happened yet.  If you install both Lightspark
+and Gnash, Lightspark will invoke Gnash if it find a AVM1 flash file,
+so you can get both handled as free software.  Unfortunately,
+Lightspark so far only implement a small subset of AVM2, and many
+sites do not work yet.</p>
+
+<p>A few months ago, I started looking at
+<a href="http://scan.coverity.com/">Coverity</a>, the static source
+checker used to find heaps and heaps of bugs in free software (thanks
+to the donation of a scanning service to free software projects by the
+company developing this non-free code checker), and Gnash was one of
+the projects I decided to check out.  Coverity is able to find lock
+errors, memory errors, dead code and more.  A few days ago they even
+extended it to also be able to find the heartbleed bug in OpenSSL.
+There are heaps of checks being done on the instrumented code, and the
+amount of bogus warnings is quite low compared to the other static
+code checkers I have tested over the years.</p>
+
+<p>Since a few weeks ago, I've been working with the other Gnash
+developers squashing bugs discovered by Coverity.  I was quite happy
+today when I checked the current status and saw that of the 777 issues
+detected so far, 374 are marked as fixed.  This make me confident that
+the next Gnash release will be more stable and more dependable than
+the previous one.  Most of the reported issues were and are in the
+test suite, but it also found a few in the rest of the code.</p>
+
+<p>If you want to help out, you find us on
+<a href="https://lists.gnu.org/mailman/listinfo/gnash-dev">the
+gnash-dev mailing list</a> and on
+<a href="irc://irc.freenode.net/#gnash">the #gnash channel on
+irc.freenode.net IRC server</a>.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/multimedia">multimedia</a>, <a href="http://people.skolelinux.org/pere/blog/tags/video">video</a>, <a href="http://people.skolelinux.org/pere/blog/tags/web">web</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/Install_hardware_dependent_packages_using_tasksel__Isenkram_0_7_.html">Install hardware dependent packages using tasksel (Isenkram 0.7)</a></div>
+      <div class="date">23rd April 2014</div>
+      <div class="body"><p>It would be nice if it was easier in Debian to get all the hardware
+related packages relevant for the computer installed automatically.
+So I implemented one, using
+<a href="http://packages.qa.debian.org/isenkram">my Isenkram
+package</a>.  To use it, install the tasksel and isenkram packages and
+run tasksel as user root.  You should be presented with a new option,
+"Hardware specific packages (autodetected by isenkram)".  When you
+select it, tasksel will install the packages isenkram claim is fit for
+the current hardware, hot pluggable or not.<p>
+
+<p>The implementation is in two files, one is the tasksel menu entry
+description, and the other is the script used to extract the list of
+packages to install.  The first part is in
+<tt>/usr/share/tasksel/descs/isenkram.desc</tt> and look like
+this:</p>
+
+<p><blockquote><pre>
+Task: isenkram
+Section: hardware
+Description: Hardware specific packages (autodetected by isenkram)
+ Based on the detected hardware various hardware specific packages are
+ proposed.
+Test-new-install: mark show
+Relevance: 8
+Packages: for-current-hardware
+</pre></blockquote></p>
+
+<p>The second part is in
+<tt>/usr/lib/tasksel/packages/for-current-hardware</tt> and look like
+this:</p>
+
+<p><blockquote><pre>
+#!/bin/sh
+#
+(
+    isenkram-lookup
+    isenkram-autoinstall-firmware -l
+) | sort -u
+</pre></blockquote></p>
+
+<p>All in all, a very short and simple implementation making it
+trivial to install the hardware dependent package we all may want to
+have installed on our machines.  I've not been able to find a way to
+get tasksel to tell you exactly which packages it plan to install
+before doing the installation.  So if you are curious or careful,
+check the output from the isenkram-* command line tools first.</p>
+
+<p>The information about which packages are handling which hardware is
+fetched either from the isenkram package itself in
+/usr/share/isenkram/, from git.debian.org or from the APT package
+database (using the Modaliases header).  The APT package database
+parsing have caused a nasty resource leak in the isenkram daemon (bugs
+<a href="http://bugs.debian.org/719837">#719837</a> and
+<a href="http://bugs.debian.org/730704">#730704</a>).  The cause is in
+the python-apt code (bug
+<a href="http://bugs.debian.org/745487">#745487</a>), but using a
+workaround I was able to get rid of the file descriptor leak and
+reduce the memory leak from ~30 MiB per hardware detection down to
+around 2 MiB per hardware detection.  It should make the desktop
+daemon a lot more useful.  The fix is in version 0.7 uploaded to
+unstable today.</p>
+
+<p>I believe the current way of mapping hardware to packages in
+Isenkram is is a good draft, but in the future I expect isenkram to
+use the AppStream data source for this.  A proposal for getting proper
+AppStream support into Debian is floating around as
+<a href="https://wiki.debian.org/DEP-11">DEP-11</a>, and
+<a href="https://wiki.debian.org/SummerOfCode2014/Projects#SummerOfCode2014.2FProjects.2FAppStreamDEP11Implementation.AppStream.2FDEP-11_for_the_Debian_Archive">GSoC
+project</a> will take place this summer to improve the situation.  I
+look forward to seeing the result, and welcome patches for isenkram to
+start using the information when it is ready.</p>
+
+<p>If you want your package to map to some specific hardware, either
+add a "Xb-Modaliases" header to your control file like I did in
+<a href="http://packages.qa.debian.org/pymissile">the pymissile
+package</a> or submit a bug report with the details to the isenkram
+package.  See also
+<a href="http://people.skolelinux.org/pere/blog/tags/isenkram/">all my
+blog posts tagged isenkram</a> for details on the notation.  I expect
+the information will be migrated to AppStream eventually, but for the
+moment I got no better place to store it.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/debian">debian</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/isenkram">isenkram</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/FreedomBox_milestone___all_packages_now_in_Debian_Sid.html">FreedomBox milestone - all packages now in Debian Sid</a></div>
+      <div class="date">15th April 2014</div>
+      <div class="body"><p>The <a href="https://wiki.debian.org/FreedomBox">Freedombox
+project</a> is working on providing the software and hardware to make
+it easy for non-technical people to host their data and communication
+at home, and being able to communicate with their friends and family
+encrypted and away from prying eyes.  It is still going strong, and
+today a major mile stone was reached.</p>
+
+<p>Today, the last of the packages currently used by the project to
+created the system images were accepted into Debian Unstable.  It was
+the freedombox-setup package, which is used to configure the images
+during build and on the first boot.  Now all one need to get going is
+the build code from the freedom-maker git repository and packages from
+Debian.  And once the freedombox-setup package enter testing, we can
+build everything directly from Debian. :)</p>
+
+<p>Some key packages used by Freedombox are
+<a href="http://packages.qa.debian.org/freedombox-setup">freedombox-setup</a>,
+<a href="http://packages.qa.debian.org/plinth">plinth</a>,
+<a href="http://packages.qa.debian.org/pagekite">pagekite</a>,
+<a href="http://packages.qa.debian.org/tor">tor</a>,
+<a href="http://packages.qa.debian.org/privoxy">privoxy</a>,
+<a href="http://packages.qa.debian.org/owncloud">owncloud</a> and
+<a href="http://packages.qa.debian.org/dnsmasq">dnsmasq</a>.  There
+are plans to integrate more packages into the setup.  User
+documentation is maintained on the Debian wiki.  Please
+<a href="https://wiki.debian.org/FreedomBox/Manual/Jessie">check out
+the manual</a> and help us improve it.</p>
+
+<p>To test for yourself and create boot images with the FreedomBox
+setup, run this on a Debian machine using a user with sudo rights to
+become root:</p>
+
+<p><pre>
+sudo apt-get install git vmdebootstrap mercurial python-docutils \
+  mktorrent extlinux virtualbox qemu-user-static binfmt-support \
+  u-boot-tools
+git clone http://anonscm.debian.org/git/freedombox/freedom-maker.git \
+  freedom-maker
+make -C freedom-maker dreamplug-image raspberry-image virtualbox-image
+</pre></p>
+
+<p>Root access is needed to run debootstrap and mount loopback
+devices.  See the README in the freedom-maker git repo for more
+details on the build.  If you do not want all three images, trim the
+make line.  Note that the virtualbox-image target is not really
+virtualbox specific.  It create a x86 image usable in kvm, qemu,
+vmware and any other x86 virtual machine environment.  You might need
+the version of vmdebootstrap in Jessie to get the build working, as it
+include fixes for a race condition with kpartx.</p>
+
+<p>If you instead want to install using a Debian CD and the preseed
+method, boot a Debian Wheezy ISO and use this boot argument to load
+the preseed values:</p>
+
+<p><pre>
+url=<a href="http://www.reinholdtsen.name/freedombox/preseed-jessie.dat">http://www.reinholdtsen.name/freedombox/preseed-jessie.dat</a>
+</pre></p>
+
+<p>I have not tested it myself the last few weeks, so I do not know if
+it still work.</p>
+
+<p>If you wonder how to help, one task you could look at is using
+systemd as the boot system.  It will become the default for Linux in
+Jessie, so we need to make sure it is usable on the Freedombox.  I did
+a simple test a few weeks ago, and noticed dnsmasq failed to start
+during boot when using systemd.  I suspect there are other problems
+too. :) To detect problems, there is a test suite included, which can
+be run from the plinth web interface.</p>
+
+<p>Give it a go and let us know how it goes on the mailing list, and help
+us get the new release published. :) Please join us on
+<a href="irc://irc.debian.org:6667/%23freedombox">IRC (#freedombox on
+irc.debian.org)</a> and
+<a href="http://lists.alioth.debian.org/mailman/listinfo/freedombox-discuss">the
+mailing list</a> if you want to help make this vision come true.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/debian">debian</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/freedombox">freedombox</a>, <a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet</a>, <a href="http://people.skolelinux.org/pere/blog/tags/surveillance">surveillance</a>, <a href="http://people.skolelinux.org/pere/blog/tags/web">web</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/Spr_kkoder_for_POSIX_locale_i_Norge.html">Språkkoder for POSIX locale i Norge</a></div>
+      <div class="date">11th April 2014</div>
+      <div class="body"><p>For 12 år siden, skrev jeg et lite notat om
+<a href="http://i18n.skolelinux.no/localekoder.txt">bruk av språkkoder
+i Norge</a>.  Jeg ble nettopp minnet på dette da jeg fikk spørsmål om
+notatet fortsatt var aktuelt, og tenkte det var greit å repetere hva
+som fortsatt gjelder.  Det jeg skrev da er fortsatt like aktuelt.</p>
+
+<p>Når en velger språk i programmer på unix, så velger en blant mange
+språkkoder.  For språk i Norge anbefales følgende språkkoder (anbefalt
+locale i parantes):</p>
+
+<p><dl>
+<dt>nb (nb_NO)</dt><dd>Bokmål i Norge</dd>
+<dt>nn (nn_NO)</dt><dd>Nynorsk i Norge</dd>
+<dt>se (se_NO)</dt><dd>Nordsamisk i Norge</dd>
+</dl></p>
+
+<p>Alle programmer som bruker andre koder bør endres.</p>
+
+<p>Språkkoden bør brukes når .po-filer navngis og installeres.  Dette
+er ikke det samme som locale-koden.  For Norsk Bokmål, så bør filene
+være navngitt nb.po, mens locale (LANG) bør være nb_NO.</p>
+
+<p>Hvis vi ikke får standardisert de kodene i alle programmene med
+norske oversettelser, så er det umulig å gi LANG-variablen ett innhold
+som fungerer for alle programmer.</p>
+
+<p>Språkkodene er de offisielle kodene fra ISO 639, og bruken av dem i
+forbindelse med POSIX localer er standardisert i RFC 3066 og ISO
+15897.  Denne anbefalingen er i tråd med de angitte standardene.</p>
+
+<p>Følgende koder er eller har vært i bruk som locale-verdier for
+"norske" språk.  Disse bør unngås, og erstattes når de oppdages:</p>
+
+<p><table>
+<tr><td>norwegian</td><td>-> nb_NO</td></tr>
+<tr><td>bokmål   </td><td>-> nb_NO</td></tr>
+<tr><td>bokmal   </td><td>-> nb_NO</td></tr>
+<tr><td>nynorsk  </td><td>-> nn_NO</td></tr>
+<tr><td>no       </td><td>-> nb_NO</td></tr>
+<tr><td>no_NO    </td><td>-> nb_NO</td></tr>
+<tr><td>no_NY    </td><td>-> nn_NO</td></tr>
+<tr><td>sme_NO   </td><td>-> se_NO</td></tr>
+</table></p>
+
+<p>Merk at når det gjelder de samiske språkene, at se_NO i praksis
+henviser til nordsamisk i Norge, mens f.eks.  smj_NO henviser til
+lulesamisk.  Dette notatet er dog ikke ment å gi råd rundt samiske
+språkkoder, der gjør
+<a href="http://www.divvun.no/">Divvun-prosjektet</a> en bedre
+jobb.</p>
+
+<p><strong>Referanser:</strong></p>
+
+<ul>
+
+  <li><a href="http://www.rfc-base.org/rfc-3066.html">RFC 3066 - Tags
+    for the Identification of Languages</a> (Erstatter RFC 1766)</li>
+   
+  <li><a href="http://www.loc.gov/standards/iso639-2/langcodes.html">ISO
+    639</a> - Codes for the Representation of Names of Languages</li>
+
+  <li><a href="http://std.dkuug.dk/jtc1/sc22/wg20/docs/n897-14652w25.pdf">ISO
+    DTR 14652</a> - locale-standard Specification method for cultural
+    conventions</li>
+ 
+  <li><a href="http://std.dkuug.dk/jtc1/sc22/wg20/docs/n610.pdf">ISO
+    15897: Registration procedures for cultural elements (cultural
+    registry)</a>,
+    <a href="http://std.dkuug.dk/jtc1/sc22/wg20/docs/n849-15897wd6.pdf">(nytt
+    draft)</a></li>
+
+  <li><a href="http://std.dkuug.dk/jtc1/sc22/wg20/">ISO/IEC
+    JTC1/SC22/WG20</a> - Gruppen for i18n-standardisering i ISO</li>
+
+<ul>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/norsk">norsk</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/S3QL__a_locally_mounted_cloud_file_system___nice_free_software.html">S3QL, a locally mounted cloud file system - nice free software</a></div>
+      <div class="date"> 9th April 2014</div>
+      <div class="body"><p>For a while now, I have been looking for a sensible offsite backup
+solution for use at home.  My requirements are simple, it must be
+cheap and locally encrypted (in other words, I keep the encryption
+keys, the storage provider do not have access to my private files).
+One idea me and my friends had many years ago, before the cloud
+storage providers showed up, was to use Google mail as storage,
+writing a Linux block device storing blocks as emails in the mail
+service provided by Google, and thus get heaps of free space.  On top
+of this one can add encryption, RAID and volume management to have
+lots of (fairly slow, I admit that) cheap and encrypted storage.  But
+I never found time to implement such system.  But the last few weeks I
+have looked at a system called
+<a href="https://bitbucket.org/nikratio/s3ql/">S3QL</a>, a locally
+mounted network backed file system with the features I need.</p>
+
+<p>S3QL is a fuse file system with a local cache and cloud storage,
+handling several different storage providers, any with Amazon S3,
+Google Drive or OpenStack API.  There are heaps of such storage
+providers.  S3QL can also use a local directory as storage, which
+combined with sshfs allow for file storage on any ssh server.  S3QL
+include support for encryption, compression, de-duplication, snapshots
+and immutable file systems, allowing me to mount the remote storage as
+a local mount point, look at and use the files as if they were local,
+while the content is stored in the cloud as well.  This allow me to
+have a backup that should survive fire.  The file system can not be
+shared between several machines at the same time, as only one can
+mount it at the time, but any machine with the encryption key and
+access to the storage service can mount it if it is unmounted.</p>
+
+<p>It is simple to use.  I'm using it on Debian Wheezy, where the
+package is included already.  So to get started, run <tt>apt-get
+install s3ql</tt>.  Next, pick a storage provider.  I ended up picking
+Greenqloud, after reading their nice recipe on
+<a href="https://greenqloud.zendesk.com/entries/44611757-How-To-Use-S3QL-to-mount-a-StorageQloud-bucket-on-Debian-Wheezy">how
+to use S3QL with their Amazon S3 service</a>, because I trust the laws
+in Iceland more than those in USA when it come to keeping my personal
+data safe and private, and thus would rather spend money on a company
+in Iceland.  Another nice recipe is available from the article
+<a href="http://www.admin-magazine.com/HPC/Articles/HPC-Cloud-Storage">S3QL
+Filesystem for HPC Storage</a> by Jeff Layton in the HPC section of
+Admin magazine.  When the provider is picked, figure out how to get
+the API key needed to connect to the storage API.  With Greencloud,
+the key did not show up until I had added payment details to my
+account.</p>
+
+<p>Armed with the API access details, it is time to create the file
+system.  First, create a new bucket in the cloud.  This bucket is the
+file system storage area.  I picked a bucket name reflecting the
+machine that was going to store data there, but any name will do.
+I'll refer to it as <tt>bucket-name</tt> below.  In addition, one need
+the API login and password, and a locally created password.  Store it
+all in ~root/.s3ql/authinfo2 like this:
+
+<p><blockquote><pre>
+[s3c]
+storage-url: s3c://s.greenqloud.com:443/bucket-name
+backend-login: API-login
+backend-password: API-password
+fs-passphrase: local-password
+</pre></blockquote></p>
+
+<p>I create my local passphrase using <tt>pwget 50</tt> or similar,
+but any sensible way to create a fairly random password should do it.
+Armed with these details, it is now time to run mkfs, entering the API
+details and password to create it:</p>
+
+<p><blockquote><pre>
+# mkdir -m 700 /var/lib/s3ql-cache
+# mkfs.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl s3c://s.greenqloud.com:443/bucket-name
+Enter backend login: 
+Enter backend password: 
+Before using S3QL, make sure to read the user's guide, especially
+the 'Important Rules to Avoid Loosing Data' section.
+Enter encryption password: 
+Confirm encryption password: 
+Generating random encryption key...
+Creating metadata tables...
+Dumping metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Compressing and uploading metadata...
+Wrote 0.00 MB of compressed metadata.
+# </pre></blockquote></p>
+
+<p>The next step is mounting the file system to make the storage available.
+
+<p><blockquote><pre>
+# mount.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl --allow-root s3c://s.greenqloud.com:443/bucket-name /s3ql
+Using 4 upload threads.
+Downloading and decompressing metadata...
+Reading metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Mounting filesystem...
+# df -h /s3ql
+Filesystem                              Size  Used Avail Use% Mounted on
+s3c://s.greenqloud.com:443/bucket-name  1.0T     0  1.0T   0% /s3ql
+#
+</pre></blockquote></p>
+
+<p>The file system is now ready for use.  I use rsync to store my
+backups in it, and as the metadata used by rsync is downloaded at
+mount time, no network traffic (and storage cost) is triggered by
+running rsync.  To unmount, one should not use the normal umount
+command, as this will not flush the cache to the cloud storage, but
+instead running the umount.s3ql command like this:
+
+<p><blockquote><pre>
+# umount.s3ql /s3ql
+# 
+</pre></blockquote></p>
+
+<p>There is a fsck command available to check the file system and
+correct any problems detected.  This can be used if the local server
+crashes while the file system is mounted, to reset the "already
+mounted" flag.  This is what it look like when processing a working
+file system:</p>
+
+<p><blockquote><pre>
+# fsck.s3ql --force --ssl s3c://s.greenqloud.com:443/bucket-name
+Using cached metadata.
+File system seems clean, checking anyway.
+Checking DB integrity...
+Creating temporary extra indices...
+Checking lost+found...
+Checking cached objects...
+Checking names (refcounts)...
+Checking contents (names)...
+Checking contents (inodes)...
+Checking contents (parent inodes)...
+Checking objects (reference counts)...
+Checking objects (backend)...
+..processed 5000 objects so far..
+..processed 10000 objects so far..
+..processed 15000 objects so far..
+Checking objects (sizes)...
+Checking blocks (referenced objects)...
+Checking blocks (refcounts)...
+Checking inode-block mapping (blocks)...
+Checking inode-block mapping (inodes)...
+Checking inodes (refcounts)...
+Checking inodes (sizes)...
+Checking extended attributes (names)...
+Checking extended attributes (inodes)...
+Checking symlinks (inodes)...
+Checking directory reachability...
+Checking unix conventions...
+Checking referential integrity...
+Dropping temporary indices...
+Backing up old metadata...
+Dumping metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Compressing and uploading metadata...
+Wrote 0.89 MB of compressed metadata.
+# 
+</pre></blockquote></p>
+
+<p>Thanks to the cache, working on files that fit in the cache is very
+quick, about the same speed as local file access.  Uploading large
+amount of data is to me limited by the bandwidth out of and into my
+house.  Uploading 685 MiB with a 100 MiB cache gave me 305 kiB/s,
+which is very close to my upload speed, and downloading the same
+Debian installation ISO gave me 610 kiB/s, close to my download speed.
+Both were measured using <tt>dd</tt>.  So for me, the bottleneck is my
+network, not the file system code.  I do not know what a good cache
+size would be, but suspect that the cache should e larger than your
+working set.</p>
+
+<p>I mentioned that only one machine can mount the file system at the
+time.  If another machine try, it is told that the file system is
+busy:</p>
+
+<p><blockquote><pre>
+# mount.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl --allow-root s3c://s.greenqloud.com:443/bucket-name /s3ql
+Using 8 upload threads.
+Backend reports that fs is still mounted elsewhere, aborting.
+#
+</pre></blockquote></p>
+
+<p>The file content is uploaded when the cache is full, while the
+metadata is uploaded once every 24 hour by default.  To ensure the
+file system content is flushed to the cloud, one can either umount the
+file system, or ask S3QL to flush the cache and metadata using
+s3qlctrl:
+
+<p><blockquote><pre>
+# s3qlctrl upload-meta /s3ql
+# s3qlctrl flushcache /s3ql
+# 
+</pre></blockquote></p>
+
+<p>If you are curious about how much space your data uses in the
+cloud, and how much compression and deduplication cut down on the
+storage usage, you can use s3qlstat on the mounted file system to get
+a report:</p>
+
+<p><blockquote><pre>
+# s3qlstat /s3ql
+Directory entries:    9141
+Inodes:               9143
+Data blocks:          8851
+Total data size:      22049.38 MB
+After de-duplication: 21955.46 MB (99.57% of total)
+After compression:    21877.28 MB (99.22% of total, 99.64% of de-duplicated)
+Database size:        2.39 MB (uncompressed)
+(some values do not take into account not-yet-uploaded dirty blocks in cache)
+#
+</pre></blockquote></p>
+
+<p>I mentioned earlier that there are several possible suppliers of
+storage.  I did not try to locate them all, but am aware of at least
+<a href="https://www.greenqloud.com/">Greenqloud</a>,
+<a href="http://drive.google.com/">Google Drive</a>,
+<a href="http://aws.amazon.com/s3/">Amazon S3 web serivces</a>,
+<a href="http://www.rackspace.com/">Rackspace</a> and
+<a href="http://crowncloud.net/">Crowncloud</A>.  The latter even
+accept payment in Bitcoin.  Pick one that suit your need.  Some of
+them provide several GiB of free storage, but the prize models are
+quite different and you will have to figure out what suits you
+best.</p>
+
+<p>While researching this blog post, I had a look at research papers
+and posters discussing the S3QL file system.  There are several, which
+told me that the file system is getting a critical check by the
+science community and increased my confidence in using it.  One nice
+poster is titled
+"<a href="http://www.lanl.gov/orgs/adtsc/publications/science_highlights_2013/docs/pg68_69.pdf">An
+Innovative Parallel Cloud Storage System using OpenStack’s SwiftObject
+Store and Transformative Parallel I/O Approach</a>" by Hsing-Bung
+Chen, Benjamin McClelland, David Sherrill, Alfred Torrez, Parks Fields
+and Pamela Smith.  Please  have a look.</p>
+
+<p>Given my problems with different file systems earlier, I decided to
+check out the mounted S3QL file system to see if it would be usable as
+a home directory (in other word, that it provided POSIX semantics when
+it come to locking and umask handling etc).  Running
+<a href="http://people.skolelinux.org/pere/blog/Testing_if_a_file_system_can_be_used_for_home_directories___.html">my
+test code to check file system semantics</a>, I was happy to discover that
+no error was found.  So the file system can be used for home
+directories, if one chooses to do so.</p>
+
+<p>If you do not want a locally file system, and want something that
+work without the Linux fuse file system, I would like to mention the
+<a href="http://www.tarsnap.com/">Tarsnap service</a>, which also
+provide locally encrypted backup using a command line client.  It have
+a nicer access control system, where one can split out read and write
+access, allowing some systems to write to the backup and others to
+only read from it.</p>
+
+<p>As usual, if you use Bitcoin and want to show your support of my
+activities, please send Bitcoin donations to my address
+<b><a href="bitcoin:15oWEoG9dUPovwmUL9KWAnYRtNJEkP1u1b&label=PetterReinholdtsenBlog">15oWEoG9dUPovwmUL9KWAnYRtNJEkP1u1b</a></b>.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/debian">debian</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/personvern">personvern</a>, <a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <div class="entry">
+      <div class="title"><a href="http://people.skolelinux.org/pere/blog/EU_domstolen_bekreftet_i_dag_at_datalagringsdirektivet_er_ulovlig.html">EU-domstolen bekreftet i dag at datalagringsdirektivet er ulovlig</a></div>
+      <div class="date"> 8th April 2014</div>
+      <div class="body"><p>I dag kom endelig avgjørelsen fra EU-domstolen om
+datalagringsdirektivet, som ikke overraskende ble dømt ulovlig og i
+strid med borgernes grunnleggende rettigheter.  Hvis du lurer på hva
+datalagringsdirektivet er for noe, så er det
+<a href="http://tv.nrk.no/program/koid75005313/tema-dine-digitale-spor-datalagringsdirektivet">en
+flott dokumentar tilgjengelig hos NRK</a> som jeg tidligere
+<a href="http://people.skolelinux.org/pere/blog/Dokumentaren_om_Datalagringsdirektivet_sendes_endelig_p__NRK.html">har
+anbefalt</a> alle å se.</p>
+
+<p>Her er et liten knippe nyhetsoppslag om saken, og jeg regner med at
+det kommer flere ut over dagen.  Flere kan finnes
+<a href="http://www.mylder.no/?drill=datalagringsdirektivet&intern=1">via
+mylder</a>.</p>
+
+<p><ul>
+
+<li><a href="http://e24.no/digital/eu-domstolen-datalagringsdirektivet-er-ugyldig/22879592">EU-domstolen:
+Datalagringsdirektivet er ugyldig</a> - e24.no 2014-04-08
+
+<li><a href="http://www.aftenposten.no/nyheter/iriks/EU-domstolen-Datalagringsdirektivet-er-ulovlig-7529032.html">EU-domstolen:
+Datalagringsdirektivet er ulovlig</a> - aftenposten.no 2014-04-08
+
+<li><a href="http://www.aftenposten.no/nyheter/iriks/politikk/Krever-DLD-stopp-i-Norge-7530086.html">Krever
+DLD-stopp i Norge</a> - aftenposten.no 2014-04-08
+
+<li><a href="http://www.p4.no/story.aspx?id=566431">Apenes: - En
+gledens dag</a> - p4.no 2014-04-08
+
+<li><a href="http://www.nrk.no/norge/_-datalagringsdirektivet-er-ugyldig-1.11655929">EU-domstolen:
+– Datalagringsdirektivet er ugyldig</a> - nrk.no 2014-04-08</li>
+
+<li><a href="http://www.vg.no/nyheter/utenriks/data-og-nett/eu-domstolen-datalagringsdirektivet-er-ugyldig/a/10130280/">EU-domstolen:
+Datalagringsdirektivet er ugyldig</a> - vg.no 2014-04-08</li>
+
+<li><a href="http://www.dagbladet.no/2014/04/08/nyheter/innenriks/datalagringsdirektivet/personvern/32711646/">-
+Vi bør skrote hele datalagringsdirektivet</a> - dagbladet.no
+2014-04-08</li>
+
+<li><a href="http://www.digi.no/928137/eu-domstolen-dld-er-ugyldig">EU-domstolen:
+DLD er ugyldig</a> - digi.no 2014-04-08</li>
+
+<li><a href="http://www.irishtimes.com/business/sectors/technology/european-court-declares-data-retention-directive-invalid-1.1754150">European
+court declares data retention directive invalid</a> - irishtimes.com
+2014-04-08</li>
+
+<li><a href="http://www.reuters.com/article/2014/04/08/us-eu-data-ruling-idUSBREA370F020140408?feedType=RSS">EU
+court rules against requirement to keep data of telecom users</a> -
+reuters.com 2014-04-08</li>
+
+</ul>
+</p>
+
+<p>Jeg synes det er veldig fint at nok en stemme slår fast at
+totalitær overvåkning av befolkningen er uakseptabelt, men det er
+fortsatt like viktig å beskytte privatsfæren som før, da de
+teknologiske mulighetene fortsatt finnes og utnyttes, og jeg tror
+innsats i prosjekter som
+<a href="https://wiki.debian.org/FreedomBox">Freedombox</a> og
+<a href="http://www.dugnadsnett.no/">Dugnadsnett</a> er viktigere enn
+noen gang.</p>
+
+<p><strong>Update 2014-04-08 12:10</strong>: Kronerullingen for å
+stoppe datalagringsdirektivet i Norge gjøres hos foreningen
+<a href="http://www.digitaltpersonvern.no/">Digitalt Personvern</a>,
+som har samlet inn 843 215,- så langt men trenger nok mye mer hvis
+
+ikke Høyre og Arbeiderpartiet bytter mening i saken.  Det var
+<a href="http://www.holderdeord.no/parliament-issues/48650">kun
+partinene Høyre og Arbeiderpartiet</a> som stemte for
+Datalagringsdirektivet, og en av dem må bytte mening for at det skal
+bli flertall mot i Stortinget.  Se mer om saken
+<a href="http://www.holderdeord.no/issues/69-innfore-datalagringsdirektivet">Holder
+de ord</a>.</p>
+</div>
+      <div class="tags">
+        
+        
+        Tags: <a href="http://people.skolelinux.org/pere/blog/tags/dld">dld</a>, <a href="http://people.skolelinux.org/pere/blog/tags/norsk">norsk</a>, <a href="http://people.skolelinux.org/pere/blog/tags/personvern">personvern</a>, <a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet</a>, <a href="http://people.skolelinux.org/pere/blog/tags/surveillance">surveillance</a>. 
+        
+        
+      </div>
+    </div>
+    <div class="padding"></div>
+    
+    <p style="text-align: right;"><a href="index.rss"><img src="http://people.skolelinux.org/pere/blog/xml.gif" alt="RSS feed" width="36" height="14" /></a></p>
+    <div id="sidebar">
+      
+
+
+<h2>Archive</h2>
+<ul>
+
+<li>2014
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/01/">January (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/02/">February (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/03/">March (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/04/">April (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/05/">May (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/06/">June (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/07/">July (1)</a></li>
+
+</ul></li>
+
+<li>2013
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/01/">January (11)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/02/">February (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/03/">March (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/04/">April (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/06/">June (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/07/">July (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/08/">August (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/09/">September (5)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/10/">October (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/11/">November (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/12/">December (3)</a></li>
+
+</ul></li>
+
+<li>2012
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/01/">January (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/02/">February (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/03/">March (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/04/">April (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/05/">May (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/06/">June (20)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/07/">July (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/08/">August (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/09/">September (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/10/">October (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/11/">November (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/12/">December (7)</a></li>
+
+</ul></li>
+
+<li>2011
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/01/">January (16)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/02/">February (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/03/">March (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/04/">April (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/05/">May (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/06/">June (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/07/">July (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/08/">August (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/09/">September (4)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/10/">October (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/11/">November (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/12/">December (1)</a></li>
+
+</ul></li>
+
+<li>2010
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/01/">January (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/02/">February (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/03/">March (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/04/">April (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/06/">June (14)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/07/">July (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/08/">August (13)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/09/">September (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/10/">October (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/11/">November (13)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/12/">December (12)</a></li>
+
+</ul></li>
+
+<li>2009
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/01/">January (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/02/">February (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/03/">March (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/04/">April (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/06/">June (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/07/">July (4)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/08/">August (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/09/">September (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/10/">October (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/11/">November (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/12/">December (3)</a></li>
+
+</ul></li>
+
+<li>2008
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2008/11/">November (5)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2008/12/">December (7)</a></li>
+
+</ul></li>
+
+</ul>
+
+
+
+<h2>Tags</h2>
+<ul>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/3d-printer">3d-printer (13)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/amiga">amiga (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/aros">aros (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bankid">bankid (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bitcoin">bitcoin (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bootsystem">bootsystem (14)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bsa">bsa (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/chrpath">chrpath (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/debian">debian (99)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/debian edu">debian edu (147)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/digistan">digistan (10)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/dld">dld (15)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/docbook">docbook (12)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/drivstoffpriser">drivstoffpriser (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/english">english (249)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/fiksgatami">fiksgatami (21)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/fildeling">fildeling (12)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/freeculture">freeculture (13)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/freedombox">freedombox (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/frikanalen">frikanalen (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/intervju">intervju (40)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/isenkram">isenkram (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/kart">kart (18)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ldap">ldap (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/lenker">lenker (7)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ltsp">ltsp (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/mesh network">mesh network (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/multimedia">multimedia (28)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/norsk">norsk (246)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/nuug">nuug (162)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/offentlig innsyn">offentlig innsyn (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/open311">open311 (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/opphavsrett">opphavsrett (46)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/personvern">personvern (72)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/raid">raid (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/reactos">reactos (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/reprap">reprap (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/rfid">rfid (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/robot">robot (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/rss">rss (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ruter">ruter (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/scraperwiki">scraperwiki (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet (40)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sitesummary">sitesummary (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/skepsis">skepsis (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/standard">standard (44)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/stavekontroll">stavekontroll (3)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/stortinget">stortinget (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/surveillance">surveillance (25)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sysadmin">sysadmin (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/valg">valg (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/video">video (42)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/vitenskap">vitenskap (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/web">web (32)</a></li>
+
+</ul>
+
+
+    </div>
+    <p style="text-align: right">
+ Created by <a href="http://steve.org.uk/Software/chronicle">Chronicle v4.6</a>
+</p>
+
+  </body>
+</html>
+

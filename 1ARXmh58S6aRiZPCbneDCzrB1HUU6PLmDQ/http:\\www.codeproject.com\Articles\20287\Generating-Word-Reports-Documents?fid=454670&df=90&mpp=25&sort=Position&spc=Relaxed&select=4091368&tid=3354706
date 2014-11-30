@@ -1,0 +1,666 @@
+http://www.codeproject.com/Articles/20287/Generating-Word-Reports-Documents?fid=454670&df=90&mpp=25&sort=Position&spc=Relaxed&select=4091368&tid=3354706
+Generating Word Reports / Documents - CodeProject ×
+Sign up for our free weekly Web Developer Newsletter.
+10,726,986 members (71,718 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Enterprise Systems » Office Development » Microsoft Word
+ArticleAlternatives
+Comments (114)
+View this article's Workspace
+Fork this Workspace
+Generating Word Reports / Documents Predrag Tomasevic, 4 Oct 2009
+4.94 (122 votes)
+1
+2
+3
+4
+5
+4.94/5 - 122 votes6 removedμ 4.82, σa 1.05 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Generate Word documents by appling XSLT on XML data.	Download source - 73.4 KB
+Introduction (ramble)
+Another boring day in my life. I often wonder why it has to be like this – I either have no obligations at all, or I'm packed with them. Most people tell me that it has to do with planning. They wear their favorite serious face and say: you, my son, just don't know how to properly make your schedule. Time is the essence, do not use it improperly! You must divide your time in million little pieces, label each one of them, implement some kind of sorting, import everything into Microsoft Outlook, and stick to that plan. Then, and only then, you'll be a man who is not a campaigner, but an organized, equally time pressured "snooze-dismiss" monkey individual.
+My answer is way simpler, I often reply with just – hey, screw you! Because, really, I've always believed it's not about planning, but about the way universe has been built. Think about it – everything important was created in just those few seconds after the Big Bang. All that followed was just plain simple boring processes of waiting for the fruits of planted seeds to grow; the stage setting for another big moment.
+So, I hope you'll agree that it is – as Derek Ager once wrote – like the life of a soldier... long periods of boredom, and short periods of terror. One can just hope that those "long periods of boredom" can be filled with small joys of doing something you like; something that'll ease your wait for those important "short periods".
+This article is just that, my way of getting along with boredom... if it helps someone else, or fills his spare time, my joy will only be greater.
+Index
+Problem
+Brief solution description
+Producing the XSL transformation
+Defining the XML schema based on the report
+Binding data from the Word document to the appropriate fields in the XML schema
+Saving into WordML and the generation of XSLT
+Solving problems with multiple used elements
+Inserting images into the document
+Opening the document in read-only mode
+Preparing data and applying the transformation
+T-SQL and XML
+Binding XML to schema
+Applying the transformation on XML data
+XML->XSLT->HTML->Word, the easy way out
+Organization of resources used for the generation in the Visual Studio project
+FAQ
+Conclusion
+References
+History
+Problem
+I don't know if you are in a club, but I've met numerous .NET developers who had much trouble with choosing the right tool to build reports. Apart from praise for the Access report building capabilities, you won't hear many compliments for the reporting tools.
+I guess we have all tried Crystal Reports embedded into Visual Studio .NET - they are OK, but are demanding. And often, small bugs, along with ridiculous option placements, will drive you nuts.
+SQL Reporting Services are somewhat a new option that is praised all over the web by Microsoft evangelists. In practice, however, I've often stumbled on projects where the team is paralyzed with problems concerning configuration and specific aspects of report writing.
+Finally, there are numerous custom reporting frameworks such as ActiveReports or DevExpress' (I love these guys) Reporting Tools.
+Specific maladies aside, the common problem with all the previously laid options is that they have a modest learning curve. I'm not talking about the time needed to acquire the knowledge for generating a list of employees from an "It's easy to use our report suite"™ example. I'm talking about the time needed to acquire the knowledge for developing real-life reports which have three tables that properly expand and contract (along with its columns and rows) over pages.
+Also, none of these options provide you with the solution for frequent user requirements – when a report is rendered, it should be possible to modify it a bit. The workaround is to use report exporting to popular formats that are known to most users, like Word.
+As I've experienced, this is the point when the bulb shines above the head of the developer and the idea comes - why not generate reports in Word in the first place. In the majority of projects, clients are provided with the needed output reports in Word format, which they print and fill by hand. And if not... well, you have one of the best "report designers" in the world, as it was tweaked and improved over numerous versions.
+So, how to do it?
+Brief solution description
+One big, big problem with Word documents before the 2003 version was their binary format. Word's file format was not publicly available, and all utilities that could parse it were mostly developed by reverse-engineering, or by stealing using documentation available to Microsoft partners. You can guess that results weren't too satisfying...
+However, in 2003, Microsoft introduced XML formats for storing Office documents. Those formats were succeeded by Office Open XML formats in Office 2007 (which are default, instead of their binary counterparts), so you can safely bet that they are here to stay.
+So, in order to generate a Word file now, you basically need to apply the appropriate XSLT (XSL Transform) onto the XML data used in a report. This process can be divided into several operational steps:
+Defining the XML schema based on the report
+Binding data from the Word document to the appropriate fields in XML schema
+Saving the Word document in WordML format and the generation of XSLT using the WML2XSLT tool
+Retrieving the needed data from a source (mostly a SQL Server database), it's structuring into appropriate XML
+Applying XSLT onto XML data in order to generate the Word document, which then can be further manipulated (sending over wire, displaying to user, and similar)
+The biggest problem is to produce valid XSLT; from five steps, three are taken to do that. The generation of XML is far easier, while the transformation is completely trivial.
+Producing the XSL transformation
+Defining the XML schema based on the report
+In order to start making the report, it is required to define the necessary data. A picture talks more than a thousand words, an example talks almost an equal amount... so let's look at the picture of the report that we'll use as an example:
+Figure 1 – Report that should be generated
+It is obvious that we first have the buyer's name, the document date follows. Then we have, from the developer point of view, an interesting table of invoice items... and so on. The structure of the XML which will hold this data is described using an XML schema. Visual Studio 2005 has nice support for visual design of schemas, which we will utilize – after starting the IDE, take option File –> New –> File (CTRL+N): this gives a list of possible document types from which we choose XML Schema.
+An element from the Toolbox should then be dragged-and-dropped on the workspace and filled with content. This process is shown on the picture that follows:
+Figure 2 – Schema that defines the structure of data for the report
+In order to be properly mapped, items on the invoice need to be described as child elements of the Invoice entity. Add -> New element from the context menu shown after right click gives the option to perform this action.
+Figure 3 – Adding a child to the Invoice entity
+Adding the rest of the elements, assigning types to variables, and setting the targetNamespace (in the Properties window) gets the job done.
+Assigning types to variables is optional in most cases – if you use special formats for printing out documents (like dd.MM.yyyy) or monetary values ($10.99), it's easier to leave everything in the schema in string type, and do the formatting and validation during the generation of XML with the data.
+On the other hand, setting the targetNamespace shouldn't be optional – the produced schema will get the default value http://tempuri.org/XMLSchema.xsd. We can put aside the rules of good practice that tells us not to use the http://tempuri.org/ namespace in production; but, if you don't give unique names to your schemas, you'll stumble into problems during import and usage – Word's schema library can't hold two different schemas with the same namespace. So, be sure to set the targetNamespace (the convention http://Organization/Project/SchemaName.xsd is used mostly) before you close the definition.
+Figure 4 – Resulting XML schema
+Binding data from the Word document to the appropriate fields in the XML schema
+Schema importing is performed by using the XML Structure dialog. In the 2003 version of Office Word, this dialog is accessible through Task Pane (CTRL+F1); it should be chosen from the list shown when clicked on the triangle in the header (left from the small x). If schemas aren't previously imported, and the Template and Add-Ins option is chosen, the picture that follows will faithfully resemble the resulting state of the screen.
+Figure 5 – Adding the new XML schema in the Word document
+In the dialog shown after clicking on the Add Schema button, it is needed to point to the location of the defined XML schema. Its fields will be then shown in the XML Structure dialog, from where they are further bound to the document data. Before starting that sweet job, some additional options should be set:
+Check Ignore mixed content – This allows mixing data from the XML with data from the document. As documents are almost always made of fixed and variable parts, this avoids frequent signalization by Word that between the data defined in the XML schema there are "some others that don't belong there".
+Check Show advanced XML error messages – Choosing developer-friendly messages over user-friendly ones.
+Check Allow saving as XML even if not valid – Most often, you just can't "validly" mark data in the report document. For example, if some data from the XML is used twice in the document, Word will signal error in validation because according to the XML schema, that data appears only once. The same problem happens with order.
+This is present to force valid entry of data in the Word document (another application of the technique that is being described). However, our current goal is diametrically opposite – we are not marking fields for entry, but for space in which data from the XML will be inserted, so it's not needed to force a unique appearance and order.
+Figure 6 – Dialog for setting XML data
+After the schema is imported in to the document and the options set, it's time to move onto binding the schema and the data. Initially, only the root element (in our case, Invoice) is available. After choosing it, Word will offer options for assigning the schema to the appropriate range in the document.
+Figure 7 – Options for applying the schema on the appropriate range in the document
+In this example, applying the schema to the entire document is a needed option (possible multi-schematic Word files aren't interesting from the reporting point of view). Now, what is left is to mark the data – the selected text is bound to the schema either by choosing the field from the Task Pane, or by using the option Apply XML Element shown after a right click.
+Figure 8 – Binding data from a Word document to fields of the XML schema
+Two things are interesting here. First, to define child items, you need to select and map the whole row in the table to the InvoiceItems element, after which Name and Price will be available for bounding to the cell's data. If the document contains a large number of items, there is no need to map every single row; mapping just the first row is fine, the rest can be deleted. The structure of report, not the content, is what matters at the moment.
+Second, Word, for previously explained reasons, signals error for double usage of the Buyer element (look at the picture). It'll cause problems later, during the generation of the XSLT, but we can omit that problem for now (if Allow saving as XML even if not valid is checked in the XML options).
+Saving into WordML and the generation of XSLT
+The marked document contains all the data needed for the generation of valid XSLT. The WML2XSLT tool accepts WordML as input, so it's required to save the Word document in this format. You can do this by using the Save As option from the File menu – when the dialog is shown in Save as Type, choose XML document (*.xml). The option Apply transform is used in the opposite direction, Data only when XML data is fetched from the document, so both fields should be left unchecked.
+The prepared WML file is processed using this statement in the Command Prompt (the following is valid assuming that everything is in the same directory):
+WML2XSLT.exe "WordGeneratedInvoice.xml" –o "WordGeneratedInvoice.xslt"
+In case you run into problems (FileNotFoundException) while using the WML2XSLT.exe packed with the article source, be sure to download the tool from the previously given link and perform the installation (as mobfigr noted in his comment).
+Solving problems with multiple used elements
+The generated XSL transform will almost always be satisfying. One exception is when an element from the XML with data is used multiple times. In the example we are developing, the Buyer element is used twice, and for its second appearance, the following will be generated (you need to open the XSLT in Notepad or Visual Studio .NET and search for the value ns1:Buyer):
+&lt;w:r&gt; &lt;w:t&gt;&lt;xsl:text&gt;(Buyer: &lt;/xsl:text&gt;&lt;/w:t&gt;&lt;/w:r&gt;
+&lt;xsl:apply-templates select="ns1:Buyer[position() &gt;= 2]" /&gt;
+&lt;w:r&gt; &lt;w:t&gt;&lt;xsl:text&gt;)&lt;/xsl:text&gt;&lt;/w:t&gt;&lt;/w:r&gt;
+It's obvious we aren't interested in the element Buyer on the second position, but the same one that is referenced earlier in the file. Because of that, the following correction should be made:
+&lt;w:r&gt; &lt;w:t&gt;&lt;xsl:text&gt;(Buyer: &lt;/xsl:text&gt;&lt;/w:t&gt;&lt;/w:r&gt;
+&lt;xsl:apply-templates select="ns1:Buyer" /&gt;
+&lt;w:r&gt; &lt;w:t&gt;&lt;xsl:text&gt;)&lt;/xsl:text&gt;&lt;/w:t&gt;&lt;/w:r&gt;
+Inserting images into the document
+Naturally, WordML has good support for images, but it is very poorly documented. So, in order to see how images are represented in WML format, we'll perform a little experiment and save the marked Word document displayed below as XML:
+Figure 9 – Document with image
+After processing the saved document using the WML2XML tool (with the WML2XML ExampleImage.xml -o ExampleImage.xslt command), and opening the generated XSLT file, we can scroll to the SomeImage tag and see the following:
+&lt;ns0:SomeImage&gt;
+  &lt;xsl:for-each select="@ns0:*|@*[namespace-uri()='']"&gt;
+    &lt;xsl:attribute name="{name()}" namespace="{namespace-uri()}"&gt;
+      &lt;xsl:value-of select="." /&gt;
+    &lt;/xsl:attribute&gt;
+  &lt;/xsl:for-each&gt;
+  &lt;w:r&gt;
+    &lt;w:pict&gt;
+      &lt;v:shapetype id="_x0000_t75" coordsize="21600,21600" o:spt="75" 
+              o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f"&gt;
+        &lt;v:stroke joinstyle="miter" /&gt;
+        &lt;v:formulas&gt;
+          &lt;v:f eqn="if lineDrawn pixelLineWidth 0" /&gt;
+          &lt;v:f eqn="sum @0 1 0" /&gt;
+          &lt;v:f eqn="sum 0 0 @1" /&gt;
+          &lt;v:f eqn="prod @2 1 2" /&gt;
+          &lt;v:f eqn="prod @3 21600 pixelWidth" /&gt;
+          &lt;v:f eqn="prod @3 21600 pixelHeight" /&gt;
+          &lt;v:f eqn="sum @0 0 1" /&gt;
+          &lt;v:f eqn="prod @6 1 2" /&gt;
+          &lt;v:f eqn="prod @7 21600 pixelWidth" /&gt;
+          &lt;v:f eqn="sum @8 21600 0" /&gt;
+          &lt;v:f eqn="prod @7 21600 pixelHeight" /&gt;
+          &lt;v:f eqn="sum @10 21600 0" /&gt;
+        &lt;/v:formulas&gt;
+        &lt;v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect" /&gt;
+        &lt;o:lock v:ext="edit" aspectratio="t" /&gt;
+      &lt;/v:shapetype&gt;
+      &lt;w:binData w:name="wordml://01000001.gif"&gt;R0lGODlhEAAQAPIGAAAAAAAAsACwALAAALD/sP+wsP
+   ///////yH5BAEAAAcALAAAAAAQABAAAAOW
+eHd3h3d3d3h3d4d3cHd4d3eHd3cHWHAXgXF3d3gHVYNwZxZ4d3eAVTUDeHdhh3d3UFgDdocRcXd4
+d1CAdncXaHZ3h3dgd3h3Z4d3d3d4d3eHB3d3eHd3h3d3QAh3d4d3d3d4QCSAd3d3eHcHhEQicHh3
+d4d3B0QoYHeHd3d3eAcEhnd3d3h3d4cHdnd4d3eHd3d3eHeXADu=
+&lt;/w:binData&gt;
+      &lt;v:shape id="_x0000_i1025" type="#_x0000_t75" style="width:12pt;height:12pt"&gt;
+        &lt;v:imagedata src="wordml://01000001.gif" o:title="convert" /&gt;
+      &lt;/v:shape&gt;
+    &lt;/w:pict&gt;
+  &lt;/w:r&gt;
+  &lt;w:p&gt;
+    &lt;w:r&gt;
+      &lt;w:t&gt;
+        &lt;xsl:value-of select="." /&gt;
+      &lt;/w:t&gt;
+    &lt;/w:r&gt;
+  &lt;/w:p&gt;
+&lt;/ns0:SomeImage&gt;
+Obviously, the image is Base64 encoded into the XML file between the <w:binData> tags. After that, we have the <v:shape> tag which defines the placing of the image and references the encoded binary data by using <v:imagedata>. All this is preceded by <v:shapetype>, which is (luckily) optional and can be removed. Now, when we have some understanding of the format, we can perform a little clean up and properly place xsl:value-of select, so that binary data comes from our XML file:
+&lt;ns0:SomeImage&gt;
+  &lt;xsl:for-each select="@ns0:*|@*[namespace-uri()='']"&gt;
+    &lt;xsl:attribute name="{name()}" namespace="{namespace-uri()}"&gt;
+      &lt;xsl:value-of select="." /&gt;
+    &lt;/xsl:attribute&gt;
+  &lt;/xsl:for-each&gt;
+  &lt;w:r&gt;
+    &lt;w:pict&gt;
+      &lt;w:binData w:name="wordml://01000001.gif"&gt;&lt;xsl:value-of select="." /&gt;&lt;/w:binData&gt;
+      &lt;v:shape id="_x0000_i1025" type="#_x0000_t75" style="width:12pt;height:12pt"&gt;
+        &lt;v:imagedata src="wordml://01000001.gif" o:title="convert" /&gt;
+      &lt;/v:shape&gt;
+    &lt;/w:pict&gt;
+  &lt;/w:r&gt;
+&lt;/ns0:SomeImage&gt;
+It looks better, doesn't it? All that is left is to supply the XML data in the proper format:
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;Something xmlns="http://schemas.microsoft.com/GeneratingWordDocuments/ImageExample.xsd"&gt;
+    &lt;SomeText&gt;Small image below&lt;/SomeText&gt;
+    &lt;SomeImage&gt;R0lGODlhE[-- binary data truncated --]3d3eHeXADu=&lt;/SomeImage&gt;
+&lt;/Something&gt;
+and we'll have the document from Figure 9 in no time. One final word of warning - if your images aren't always the same size, you'll want to check the style attribute of the <v:shape> tag. And, after checking, you'll probably want to move it out of the transformation into XML . Here is how to do that:
+&lt;w:pict&gt;
+  &lt;w:binData w:name="wordml://01000001.gif"&gt;
+      &lt;xsl:value-of select="." /&gt;
+  &lt;/w:binData&gt;
+    &lt;v:shape id="_x0000_i1025" type="#_x0000_t75"&gt;
+        &lt;xsl:attribute name="style"&gt;
+            &lt;xsl:value-of select="@style"/&gt;
+        &lt;/xsl:attribute&gt;
+        &lt;v:imagedata src="wordml://01000001.gif" o:title="convert" /&gt;
+    &lt;/v:shape&gt;
+&lt;/w:pict&gt;
+ 
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;Something xmlns="http://schemas.microsoft.com/GeneratingWordDocuments/ImageExample.xsd"&gt;
+    &lt;SomeText&gt;Small image below&lt;/SomeText&gt;
+    &lt;SomeImage style="width:24pt;height:24pt"&gt;R0lGOD[-- binary data truncated --]3d3eADu=
+    &lt;/SomeImage&gt;
+&lt;/Something&gt;
+Opening the document in read-only mode
+To force opening the report in read-only mode when the report is displayed to the user, it's needed to use the Tools -> Options -> Security -> Protect Document option during the document creation. Under Editing Restrictions, 'No changes (Read only)' should be chosen... after that, the only thing left to do is click onto 'Yes, Start Enforcing Protection' and enter the password for protection. Of course, further steps remain the same - the document is saved as WordML, processed through the WML2XSLT tool...
+Figure 10 – Settings for the read-only mode
+Do not expect too much from this "protection". In WordML format, it's enforced by one line in the DocumentProperties element:
+  &lt;w:docPr&gt;
+    &lt;w:view w:val="print" /&gt;
+    &lt;w:zoom w:percent="85" /&gt;
+    &lt;w:doNotEmbedSystemFonts /&gt;
+    &lt;w:proofState w:spelling="clean" w:grammar="clean" /&gt;
+    &lt;w:attachedTemplate w:val="" /&gt;
+    &lt;u&gt;&lt;w:documentProtection w:edit="read-only" w:enforcement="on" 
+                             w:unprotectPassword="4560CA9C" /&gt;&lt;/u&gt;
+    &lt;w:defaultTabStop w:val="720" /&gt;
+    &lt;w:punctuationKerning /&gt;
+    &lt;w:characterSpacingControl w:val="DontCompress" /&gt;
+    &lt;w:optimizeForBrowser /&gt;
+    &lt;w:validateAgainstSchema /&gt;
+    &lt;w:saveInvalidXML /&gt;
+    &lt;w:ignoreMixedContent /&gt;
+    &lt;w:alwaysShowPlaceholderText w:val="off" /&gt;
+    &lt;w:compat&gt;
+      &lt;w:breakWrappedTables /&gt;
+      &lt;w:snapToGridInCell /&gt;
+      &lt;w:wrapTextWithPunct /&gt;
+      &lt;w:useAsianBreakRules /&gt;
+      &lt;w:dontGrowAutofit /&gt;
+    &lt;/w:compat&gt;
+    &lt;w:showXMLTags w:val="off" /&gt;
+  &lt;/w:docPr&gt;
+This means that the read-only mode can be easily incorporated into XSLT for reports you've already done... but, it also means that anyone knowing WML format can easily workaround your "protection". So, use it wisely Preparing data and applying the transformation
+T-SQL and XML
+XML data that satisfies the previously defined schema and which we'll use in the report can be generated in many ways. The most commonly used is the one that utilizes the SELECT... FOR XML command and data from SQL Server 2005 that directly translates into XML.
+SELECT... FOR XML has two parameters:
+Work mode, chosen from RAW, AUTO, EXPLICIT, and the PATH array. In general, the AUTO mode will finish the job; when extra formatting is needed, the PATH mode is the choice.
+Additional variables like ROOT (add a root tag to XML), ELEMENTS (format output data as elements), TYPE (result is returned as XML type of SQL Server 2005), and XMLSCHEMA (write XML schema before data).
+For example, if there is a c_City table with columns CityId and CityName, and XML with element City is needed, the following T-SQL is required:
+SELECT CityId, CityName FROM c_City AS City
+FOR XML AUTO
+
+&lt;City CityId="43" CityName="100 Mile House" /&gt;
+&lt;City CityId="53" CityName="Abbotsford" /&gt;
+If it's needed to write out data in elements, the ELEMENTS directive is added:
+SELECT CityId, CityName FROM c_City AS City
+FOR XML AUTO, ELEMENTS
+
+&lt;City&gt;
+  &lt;CityId&gt;43&lt;/CityId&gt;
+  &lt;CityName&gt;100 Mile House&lt;/CityName&gt;
+&lt;/City&gt;
+&lt;City&gt;
+  &lt;CityId&gt;53&lt;/CityId&gt;
+  &lt;CityName&gt;Abbotsford&lt;/CityName&gt;
+&lt;/City&gt;
+As two elements exist on the first level, Root tag must be added so that the XML is syntactically valid:
+SELECT CityId, CityName FROM c_City AS City
+FOR XML AUTO, ELEMENTS, ROOT('Root')
+
+&lt;Root&gt;
+  &lt;City&gt;
+    &lt;CityId&gt;43&lt;/CityId&gt;
+    &lt;CityName&gt;100 Mile House&lt;/CityName&gt;
+  &lt;/City&gt;
+  &lt;City&gt;
+    &lt;CityId&gt;53&lt;/CityId&gt;
+    &lt;CityName&gt;Abbotsford&lt;/CityName&gt;
+  &lt;/City&gt;
+&lt;/Root&gt;
+Let's assume that there is a c_PostalCode table with postal codes used in cities. If it's required to make XML where postal codes will be child element of cities, the following SQL is in order:
+SELECT CityId, CityName,  
+    (SELECT PostalCodeId, PostalCodeName FROM c_PostalCode
+     WHERE CityId = City.CityId
+     FOR XML AUTO, TYPE)        
+FROM c_City AS City
+FOR XML AUTO, TYPE
+
+&lt;Root&gt;
+  &lt;City CityId="43" CityName="100 Mile House"&gt;
+    &lt;c_PostalCode PostalCodeId="317701" PostalCodeName="V0K2Z0" /&gt;
+    &lt;c_PostalCode PostalCodeId="317702" PostalCodeName="V0K2E0" /&gt;
+  &lt;/City&gt;
+  &lt;City CityId="53" CityName="Abbotsford"&gt;
+    &lt;c_PostalCode PostalCodeId="317703" PostalCodeName="V3G2J3" /&gt;
+  &lt;/City&gt;
+&lt;/Root&gt;
+If more output flexibility is required, it's possible to format the XML in more detail using the PATH mode. For example, if it's needed to hold CityId as an attribute, CityName as an element, and information about postal codes as child elements which PostalCodeId places in the NotNeeded sub element, use this T-SQL:
+SELECT CityId AS '@CityId', CityName,  
+    (SELECT PostalCodeId AS 'NotNeeded/PostalCodeId', PostalCodeName 
+     FROM c_PostalCode
+     WHERE CityId = City.CityId
+     FOR XML path('PostalCode'), TYPE)        
+FROM c_City AS City
+FOR XML PATH('CityRow'), type, root('Data')
+
+&lt;Data&gt;
+  &lt;CityRow CityId="43"&gt;
+    &lt;CityName&gt;100 Mile House&lt;/CityName&gt;
+    &lt;PostalCode PostalCodeName="V0K2Z0"&gt;
+      &lt;NotNeeded&gt;
+        &lt;PostalCodeId&gt;317701&lt;/PostalCodeId&gt;
+      &lt;/NotNeeded&gt;
+    &lt;/PostalCode&gt;
+    &lt;PostalCode PostalCodeName="V0K2E0"&gt;
+      &lt;NotNeeded&gt;
+        &lt;PostalCodeId&gt;317702&lt;/PostalCodeId&gt;
+      &lt;/NotNeeded&gt;
+    &lt;/PostalCode&gt;
+  &lt;/CityRow&gt;
+  &lt;CityRow CityId="53"&gt;
+    &lt;CityName&gt;Abbotsford&lt;/CityName&gt;
+    &lt;PostalCode PostalCodeName="V3G2J3"&gt;
+      &lt;NotNeeded&gt;
+        &lt;PostalCodeId&gt;317703&lt;/PostalCodeId&gt;
+      &lt;/NotNeeded&gt;
+    &lt;/PostalCode&gt;
+  &lt;/CityRow&gt;
+&lt;/Data&gt;
+Binding XML to schema
+For the XML data to be shown in Word, it's necessary that the xmlns attribute of the root tag points to the appropriate schema. To be precise – in our example, to show the XML data in the generated Word document, it's not enough to provide just the following output from SQL:
+SELECT Buyer, InvoiceDate, ...
+FROM Invoice
+FOR XML PATH('Invoice'), ELEMENTS
+
+&lt;Invoice&gt;
+    &lt;Buyer&gt;John Doe&lt;/Buyer&gt;
+    &lt;InvoiceDate&gt;2008-01-01&lt;/InvoiceDate&gt;
+    ...
+&lt;/Invoice&gt;
+It's needed to set the xmlns attribute in such a manner to point to the targetNamespace of the WordGeneratedInvoice.xsd schema:
+WITH XMLNAMESPACES(DEFAULT 
+   'http://schemas.microsoft.com/GeneratingWordDocuments/WordGeneratedInvoice.xsd')
+SELECT Buyer, InvoiceDate, ...
+FROM Invoice 
+FOR XML PATH('Invoice'), ELEMENTS
+
+&lt;Data xmlns="http://schemas.microsoft.com/GeneratingWordDocuments/WordGeneratedInvoice.xsd"&gt;
+    &lt;Buyer&gt;John Doe&lt;/Buyer&gt;
+    &lt;InvoiceDate&gt;2008-01-01&lt;/InvoiceDate&gt;
+    ...
+&lt;/Invoice&gt;
+A blank Word document is the most common result if the XML data is not bound to the schema over an xmlns attribute.
+Applying the transformation on XML data
+public static byte[] GetWord(XmlReader xmlData, XmlReader xslt)
+{
+    XslCompiledTransform xslt = new XslCompiledTransform();
+    XsltArgumentList args = new XsltArgumentList();
+
+    using (MemoryStream swResult = new MemoryStream())
+    {
+        xslt.Load(xslt);
+        xslt.Transform(xmlData, args, swResult);
+
+        return swResult.ToArray();
+    }
+}
+It's mentioned earlier that this step is trivial. The example justifies that, doesn't it?
+After the XML data and the XSL transformation are passed as XmlReader objects, an XslCompiledTransform is initialized through the Load method. All that is left is to call Transform to finish the job.
+XML->XSLT->HTML->Word, the easy way out
+In case you don't need advanced capabilities that Word provides (page numbering, margins, and similar), you have a pretty handy option of hand-writing XSLT that transforms XML data to HTML and then just opens HTML in Word.
+To illustrate the idea with an example – here is an XSLT that I use for a list report that just shows the contents of a CD DataTable with two columns, Title and Price:
+&lt;?xml version='1.0' encoding='UTF-8' ?&gt;
+&lt;xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' 
+xmlns:fo='http://www.w3.org/1999/XSL/Format' 
+xmlns:fn='http://www.w3.org/2003/11/xpath-functions' 
+xmlns:xf='http://www.w3.org/2002/08/xquery-functions'&gt;
+    &lt;xsl:template match='/'&gt;
+        &lt;html&gt;
+            &lt;body&gt;
+                &lt;h2&gt;Report Header&lt;/h2&gt;
+                &lt;table border='0' width='100%'&gt;
+                    &lt;tr bgcolor='Gray'&gt;
+                        &lt;th align='left'&gt;Title&lt;/th&gt;
+                        &lt;th align='left'&gt;Price&lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;xsl:for-each select='DocumentElement/Cd'&gt;
+                        &lt;tr&gt;
+                            &lt;td&gt;
+                                &lt;xsl:value-of select='Title'/&gt;
+                            &lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;xsl:value-of select='Price'/&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/xsl:for-each&gt;
+                &lt;/table&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;
+    &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+The XML data which is transformed:
+&lt;?xml version='1.0' encoding='UTF-8' ?&gt;
+&lt;DocumentElement&gt;
+    &lt;Cd&gt;
+        &lt;Title&gt;Mike&lt;/Title&gt;
+        &lt;Price&gt;20$&lt;/Price&gt;
+    &lt;/Cd&gt;
+    &lt;Cd&gt;
+        &lt;Title&gt;Nike&lt;/Title&gt;
+        &lt;Price&gt;30$&lt;/Price&gt;
+    &lt;/Cd&gt;
+    &lt;Cd&gt;
+        &lt;Title&gt;Reebok&lt;/Title&gt;
+        &lt;Price&gt;40$&lt;/Price&gt;
+    &lt;/Cd&gt;
+&lt;/DocumentElement&gt;
+When the xsl:template tag is matched (and it'll be matched always because it points to root), its InnerText is evaluated. The xsl:for-each tag processes each of the DocumentElement/Cd nodes, and xsl:value-of gets the InnerText of the XPath selected element. In case you're not too good with XSLT, I recommend this webpage: W3Schools. W3Schools, you rock! Resulting HTML:
+&lt;html xmlns:fo="http://www.w3.org/1999/XSL/Format" 
+xmlns:fn="http://www.w3.org/2003/11/xpath-functions" 
+xmlns:xf="http://www.w3.org/2002/08/xquery-functions"&gt;
+    &lt;body&gt;
+        &lt;h2&gt;Something&lt;/h2&gt;
+        &lt;table border="0" width="100%"&gt;
+            &lt;tr bgcolor="Gray"&gt;
+                &lt;th align="left"&gt;Title&lt;/th&gt;
+                &lt;th align="left"&gt;Price&lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;Mike&lt;/td&gt;
+                &lt;td&gt;20$&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;Nike&lt;/td&gt;
+                &lt;td&gt;30$&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;Reebok&lt;/td&gt;
+                &lt;td&gt;40$&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+Word, even in versions earlier than 2003, had no any problems with opening HTML; so, just save the result as .doc (instead of .HTML) and you'll be done. In case you are sending the response over the Web, you can specify the type with:
+Response.AddHeader("content-type", "application/msword");
+Response.AddHeader("Content-Disposition", "attachment; filename=report.doc");
+The true value of this option comes into light when you start thinking about generic reports. In the source code that accompanies this article, you'll find a generic version of this example, the one that works with any DataTable. Be sure to check it.
+Organization of resources used for the generation in the Visual Studio project
+The source code I have attached to this article demonstrates one possible way of organizing the needed resources for the Word reports generation. Here is the project structure:
+Figure 11 - XSL transform as part of the VS.NET project for generating Word reports
+It is of utmost importance that Embedded Resource is set on the Build Action for all the resources that are used in the generation of the Word document (XML, XSD, XSLT). This enables their later fetching from the resource collection of the compiled DLL.
+Reports are generated through a static Report class which represents the facade to embedded resources and the logic exploiting them:
+public class Report
+{
+    /// &lt;summary&gt;
+    /// Generates Demonstration Report
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;Resulting Word document as Byte array&lt;/returns&gt;
+    public static byte[] WordGeneratedInvoice()
+    {
+        // Get data as XML... for demonstration prepared XML is used,
+
+        // in real implementation scenario this data would be 
+
+        // fetched from SQL Server
+
+        string xmlData = Getters.GetTestXml("WordGeneratedInvoice");
+        return Getters.GetWord(xmlData, "WordGeneratedInvoice");
+    }
+
+    // ... //
+
+
+    /* Add Report methods here */
+
+}
+Adding new reports in this structure is easy:
+The new report for generation is added in the Doc directory.
+The XML schema which is created based on the report is added in the Xsd directory.
+After the schema is applied on the document, the saved WordML is used as the input in the WML2XSLT tool; the resulting XSLT is placed in the Xslt directory.
+A method is added in the Report class which is responsible for fetching XML data, invoking the transformation, and returning the resulting Word document.
+FAQ
+Can I convert the generated WordML to PDF? How do I do it?
+Check out my article Generate PDF using C#.
+I applied the schema to the Word document and ended my work on it. After some time, I reopened the document, but in the XML structure dialog, the list of elements available for applying onto the document (the lower listbox) is empty.
+This occurred because the path to the XSD file is changed. The location of the schema can be refreshed by using XML Options -> Schema Library -> choose the schema used in the document -> Schema Settings -> Browse...
+Figure 12 – Dialogs (ordered from left to right) that visually show the path to the Browse... option
+I've changed the XML schema (XSD) after the changed request for the new report fields arrived. However, Word 2003 does not show new fields in the XML structure dialog, so I can't bind them to the data in the new version of the report. Must I build the report from scratch?
+This problem can be solved by installing the Office 2003 Service Pack 2. When SP2 is installed, Word 2003 will refresh the attached schema if the following steps are satisfied:
+Schema is changed, XSD file is saved
+All instances of Word 2003 are closed (not only the document which uses the mentioned schema!)
+Reopen the Word document that uses the schema
+In some situations, the better way to solve this problem is to install the XML Toolbox for Microsoft Office Word 2003 – it adds the command Refresh Schema. The solution isn't universal because the XML Toolbox doesn't install properly always (the most common problems are security polices, the existence of .NET Framework 1.1...). So, my suggestion is to close all Office applications, download the .msi from the link, run it – if everything goes smoothly, you'll see the Word XML toolbar (View -> Toolbars -> Word XML Toolbar); if not, you always have the first suggestion for schema refreshing.
+Figure 13 - XML Toolbox in Word 2003, with the Reload Schema option
+I made the XSD, bound it to the Word document, made the XSLT, prepared the XML data, performed the transformation, and got – empty document
+The most common cause of this problem is that XML doesn't contain the schema binding (as a value of the xmlns attribute of the root tag). Read the Binding XML to schema chapter.
+The easiest way to see the type of XML you should prepare is to get the properly schema and fields bounded Word document to be saved on the some temporary location as the XML (File -> Save as, Save as type: XML document), by checking the option Save data only. You can view the saved XML by opening it in Visual Studio .NET or Notepad...
+Figure 14 – Saving the XML data only from properly mapped Word document
+Where are the XML options located in Office Word 2007? How different is report making between Word 2003 and 2007?
+Honestly, I haven't worked much in the 2007 version of Word, but still - I couldn't find big differences. The only problem I've had is in finding the XML Structure dialog, as it was not accessible with the Task Pane. It seems that the XML Toolbox is installed by default with Office 2007, so you can solve this by its adding by using the toolbar's (Ribbon's) option, Customize...
+Figure 15 – Dialog shown after choosing the option Customize... in Word 2007
+Figure 16 - XML Toolbox in Word 2007
+Conclusion
+It is worthy to note that the solution I recommended doesn't use Visual Studio Tools for Office. I tried them out for document generation, and was very disappointed as they required a nasty deal of configuring both to develop and run.
+Also, using XSLT to produce Word documents is far easier than juggling with the Microsoft Word Object Library COM DLL and its Word.Application class; not to mention that it is way faster and memory leak free. If you are using a COM DLL for generating Word files, I would advise you to start rewriting that part of your system right now, especially if you are generating documents on the server and then sending them to clients. Simply, Word was developed to be an interactive user application and not a "visible = false" puppet of another process.
+Well, that's it folks. You know the drill - please take your time to rate this article, and if you are (un)happy with it or just need some aid, post comments and I'll be glad to respond/help in no time .
+References
+In no particular order…
+Books:
+Eric Carter, Eric Lippert, "Visual Studio Tools for Office: Using C# with Excel, Word, Outlook, and Infopath" (2005)
+Kevin Goff, Rod Paddock, "Pro VS 2005 Reporting Using SQL Server and Crystal Reports" (2006)
+WordML Image specs - Dave Thielen and Oleg Tkachenko blogs
+History
+February 17, 2008 - Added the multiple images example (this comment initiated it).
+November 4, 2007 - Added the image example (this comment initiated it).
+October 17, 2007 – Added the grouping example (this comment initiated it).
+September 13, 2007 – Added the read-only section, added one more example (this comment initiated it).
+August 31, 2007 – Initial version of the article.
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+View All ThreadsFirst Prev Next
+Generationg Word Reports / Document question newbetonet3-Feb-10 4:59 Hello and thanks so very much for your documents and articles. It is truly helpfull to people like me that are new to this environment. I just stated to go through your document but when I create a XML Schema using visual studio, I do not see any controls. Also when I create the XML Schema my screen is very different then your document. on XMLSchema1.xsd I have which is very different than your document. Can you help so I can start this tutorial?
+thank you very much
+IA
+Last Visit: 31-Dec-99 18:00 Last Update: 12-Jul-14 2:43Refresh1
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 30 Aug 2007
+Views 371,982
+Downloads 4,525
+Bookmarked 531 times
+.NET2.0 SQL-server-2005 VS2005 C#2.0 XML SQL Windows HTML DBA Dev , + Related Articles
+Dynamically generate a MS Word document using HTML & CSS
+Understanding the Why, What, and How of Reporting Solutions: Reporting 101
+Term frequency/Inverse document frequency implementation in C#
+A SOA Approach to Dynamic DOCX-PDF Report Generation - Part 1
+Create simple Word 2007 documents without needing Word 2007 installed
+Gios WORD .NET Library (using RTF specification)
+NetSpell - Spell Checker for .NET
+Yet another way to Generate Excel documents programmatically
+SSRS Series Part I: Various ways of Report creation, deployment and invocation
+A SOA approach to dynamic DOCX-PDF report generation - Part 2
+Fill Mergefields in .docx Documents without Microsoft Word
+Report Generator
+An alternative way to the MSWord Render extension of SQL Reporting Services using XSLT and XML document mapping
+rtflib v1.0
+Reporting: Embed dotnet code in MS Word files
+Adding DOC, RTF, and OOXML Export Formats to the Microsoft Report Viewer Control: Implementing It Easier Using Private Reflection
+C# and XML Source Code Documentation
+Crystal Reports helper class
+PDF reporting using ASP.NET MVC3
+Text Based Random Password Generator
+Related Research
+Toad Oracle: Tips to Simplify Database Administration and Development
+Data Modeling for Effective Data Warehousing and Business Intelligence
+Toad Oracle: Discover the Top 10 Most Useful Toad Features
+How to Apply Changes to Your DB2 Database with Minimal Risk
+Permalink | Advertise |
+Privacy |
+Mobile
+Web02 |
+2.8.140709.1 |
+Last Updated 4 Oct 2009	Article Copyright 2007 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

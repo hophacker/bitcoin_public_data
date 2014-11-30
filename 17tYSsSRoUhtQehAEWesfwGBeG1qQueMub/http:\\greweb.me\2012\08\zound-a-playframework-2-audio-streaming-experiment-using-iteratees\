@@ -1,0 +1,467 @@
+http://greweb.me/2012/08/zound-a-playframework-2-audio-streaming-experiment-using-iteratees/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Date: Tue, 22 Jul 2014 21:32:23 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Last-Modified: Mon, 30 Jun 2014 18:00:01 GMT
+Expires: Tue, 22 Jul 2014 21:42:23 GMT
+Cache-Control: max-age=600
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Vary: Accept-Encoding
+
+<!DOCTYPE HTML>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="author" content="Gaëtan Renaudeau" />
+    <meta name="description" content="Zound uses an audio generator (JSyn, an audio synthesizer), encode the output and stream it all using Play Iteratees to pipe everything in real-time." />
+    <meta name="keywords" content="animation,canvas,javascript,bezier,gamedev,css,sass,playframework,transition,linux,html,mobile,library,navigation,sysadmin,templating,math,websocket,blender,color,GLSL,WebGL,audio,iteratee,hackday,float,reactive,unix,AWOP,promise,Q,MIDI,zound,fm,WebRTC,js13k,functional,rendering,ludumdare,js1k,phaser," />
+    
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@greweb">
+    <meta name="twitter:title" content="Zound, a PlayFramework 2 audio streaming experiment using Iteratees">
+    <meta name="twitter:description" content="Zound uses an audio generator (JSyn, an audio synthesizer), encode the output and stream it all using Play Iteratees to pipe everything in real-time.">
+    <meta name="twitter:creator" content="@greweb">
+    
+    <meta name="twitter:image:src" content="http://greweb.me/images/2012/07/ZOUND.png">
+    <link rel="image_src" href="http://greweb.me/images/2012/07/ZOUND.png">
+    
+
+    <title>@GreWeb - Zound, a PlayFramework 2 audio streaming experiment using Iteratees</title>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Fredericka+the+Great' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/style/main.css" />
+    <link rel='shortcut icon' href='/favicon.png' />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://greweb.me/rss/index.xml" />
+  </head>
+  <body>
+
+    <header role="banner">
+      <h1><a href="http://greweb.me">@GreWeb</a></h1>
+      <h2>embrace standard web technologies for web, games and mobile apps</h2>
+    </header>
+
+    <nav>
+      <a href="mailto:renaudeau.gaetan@gmail.com">Mail</a>
+      <a href="http://github.com/gre" target="_blank">Github</a>
+      <a href="http://twitter.com/greweb" target="_blank">Twitter</a>
+      <a href="http://www.linkedin.com/pub/gaetan-renaudeau/21/258/620" target="_blank">LinkedIn</a>
+      <a href="https://soundcloud.com/greweb" target="_blank">SoundCloud</a>
+    </nav>
+
+    <div id="container">
+    <div id="main">
+      <div id="content">
+        <article>
+  
+  
+  <header>
+    <h1><a href="/2012/08/zound-a-playframework-2-audio-streaming-experiment-using-iteratees/">Zound, a PlayFramework 2 audio streaming experiment using Iteratees</a></h1>
+    <time class="date" datetime="2012-08-01">August  1, 2012</time>
+   <span class="tags">
+     <a class="tag" href="/tags/audio/">audio</a>
+     <a class="tag" href="/tags/iteratee/">iteratee</a>
+     <a class="tag" href="/tags/playframework/">playframework</a>
+     <a class="tag" href="/tags/hackday/">hackday</a>
+     
+   </span>
+  </header>
+
+  <div class="entry-content">
+    <p><img src="/images/2012/07/ZOUND.png" alt="ZOUND"></p>
+
+<p>Last Friday was HackDay #7 at <a href="http://zenexity.com">Zenexity</a>, and we decided to work on a real-time audio <a href="http://github.com/gre/zound">experiment</a> made with <a href="http://playframework.org">Play Framework</a>. The plan was to use an audio generator (<a href="http://www.softsynth.com/jsyn/">JSyn</a>, an audio synthesizer), encode the output and stream it all using Play Iteratees to pipe everything in real-time.</p>
+
+<iframe width="640" height="360" src="http://www.youtube.com/embed/taDLKTcNHnQ?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
+
+<p><strong>First of all, let’s highlight some interesting part of the project, then get into some of the details.</strong></p>
+
+<p>Thanks to <a href="https://twitter.com/Sadache">@Sadache</a> for his Iteratee expertise, we ended up with a simple line of code that does all of the hard work:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="n">chunkedAudioStream</span> <span class="k">=</span> <span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">audioEncoder</span>
+</code></pre></div>
+<p>You can think of the <code>&amp;&gt;</code> operator as the UNIX pipe <code>|</code>. So we simply take the <code>rawStream</code>, chunk it with a <code>chunker</code> and encode it with an <code>audioEncoder</code>.</p>
+
+<p>Now, <strong>rawStream</strong> is the raw stream of audio samples (numbers between -1 and 1) generated by the audio synthesizer. Next, the <strong>chunker</strong> buffers a data stream into chunk of bytes. For instance, if you send data stream at 1Kb/s to a 10Kb chunker, it will output one chunk of size 10Kb every 10 seconds. And finally, the <strong>audioEncoder</strong> takes <strong>audio samples</strong> and outputs encoded bytes implementing an audio format (like WAVE).</p>
+
+<p>We can then make a broadcast of the stream:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="o">(</span><span class="n">sharedChunkedAudioStream</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=</span>   
+<span class="err"> </span> <span class="nc">Concurrent</span><span class="o">.</span><span class="n">broadcast</span><span class="o">(</span><span class="n">chunkedAudioStream</span><span class="o">)</span>
+</code></pre></div>
+<p>And then the <strong>sharedChunkedAudioStream</strong> is now a shared stream for every consumer (clients). All that’s left to do is to stream it over HTTP:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sharedChunkedAudioStream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="s">&quot;Content-Type&quot;</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<p>The <code>&gt;&gt;&gt;</code> operator means “concatenation”, so here we’re concatenating the <strong>audio header</strong> (given by the format like WAVE) with the current <strong>chunked audio stream</strong>. We also send the right HTTP <strong>Content-Type</strong> header (like “audio/wav” for WAVE).</p>
+
+<p>Another interesting part of the project is the <strong>multi-user web user interface: allowing users to interact with the sound synthesis</strong>.</p>
+
+<p>Using <a href="https://twitter.com/mrspeaker">@mrspeaker</a>‘s audio synthesis expertise, we started creating a synthesizer generator – 3 oscillators, various wave shapes, frequency and volumes, and finally flowing through a high pass filter before entering our “rawStream” above.</p>
+
+<p>Thanks to the Play framework goodness, <strong>this audio stream can be both consumed by the web page with an HTML audio tag, and with a stream player such as VLC!</strong> Ok, that’s the project – let’s have a closer look at some of the concepts…</p>
+
+<!-- more -->
+
+<h2>What is sound?</h2>
+
+<blockquote>
+<p>Sound is a mechanical wave that is an oscillation of pressure transmitted through a solid, liquid, or gas, composed of frequencies within the range of hearing and of a level sufficiently strong to be heard, or the sensation stimulated in organs of hearing by such vibrations. <strong><em>Wikipedia</em></strong></p>
+</blockquote>
+
+<p>We can represents the sound like any wave as a graphic of the amplitude (the oscillation pressure) as a function of time. Here you see it in Audacity:</p>
+
+<p><img src="/images/2012/07/sound-audacity.png" alt="sound-audacity"></p>
+
+<p>Electricity is used to pump these amplitudes to your speakers, over time.</p>
+
+<h3>About primitive wave sounds</h3>
+
+<p>There are some patterns – some primitives waves – we can easily generate with computers (or before with analog oscillators). Those are well known by mathematicians and physicians: Sine wave, Triangle wave, Square wave,…</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Sampling_(signal_processing)"><img src="/images/2012/07/557px-Waveforms.svg_.png" alt=""></a></p>
+
+<p>A sine wave produce a smooth tone, whereas Triangle and Square wave are more aggressive sounds. The shorter a wave period is, the lower the note you hear: it’s called the frequency.</p>
+
+<h3>How is sound represented by computer?</h3>
+
+<p>Whereas analog oscillators generate sounds in an <em>almost</em>* continuous stream of electricity, computers are not able to generate continuous stream of data. This is why with computers the sound is divided in to discrete <strong>samples</strong>, usually <strong>44100 samples per second</strong> for standard CD quality audio. Each sample is a value (amplitude) for a given time position.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Sampling_(signal_processing)">See Sampling (wikipedia)</a>.</p>
+
+<p>If you zoom in Audacity, you can actually see each sample:<br>
+<img src="/images/2012/07/audacity-zoom-ah.png" alt="audacity-zoom">
+This is an “AH” timbre of my voice. A timbre is unique to everyone, it’s the pattern the sound wave take when you speak. <strong>The amplitude of an audio sample is usually represented as a Real number between -1.0 and 1.0</strong>.</p>
+
+<p>** electricity is not strictly continuous, we have electrons out there!*</p>
+
+<p>Ok, Let’s go back to our experiment now!</p>
+
+<h2>The experiment</h2>
+
+<p>Our experiment is using <a href="http://www.playframework.org/">Play Framework</a> and is written in <a href="scala-lang.org/">Scala language</a>. Specifically, our project takes advantage of Play framework’s powerful <strong>Iteratee</strong>s.</p>
+
+<blockquote>
+<p>Take the expressivity of UNIX pipes, bring the power of Scala, mix it with Play Framework and you got a powerful framework for handling real-time and web streaming.</p>
+</blockquote>
+
+<p>The iteratee (and related constructs) can take a bit of getting used to. I recommend checking out <a href="http://sadache.tumblr.com/post/26784721867/is-socket-push-bytes-all-what-you-need-to-program">this article on Iteratees in Play</a> and/or <a href="http://www.infoq.com/presentations/Play-I-ll-See-Your-Async-and-Raise-You-Reactive">this presentation</a> if you are interested in learning more about Play2 and reactive programming with Iteratees. And if you just want to see how it work – you can read the source code at <a href="https://github.com/playframework/Play20/tree/master/framework/src/play/src/main/scala/play/api/libs/iteratee">Play20 Github source code</a>.</p>
+
+<h3>Generating the audio stream</h3>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="o">(</span><span class="n">rawStream</span><span class="o">,</span> <span class="n">channel</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Concurrent</span><span class="o">.</span><span class="n">broadcast</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">]]</span>  
+<span class="k">val</span> <span class="n">zound</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ZoundGenerator</span><span class="o">(</span><span class="n">channel</span><span class="o">).</span><span class="n">start</span><span class="o">()</span>
+</code></pre></div>
+<p>We create an <code>Array[Double]</code> broadcast which return two values: the <strong>rawStream</strong> will be used to read the generated data, and the <strong>channel</strong> used by the generator to push generated audio samples. We give this channel to the <strong>ZoundGenerator</strong>. The <code>.start()</code> then starts the audio generation. All of the generation is done using the JSyn library.</p>
+
+<p>Here’s a snippet from the <strong>ZoundGenerator</strong> class showing the connection between <strong>JSyn</strong> and <strong>Channel</strong>:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">ZoundGenerator</span><span class="o">(</span><span class="n">output</span><span class="k">:</span> <span class="kt">Channel</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">]])</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="k">val</span> <span class="n">out</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MonoStreamWriter</span><span class="o">()</span>  
+
+<span class="err"> </span> <span class="k">val</span> <span class="n">synth</span> <span class="k">=</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="k">val</span> <span class="n">synth</span> <span class="k">=</span> <span class="nc">JSyn</span><span class="o">.</span><span class="n">createSynthesizer</span><span class="o">()</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="n">synth</span><span class="o">.</span><span class="n">add</span><span class="o">(</span><span class="n">out</span><span class="o">)</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="n">out</span><span class="o">.</span><span class="n">setOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">AudioOutputStream</span><span class="o">(){</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="k">def</span> <span class="n">close</span><span class="o">()</span> <span class="o">{}</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="k">def</span> <span class="n">write</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="n">output</span><span class="o">.</span><span class="n">push</span><span class="o">(</span><span class="nc">Array</span><span class="o">(</span><span class="n">value</span><span class="o">))</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="o">}</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="k">def</span> <span class="n">write</span><span class="o">(</span><span class="n">buffer</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="n">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="o">,</span> <span class="n">buffer</span><span class="o">.</span><span class="n">length</span><span class="o">)</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="o">}</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="k">def</span> <span class="n">write</span><span class="o">(</span><span class="n">buffer</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">],</span> <span class="n">start</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">count</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="n">output</span><span class="o">.</span><span class="n">push</span><span class="o">(</span><span class="n">buffer</span><span class="o">.</span><span class="n">slice</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">start</span> <span class="n">count</span><span class="o">))</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="o">}</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="o">})</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="n">synth</span>  
+<span class="err"> </span> <span class="o">}</span>  
+<span class="err"> </span> <span class="c1">// ...</span>
+</code></pre></div>
+<p>We have to implement the methods of AudioOutputStream – but it’s just a matter of pushing each audio sample to the channel. It’s that simple!</p>
+
+<h3>Encoding the raw audio stream</h3>
+
+<p>For now, we have only implemented the <a href="http://en.wikipedia.org/wiki/WAV">WAVE format</a>. Basically, WAVE has 2 parts; the WAVE header which describes important information (like the framerate and the bits per sample), and the data.<br>
+The data is encoded in a simple manner I won’t describe here but you can look to the encoder I made here: </p>
+
+<p>Now more interesting, let’s wrap it with Play Iteratees:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="n">audio</span> <span class="k">=</span> <span class="nc">MonoWaveEncoder</span><span class="o">()</span> <span class="c1">// instanciate the WAV encoder  </span>
+<span class="k">val</span> <span class="n">audioHeader</span> <span class="k">=</span> <span class="nc">Enumerator</span><span class="o">(</span><span class="n">audio</span><span class="o">.</span><span class="n">header</span><span class="o">)</span>  
+<span class="k">val</span> <span class="n">audioEncoder</span> <span class="k">=</span> <span class="nc">Enumeratee</span><span class="o">.</span><span class="n">map</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span><span class="n">audio</span><span class="o">.</span><span class="n">encodeData</span><span class="o">)</span>
+</code></pre></div>
+<p><strong><em>N. B.</em></strong>: <em>Remember that Scala is a typed language but where the type declaration is optional because the compiler can infer the type.</em></p>
+
+<p><strong>audioHeader</strong> is an <code>Enumerator</code> which means it can <em>produce</em> data, and here the data is the audio header. More precisely it’s an <code>Enumerator[Array[Byte]]</code> because audio.header is an <code>Array[Byte]</code>. Note that contained data is not “consumed” like it would be for an <code>InputStream</code>. Each time you use this enumerator, it gives you its entire content.</p>
+
+<p><strong>audioEncoder</strong> is an <code>Enumeratee[Array[Double], Array[Byte]]</code>. It takes an <code>Array[Double]</code> from input and returns an <code>Array[Byte]</code> as output. The input is a raw array of audio samples (double numbers between -1.0 and 1.0). The output is the encoded array of bytes.</p>
+
+<p>More formally, an <code>Enumeratee[A, B]</code> is an <em>adapter</em> which maps some data of type A to new data of type B. You can implement the way the data is transformed with the map function. Here we just give it the <code>audio.encodeData</code> function.</p>
+
+<h3>Streaming it</h3>
+
+<p>We can basically stream the audio stream with Play2 like so:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="k">val</span> <span class="n">audioStream</span> <span class="k">=</span> <span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">audioEncoder</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">audioStream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<p>The <code>rawStream &amp;&gt; audioEncoder</code> takes the raw stream and <strong>pipes</strong> it into the encoder which results in the encoded audio stream. <code>audioHeader &gt;&gt;&gt; audioStream</code> will <strong>concatenate</strong> <code>audioHeader</code> with <code>audioStream</code>. Hence, the first thing the server will do is start sending the audio header to the client <strong>and then</strong> stream the audio in real-time.</p>
+
+<p><strong>A client can connect at any time and will hear current stream</strong>, so it should simultaneously hear the same thing as any other client (with some delay depending on the client buffer). If the generator stops emitting audio samples, the http client will stop receiving audio data – but it will still be waiting for the server, so the audio play will pause until the server re-sends new audio samples. <strong>That is pretty cool!</strong> – because of the way iteratees work, the stream doesn’t just die when all of the input is consumed.</p>
+
+<h4>A chunker to reduce HTTP packet numbers</h4>
+
+<p>Up to now we’ve been streaming the audio in <strong>very small chunks</strong> because by default JSyn writes out arrays of just 8 audio samples and the <code>.stream()</code> function consumes all data as it comes. This means <em>a lot</em> of HTTP chunks per second are sent – which is less efficient and take more bandwidth.</p>
+
+<p>In order to fix this, we need to use a <strong>buffer on the server side</strong>. In other words, instead of sending audio samples as they come we need to <strong>group audio samples</strong>. We have currently grouped audio samples in arrays of 5000 which is quite reasonable (it’s about 10 chunks per second using 44100 samples/s). We can easily change this later. This logic is implemented in an <code>Enumeratee</code> we called “chunker”. In that sense, it is reusable and modular:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="n">chunker</span> <span class="k">=</span> <span class="nc">Enumeratee</span><span class="o">.</span><span class="n">grouped</span><span class="o">(</span>  
+<span class="err"> </span> <span class="nc">Traversable</span><span class="o">.</span><span class="n">take</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span><span class="mi">5000</span><span class="o">)</span> <span class="o">&amp;&gt;&gt;</span> <span class="nc">Iteratee</span><span class="o">.</span><span class="n">consume</span><span class="o">()</span>  
+<span class="o">)</span>
+</code></pre></div>
+<p>And now, we can easily plug it in like this:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="k">val</span> <span class="n">chunkedAudioStream</span> <span class="k">=</span> <span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">audioEncoder</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">chunkedAudioStream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<h3>Broadcast</h3>
+
+<p>Now, another improvement we made was to <strong>factorize this chunking and encoding part: avoiding having this computing tasks done for every stream consumer</strong>.</p>
+
+<p>Basically, we move it out of the stream function:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="n">chunkedAudioStream</span> <span class="k">=</span> <span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">audioEncoder</span>  
+<span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">chunkedAudioStream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<p>But to allow broadcasting, we have to use a broadcast:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">val</span> <span class="n">chunkedAudioStream</span> <span class="k">=</span> <span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">audioEncoder</span>  
+<span class="k">val</span> <span class="o">(</span><span class="n">sharedChunkedAudioStream</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=</span> <span class="err"> </span><span class="k">=</span>   
+<span class="err"> </span> <span class="nc">Concurrent</span><span class="o">.</span><span class="n">broadcast</span><span class="o">(</span><span class="n">chunkedAudioStream</span><span class="o">)</span>  
+<span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sharedChunkedAudioStream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<p>Here we only care about the enumerator (the left argument in the Tuple2), we put the wildcard &quot;_&quot; to ignore the return value.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Broadcasting_(networking)"><img src="/images/2012/07/320px-Broadcast.svg_.png" alt=""></a></p>
+
+<p>Using a broadcast, generated audio samples pushed by the audio generator can be simultaneously spread to multiple consumers. This is perfect for our needs, multiple players can connect to this web radio!</p>
+
+<h3>Avoiding the server load</h3>
+
+<p>The last important fix we made was to <strong>avoid the server load</strong>:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="err"> </span> <span class="k">def</span> <span class="n">stream</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">audioHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sharedChunkedAudioStream</span>   
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="o">&amp;&gt;</span> <span class="nc">Concurrent</span><span class="o">.</span><span class="n">dropInputIfNotReady</span><span class="o">(</span><span class="mi">50</span><span class="o">)).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="err"> </span> <span class="o">}</span>
+</code></pre></div>
+<p>If a client is opening the stream connection but doesn’t consume enough or doesn’t consume it at all (download is paused), the server will fill in memory the chunks to send to the client and the server can reach an <em>out of memory</em> exception. To avoid that <strong>we have to drops chunks if the consumer is not ready</strong>. Then the client will just lose messages if it is not ready (in our case, we give them 50 milliseconds).</p>
+
+<p>And this is what <code>Concurrent.dropInputIfNotReady(50)</code> is actually doing – with yet another <strong>Enumeratee</strong>! <strong>Dropping old chunks is really what we want in an audio streaming application</strong>: We want the consumer to subscribe to the current audio stream and not to continue from where they stopped.</p>
+
+<h3>Client consumers</h3>
+
+<h4>HTML5 Audio tag</h4>
+
+<p>In HTML5, we have the Audio tag – and we can just consume our stream like this:</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;audio</span> <span class="na">src=</span><span class="s">&quot;/stream.wav&quot;</span><span class="nt">&gt;&lt;/audio&gt;</span>
+</code></pre></div>
+<p>Or if we want to make it auto loading:</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;audio</span> <span class="na">src=</span><span class="s">&quot;/stream.wav&quot;</span> <span class="na">preload</span> <span class="na">autoplay</span> <span class="na">controls</span><span class="nt">&gt;&lt;/audio&gt;</span>
+</code></pre></div>
+<p>It may be a bit “wrong” to use `` for streaming, but it works because we are using it as if the server was hosting a static audio file. The only disputable hack is to have to set the max ChunkSize in the WAVE header which is 2147483647 (it’s about 6 hours 45mn!), so the browser believes the audio is not finished.</p>
+
+<p>The issue we are currently facing is this crazy latency (a few seconds) between user actions and the produced sound. This problem is due to the browser audio cache buffer: if we were able to minimize it we would have an almost real-time audio player.</p>
+
+<h4>Playing it with VLC</h4>
+
+<p>This stream is spread through HTTP so we need a HTTP client to consume it. But a HTTP client doesn’t mean only browsers! We can also use VLC for this, as if it was a web radio! One advantage of using VLC is it suffers far less latency (presumably because the cache buffer is smaller than the audio tag).</p>
+
+<p><img src="/images/2012/07/vlc.png" alt="vlc"></p>
+
+<h2>Making the real-time control UI</h2>
+
+<p>Our experiment <strong>mixes different oscillators to generator one sound</strong>. The web user interface allows a user to control the parameters of those. Two knobs control the <strong>volume</strong> and the <strong>pitch</strong> (tuned to a dorian mode scale) and you can select the oscillator <strong>wave primitive</strong> (sine, sawtooth, square, noise). It’s not fancy at the moment – but JSYN offers a lot of features for expanding our simple demo.</p>
+
+<p><img src="/images/2012/07/Capture-d%E2%80%99%C3%A9cran-2012-07-31-%C3%A0-16.42.15.png" alt=""></p>
+
+<p>This interface is <strong>multi-users</strong>, so if you use it with other people, <strong>the interface will stay synchronized over multiple browsers</strong> (turn the knobs, change the wave primitive, …). All this is done with WebSockets, and on the server-side it’s using, again, <strong>Iteratees</strong>!</p>
+
+<p>The workflow is simple: When someone does some action on the user interface, events are sent to the server. These events are interpreted by the <em>ZoundGenerator</em> resulting in updates to the audio synthesis configuration. These events are then broadcast to each client, and some Javascript handlers are called in order to keep the interface synchronized.</p>
+
+<h2>Source code</h2>
+
+<p><strong><a href="http://github.com/gre/zound">Fork me on Github</a></strong></p>
+
+<h2>What’s next?</h2>
+
+<p>This was just a simple demo to show the power and flexibility of Play2′s Iteratee concept. Because of the modular nature, extending the demo is easy. For example, we could plug a new audio encoder such an OGG encoder. The code would be simple and we could even choose on a request-by-request basis which encoder to use:</p>
+<div class="highlight"><pre><code class="scala language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">Concurrent.broadcast</span>  
+<span class="k">val</span> <span class="o">(</span><span class="n">chunkedWaveStream</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=</span>   
+<span class="err"> </span> <span class="n">broadcast</span><span class="o">(</span><span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">waveEncoder</span><span class="o">)</span>  
+<span class="k">val</span> <span class="o">(</span><span class="n">chunkedOggStream</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=</span>   
+<span class="err"> </span> <span class="n">broadcast</span><span class="o">(</span><span class="n">rawStream</span> <span class="o">&amp;&gt;</span> <span class="n">chunker</span> <span class="o">&amp;&gt;</span> <span class="n">oggEncoder</span><span class="o">)</span>  
+
+<span class="k">def</span> <span class="n">stream</span><span class="o">(</span><span class="n">format</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="k">val</span> <span class="n">stream</span> <span class="k">=</span> <span class="n">format</span> <span class="k">match</span> <span class="o">{</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="k">case</span> <span class="s">&quot;wav&quot;</span> <span class="k">=&gt;</span> <span class="n">waveHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">chunkedWaveStream</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="k">case</span> <span class="s">&quot;ogg&quot;</span> <span class="k">=&gt;</span> <span class="n">oggHeader</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">chunkedOffStream</span>  
+<span class="err"> </span> <span class="o">}</span>  
+<span class="err"> </span> <span class="nc">Ok</span><span class="o">.</span><span class="n">stream</span><span class="o">(</span><span class="n">stream</span><span class="o">).</span>  
+<span class="err"> </span> <span class="err"> </span> <span class="err"> </span><span class="n">withHeaders</span><span class="o">(</span> <span class="o">(</span><span class="nc">CONTENT_TYPE</span><span class="o">,</span> <span class="n">audio</span><span class="o">.</span><span class="n">contentType</span><span class="o">)</span> <span class="o">)</span>  
+<span class="o">}</span>
+</code></pre></div>
+<p><strong>Now it’s up to you!</strong></p>
+
+<p>Hopefully you get a feel for the possibilities of stream processing and piping with Play. You can now reuse these concepts and make your own stuff: Maybe you don’t need to generate sounds on the fly, but instead you simply want to play a collection of audio files and stream them like radio? <strong>Well you can make a web radio engine now!</strong>. </p>
+
+<p>But that’s just the beginning – I would love to see someone taking the concept, and running even further… Do you know that in Youtube, during the time you are uploading a video, Youtube is already re-encoding it and can start streaming it <em>before</em> the file has finished uploading? Hmm, that’s starting to sound almost simple…</p>
+
+  </div>
+  <footer class="comments">
+    <div id="disqus_thread"></div>
+  </footer>
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'greweb'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    
+</article>
+
+      </div>
+
+      <aside id="sidebar">
+        <section class="latest_posts">
+          <h3>Last Posts</h3>
+          <ul>
+            
+            <li>
+              <a href="/2014/05/ld29">48 hours to prototype an Ant Sim Game</a>
+            </li>
+            
+            <li>
+              <a href="/2014/03/panzer-dragoon-1k">Panzer Dragoon 1k</a>
+            </li>
+            
+            <li>
+              <a href="/2014/01/promisify-your-games">Promisify your games</a>
+            </li>
+            
+            <li>
+              <a href="/2013/11/functional-rendering">Functional Rendering</a>
+            </li>
+            
+            <li>
+              <a href="/2013/09/webaudioapi">Slides: Web Audio API, Overview</a>
+            </li>
+            
+            <li>
+              <a href="/2013/09/timelapse">Making a rhythm game with bleeding-edge web</a>
+            </li>
+            
+            <li>
+              <a href="/2013/09/beez">Beez, WebRTC + Audio API</a>
+            </li>
+            
+            <li>
+              <a href="/2013/08/FM-audio-api">Frequency Modulation (FM) with Web Audio API</a>
+            </li>
+            
+            <li>
+              <a href="/2013/08/zound-wip-v1">ZOUND live v1 in development</a>
+            </li>
+            
+            <li>
+              <a href="/2013/07/zound-live">ZOUND live project initiated</a>
+            </li>
+            
+          </ul>
+        </section>
+
+        <section class="about_me">
+          <h3>About the author</h3>
+          <p>Hi, I am Gaëtan Renaudeau. <a href="mailto:renaudeau.gaetan@gmail.com">renaudeau.gaetan@gmail.com</a></p>
+          <img style="float:left;margin-right:10px;margin-top:5px" src="https://pbs.twimg.com/profile_images/473845581618491392/mo5JQ7wa.jpeg" alt="" />
+          <p>I work in Zengularity, the Paris' startup behind PlayFramework, as a web architect.</p>
+          <p>I write articles, do talks and videos around web technologies. I develop HTML5 games for fun.</p>
+          <p>I speak French, English and start learning Chinese.</p>
+        </section>
+
+        <section class="currentProject">
+          <h3>Current Project</h3>
+          <p>
+            <a href="https://glsl.io/">
+              <img src="/images/glslio.png" style="width:240px" alt="">
+            </a>
+          </p>
+        </section>
+
+        <section class="twitter">
+          <h3>Last Tweets</h3>
+          <a class="twitter-timeline" href="https://twitter.com/greweb" data-widget-id="325600219960057857"></a>
+        </section>
+      </aside>
+    </div>
+    </div>
+
+    <footer role="contentinfo">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licence Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/80x15.png"></a>
+      <span>Gaëtan Renaudeau</span>
+      <a href="https://twitter.com/greweb" class="twitter-follow-button" data-show-count="false" data-lang="en">Follow @greweb</a>
+    </footer>
+
+    <footer role="donation">
+        <script id='fbj8guq'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=greweb&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fbj8guq');</script><br/>
+        BitCoin: <a href="bitcoin:17tYSsSRoUhtQehAEWesfwGBeG1qQueMub?amount=0.01">17tYSsSRoUhtQehAEWesfwGBeG1qQueMub</a> <br />
+        LiteCoin: <a href="litecoin:LbDq1zaNQgNT59H5fDuGDm4S1iHdf22BAL?amount=1">LbDq1zaNQgNT59H5fDuGDm4S1iHdf22BAL</a>
+    </footer>
+
+<script type='text/javascript' src='/javascripts/header.js'></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greweb'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+<script type="text/javascript">//<![CDATA[
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-9919624-1']);
+_gaq.push(['_trackPageview']);
+(function () {
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
+})();
+//]]></script>
+  </body>
+</html>
+

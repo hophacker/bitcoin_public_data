@@ -1,0 +1,1469 @@
+http://bits.aihosting.com/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 00:15:33 GMT
+Server: Apache
+X-Powered-By: PHP/5.3.3-7+squeeze19
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 31990
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Bitcoin News Aggregator</title>
+   	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+
+	<meta name="keywords" content="bitcoin, bitcoin news, news aggregator, btc, dwolla, ripple, alternative currency">
+
+    <meta name="description" content="Cross-device, cross-platform Bitcoin news aggregator and simple rate converter.">
+    <meta name="author" content="Joe Lumbroso - brilliantchampions.com">
+	
+	<link rel="apple-touch-icon" href="/images/icons/Icon.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/images/icons/Icon-72.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="/images/icons/iTunesArtwork.png" />
+	<link rel="shortcut icon" href="/images/icons/Icon@2x.png" />
+	<link rel="icon" href="/images/icons/Icon@2x.png" />
+	<link rel="shortcut icon" href="/images/icons/Icon@2x.png" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+	<style>
+	h3 small, h3 small a { font-weight: normal; font-style: italic; color: #000; }
+	.ui-listview .ui-li-heading {
+	    overflow: visible;
+		font-size: 12px;
+		white-space: normal;
+	}
+	.odd_row { background-color: #fff; }
+	.even_row { background-color: rgb(250, 250, 250); }
+
+	.row_pad { padding-left: 10px; }
+	.row_pad .feed_link { font-weight: normal; }
+	
+	.reddit_row .row_pad { border-left: 2px solid orangered; }
+	.reddit_row .feed_link, .reddit_row .feed_link:visited { color: orangered; }
+	.googlenews_row .row_pad { border-left: 2px solid #12c; }
+	.googlenews_row .feed_link, .googlenews_row .feed_link:visited { color: #12c; }
+	.bitcoinnews_row .row_pad { border-left: 2px solid #666; }
+	.bitcoinnews_row .feed_link, .bitcoinnews_row .feed_link:visited { color: #666; }
+	.thebitcoinfoundation_row .row_pad { border-left: 2px solid #f99d1c; }
+	.thebitcoinfoundation_row .feed_link, .thebitcoinfoundation_row .feed_link:visited { color: #f99d1c; }
+	.yahoonews_row .row_pad { border-left: 2px solid #70219f; }
+	.yahoonews_row .feed_link, .yahoonews_row .feed_link:visited { color: #70219f; }
+	.digg_row .row_pad { border-left: 2px solid #77bb41; }
+	.digg_row .feed_link, .digg_row .feed_link:visited { color: #77bb41; }
+	.coindesk_row .row_pad { border-left: 2px solid #e3af15; }
+	.coindesk_row .feed_link, .coindesk_row .feed_link:visited { color: #e3af15; }
+	.bitcoinprbuzz_row .row_pad { border-left: 2px solid #ffbc40; }
+	.bitcoinprbuzz_row .feed_link, .bitcoinprbuzz_row .feed_link:visited { color: #ffbc40; }
+	.bitcoinmagazine_row .row_pad { border-left: 2px solid #FC6B0A; }
+	.bitcoinmagazine_row .feed_link, .bitcoinmagazine_row .feed_link:visited { color: #FC6B0A; }
+
+	.cointelegraph_row .row_pad { border-left: 2px solid #A1A1A1; }
+	.cointelegraph_row .feed_link, .cointelegraph_row .feed_link:visited { color: #A1A1A1; }
+	
+	.coinbuzz_row .row_pad { border-left: 2px solid #333; }
+	.coinbuzz_row .feed_link, .coinbuzz_row .feed_link:visited { color: #333; }
+	
+	.moneytech_row .row_pad { border-left: 2px solid #000; }
+	.moneytech_row .feed_link, .moneytech_row .feed_link:visited { color: #000; }
+	
+	.altcoinpress_row .row_pad { border-left: 2px solid #EA141F; }
+	.altcoinpress_row .feed_link, .altcoinpress_row .feed_link:visited { color: #EA141F; }
+
+	.mt_gox_text { font-size: 10px; text-align: center; margin-top: -10px; margin-bottom: 10px; }
+	.mt_gox_updated { font-style: italic; }
+	.mt_gox_hl { font-size: 10px; color: #666; padding-top: 8px; }
+
+	.footer { font-size: 12px; line-height: 18px; padding: 10px; background-color: rgba(0, 0, 0, .2); font-weight: normal; }
+	.footer a, .footer a:visited, .footer a.ui-link:visited, .footer_link { color: #fff; }
+	.ui-bar-a a.ui-link { color: #fff; }
+
+	#big_price { background-color: #fff; text-align: center; padding: 20px 10px; border-radius: 10px; color: #194b7e; font-size: 50px; }
+	#graph { text-align: center; border-radius: 10px; padding: 10px; background-color: #fff; color: #efefef; }
+	#graph img { width: 270px; }
+	</style>
+	<script>
+		var mt_gox_price_timer, display_news_timer;
+		function update_mt_gox_price() {
+			$.getJSON('?mt_gox_price', function(data) {
+				if (data) {
+					$('.mt_gox_price').html(data.price);
+					$('.mt_gox_high').html('High: <span>'+data.high+'</span>');
+					$('.mt_gox_low').html('Low: <span>'+data.low+'</span>');
+					$('.mt_gox_updated').html(data.updated);
+					document.title = data.price + ' - BTC NEWS';
+				}
+				mt_gox_price_timer = setTimeout('update_mt_gox_price();', 1000);
+			});
+		}
+
+		function display_news() {
+			$.get('?display_news', function(data) {
+				if (data) {
+					$('#news-container').html(data);
+					$('#news-container').listview('refresh').trigger('create');
+					$('.source_check').each(function(t, v) {
+						var r = $(v).val();
+						if ($(v).is(":checked"))
+							$('.' + r + '_row').show();
+						else
+							$('.' + r + '_row').hide();
+					});
+				}
+				display_news_timer = setTimeout('display_news();', 30000);
+			});
+		}
+
+		$(function() {
+			update_mt_gox_price();
+			display_news();
+
+			$('.footer').html("<small><em>This project brought to you by <a href=\"http://www.brilliantchampions.com\" target=\"bc\">Brilliant Champions</a>.</em><br>Donations: <a href=\"bitcoin:1AMAMHQFpKCuPWivyzgUv1ip6BPz9V73QN\" class=\"footer_link\">1AMAMHQFpKCuPWivyzgUv1ip6BPz9V73QN</a></small>");
+
+			$('.source_check').click(function() {
+				if ($(this).is(":checked"))
+					$('.' + this.value + '_row').show();
+				else
+					$('.' + this.value + '_row').hide();
+			});
+
+			$('#refresh_price').change(function() {
+				if ($(this).val() == 'off') {
+					if (mt_gox_price_timer)
+						clearTimeout(mt_gox_price_timer);
+				} else
+					update_mt_gox_price();
+			});
+			
+			$('#refresh_news').change(function() {
+				if ($(this).val() == 'off') {
+					if (display_news_timer)
+						clearTimeout(display_news_timer);
+				} else
+					display_news();
+			});
+		});
+	</script>
+</head>
+<body>
+
+<div data-role="page" id="home">
+	<div data-role="panel" id="settings" data-display="overlay" data-position-fixed="true" data-theme="a">
+		<h2>Settings</h2>
+		<form>
+		    <fieldset data-role="controlgroup">
+		        <legend>News Sources:</legend>
+						        <input type="checkbox" name="source-0" id="source-0" value="googlenews" class="source_check" checked>
+		        <label for="source-0"><small>Google News</small></label>
+						        <input type="checkbox" name="source-1" id="source-1" value="reddit" class="source_check" checked>
+		        <label for="source-1"><small>Reddit</small></label>
+						        <input type="checkbox" name="source-3" id="source-3" value="thebitcoinfoundation" class="source_check" checked>
+		        <label for="source-3"><small>The Bitcoin Foundation</small></label>
+						        <input type="checkbox" name="source-4" id="source-4" value="yahoonews" class="source_check">
+		        <label for="source-4"><small>Yahoo News</small></label>
+						        <input type="checkbox" name="source-5" id="source-5" value="digg" class="source_check" checked>
+		        <label for="source-5"><small>Digg</small></label>
+						        <input type="checkbox" name="source-6" id="source-6" value="bitcoinprbuzz" class="source_check" checked>
+		        <label for="source-6"><small>Bitcoin PR Buzz</small></label>
+						        <input type="checkbox" name="source-7" id="source-7" value="coindesk" class="source_check" checked>
+		        <label for="source-7"><small>Coin Desk</small></label>
+						        <input type="checkbox" name="source-8" id="source-8" value="bitcoinmagazine" class="source_check" checked>
+		        <label for="source-8"><small>Bitcoin Magazine</small></label>
+						        <input type="checkbox" name="source-9" id="source-9" value="moneytech" class="source_check" checked>
+		        <label for="source-9"><small>Money & Tech</small></label>
+						        <input type="checkbox" name="source-10" id="source-10" value="cointelegraph" class="source_check" checked>
+		        <label for="source-10"><small>CoinTelegraph</small></label>
+						        <input type="checkbox" name="source-11" id="source-11" value="coinbuzz" class="source_check" checked>
+		        <label for="source-11"><small>Coin Buzz</small></label>
+						        <input type="checkbox" name="source-12" id="source-12" value="altcoinpress" class="source_check" checked>
+		        <label for="source-12"><small>AltCoin Press</small></label>
+						    </fieldset>
+
+			<fieldset>
+				<label for="refresh_news"><small>Auto refresh News:</small></label>
+				<select name="refresh_news" id="refresh_news" data-role="slider" data-mini="true">
+					<option value="off">Off</option>
+					<option value="on" selected="">On</option>
+				</select>
+			</fieldset>
+
+			<fieldset>
+				<label for="refresh_price"><small>Auto refresh USD exchange rate:</small></label>
+				<select name="refresh_price" id="refresh_price" data-role="slider" data-mini="true">
+					<option value="off">Off</option>
+					<option value="on" selected="">On</option>
+				</select>
+			</fieldset>
+		</form>
+		<a href="#my-header" data-rel="close" data-role="button" data-icon="check">Done</a>
+	</div>
+	<div data-role="header" data-position="fixed">
+		<a href="#settings" data-icon="gear" class="ui-btn-left"  data-rel="dialog" data-iconpos="notext">&nbsp;</a>
+		<h1>BTC NEWS</h1>
+		<a href="#price" data-icon="check" class="ui-btn-right" data-theme="b" data-transition="slide"><small><span class="mt_gox_price">loading..</span> USD</small></a>
+	</div>
+	<div data-role="content" id="news-content">
+		<ul id="news-container" data-role="listview" data-filter="true" data-filter-placeholder="Search News" data-inset="true">
+			<li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="https://twitter.com/TimDraper/status/492032206810779648" target="new">Tim Draper (USMS Auction winner) will be on Colbert Report tonight</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bjg6p/tim_draper_usms_auction_winner_will_be_on_colbert/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 hours ago</em></p>
+				<p>    submitted by  DHorks     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/8MEcnGX" target="new">Economist accuses "politically ambitious" Ben Lawsky of running an "extortion racket" in BNP Paribas case</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bjf2p/economist_accuses_politically_ambitious_ben/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 hours ago</em></p>
+				<p>    submitted by  rowyaboat     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>BITCOINSTUDENT.TUMBLR.COM&nbsp;: <a href="http://bitcoinstudent.tumblr.com/post/92669241028/results-of-a-3-000-person-bitcoin-survey" target="new">Results of a 3,000+ person Bitcoin survey</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bjefu/results_of_a_3000_person_bitcoin_survey/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 hours ago</em></p>
+				<p>    submitted by  bitcoinstudent     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/D3Cst3hcsd0/" target="new">Auction of Bitcoins.com Domain Name Halted By US Court</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/D3Cst3hcsd0/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 hours ago</em></p>
+				<p>The US District Court of Seattle has ordered Tibanne KK to stop the auction after CoinLab protested domain name sale.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bjdu1/hi_rbitcoin_someone_on_reddit_suggested_my/" target="new">Hi r/bitcoin - Someone on reddit suggested my nonprofit should accept bitcoin donations. I don't know very much about digital currencies, but this seems like a good idea. What would be the best way to do it?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bjdu1/hi_rbitcoin_someone_on_reddit_suggested_my/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 hours ago</em></p>
+				<p>I am looking for advice here on what the best/simplest way to accept bitcoin or other digital currency donations would be. There seem to be a few different ways to go about this, and since I am unfamiliar with the subject, I am just looking for some guida</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CEOOFBITCOIN.COM&nbsp;: <a href="http://www.ceoofbitcoin.com" target="new">Today I launched "CEO of Bitcoin" as a way to help newcomers to understand Bitcoin. I'm launching anonymously, but I've been part of this community since 2012. This is my way of helping Bitcoin to reach mainstream users. Cheers!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bj85z/today_i_launched_ceo_of_bitcoin_as_a_way_to_help/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 hours ago</em></p>
+				<p>    submitted by  ceo-of-bitcoin     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/oiXDOKj.jpg?1" target="new">These guys are accepting bitcoin.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bj2ks/these_guys_are_accepting_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>4 hours ago</em></p>
+				<p>    submitted by  GlacialDoom     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://www.coindesk.com/barry-silbert-invests-250000-mexican-bitcoin-exchange-volabit/" target="new">Barry Silbert Leads $250,000 Investment in Mexican Bitcoin Exchange Volabit</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bj189/barry_silbert_leads_250000_investment_in_mexican/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>4 hours ago</em></p>
+				<p>    submitted by  GoMoneyPenny     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINBRIEF.NET&nbsp;: <a href="http://coinbrief.net/copay-multisig-bitcoin-wallet/" target="new">An Analysis of BitPay's Copay: Multi-Sig Bitcoin Wallet For Groups</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bj0em/an_analysis_of_bitpays_copay_multisig_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>4 hours ago</em></p>
+				<p>    submitted by  DynamicDK     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/jdisRD2azBE/" target="new">Perianne Boring: Regulators Will Decide Bitcoin’s Fate Within 18 Months</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/jdisRD2azBE/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>4 hours ago</em></p>
+				<p>New Chamber of Digital Commerce president Perianne Boring shares how she aims to change bitcoin's perception in Washington.</p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/wLioQWc1u4I/" target="new">Barry Silbert Invests $250,000 in Mexican Bitcoin Exchange Volabit</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/wLioQWc1u4I/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>5 hours ago</em></p>
+				<p>Barry Silbert's Bitcoin Opportunity Corp has invested $250,000 in Volabit, the startup formerly known as Coincove.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>TUCKER.LIBERTY.ME&nbsp;: <a href="http://tucker.liberty.me/2014/07/23/dont-fight-over-the-dinner-bill-use-bitcoin/?refer=libertyme" target="new">Bitcoin solves the old problem of dividing up the bill for drinks and dinner</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2biq6a/bitcoin_solves_the_old_problem_of_dividing_up_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>5 hours ago</em></p>
+				<p>    submitted by  jatucker     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>BTCJUKEBOX.COM&nbsp;: <a href="https://www.btcjukebox.com/" target="new">Bitcoin powered web jukebox. Proceeds go to charity.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2biphh/bitcoin_powered_web_jukebox_proceeds_go_to_charity/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>6 hours ago</em></p>
+				<p>submitted by  jbaudanza    </p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK&nbsp;: <a href="http://www.coindesk.com/airbaltic-accepts-bitcoin-missed-opportunity/" target="new">World&#39;s First Airline to Accept Bitcoin Misses a Big Opportunity</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>6 hours ago</em></p>
+				<p>He runs The Nordic Web, a content and data provider, alongside VIP VoIP, an event series which connects local startup ecosystems with global tech players. Here, he discusses the perks of bitcoin as both a marketing tool and a cheaper transaction method.</p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/ZhTZlaHVvrE/" target="new">World’s First Airline to Accept Bitcoin Misses a Big Opportunity</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/ZhTZlaHVvrE/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>6 hours ago</em></p>
+				<p>AirBaltic may be the first airline to accept bitcoin, but its implementation doesn't take advantage of its full potential.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>FINANCE.YAHOO.COM&nbsp;: <a href="http://finance.yahoo.com/news/provident-metals-accept-bitcoin-dogecoin-110000518.html?soc_src=mediacontentsharebuttons" target="new">Provident Metals to Accept Bitcoin, Dogecoin and Litecoin for All Purchases</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bilfc/provident_metals_to_accept_bitcoin_dogecoin_and/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>6 hours ago</em></p>
+				<p>    submitted by  GoMoneyPenny     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2biji3/bring_bitcoin_to_dellca/" target="new">Bring bitcoin to dell.ca!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2biji3/bring_bitcoin_to_dellca/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>6 hours ago</em></p>
+				<p>C&#39;mooooon get &#39;er done!  submitted by  canad1andev3loper    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>OPENNAMESYSTEM.ORG&nbsp;: <a href="http://opennamesystem.org/" target="new">Open Name System: Extending DNS with the Blockchain</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bihwt/open_name_system_extending_dns_with_the_blockchain/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>7 hours ago</em></p>
+				<p>    submitted by  sebicas     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/QX4KqD4" target="new">Coinbase Vault is now live</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2biepu/coinbase_vault_is_now_live/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>7 hours ago</em></p>
+				<p>    submitted by  SpaceCashApp     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/z8Wn7vHmXVQ/" target="new">ZipZap Expands Bitcoin Buying Service to 34 European Countries</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/z8Wn7vHmXVQ/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>Transaction network ZipZap has announced that consumers across 34 countries will soon be able to use its cash-to-bitcoin services.</p>
+			</div>
+		</li><li class="yahoonews_row even_row">
+			<div class="row_pad">
+				<h3>FEEDS.BOSTON.COM&nbsp;: <a href="http://feeds.boston.com/c/35022/f/646898/s/3ccb146d/sc/1/l/0L0Sboston0N0Cbusiness0Ctechnology0C20A140C0A70C230Cinnovators0Espeak0Eout0Eagainst0Eproposed0Ebitcoin0Eregulations0Cty5ZOSlj5onsjFISFIqUjI0Cstory0Bhtml/story01.htm" target="new">Innovators Speak Out Against Proposed Bitcoin Regulations</a> <small>(via: <a href="http://feeds.boston.com/c/35022/f/646898/s/3ccb146d/sc/1/l/0L0Sboston0N0Cbusiness0Ctechnology0C20A140C0A70C230Cinnovators0Espeak0Eout0Eagainst0Eproposed0Ebitcoin0Eregulations0Cty5ZOSlj5onsjFISFIqUjI0Cstory0Bhtml/story01.htm" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>As New York takes its first stab at regulating the shady online currency Bitcoin, Massachusetts innovators say that such regulations could stifle innovation.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/zuU1N3b.jpg" target="new">Driving in Warsaw, expected to find all but this! (Bitcoin aembassy)</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2biahe/driving_in_warsaw_expected_to_find_all_but_this/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>    submitted by  Happy_Rave     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>ARSTECHNICA.COM&nbsp;: <a href="http://arstechnica.com/security/2014/07/wsj-website-hacked-data-offered-for-sale-for-1-bitcoin/" target="new">WSJ website hacked, data offered for sale for 1 bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi99o/wsj_website_hacked_data_offered_for_sale_for_1/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>    submitted by  rmvaandr     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>MONEYMORNING.COM&nbsp;: <a href="http://moneymorning.com/2014/07/23/how-the-growing-bitcoin-market-will-cause-a-3-4-trillion-disruption/" target="new">How the Growing Bitcoin Market Will Cause a $3.4 Trillion Disruption | Money Morning</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi8xv/how_the_growing_bitcoin_market_will_cause_a_34/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>    submitted by  bit_moon     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINDE.SK&nbsp;: <a href="http://coinde.sk/1qA4Sfs" target="new">Bitcoin Sign-Ups for Intuit QuickBooks 'Higher than Expected'</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi6p4/bitcoin_signups_for_intuit_quickbooks_higher_than/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>    submitted by  thepete_rizzo_     </p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>FINANCE.YAHOO.COM&nbsp;: <a href="http://finance.yahoo.com/news/silicon-valleys-premier-jeweler-embraces-160000098.html" target="new">Silicon Valley&#39;s Premier Jeweler Embraces Bitcoin</a> <small>(via: <a href="http://finance.yahoo.com/news/silicon-valleys-premier-jeweler-embraces-160000098.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>Stephen Silver Fine Jewelry, Silicon Valley&#39;s premier jewelry house, has partnered with GoCoin to accept Bitcoin, Litecoin and Dogecoin payments at its new retail store in the luxurious Rosewood Sand Hill ...</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi6n1/just_a_reminder_the_banking_regulation_did_not/" target="new">Just a reminder, the "banking regulation" did not save us from the banking scams, nor have they prosecuted the banks that perpetrated the fraud.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi6n1/just_a_reminder_the_banking_regulation_did_not/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>The banking failure cost at leas $700 billion dollars, not to mention the loss of jobs. This is the reason bitcoin exists, and we should rub Benjamin Lawsky&#39;s nose in the fact. If they cannot take care of consumers in the real banking industry, they h</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>COINFIRE.CF&nbsp;: <a href="http://coinfire.cf/2014/07/23/zipzap-keeps-expanding-now-34-european-countries/" target="new">ZipZap lets you buy Bitcoin in 34 more European countries</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi5rj/zipzap_lets_you_buy_bitcoin_in_34_more_european/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>8 hours ago</em></p>
+				<p>    submitted by  Christinabtc     </p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK&nbsp;: <a href="http://www.coindesk.com/bitcoin-sign-ups-intuit-quickbooks-higher-expected/" target="new">Bitcoin Sign-Ups for Intuit QuickBooks &#39;Higher than Expected&#39;</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>While bitcoin&#39;s headlines are often dominated by large merchants like Dell, DISH and Overstock, broader business adoption of the technology as a payments solution may be more arguably influenced by the various platform providers serving the space.</p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/0i8OKdSEWzY/" target="new">Bitcoin Sign-Ups for Intuit QuickBooks ‘Higher than Expected’</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/0i8OKdSEWzY/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>CoinDesk speaks to the developers behind the first of what could be many Intuit products integrated with bitcoin.</p>
+			</div>
+		</li><li class="coinbuzz_row even_row">
+			<div class="row_pad">
+				<h3>COINBUZZ.COM&nbsp;: <a href="http://www.coinbuzz.com/2014/07/23/mt-gox-saga-continues-exchange-may-revived-creditors-want-bitcoins/?utm_source=rss&utm_medium=rss&utm_campaign=mt-gox-saga-continues-exchange-may-revived-creditors-want-bitcoins" target="new">The Mt. Gox Saga Continues: Exchange may be revived, creditors want bitcoins</a> <small>(via: <a href="http://www.coinbuzz.com/2014/07/23/mt-gox-saga-continues-exchange-may-revived-creditors-want-bitcoins/?utm_source=rss&utm_medium=rss&utm_campaign=mt-gox-saga-continues-exchange-may-revived-creditors-want-bitcoins" target="feed" class="feed_link">Coin Buzz</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>It appears that the Mt. Gox saga will never come to an end as there is still a lot of unsettled business to attend to. This has become more apparent after one trustee of the bankrupt bitcoin exchange opened the doors to a potential revival of Mt. Gox, whi</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>GETTOKNOWBITCOIN.COM&nbsp;: <a href="http://gettoknowbitcoin.com/zuman-bitpay-to-offer-bitcoin-paychecks/" target="new">Zuman, BitPay to Offer Bitcoin Paychecks</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bi1ww/zuman_bitpay_to_offer_bitcoin_paychecks/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>    submitted by  gettoknowbitcoin     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhzyx/circle_vs_coinbase/" target="new">Circle vs. Coinbase</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhzyx/circle_vs_coinbase/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>I just got my Circle invite, and i&#39;d like to hear pros and cons of using one or the other. I currently use coinbase, but Circle sounds extremely attractive. Can anyone out there, particularly users, walk me through the advantages and disadvantages?  s</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>TINYPASS.COM&nbsp;: <a href="http://www.tinypass.com/blog/bitcoin-now-a-tinypass-payment-option/" target="new">Bitcoin Now a Tinypass (paywall) Payment Option</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhzx2/bitcoin_now_a_tinypass_paywall_payment_option/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>9 hours ago</em></p>
+				<p>    submitted by  tinypass     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhxi0/i_need_help_cryptowall_virus_infected_my_clients/" target="new">I need help - CryptoWall virus infected my client's law firm. I need some bitcoins...</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhxi0/i_need_help_cryptowall_virus_infected_my_clients/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>10 hours ago</em></p>
+				<p>I need to pay these &quot;cyber-terrorists&quot; with bitcoins. I need to send 0.82 bitcoins in less than 34 minutes or else it doubles to 1.64 bitcoins.  I&#39;ve been screwing around with this for over 24 hours. Where on earth can I buy some bitcoins us</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>ONLINE.WSJ.COM&nbsp;: <a href="http://online.wsj.com/articles/mt-gox-trustee-will-consider-returning-bitcoin-unconverted-1406117734" target="new">Mt. Gox Trustee Will Consider Returning Bitcoin Unconverted</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhwc9/mt_gox_trustee_will_consider_returning_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>10 hours ago</em></p>
+				<p>    submitted by  bittime     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhu8k/if_you_believe_2000_ether_1_btc_is_a_great_price/" target="new">If you believe 2000 ether = 1 btc is a great price, don't you have to believe that $0.35 to do anything on Ethereum is a great bargain?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhu8k/if_you_believe_2000_ether_1_btc_is_a_great_price/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>10 hours ago</em></p>
+				<p>An ether, unlike bitcoin, is the smallest unit in the Ethereum network. Right now, you can get 2000 ether for 1 BTC (https://www.ethereum.org/). Which, incorporating today&#39;s BTC price(620.08) amounts to 1 ether for $ 0.3. I love Ethereum, the technolo</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/Jxcc66b.jpg" target="new">Sorry</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhrs6/sorry/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>11 hours ago</em></p>
+				<p>    submitted by  bitPreposterous     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhqlw/does_blank_paper_wallets_exist/" target="new">Does blank paper wallets exist?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhqlw/does_blank_paper_wallets_exist/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>11 hours ago</em></p>
+				<p>Hey r/bitcoin I would like to gift some BTC to my newborn niece, since I&#39;m rather paranoid and relative to the average cryptocurrency user not exactly tech-savvy, I prefer to print out a blank paper wallet and then manually write the adresses (generat</p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Wo1HMy7RSYQ/" target="new">6 New Hedge Funds Seeking Bitcoin Returns</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Wo1HMy7RSYQ/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>11 hours ago</em></p>
+				<p>A new crop of bitcoin-focused hedge funds wants to direct sophisticated investors into the cryptocurrency markets.</p>
+			</div>
+		</li><li class="yahoonews_row even_row">
+			<div class="row_pad">
+				<h3>CHANNELNEWSASIA.COM&nbsp;: <a href="http://www.channelnewsasia.com/news/business/international/angry-bitcoin-investors/1278814.html" target="new">Angry Bitcoin investors demand answers at Tokyo creditors&#39; meeting</a> <small>(via: <a href="http://www.channelnewsasia.com/news/business/international/angry-bitcoin-investors/1278814.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>11 hours ago</em></p>
+				<p>Bitcoin investors voiced anger Wednesday (July 23) after the first creditors&#39; meeting for failed Tokyo trading exchange MtGox, whose spectacular collapse hammered the digital currency&#39;s reputation and left a trail of unanswered questions.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=cW3fM95L7RU&amp;feature=youtu.be" target="new">Pheeva Launches mainstream TV commercial. Troll Please!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhpxd/pheeva_launches_mainstream_tv_commercial_troll/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>11 hours ago</em></p>
+				<p>    submitted by  bigmarh     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhmhe/question_for_ny_bitcoiners_new_jersey_vs/" target="new">Question for NY Bitcoiners - New Jersey vs Connecticut?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhmhe/question_for_ny_bitcoiners_new_jersey_vs/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>With disappointment at the regulatory climate that appears to be surfacing in NY State, I have a belief that it is easier to move the business/checkbook/jobs rather than fight City Hall. New Jersey is logistically easy PATH train to what has become the ba</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhllx/draft_of_article_78_against_tc_vs_nydfs/" target="new">Draft of Article 78 against T.C. (vs) NYDFS</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhllx/draft_of_article_78_against_tc_vs_nydfs/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>I don&#39;t know if there are many crowdsourcing Lawsuit that ever took place but attached is the 1st Draft of the Notice of Verified Petition. https://github.com/theochino/Article78againstNYDFS/tree/master/Lawsuit I would need volunteers to do some backg</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINFINITY.CO&nbsp;: <a href="http://coinfinity.co/osterreichischer-finanzminister-nimmt-zu-bitcoin-stellung/" target="new">[German] Austrian finance minister: Bitcoin not a financial instrument, VAT might apply</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhlll/german_austrian_finance_minister_bitcoin_not_a/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>    submitted by  maxminski     </p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>PCWORLD&nbsp;: <a href="http://www.pcworld.com/article/2457280/mt-gox-trustee-leaves-door-open-to-revival-of-bitcoin-exchange.html" target="new">Mt. Gox trustee leaves door open to revival of Bitcoin exchange</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>The trustee overseeing the carcass of Mt. Gox, once the world&#39;s largest trading platform for Bitcoin, told investors Wednesday that the company could be revived. Speaking to a meeting of people whose bitcoins evaporated in the fall of Mt. Gox, Nobuaki</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhknd/btc_is_like_a_drug/" target="new">BTC is like a drug…</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhknd/btc_is_like_a_drug/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>This is really bad. Do you find yourself buying shit you don’t even need because you want to use your BTC? Just this morning I purchased a wireless mouse off Dell just because. WTF! I’m setting up a BTC Rehab center...   submitted by  TiPs4tat    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CITYAM.COM&nbsp;: <a href="http://www.cityam.com/1406114886/hailo-taxi-app-actively-looking-accepting-bitcoin-says-ceo" target="new">Hailo taxi app actively looking into accepting Bitcoin says CEO</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhk5s/hailo_taxi_app_actively_looking_into_accepting/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>    submitted by  lobas     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>SILICONANGLE.COM&nbsp;: <a href="http://siliconangle.com/blog/2014/07/23/is-gliph-messaging-app-the-perfect-vehicle-for-bitcoin/" target="new">Is Gliph messaging app the perfect vehicle for Bitcoin?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhk40/is_gliph_messaging_app_the_perfect_vehicle_for/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>    submitted by  lobas     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>NEWS.ASIAONE.COM&nbsp;: <a href="http://news.asiaone.com/news/business/angry-bitcoin-investors-demand-answers-tokyo-creditors-meet" target="new">Angry Bitcoin investors demand answers at Tokyo creditors' meet</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhk1e/angry_bitcoin_investors_demand_answers_at_tokyo/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>12 hours ago</em></p>
+				<p>    submitted by  lobas     </p>
+			</div>
+		</li><li class="yahoonews_row even_row">
+			<div class="row_pad">
+				<h3>NEWS.YAHOO.COM&nbsp;: <a href="http://news.yahoo.com/angry-bitcoin-investors-demand-answers-tokyo-creditors-meet-114524119.html" target="new">Angry Bitcoin investors demand answers at Tokyo creditors&#39; meet</a> <small>(via: <a href="http://news.yahoo.com/angry-bitcoin-investors-demand-answers-tokyo-creditors-meet-114524119.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>13 hours ago</em></p>
+				<p>Bitcoin investors voiced anger Wednesday after the first creditors&#39; meeting for failed Tokyo trading exchange MtGox, whose spectacular collapse hammered the digital currency&#39;s reputation and left a trail of unanswered questions. More than 100 inve</p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/BNzAiardNZM/" target="new">Ethereum Launches Own ‘Ether’ Coin, With Millions Already Sold</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/BNzAiardNZM/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>13 hours ago</em></p>
+				<p>The presale of Ethereum's own platform-specific altcoin kicked off last night, with sales already booming.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhinz/buy_a_house_for_btc/" target="new">Buy a House for BTC</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhinz/buy_a_house_for_btc/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>13 hours ago</em></p>
+				<p>We will escrow. Hurry this market is hot y&#39;all.. http://tours.tourfactory.com/tours/tour.asp?t=1203059  submitted by  vleroybrown    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhi8w/ben_lawsky_has_made_it_very_clear_everything_must/" target="new">Ben Lawsky has made it very clear: everything must become de-centralized. And I mean EVERYTHING!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhi8w/ben_lawsky_has_made_it_very_clear_everything_must/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>13 hours ago</em></p>
+				<p>Enough is enough with the abuse.  submitted by  billybobbit    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>BLOGS.WSJ.COM&nbsp;: <a href="http://blogs.wsj.com/japanrealtime/2014/07/22/app-shows-bitcoins-reach-into-everyday-tokyo-life/?mg=blogs-wsj&amp;url=http%253A%252F%252Fblogs.wsj.com%252Fjapanrealtime%252F2014%252F07%252F22%252Fapp-shows-bitcoins-reach-into-everyday-tokyo-life" target="new">App Shows Bitcoin’s Reach Into Everyday Tokyo Life - Japan Real Time</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhf0c/app_shows_bitcoins_reach_into_everyday_tokyo_life/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>14 hours ago</em></p>
+				<p>    submitted by  koola_fight     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/-PrTc9aVhH4/" target="new">Mt. Gox Creditors’ Meeting Delivers Few Answers and One Apology</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/-PrTc9aVhH4/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>14 hours ago</em></p>
+				<p>Mt. Gox's bankruptcy trustee and CEO Mark Karpeles faced creditors for the first time today, but many answers remain.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>INTEREST.CO.NZ&nbsp;: <a href="http://www.interest.co.nz/personal-finance/71048/ird-says-bitcoin-should-be-treated-foreign-currencies-are-tax-purposes" target="new">IRD says bitcoin should be treated in the same manner as foreign currencies for tax purposes</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bheru/ird_says_bitcoin_should_be_treated_in_the_same/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>14 hours ago</em></p>
+				<p>    submitted by  koola_fight     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>MTGOX.COM&nbsp;: <a href="https://www.mtgox.com/img/pdf/20140723_report_en.pdf" target="new">mtgox creditor meeting handout PDF</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bhe0i/mtgox_creditor_meeting_handout_pdf/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>14 hours ago</em></p>
+				<p>submitted by  jasonmaurice    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>THENOMAD.INFO&nbsp;: <a href="http://www.thenomad.info/bitcoins-potentialin-new-zealand/" target="new">Bitcoin's potential in New Zealand: How is the bitcoin industry in New Zealand?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh7tn/bitcoins_potential_in_new_zealand_how_is_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>16 hours ago</em></p>
+				<p>    submitted by  thegreathummingturtl     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>PARLAMENT.GV.AT&nbsp;: <a href="http://www.parlament.gv.at/PAKT/VHG/XXV/AB/AB_01485/imfname_359813.pdf" target="new">[DE] Austrian's ministry of finance answers parliamentary inquiry about Bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh6ry/de_austrians_ministry_of_finance_answers/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>16 hours ago</em></p>
+				<p>submitted by  phatsphere    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=6CBg2L-sNwU" target="new">My elevator pitch for Bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh59q/my_elevator_pitch_for_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>17 hours ago</em></p>
+				<p>    submitted by  tkembo     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh4tv/for_importprivkey_0921_just_got_a_whole_lot_more/" target="new">For importprivkey, 0.9.2.1 just got a whole lot more inconvenient.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh4tv/for_importprivkey_0921_just_got_a_whole_lot_more/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>17 hours ago</em></p>
+				<p>Up until today I&#39;d been using 0.9.1, and sometimes using the console to import a few private keys. In that version, I could paste in multiple keys, hitting enter after each one (I think I pasted in 40 keys once). Since each key would take about 15 min</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh3nt/just_tried_the_bitcoin_atm_in_south_brisbane/" target="new">Just tried the Bitcoin ATM in South Brisbane...</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh3nt/just_tried_the_bitcoin_atm_in_south_brisbane/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>17 hours ago</em></p>
+				<p>I just tried the bitcoin ATM in South Brisbane today (Roastery Cafe @ 22 Glenelg), and it was surprisingly quick and painless to sell some for AUD. No ID or verification required for selling coins, so I was done in about 20 seconds. I can&#39;t speak for </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh2sr/mtgox_creditor_meeting_handout/" target="new">mtgox creditor meeting handout</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh2sr/mtgox_creditor_meeting_handout/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>18 hours ago</em></p>
+				<p>http://imgur.com/38MigtF http://imgur.com/QhSl7Pj http://imgur.com/zlZWAKg http://imgur.com/oeyXh0w http://imgur.com/53VcyPn http://imgur.com/lgSO0Y8 http://imgur.com/kLXhJA4 http://imgur.com/6XiigFL http://imgur.com/5vA1kkm http://imgur.com/b52dVDj http:</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh06j/my_first_ecommerce_purchase_on_newegg_wow/" target="new">my first ecommerce purchase (on newegg). Wow.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bh06j/my_first_ecommerce_purchase_on_newegg_wow/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>18 hours ago</em></p>
+				<p>I made my first real ecommerce purchase today using bitcoin, and actually doing it is eye opening. I&#39;ve had and played with bitcoin for a long time, but have mostly been hoarding and sending bitcoin back and forth to friends and family. The real power</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgzgv/im_off_to_amsterdam_in_a_few_days_any_tips_on/" target="new">I'm off to Amsterdam in a few days. Any tips on where I can spend bitcoin following the conference?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgzgv/im_off_to_amsterdam_in_a_few_days_any_tips_on/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>18 hours ago</em></p>
+				<p>I missed the BTC conference but I&#39;m going to Dam this weekend with a proportion of my vacation funds in bitcoin. Anyone know of places that accept bitcoin? I&#39;m thinking of beer, food and of course Mary Jane.  submitted by  M4RTINJ    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgwfq/nydfs_it_is_evident_from_the_subject_matter_of/" target="new">NYDFS: "it is evident from the subject matter of the [BitLicense proposal] that it will not have an adverse impact on jobs and employment opportunities in New York State"</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgwfq/nydfs_it_is_evident_from_the_subject_matter_of/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>19 hours ago</em></p>
+				<p>New York agencies have a duty to develop regulatory rules in a manner that (i) minimizes any unnecessary adverse impacts on existing jobs and (ii) promotes the development of new employment opportunities, including opportunities for self-employment, for t</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgl4i/mtgox_today_at_130m_jst_the_creditors_meeting_for/" target="new">MtGox: Today at 1:30m JST the creditor's meeting for reporting the status of property will be held.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgl4i/mtgox_today_at_130m_jst_the_creditors_meeting_for/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>21 hours ago</em></p>
+				<p>submitted by  cryptog    </p>
+			</div>
+		</li><li class="yahoonews_row even_row">
+			<div class="row_pad">
+				<h3>TUCSON.COM&nbsp;: <a href="http://tucson.com/business/local/9714870a-4798-5383-821b-1a99b97b866a.html" target="new">Tucson gets Arizona&#39;s first bitcoin ATM</a> <small>(via: <a href="http://tucson.com/business/local/9714870a-4798-5383-821b-1a99b97b866a.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>22 hours ago</em></p>
+				<p>It&#39;s now operating inside a Bookmans Entertainment Exchange in Tucson.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>FREEP.COM&nbsp;: <a href="http://www.freep.com/article/20140716/OPINION05/307160115/credit-card-fees" target="new">Credit card fees are killing small businesses - Detroit Free Press</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bgb55/credit_card_fees_are_killing_small_businesses/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>23 hours ago</em></p>
+				<p>    submitted by  cryptotraveler     </p>
+			</div>
+		</li><li class="moneytech_row even_row">
+			<div class="row_pad">
+				<h3>MONEYANDTECH.COM&nbsp;: <a href="http://moneyandtech.com/july-22-news-update/?utm_source=rss&utm_medium=rss&utm_campaign=july-22-news-update" target="new">Ripple Labs launches Codius, Gliph puts bitcoin back on iOS, & Sweden seeks clarity</a> <small>(via: <a href="http://moneyandtech.com/july-22-news-update/?utm_source=rss&utm_medium=rss&utm_campaign=july-22-news-update" target="feed" class="feed_link">Money & Tech</a>)</small></h3>
+				<p class="ui-li-aside"><em>23 hours ago</em></p>
+				<p>
+
+airBaltic becomes first airline to accept Bitcoin, Ripple Labs unveils plans for new smart contract system called Codius, Gliph re-adds bitcoin functionality on iOS, the Isle of Man clarifies regulations, the Australian Tax Office prepares to release of</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bg93d/heres_why_i_love_bitcoin_very_nsfw_version/" target="new">Here's Why I Love Bitcoin! [Very NSFW Version] ;)</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bg93d/heres_why_i_love_bitcoin_very_nsfw_version/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>23 hours ago</em></p>
+				<p>Hey everyone! A few days ago I posted a video talking about why I love bitcoin! Here&#39;s the original thread:  http://www.reddit.com/r/Bitcoin/comments/2b6335/heres_why_i_love_bitcoin/ In the thread, I was asked if I could do a topless version, so I put</p>
+			</div>
+		</li><li class="moneytech_row even_row">
+			<div class="row_pad">
+				<h3>MONEYANDTECH.COM&nbsp;: <a href="http://moneyandtech.com/brock-pierce-coin-congress-san-francisco/?utm_source=rss&utm_medium=rss&utm_campaign=brock-pierce-coin-congress-san-francisco" target="new">Brock Pierce on Coin Congress San Francisco</a> <small>(via: <a href="http://moneyandtech.com/brock-pierce-coin-congress-san-francisco/?utm_source=rss&utm_medium=rss&utm_campaign=brock-pierce-coin-congress-san-francisco" target="feed" class="feed_link">Money & Tech</a>)</small></h3>
+				<p class="ui-li-aside"><em>23 hours ago</em></p>
+				<p>
+
+Brock Pierce, adviser for Coin Congress and founding partner of Cryptocurrency Partners, sits down with Money &#038; Tech's Stephen Chun to discuss this week's conference in San Francisco. Brock tells how Coin Congress came to be, and its origins in the</p>
+			</div>
+		</li><li class="moneytech_row odd_row">
+			<div class="row_pad">
+				<h3>MONEYANDTECH.COM&nbsp;: <a href="http://moneyandtech.com/tmyk-bitcoin-security/?utm_source=rss&utm_medium=rss&utm_campaign=tmyk-bitcoin-security" target="new">The More You Know Bitcoin Security</a> <small>(via: <a href="http://moneyandtech.com/tmyk-bitcoin-security/?utm_source=rss&utm_medium=rss&utm_campaign=tmyk-bitcoin-security" target="feed" class="feed_link">Money & Tech</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Andreas Antonopoulos, Jonathan Levin &#038; Susan Athey on Bitcoin Privacy vs Anonymity
+</p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>ECONOMIC TIMES&nbsp;: <a href="http://economictimes.indiatimes.com/tech/internet/bitcoin-revival-underway-startup-traders-sure-of-overcoming-hurdles/articleshow/38890526.cms" target="new">Bitcoin revival underway, startup &amp; traders sure of overcoming hurdles</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>BANGALORE: After major setbacks, bitcoin users in the country are trying to revive the crypto currency feted by geeks as the future of money and reviled by regulators as the currency of the underworld. Among them is Mohit Kalra, 23, the son of Delhi ...</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfytx/i_will_continue_to_remove_nonbitcoin_related_news/" target="new">I will continue to remove Non-Bitcoin related news from this subreddit.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfytx/i_will_continue_to_remove_nonbitcoin_related_news/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>I&#39;ve seen a string of posts today regarding the same crypto-currency news - Please list this news in /r/cryptocurrency as it is not explicitly related to Bitcoin. Thank you.  submitted by  frankenmint    </p>
+			</div>
+		</li><li class="bitcoinmagazine_row even_row">
+			<div class="row_pad">
+				<h3>BITCOINMAGAZINE.COM&nbsp;: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/Vb--2G30md4/" target="new">Why I </a> <small>(via: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/Vb--2G30md4/" target="feed" class="feed_link">Bitcoin Magazine</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Some people ask me why I love Bitcoin so much, given that I (at the time of this writing) don&#8217;t have very much. I wear Bitcoin shirts, talk about it way too much, and have convinced dozens of businesses to adopt it&#8211;I even got a Bitcoin tattoo </p>
+			</div>
+		</li><li class="bitcoinmagazine_row odd_row">
+			<div class="row_pad">
+				<h3>BITCOINMAGAZINE.COM&nbsp;: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/K-I0Gic6Bro/" target="new">Sovereignty 2.0</a> <small>(via: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/K-I0Gic6Bro/" target="feed" class="feed_link">Bitcoin Magazine</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>We are living in a new world.  As Andreas Antonopoulos put so eloquently, “now that we have crypto-currencies, it’s not sovereignty that determines currency, it’s currency that creates sovereignty.” Bitcoin has helped declare independence for the</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>GALLERISTNY.COM&nbsp;: <a href="http://galleristny.com/2014/07/world-edges-closer-to-being-able-to-buy-art-with-bitcoins-thanks-to-paddle8-and-the-winklevii/" target="new">The Winklevoss´ latest investment: Paddle8. The online auction house will start taking BTC soon.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfrz7/the_winklevoss_latest_investment_paddle8_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  valentin_ruhry     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/vgTvL6ZVLzM/" target="new">Japan’s bitFlyer Raises $1.6 Million for Bitcoin Exchange Expansion</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/vgTvL6ZVLzM/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>bitFlyer has revealed new details about its exchange platform, including its notable $1.6m investment.</p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>WALL STREET JOURNAL (BLOG)&nbsp;: <a href="http://blogs.wsj.com/moneybeat/2014/07/22/bitbeat-bitcoin-price-curiously-gets-no-boost-from-dell-news/" target="new">BitBeat: Bitcoin Price – Curiously – Gets No Boost From Dell News</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>After last week&#39;s news that Dell would start taking bitcoin as payment on its website, bitcoins prices did…nothing. This was surprising to a few folks, us included, seeing as adoption by major retailers has been one of the big signposts of mainstrea</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CAMO.GITHUBUSERCONTENT.COM&nbsp;: <a href="https://camo.githubusercontent.com/81cc81d7342b0c65d3a8d1a89c8121f5f79b64ba/687474703a2f2f7333302e706f7374696d672e6f72672f3430723034653467312f53637265656e5f362e706e67" target="new">Yes! OpenBazaar is implementing Bitmessage encrypted messaging! Just noticed in this screenshot :) I love Bitmessage</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfmg5/yes_openbazaar_is_implementing_bitmessage/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  spottedmarley     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/meBxdpQFR0o/" target="new">Isreali Bitcoin Conference Postponed Due to Gaza Crisis</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/meBxdpQFR0o/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>The battle between the Israeli and Hamas has resulted in the closure of Ben-Guiron International Airport to incoming flights.</p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/UroGvtN_UZ0/" target="new">Israeli Bitcoin Conference Postponed Due to Gaza Crisis</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/UroGvtN_UZ0/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>The battle between the Israeli and Hamas has resulted in the closure of Ben-Guiron International Airport to incoming flights.</p>
+			</div>
+		</li><li class="yahoonews_row even_row">
+			<div class="row_pad">
+				<h3>BLOOMBERG.COM&nbsp;: <a href="http://www.bloomberg.com/news/2014-07-22/ex-goldman-trader-opens-bitcoin-exchange-to-fill-mt-gox-void.html" target="new">Ex-Goldman Trader Opens Bitcoin Exchange to Fill Mt. Gox Void</a> <small>(via: <a href="http://www.bloomberg.com/news/2014-07-22/ex-goldman-trader-opens-bitcoin-exchange-to-fill-mt-gox-void.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Yuzo Kano quit Goldman Sachs Group Inc. (GS) twice: once for a rival bank, the second time to open Japan ’s first bitcoin exchange since the collapse of Mt. Gox.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/UsMspGX.png" target="new">Just noticed changetip works on youtube comments</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bff5j/just_noticed_changetip_works_on_youtube_comments/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  shwag     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfevv/i_just_made_my_first_bitcoin_purchase_i_saw_the/" target="new">I just made my first bitcoin purchase - I saw the future.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfevv/i_just_made_my_first_bitcoin_purchase_i_saw_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Clicked &#39;give gold&#39; on a reddit post. Clicked &#39;Bitcoin&#39; and then clicked Yes on Coinbase. And. That. Was. It. Wtf. How has this not replaced PayPal already? I want to pay for everything online with bitcoin now!  submitted by  18andover    </p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>BUSINESSWEEK&nbsp;: <a href="http://www.businessweek.com/news/2014-07-22/ex-goldman-trader-opens-bitcoin-exchange-to-fill-mt-dot-gox-void" target="new">Ex-Goldman Trader&#39;s Bitcoin Exchange to Fill Mt. Gox Void</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>When Kano, 38, left his job as a derivatives and convertible bonds trader in December, bitcoin had climbed to a record $1,151. Three months later, it was worth half that after a $530 million heist at Tokyo-based Mt. Gox bankrupted what was once the ...</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINBRIEF.NET&nbsp;: <a href="http://coinbrief.net/debunking-kipochi-mpesa-bitcoin-kenya" target="new">Debunking Kipochi, M-PESA & Bitcoin In Kenya</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfe8o/debunking_kipochi_mpesa_bitcoin_in_kenya/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  shaftian     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BBC.CO.UK&nbsp;: <a href="http://www.bbc.co.uk/programmes/p023dgg1" target="new">Benjamin Lawsky discusses New York’s plans for Bitcoin regulation on BBC</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bfdv5/benjamin_lawsky_discusses_new_yorks_plans_for/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  TheBTC-G     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/OJChRcu.gif" target="new">Bitcoinprice right now with all the big news happening</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bf9rw/bitcoinprice_right_now_with_all_the_big_news/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  TwinWinNerD     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/fb5B5ExZzrE/" target="new">WinkDex Bitcoin Price Index Launches Developer API</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/fb5B5ExZzrE/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>The Winkdex, launched by Cameron and Tyler Winklevoss, is now enabling third-party application development.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bexd2/people_asking_about_bitcoin_value_why/" target="new">People asking about Bitcoin value. Why ridiculously high estimates are not that ridiculous.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bexd2/people_asking_about_bitcoin_value_why/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>http://www.reddit.com/r/Bitcoin/comments/2belsq/i_bought_10_bitcoin_a_few_years_ago_am_i_really/ These types of posts happen a lot, and it&#39;s always fun to do interesting comparisons. Let&#39;s say that all 21 million coins were mined. If 1 bitcoin was</p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Leq3yOkd5ZM/" target="new">OKCoin Wants to Rule the International Bitcoin Exchange Market</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Leq3yOkd5ZM/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>CoinDesk sits down with OKCoin's Changpeng Zhao at The North American Bitcoin Conference for an extensive interview.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>BLOG.BLOCKTRAIL.COM&nbsp;: <a href="http://blog.blocktrail.com/2014/07/bitmessage-all-your-messages-are-belong-to-you/" target="new">Bitmessage: All your messages are belong to…you.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2berfu/bitmessage_all_your_messages_are_belong_toyou/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  blue_cube     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/AskReddit/comments/2bdwqj/what_is_something_about_the_company_you_work_for/cj4d0d0" target="new">Why we need to replace credit cards with bitcoin: “Every guest's credit card info was stored in plain text in our database WITH their full name, home address, email and the CC's security code” (x-post r/AskReddit/)</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bep6o/why_we_need_to_replace_credit_cards_with_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>submitted by  milam_command    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>CRYPTOCOINSNEWS.COM&nbsp;: <a href="http://www.cryptocoinsnews.com/news/tony-gallippi-talks-newest-bitpay-innovation-copay/2014/07/22" target="new">Tony Gallippi Talks Newest BitPay Innovation: Co-Pay</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2beoqr/tony_gallippi_talks_newest_bitpay_innovation_copay/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  crash__bandicoot     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>GETTOKNOWBITCOIN.COM&nbsp;: <a href="http://gettoknowbitcoin.com/bitcoins-prepare-a-second-coming-in-india/" target="new">Bitcoins prepare a second coming in India</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bemqr/bitcoins_prepare_a_second_coming_in_india/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  gettoknowbitcoin     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>FORTUNE.COM&nbsp;: <a href="http://fortune.com/2014/07/22/on-winklevoss-bitcoin-index-its-open-season-for-developers/" target="new">Winklevoss Bitcoin Index (WinkDex) Launches API for Developers</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2belun/winklevoss_bitcoin_index_winkdex_launches_api_for/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  winky_pop     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2belsq/i_bought_10_bitcoin_a_few_years_ago_am_i_really/" target="new">I bought 10 bitcoin a few years ago. Am I really going to be the global elite in a few decades?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2belsq/i_bought_10_bitcoin_a_few_years_ago_am_i_really/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>I feel like I&#39;m holding bitcoin hostage. Like I get to say to all the governments and financial systems in the world &quot;if you want to use bitcoin on a wide scale you have to give me billions of dollars first&quot;. Lol.   submitted by  globleleet </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2belga/dell_bitcoin_not_quite_ready_for_primetime_yet/" target="new">Dell bitcoin not quite ready for primetime yet.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2belga/dell_bitcoin_not_quite_ready_for_primetime_yet/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>When i saw the Dell announcement, I was excited. My daughter needed a laptop for schoolwork, nothing fancy, so I ordered her laptop up and paid with bitcoin on 7/18. The order was placed on hold pending &quot;Verification&quot; according to Dell support, </p>
+			</div>
+		</li><li class="bitcoinmagazine_row odd_row">
+			<div class="row_pad">
+				<h3>BITCOINMAGAZINE.COM&nbsp;: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/lPczL6qkjDE/" target="new">Bitcoin to Earth:  Don’t Look Now, but your Paradigm is Shifting</a> <small>(via: <a href="http://feedproxy.google.com/~r/BitcoinMagazine/~3/lPczL6qkjDE/" target="feed" class="feed_link">Bitcoin Magazine</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>There is one thing stronger than all the armies in the world, and that is an idea whose time has come. - Victor Hugo.  French poet and writer. 1802 &#8211; 1885 Historians may look back on these current days with fascination.  We may be living through t</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>AMAZON.COM&nbsp;: <a href="http://www.amazon.com/REVLAR-Waterproof-Printer-8-5x11-4-7mil/dp/B004UI335W" target="new">I bought some of this nearly un-rippable, waterproof, archival laser printer paper for paper wallets --- its great</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bejjf/i_bought_some_of_this_nearly_unrippable/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  bruce_fenton     </p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>FAST COMPANY&nbsp;: <a href="http://www.fastcompany.com/3032958/banksy-bitcoins-and-the-winklevoss-twins-an-online-art-world-love-story" target="new">Banksy, Bitcoin, And The Winklevoss Twins: An Online Art World Love Story</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Cameron and Tyler Winklevoss, the Internet entrepreneurs perhaps best known for their associations with Facebook and Bitcoin, are the latest techies to leap into the art world. This week, the twins&#39; Winklevoss Capital announced an investment round in&</p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>INFORMATIONWEEK&nbsp;: <a href="http://www.informationweek.com/government/cybersecurity/ny-seeks-bitcoin-exchange-regulations/d/d-id/1297469" target="new">NY Seeks Bitcoin Exchange Regulations</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Although the proposed regulations do not mention Bitcoin, the department refers to the proposal as &quot;BitLicense.&quot; It is a response to the growing popularity of electronic money and its potential for misuse in burgeoning underground online economi</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BITCOINMILLIONAIRES.ORG&nbsp;: <a href="http://bitcoinmillionaires.org/blog/the-five-stages-of-bitcoin-acceptance/" target="new">My Story: Why Bitcoin Will Gain Traction Faster than We Think (The Five Stages of Bitcoin Acceptance)</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2begj8/my_story_why_bitcoin_will_gain_traction_faster/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  bitcoinmillionaires     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=djDm5fTg0Ro" target="new">They actually made a video: How to Buy with Bitcoin from Dell.com</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2begbh/they_actually_made_a_video_how_to_buy_with/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  Sherlockcoin     </p>
+			</div>
+		</li><li class="coinbuzz_row odd_row">
+			<div class="row_pad">
+				<h3>COINBUZZ.COM&nbsp;: <a href="http://www.coinbuzz.com/2014/07/22/dell-becomes-latest-major-company-accept-bitcoin/?utm_source=rss&utm_medium=rss&utm_campaign=dell-becomes-latest-major-company-accept-bitcoin" target="new">Dell becomes latest major company to accept bitcoin</a> <small>(via: <a href="http://www.coinbuzz.com/2014/07/22/dell-becomes-latest-major-company-accept-bitcoin/?utm_source=rss&utm_medium=rss&utm_campaign=dell-becomes-latest-major-company-accept-bitcoin" target="feed" class="feed_link">Coin Buzz</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>When it comes to the relationship between the peer-to-peer decentralized digital currency bitcoin and the retail industry, some experts now use the tagline: there is no reason for merchants to not accept bitcoin. It appears that Dell is following that man</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINKITE.GITHUB.IO&nbsp;: <a href="http://coinkite.github.io/coinkite-bitcoin-atm/" target="new">Open Source Bitcoin ATM in Angular.js</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2becv9/open_source_bitcoin_atm_in_angularjs/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  rnvk     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2beazu/newegg_10_off_bitcoin_purchases_extended_to_july/" target="new">Newegg 10% Off Bitcoin Purchases Extended to July 31st</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2beazu/newegg_10_off_bitcoin_purchases_extended_to_july/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Previously, the cutoff was July 22nd at midnight; it has now been extended to the 31st.  *Offer expires July 31, 2014 at 11:59PM PT. Offer valid while funds and/or supplies last. Does not include Newegg Promotional Gift Cards, Marketplace or Open Box item</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="https://twitter.com/coinfinityco/status/491576843775270912" target="new">Visiting Austria? Grab some cupcakes and pay with your favorite currency!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2be64i/visiting_austria_grab_some_cupcakes_and_pay_with/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  maxminski     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>OPENBAZAAR.ORG&nbsp;: <a href="https://openbazaar.org/" target="new">If you havn't donated to OpenBazaar by now, please please do. This open source project will change the way we commerce and they deserve our help.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2be4rw/if_you_havnt_donated_to_openbazaar_by_now_please/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>    submitted by  bitcoingfevermania     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>ROYALVEGASCASINO.COM&nbsp;: <a href="http://www.royalvegascasino.com/blog/5-things-to-know-cryptocurrencies/" target="new">Online gamblers, would you prefer to gamble with Bitcoin? Online casinos are talking about cryptos</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2be42b/online_gamblers_would_you_prefer_to_gamble_with/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>submitted by  RuanStix    </p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>SPECTRUM.IEEE.ORG&nbsp;: <a href="http://spectrum.ieee.org/tech-talk/computing/networks/bitcoin-gets-its-own-tv-network" target="new">Bitcoin Gets Its Own TV Network</a> <small>(via: <a href="http://spectrum.ieee.org/tech-talk/computing/networks/bitcoin-gets-its-own-tv-network" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Kryptoradio will broadcast the Bitcoin blockchain on digital TV to increase redundancy and enable new applications</p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/lQGvtCGmi0Q/" target="new">Gliph iOS Messaging App Reinstates Bitcoin Functionality</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/lQGvtCGmi0Q/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>The privacy-focused messaging app once again allows users too send and receive bitcoin in its newest iOS release</p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>FINANCE.YAHOO.COM&nbsp;: <a href="http://finance.yahoo.com/news/bitcoin-shop-ceo-charles-allen-130000396.html" target="new">Bitcoin Shop CEO Charles Allen Interviewed on Bloomberg TV&#39;s &#39;Street Smart&#39; to Discuss New York State&#39;s Virtual ...</a> <small>(via: <a href="http://finance.yahoo.com/news/bitcoin-shop-ceo-charles-allen-130000396.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>Bitcoin Shop, Inc.   , the virtual currency ecommerce marketplace www.bitcoinshop.us, today announced that its Chief Executive Officer, Charles Allen, was interviewed on Monday, July 21, 2014 live on Bloomberg ...</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>AIRBALTIC.COM&nbsp;: <a href="https://www.airbaltic.com/airbaltic-worlds-first-airline-to-accept-bitcoin" target="new">airBaltic - World’s First Airline To Accept Bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2be1uh/airbaltic_worlds_first_airline_to_accept_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>submitted by  JonathanCake    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdzq8/mr_benjamin_lawsky_vs_the_hal_9000_computer/" target="new">Mr. Benjamin Lawsky vs the HAL 9000 Computer</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdzq8/mr_benjamin_lawsky_vs_the_hal_9000_computer/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>1 day ago</em></p>
+				<p>The HAL9000 intends to establish a Distributed Autonomous Organization in the State of New York. Such an organization would, for the purposes of this experiment, and as a part of its charter, seek to facilitate the formation of a decentralized storage, co</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=Bhe61JaNFLU&amp;index=2&amp;list=PLzctEq7iZD-7-DgJM604zsndMapn9ff6q" target="new">For any noobs that missed it. Definitely my favorite intro to Bitcoin.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdysc/for_any_noobs_that_missed_it_definitely_my/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  MaDdChEMis     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CRYPTOCOINSNEWS.COM&nbsp;: <a href="http://www.cryptocoinsnews.com/news/openbazaar-blazing-trail-bitcoin-commerce-without-barriers/2014/07/22" target="new">OpenBazaar: Blazing The Trail For Bitcoin Commerce Without Barriers</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdykr/openbazaar_blazing_the_trail_for_bitcoin_commerce/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  hoffmabc     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/qMVrsTzhHz4/" target="new">The Real Reason Banks Don’t Like Bitcoin</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/qMVrsTzhHz4/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>A banking professional lists the reasons banks are reluctant to deal with bitcoin, and it involves compliance and costs.</p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>NASDAQ.COM&nbsp;: <a href="http://www.nasdaq.com/article/bitcoin-down-slightly-in-directionless-trade-cm372080" target="new">Bitcoin down slightly in directionless trade</a> <small>(via: <a href="http://www.nasdaq.com/article/bitcoin-down-slightly-in-directionless-trade-cm372080" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Bitcoin down slightly in directionless trade</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>LETSTALKBITCOIN.COM&nbsp;: <a href="http://letstalkbitcoin.com/blog/post/princeton-researcher-receives-half-million-dollar-national-science-foundation-cryptocurrency-grant" target="new">Princeton Researcher Receives Half Million Dollar National Science Foundation Cryptocurrency Grant</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdvx7/princeton_researcher_receives_half_million_dollar/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  Bidofthis     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>DOCS.GOOGLE.COM&nbsp;: <a href="https://docs.google.com/forms/d/1FTW8ec0KAzmK8DVYEhFIRVbmYTHNxQzgiXHAh35p5IY/viewform" target="new">I've created a bitcoin survey to help with a class assignment. Please help me by taking it! I hope to reach 500 responses and will share the results when finished.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdv0o/ive_created_a_bitcoin_survey_to_help_with_a_class/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  bitcoinstudent     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bduhq/thoughts_about_section_20012_books_and_records_of/" target="new">Thoughts about "Section 200.12 Books and records" of the Proposed NEW YORK CODES, RULES AND REGULATIONS</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bduhq/thoughts_about_section_20012_books_and_records_of/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Specifically, I was wondering about the phrase, &quot;... The books and records maintained by each Licensee shall, without limitation, include: (1) for each transaction, the amount, date, and precise time of the transaction, any payment instructions, the </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdu82/bitcoin_startups_in_india_start_gaining_momentum/" target="new">Bitcoin startups in India start gaining momentum</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdu82/bitcoin_startups_in_india_start_gaining_momentum/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>41% of the population of India is un banked Population of 1.237 billion   submitted by  kitthecar    </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/vAJ1hyi-SyU/" target="new">Hailo CEO: Bitcoin Could Benefit Our Customers and Taxi Drivers</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/vAJ1hyi-SyU/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Taxi app Hailo is “actively” looking into allowing its customers to pay with bitcoin, says CEO Jay Bergman.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>THENOMAD.INFO&nbsp;: <a href="http://www.thenomad.info/bitcoin-is-introduced-in-bangladesh/" target="new">Bitcoin is introduced in Bangladesh.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdtyw/bitcoin_is_introduced_in_bangladesh/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  thegreathummingturtl    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=KVYMRKrDekM&amp;t=19m25s" target="new">Threats to Decentralized Software Development</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bds06/threats_to_decentralized_software_development/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  Jachoshi     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/LIpjtdo" target="new">Time for a new ad ? This one is old AF.....</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdrw0/time_for_a_new_ad_this_one_is_old_af/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  bkagn     </p>
+			</div>
+		</li><li class="thebitcoinfoundation_row even_row">
+			<div class="row_pad">
+				<h3>BITCOINFOUNDATION.ORG&nbsp;: <a href="https://bitcoinfoundation.org/2014/07/22/summer-in-scandinavia-travelbitcoin/" target="new">Summer in Sweden! #TravelBitcoin</a> <small>(via: <a href="https://bitcoinfoundation.org/2014/07/22/summer-in-scandinavia-travelbitcoin/" target="feed" class="feed_link">The Bitcoin Foundation</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The number of places that accept Bitcoin in Stockholm, the beautiful Scandinavian capital of Sweden, is increasing as the general interest for the new currency is growing. The cozy  Twang café is situated in the area known as &#8220;SoFo&#8221; locat</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdr70/new_blockchaininfo_android_app_just_almost_made/" target="new">New Blockchain.info android app just almost made me poop myself.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdr70/new_blockchaininfo_android_app_just_almost_made/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>So I&#39;m trying to sweep a paper wallet. First thing I notice is there are no &quot;sweep&quot; or &quot;import&quot; functions anymore. so instead i do it the old fashioned way, create a tx that cleans out the address, and I scan the private key, input</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdq0g/crowdsourcing_to_mount_new_york_state_article_78/" target="new">Crowdsourcing to mount "New York State Article 78" lawsuit against Ben Lawsky's DFS regulations.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdq0g/crowdsourcing_to_mount_new_york_state_article_78/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Anyone know how to do a successful Crowdsourcing to mount what is called a Article 78 lawsuit against DFS ? Understanding Article 78: http://civilservice.sheerinlaw.com/sheerinlaw.com-Article_78_eBook.pdf  submitted by  theochino    </p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>UK.NEWS.YAHOO.COM&nbsp;: <a href="http://uk.news.yahoo.com/cryptocurrency-round-airbaltic-accepts-bitcoin-bitsells-150-atms-092042455.html" target="new">Cryptocurrency Round-Up: AirBaltic Accepts Bitcoin, BitSell&#39;s $150 ATMs & Gold Bitcoins</a> <small>(via: <a href="http://uk.news.yahoo.com/cryptocurrency-round-airbaltic-accepts-bitcoin-bitsells-150-atms-092042455.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Two students have set up an Indiegogo crowdfunding campaign in an ambitious effort to manufacture bitcoin ATMs for a fraction of the price of what they currently cost. &quot;Right now an ATM costs over $500 to purchase, making it an impractical business i</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>COINMANUAL.COM&nbsp;: <a href="http://www.coinmanual.com/australian-tax-office-makes-ruling-on-the-treatment-of-bitcoin-and-other-crypto-currencies/" target="new">Australian Tax Office Finally makes Ruling on the treatment of Bitcoin and other crypto currencies</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdmyx/australian_tax_office_finally_makes_ruling_on_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  mjsals    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://www.coindesk.com/isle-man-clarifies-regulation-digital-currency-businesses/" target="new">Great news [Isle of Man Clarifies Regulation for Digital Currency Businesses]</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdmwq/great_news_isle_of_man_clarifies_regulation_for/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  maxilllian     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdk1n/to_all_potential_lamassu_atm_buyers_beware_hers/" target="new">To all potential Lamassu ATM buyers: beware. Her's my friends experience.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdk1n/to_all_potential_lamassu_atm_buyers_beware_hers/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>This is my friends experience in attempt to install the first Bitcoin ATM machine in Croatia. More than a half a year ago there was not much of a ATM choice, so he went with Lamassu ATM, second one to appear after Robocoin ATM. He advanced $2500, 50% paym</p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>ECONOMICTIMES.INDIATIMES.COM&nbsp;: <a href="http://economictimes.indiatimes.com/news/economy/finance/bitcoin-startups-in-the-country-gaining-momentum/articleshow/38853606.cms" target="new">Bitcoin startups in the country gaining momentum</a> <small>(via: <a href="http://economictimes.indiatimes.com/news/economy/finance/bitcoin-startups-in-the-country-gaining-momentum/articleshow/38853606.cms" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Bitcoin users in the country are trying to revive the crypto currency feted by geeks as the future of money and reviled by regulators as the currency of the underworld.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="https://twitter.com/Bitstamp/status/491464933725708288" target="new">Zero fees for SEPA deposits at #Bitstamp!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bdfcx/zero_fees_for_sepa_deposits_at_bitstamp/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  bitcoinrole    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>ATO.GOV.AU&nbsp;: <a href="https://www.ato.gov.au/General/About-consultation/In-detail/Completed-matters/" target="new">ATO Decision: Australian Tax Treatment of Bitcoin and other crypto currencies</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bddwx/ato_decision_australian_tax_treatment_of_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  phrak79    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bd8kh/130k_subscribers_only_54k_more_until_were_as_big/" target="new">130K Subscribers! Only 54K more until we're as big as r/Anime.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bd8kh/130k_subscribers_only_54k_more_until_were_as_big/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>I know everyone wants to take on world governments and central banks and all, but I&#39;m not sure we&#39;re ready. Just my 2 bits.  submitted by  hgkvas    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="https://twitter.com/ericnakagawa/status/491441738674749442" target="new">I Can Has Bitcoin? No. Chase Bank shuts down founder of LOLCats bank account for buying bitcoin on Coinbase</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bd7z6/i_can_has_bitcoin_no_chase_bank_shuts_down/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  julanrouge     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/4KQux3p.jpg" target="new">Gyft offers Best Buy now!</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bd5l8/gyft_offers_best_buy_now/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  Logical007     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/ZTRusAF" target="new">Coinbase + United Kingdom? Soon or already?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bcy0n/coinbase_united_kingdom_soon_or_already/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  adamsol     </p>
+			</div>
+		</li><li class="moneytech_row even_row">
+			<div class="row_pad">
+				<h3>MONEYANDTECH.COM&nbsp;: <a href="http://moneyandtech.com/week-three-review-btc-travel/?utm_source=rss&utm_medium=rss&utm_campaign=week-three-review-btc-travel" target="new">Week Three in Review, BTC Only Travel</a> <small>(via: <a href="http://moneyandtech.com/week-three-review-btc-travel/?utm_source=rss&utm_medium=rss&utm_campaign=week-three-review-btc-travel" target="feed" class="feed_link">Money & Tech</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The first two weeks of our cross-country bitcoin-only tour showed us the beautiful diversity that our country has to offer. From the mountains in Asheville to the Monuments in DC, from the chaos of NYC to the serenity of New Hampshire, our journey twisted</p>
+			</div>
+		</li><li class="moneytech_row odd_row">
+			<div class="row_pad">
+				<h3>MONEYANDTECH.COM&nbsp;: <a href="http://moneyandtech.com/july-21-news-update/?utm_source=rss&utm_medium=rss&utm_campaign=july-21-news-update" target="new">Blockchain’s educational wallet, Paybits for bitcoin paychecks, & DC’s “Digital Chamber”</a> <small>(via: <a href="http://moneyandtech.com/july-21-news-update/?utm_source=rss&utm_medium=rss&utm_campaign=july-21-news-update" target="feed" class="feed_link">Money & Tech</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>
+
+Blockchain has releases new version of Android app, Copay releases on Android, Paybits announces new payroll service, Bankcoin now pegged to stock market's 1oz gold price, Chamber of Digital Commerce opens its doors in Washington DC, the ADCCA gathers A</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bcn8i/alright_xapo_its_almost_the_end_of_the_month/" target="new">Alright Xapo, it's almost the end of the month, what's up with our cards?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bcn8i/alright_xapo_its_almost_the_end_of_the_month/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  DannyDesert    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="https://twitter.com/ErikVoorhees/status/491335138857324544" target="new">Guys we need Gov. Cuomo's attention about what Lawsky is doing. Retweeting is free, easy, and will help get this on the Gov's radar.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bcmg8/guys_we_need_gov_cuomos_attention_about_what/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  zombiecoiner     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bchgh/digitalocean_ny_bitcoin_node_moved_to_singapore/" target="new">DigitalOcean NY Bitcoin node Moved to Singapore</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bchgh/digitalocean_ny_bitcoin_node_moved_to_singapore/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>My insignificant protest... http://128.199.209.80/  submitted by  2-bit-tipper    </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>STEAMCOMMUNITY.COM&nbsp;: <a href="http://steamcommunity.com/sharedfiles/filedetails/?id=108690995&amp;searchtext=improvments+patch" target="new">Author of Unofficial Improvements Patch for Civ V Accepting Bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bceai/author_of_unofficial_improvements_patch_for_civ_v/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  jnoble3     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/es-DWfVGNS8/" target="new">Stripe: Bitcoin Has Future in Global Payments if Issues Solved</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/es-DWfVGNS8/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The payments processor examined bitcoin and weighed its potential impact on the world's payment network.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bc6ge/looks_like_im_subscriber_130000/" target="new">Looks like I'm subscriber 130,000</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bc6ge/looks_like_im_subscriber_130000/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>One of at least 10 smurf accounts, but not everyone is smurf&#39;ing right?  submitted by  turbo6    </p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>AL JAZEERA AMERICA&nbsp;: <a href="http://america.aljazeera.com/articles/2014/7/21/new-york-crafts-bitcoinlicenses.html" target="new">Bitcoin supporters say New York regulations would stymie innovation</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>But the regulations also would entail what bitcoin backers characterize as onerous and innovation-killing conditions, like fingerprinting and capital requirements, that would apply to all Bitcoin businesses, whether they are major repositories with ...</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BLOGS.COMPUTERWORLD.COM&nbsp;: <a href="http://blogs.computerworld.com/malware-and-vulnerabilities/24161/backup-your-data-now-new-more-powerful-ransomware-using-tor-spotted-wild" target="new">Backup your data now: New, more powerful ransomware using Tor spotted in the wild | Cybercrooks call the crypto-malware CTB-Locker (Curve-Tor-Bitcoin Locker) available in English and Russian, making countries that use those languages the prime targets for</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bc2j7/backup_your_data_now_new_more_powerful_ransomware/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  bit_moon     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/lAKKFXoEesQ/" target="new">Ripple Labs Unveils Proposal for New Smart Contract System</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/lAKKFXoEesQ/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The company's proposed system could reinvigorate the movement to build smart contract mechanisms.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>ZDNET.COM&nbsp;: <a href="http://www.zdnet.com/forensic-scientist-identifies-suspicious-back-doors-running-on-every-ios-device-7000031795/" target="new">Just to inform the people who are so excited about iOS wallets: Forensic Scientist claims that backdoors are on every iOS device.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bc0y3/just_to_inform_the_people_who_are_so_excited/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  DrunkRaven     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/kGD0zMY.jpg" target="new">Miner`s Destiny</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbzb2/miners_destiny/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  StanTheBig     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BUSINESSINSIDER.COM&nbsp;: <a href="http://www.businessinsider.com/the-future-of-the-payments-industry-2014-slide-deck-2014-7?op=1" target="new">The future of the payments industry...</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbxk5/the_future_of_the_payments_industry/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  iWeyerd     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=-hxO5BXklLU&amp;list=UUJo19qRg5Diyq3t2IOFZ-4A" target="new">Bitcoin on Power Trading Radio</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbsmn/bitcoin_on_power_trading_radio/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  naomibrockwell     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/zf2vCKzmcuk/" target="new">Dell: Bitcoin Aligns Our Brand With Innovation</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/zf2vCKzmcuk/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>CoinDesk interviews Dell's Paul Walsh to learn more about its bitcoin payments play.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbrga/when_a_new_bitlicense_comes_out_it_will_look_like/" target="new">When a "new" Bitlicense comes out, it will look like we've won in comparison. This was the plan all along. Make it really bad to start with, and the new one will look great. "Foot in the door" technique.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbrga/when_a_new_bitlicense_comes_out_it_will_look_like/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  bitcoinsatoshi    </p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>COINTELEGRAPH&nbsp;: <a href="http://cointelegraph.com/news/112115/investing-101-how-to-predict-bitcoins-price" target="new">Investing 101: How to Predict Bitcoin&#39;s Price</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The best any of us can do is rely on mathematical models to give us confidence in our own educated guesses as to whether the exchange value of a Bitcoin will go up or down tomorrow. Anyone who tells you any differently has a wagon full of snake oil to ...</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbme1/were_looking_for_a_dallas_business_who_wants_the/" target="new">We're looking for a Dallas business who wants the city's first Bitcoin ATM! ($500 Bounty!)</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbme1/were_looking_for_a_dallas_business_who_wants_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Hello r/Bitcoin! We would like to place one of the nation&#39;s first Bitcoin ATMs at a Dallas business as soon as possible! Our kiosks have the look and feel of an ATM (they&#39;re just about 5 square feet). However, unlike a traditional ATM, our Bitcoin</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>NOIP.COM&nbsp;: <a href="https://www.noip.com/" target="new">Dynamic DNS player no-ip.com accepts bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbm3h/dynamic_dns_player_noipcom_accepts_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  adv4nced     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/iIxX2yl.jpg" target="new">Bitcoin melon carving. Anyone know the source?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbjpo/bitcoin_melon_carving_anyone_know_the_source/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  Corneil     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>PANAMPOST.COM&nbsp;: <a href="http://panampost.com/belen-marty/2014/07/20/buenos-aires-to-unleash-latin-americas-first-bitcoin-hub/" target="new">Buenos Aires to Unleash Latin America’s First Bitcoin Hub</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbgmy/buenos_aires_to_unleash_latin_americas_first/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  TheStatelessMan     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/whDHsBKHn-g/" target="new">Latvia’s airBaltic Now Accepts Bitcoin for Flight Bookings</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/whDHsBKHn-g/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The Latvian-based airline now offers a bitcoin payment option for basic class reservations.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BLOGS.TAZ.DE&nbsp;: <a href="http://blogs.taz.de/hausblog/2014/07/21/taz-zahl-ich-ab-sofort-auch-mit-bitcoin/" target="new">German newspaper taz.de accepts bitcoin donations</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbex0/german_newspaper_tazde_accepts_bitcoin_donations/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  da_js     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbdhq/bitwage_announces_release_of_first_formal_bitcoin/" target="new">Bitwage Announces Release of First Formal Bitcoin Payroll Service</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbdhq/bitwage_announces_release_of_first_formal_bitcoin/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The future of payroll is here.  As of July 21st, Bitwage has released its private Bitcoin Payroll Alpha Service. This service combines a user-friendly portal for employers and employees with enterprise quality Bitcoin storage and distribution systems, the</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>TECHCRUNCH.COM&nbsp;: <a href="http://techcrunch.com/2014/07/21/new-york-to-bitcoin-startups-get-permission-or-get-out/?ncid=rss&amp;utm_source=dlvr.it&amp;utm_medium=twitter" target="new">New York To Bitcoin Startups: Get Permission Or Get Out</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbb6r/new_york_to_bitcoin_startups_get_permission_or/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  GoMoneyPenny     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="https://i.imgur.com/M7nylGa.png" target="new">This is what happens when you try to regulate Bitcoin</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bbavd/this_is_what_happens_when_you_try_to_regulate/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  EcstaticShock     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>STRIPE.COM&nbsp;: <a href="https://stripe.com/blog/bitcoin-the-stripe-perspective" target="new">Bitcoin: the Stripe perspective</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bba38/bitcoin_the_stripe_perspective/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  wewtr     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>INVESTS.COM&nbsp;: <a href="http://invests.com/bitcoin-has-passed-the-tipping-point/20140721140817901" target="new">Bitcoin Has Passed The Tipping Point</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb99u/bitcoin_has_passed_the_tipping_point/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  GoMoneyPenny     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>LINKPLUGAPP.COM&nbsp;: <a href="http://www.linkplugapp.com/a/418707" target="new">German Company Aims to Bring 1,000 Bitcoin ATMs to North America</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb8ot/german_company_aims_to_bring_1000_bitcoin_atms_to/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  GoMoneyPenny     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/N9zOxqK" target="new">The bitcoin car spotted in Cleveland heights, OH</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb70m/the_bitcoin_car_spotted_in_cleveland_heights_oh/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  ashish2701     </p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>PCWORLD.COM&nbsp;: <a href="http://www.pcworld.com/article/2456120/dell-accepting-bitcoin-payments.html" target="new">Dell accepting Bitcoin payments</a> <small>(via: <a href="http://www.pcworld.com/article/2456120/dell-accepting-bitcoin-payments.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Refunds for returned products will be issued in real currency (pcworld.com) To read this article in full or to leave a comment, please click here</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=RkvTHlMcEIg" target="new">BitCoin Could Go Down In History As Destroyer Of The US Dollar - Ron Paul</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb6qi/bitcoin_could_go_down_in_history_as_destroyer_of/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  sebicas     </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Ad9hRqLb8lA/" target="new">BTC China Launches USD, HKD Bitcoin Trading Accounts</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/Ad9hRqLb8lA/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The China-based cryptocurrency exchange has added support for USD and HKD deposits and withdrawals to attract international customers.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb1gg/bitcoin_feature_in_british_airways_inflight_mag/" target="new">Bitcoin feature in British Airways in-flight mag</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bb1gg/bitcoin_feature_in_british_airways_inflight_mag/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>OK, so it isn&#39;t &quot;Dell accepts bitcoin&quot;, but I noticed a Bitcoin feature in the BA in-flight mag High Life during a recent trip - I took a couple of snaps: http://imgur.com/8ci7arW  submitted by  supertyler    </p>
+			</div>
+		</li><li class="coindesk_row odd_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/N6nSR4ZTqnc/" target="new">Isle of Man Clarifies Regulation for Digital Currency Businesses</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/N6nSR4ZTqnc/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The island's Financial Supervision Commission has explained the application of existing regulations on bitcoin businesses.</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2batrl/where_are_the_probitcoin_states/" target="new">Where are the Pro-Bitcoin states?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2batrl/where_are_the_probitcoin_states/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>So we&#39;ve seen that NY with its banks wants to neuter Bitcoin--no surprise there. But where are the states that will stand up for bitcoin and financial freedom? Where are the states who will pass a bill that promises to not legislate restrictions or ta</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CA.BITCOINFOUNDATION.ORG&nbsp;: <a href="http://ca.bitcoinfoundation.org/proposed-bitlicense-regulations-will-isolate-new-york/" target="new">"Proposed BitLicense regulations will isolate New York (...) the incentive not to conduct business or to transact with individuals and corporations in the State of New York will become far greater"</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2batpb/proposed_bitlicense_regulations_will_isolate_new/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  btcmbc     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>TURNKEYLINUX.ORG&nbsp;: <a href="http://www.turnkeylinux.org/blog/introducing-bitkey" target="new">Introducing BitKey - A secure Bitcoin live USB/CD solution built with TKLDev [Is this safe to use?]</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2batks/introducing_bitkey_a_secure_bitcoin_live_usbcd/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  pa2013     </p>
+			</div>
+		</li><li class="coinbuzz_row odd_row">
+			<div class="row_pad">
+				<h3>COINBUZZ.COM&nbsp;: <a href="http://www.coinbuzz.com/2014/07/21/sweden-urges-eu-rule-bitcoin-taxation/?utm_source=rss&utm_medium=rss&utm_campaign=sweden-urges-eu-rule-bitcoin-taxation" target="new">Sweden urges EU to rule on bitcoin taxation</a> <small>(via: <a href="http://www.coinbuzz.com/2014/07/21/sweden-urges-eu-rule-bitcoin-taxation/?utm_source=rss&utm_medium=rss&utm_campaign=sweden-urges-eu-rule-bitcoin-taxation" target="feed" class="feed_link">Coin Buzz</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The government of Sweden has asked the European Union to issue definitive rules on the value-added tax (VAT) treatment for peer-to-peer decentralized virtual currencies, like bitcoin and litecoin. Sweden is seeking confirmation after the United Kingdom mo</p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/a6mgNbW1fXo/" target="new">Circle’s Bitcoin Banking Platform is Savvy Bid for Mainstream Market</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/a6mgNbW1fXo/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>Circle Internet Financial gave CoinDesk a preview of the Circle.com digital money platform.</p>
+			</div>
+		</li><li class="yahoonews_row odd_row">
+			<div class="row_pad">
+				<h3>FINANCE.YAHOO.COM&nbsp;: <a href="http://finance.yahoo.com/news/bitcoin-competitor-nxt-modest-start-143500054.html" target="new">Bitcoin competitor NXT in modest start to trade vs the dollar</a> <small>(via: <a href="http://finance.yahoo.com/news/bitcoin-competitor-nxt-modest-start-143500054.html" target="feed" class="feed_link">Yahoo News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>The majority of the trades in NXT - which is similar to Bitcoin - taking place over the past three days were to sell the cryptocurrency for dollars, according to the website of CCEDK, a Danish company based in a small town called Blokhus in the far north </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2baq2u/press_release_btc_china_officially_launches_usd/" target="new">Press Release: BTC China Officially Launches USD, HKD Deposits and Withdrawals</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2baq2u/press_release_btc_china_officially_launches_usd/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>BTC China is proud to officially launch USD and HKD deposits and withdrawals, becoming the first Chinese exchange to support three fiat currencies. After an invite-only period, BTC China is thrilled to expand this service to all of its International Accou</p>
+			</div>
+		</li><li class="googlenews_row odd_row">
+			<div class="row_pad">
+				<h3>FORBES&nbsp;: <a href="http://www.forbes.com/sites/techonomy/2014/07/21/paranoia-muddies-medias-view-of-bitcoins-potential/" target="new">Paranoia Muddies Media&#39;s View of Bitcoin&#39;s Potential</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>However, those taking the time to browse through the EBA&#39;s 46-page report will notice what most of the press did not-—that it also acknowledged and highlighted several key benefits of Bitcoin, such as lower transaction costs and faster processing ti</p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>IMGUR.COM&nbsp;: <a href="http://imgur.com/a/KLd9P" target="new">Here's why everyone should secure their Bitcoins properly.</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bam31/heres_why_everyone_should_secure_their_bitcoins/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  Raaion     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>YOUTUBE.COM&nbsp;: <a href="https://www.youtube.com/watch?v=k-ImIQp4y0I" target="new">Saffron Bacchus - "Why I #lovebitcoin!" @SexyMissSaffron | Prize Pool over 5BTC and growing</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2balx5/saffron_bacchus_why_i_lovebitcoin_sexymisssaffron/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  lovebitcoin_contest     </p>
+			</div>
+		</li><li class="coindesk_row even_row">
+			<div class="row_pad">
+				<h3>COINDESK.COM&nbsp;: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/SqOSM679uvc/" target="new">Investor Fred Wilson: Security and Hoarding Are Holding Back Bitcoin</a> <small>(via: <a href="http://feedproxy.google.com/~r/CoinDesk/~3/SqOSM679uvc/" target="feed" class="feed_link">Coin Desk</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>In a recent speech, the venture capitalist discussed the issues preventing bitcoin from reaching widespread adoption.</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>BITCOINTAXBLOG.COM&nbsp;: <a href="http://www.bitcointaxblog.com/new-york-bitlicense-rules/" target="new">New York Bitlicense Rules Probably Won't Affect You</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bahef/new_york_bitlicense_rules_probably_wont_affect_you/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  bitcointaxblog     </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>TWITTER.COM&nbsp;: <a href="http://twitter.com/airBaltic/status/491148581907095552" target="new">First airline to accept Bitcoin for payment - AirBaltic</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bagr6/first_airline_to_accept_bitcoin_for_payment/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>    submitted by  sgornick     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>FENTONREPORT.COM&nbsp;: <a href="http://www.fentonreport.com/news/bitcoin-why-engage-with-ben-lawsky" target="new">Yes, I think it is wasted effort to engage with Ben Lawsky and here are the reasons why</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bafnv/yes_i_think_it_is_wasted_effort_to_engage_with/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>2 days ago</em></p>
+				<p>submitted by  bruce_fenton    </p>
+			</div>
+		</li><li class="reddit_row even_row">
+			<div class="row_pad">
+				<h3>CRYPTOCOINSNEWS.COM&nbsp;: <a href="http://www.cryptocoinsnews.com/news/expensive-bitcoin-painting-sold/2014/07/21" target="new">The Most Expensive Bitcoin Painting Just Sold</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2badqw/the_most_expensive_bitcoin_painting_just_sold/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>    submitted by  AQuentson     </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>CRYPTOCOINSNEWS.COM&nbsp;: <a href="http://www.cryptocoinsnews.com/news/meet-high-schoolers-developing-bitsell-150-bitcoin-atm/2014/07/21" target="new">Meet the high schoolers developing BitSell, the $150 Bitcoin ATM</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2bacsz/meet_the_high_schoolers_developing_bitsell_the/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>    submitted by  Y3llowb1ackbird     </p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>THE GUARDIAN&nbsp;: <a href="http://www.theguardian.com/technology/2014/jul/21/new-york-licence-bitcoin-trading" target="new">New York proposes licence for Bitcoin trading</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>The proposal, known as the &quot;BitLicence&quot; would require businesses to keep records of the identities and real-world addresses of their customers, to actively keep an eye out for illegal activity, and to always have in its possession the amount of </p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>REDDIT.COM&nbsp;: <a href="http://www.reddit.com/r/Bitcoin/comments/2baawt/time_to_push_back_can_rbitcoin_crowdsource_a/" target="new">Time to push back... can /r/bitcoin crowdsource a BitLicensing counterproposal?</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2baawt/time_to_push_back_can_rbitcoin_crowdsource_a/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>submitted by  jdkeith    </p>
+			</div>
+		</li><li class="googlenews_row even_row">
+			<div class="row_pad">
+				<h3>TELEGRAPH.CO.UK&nbsp;: <a href="http://www.telegraph.co.uk/technology/dell/10980089/Dell-jumps-on-the-Bitcoin-bandwagon.html" target="new">Dell jumps on the Bitcoin bandwagon</a> <small>(via: <a href="https://news.google.com/news/search?q=bitcoin" target="feed" class="feed_link">Google News</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>In recent months businesses including Expedia and Overstock.com have started to accept Bitcoin, many of which have opted to use the payment processor start-up Coinbase. But Dell is by far the largest company to have made the move so far, potentially&nbsp;</p>
+			</div>
+		</li><li class="reddit_row odd_row">
+			<div class="row_pad">
+				<h3>I.IMGUR.COM&nbsp;: <a href="http://i.imgur.com/8iCLChf.jpg" target="new">Bitcoin mentioned on Millionaire Hot Seat tonight</a> <small>(via: <a href="http://www.reddit.com/r/Bitcoin/comments/2baae0/bitcoin_mentioned_on_millionaire_hot_seat_tonight/" target="feed" class="feed_link">Reddit</a>)</small></h3>
+				<p class="ui-li-aside"><em>3 days ago</em></p>
+				<p>    submitted by  FranklinFuckinMint     </p>
+			</div>
+		</li>		</ul>
+	</div>
+	<div data-role="footer" data-position="fixed" class="footer">
+		<small><em>This project brought to you by <a href="http://www.brilliantchampions.com" target="bc">Brilliant Champions</a>.</em><br>Donations: <a href="bitcoin:1AMAMHQFpKCuPWivyzgUv1ip6BPz9V73QN" class="footer_link">1AMAMHQFpKCuPWivyzgUv1ip6BPz9V73QN</a></small>
+	</div>
+</div>
+<div data-role="page" id="price" data-theme="c">
+	<div data-role="header" data-position="fixed">
+		<h1>BTC NEWS</h1>
+		<a href="#home" data-icon="arrow-l" class="ui-btn-left" data-theme="b" data-transition="slide" data-direction="reverse">Back</a>
+	</div>
+	<div data-role="content">
+		<h1 id="big_price"><span class="mt_gox_price"></span><div class="mt_gox_hl"><span class="mt_gox_high"></span> / <span class="mt_gox_low"></span></div></h1>
+		<div class="mt_gox_text"><small>Data from BitStamp. Last updated <span class="mt_gox_updated"></span></small></div>
+		<div id="graph">
+			<a href="http://bitcoinity.org/markets/bitstamp/USD" target="_blank">
+			  <img src="http://bitcoinity.org/markets/image?span=24h&size=medium&currency=USD&exchange=bitstamp" alt="bitcoin price chart"/>
+			</a>
+			<br>
+			<a href="http://bitcoinity.org/markets/bitstamp/USD" target="_blank">
+			  <img src="http://bitcoinity.org/markets/image?span=7d&size=medium&currency=USD&exchange=bitstamp" alt="bitcoin price chart"/>
+			</a>
+			<br>
+			<a href="http://bitcoinity.org/markets/bitstamp/USD" target="_blank">
+			  <img src="http://bitcoinity.org/markets/image?span=30d&size=medium&currency=USD&exchange=bitstamp" alt="bitcoin price chart"/>
+			</a>
+			<br>
+			<a href="http://bitcoinity.org/markets/bitstamp/USD" target="_blank">
+			  <img src="http://bitcoinity.org/markets/image?span=6m&size=medium&currency=USD&exchange=bitstamp" alt="bitcoin price chart"/>
+			</a>
+		</div>
+	</div>
+	<div data-role="footer" data-position="fixed" class="footer">
+	</div>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-89489-21', 'aihosting.com');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
+

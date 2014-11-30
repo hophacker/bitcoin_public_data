@@ -1,0 +1,191 @@
+http://bayeux.datensalat.net/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 20:00:04 GMT
+Server: Apache/2.2.22 (Ubuntu)
+Last-Modified: Tue, 02 Apr 2013 08:37:36 GMT
+ETag: "225ed-1b6b-4d95ca63bd400"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 2427
+Connection: close
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Bildwirkerey von Bayeux</title>
+		<link rel="icon" type="image/png" href="assets/900x600/favicon.png" />
+		<link rel="stylesheet" type="text/css" href="assets/900x600/style.css">
+		<link rel="stylesheet" href="assets/900x600/transforms.css">
+		<script src="assets/jquery.min.js"></script>
+		<script src="assets/htck.js"></script>
+		<script src="assets/jquery-ui/js/jquery-ui.js" async="async"></script>
+		<script src="assets/textcontrolpanel.js" defer="defer"></script>
+		<script src="assets/postit.js" defer="defer"></script>		
+		<script type="text/javascript">
+  			if(top != self) top.location.replace(location);
+  			$(document).ready(function(){
+				generalInit ();
+  				initStartPane();
+  				initTextEditPane();
+  				initImageModePane();
+  				initImageControlPanel ();
+  				$('#bayeux-start-button').click (function () {
+  					$.get('/backend/tabs', function(data) {
+						initImageModeTabs(data);
+						$.get('/backend/figures', function(figures) {
+							initFigures(figures);
+						});
+					});	
+				});
+			});
+			
+			$(window).load(function() {
+  				setTimeout(function () {startAnimation()}, 500);
+  				setTimeout(function () {schedulePulse()}, 5700);
+			}); 
+			
+			/*$(document).unbind('keypress');
+			
+			$(document).keypress(function (e) {
+			   //if ( e.target.nodeName.toUpperCase() != 'TEXTAREA' ) {	   
+				  var code = (e.keyCode ? e.keyCode : e.which);
+				  if ( code == 8 ) { 
+				  	return false;
+				  }
+			   //}
+			});*/
+		</script>
+		<!--[if lte IE 9]> 
+			<script>
+				$(document).ready(function() {
+					$('body').html('<h1 class="fatal-error">Sorry</h1><p>This web application does not work with Internet Explorer</p>');
+				});
+			</script>
+		<![endif]-->
+	</head>
+	<body spellcheck="false">
+		<header><h1>Bildwirkerey von Bayeux<span>beta</span></h1></header>
+      <div id="maincontent">
+      	<div id="javascript-required">
+			<h1>Sorry</h1>
+			<p>This is a web application. To use it, you have to have JavaScript enabled in your browser.</p>
+		</div>
+      	<div id="bayeux-region">
+			<div id="bayeux-start" class="htck-panel">
+				<div class="toolsection">
+					<div id="introtext">
+						<h2>Welcome</h2>
+						<p class="htck-text">Create your own stories with the <b>historic tale construction kit</b>.</p>
+						<p class="htck-text">Drag <b>images</b> to the canvas to compose story panels. Click the canvas to enter <b>text</b>.</p>
+					</div>
+					<img src="assets/900x600/start/horiz_div_toolstop.png" style="margin-top: 25px;" alt="">
+					<img src="assets/900x600/start/tools.png"  alt="Tool Section">
+					<div id="bayeux-start-button" class="bayeux-start-button" >
+						<img src="assets/900x600/start/startbutton_red.png" class="bayeux-button" alt="Click Button to start designing">
+					</div>
+				</div>
+				<div id="bayeux-start-tooltip" style="display: none">
+					<img src="assets/900x600/start/tooltip.png" alt="">
+				</div>
+			</div>
+			
+			<div id="bayeux-image-mode" class="htck-panel">
+				<div class="toolsection">
+					<div id="bayeux-imagemode-tabs">
+					</div>
+					<div id="bayeux-imagemode-tabbody"></div>
+
+				</div>
+				
+			</div>
+			<div id="bayeux-mailto" class="htck-panel"></div>
+			<div id="bayeux-gallery-submit" class="htck-panel"></div>
+			<div id="bayeux-gallery-view-warn" class="htck-panel"></div>
+			<div id="bayeux-gallery-view" class="htck-panel"></div>
+			<div id="bayeux-gallery-clear-warn" class="htck-panel"></div>
+			<div id="bayeux-canvas" class="canvas">
+				<div id="intro-region">
+					<div id="borduere-oben"></div>
+					<div id="slogan-top"></div>
+					<div id="intro-lions"></div>
+					<div id="intro-sitting_king"></div>
+					<div id="first-knight"></div>
+					<div id="final-knights"></div>
+					<div id="slogan-bottom"></div>
+					<div id="borduere-unten"></div>
+				</div>
+				<div id="bayeux-imagecontrolpanel">
+					<div id="bayeux-imagelarger"></div>
+					<div id="bayeux-imagesmaller"></div>
+					<div id="bayeux-imageright"></div>
+					<div id="bayeux-imageleft"></div>
+					<div id="bayeux-imageflip"></div>
+					<div id="bayeux-imageclear"></div>
+				</div>
+				<div id="bayeux-textcontrolpanel">
+					<div id="bayeux-textlarger"></div>
+					<div id="bayeux-textsmaller"></div>
+					<div id="bayeux-textred"></div>
+					<div id="bayeux-textblue"></div>
+					<div id="bayeux-textyellow"></div>
+					<div id="bayeux-textgreen"></div>
+					<div id="bayeux-textblack"></div>
+					<div id="bayeux-textclear"></div>
+				</div>
+			</div>
+			<div class="submit" onclick="postIt(); return false;" style="display: none;"><span>S</span><span>u</span><span>b</span><span>m</span><span>i</span><span>t</span></div>
+			<div id="bayeux-footer">
+				<img src="assets/900x600/footer_url.jpg"  alt="&copy;  MMXI Eisenheinrich">
+				<img src="assets/900x600/background_eh_k_and_j.jpg" id="bayeux-start-eh-branding"  alt="&copy; MMXI Eisenheinrich">
+					<img src="assets/900x600/footer.png" id="bayeux-start-kj-branding" style="display: none"  alt="Original credits">
+			</div>
+		</div>
+		
+		<div id="gallery">
+			<h2>Your Images</h2>
+			<div id="recents"></div>
+		</div>
+		<script>
+			$('#javascript-required').remove();
+			var ua = navigator.userAgent.toLowerCase();
+			if ((ua.indexOf ('firefox/2.') != -1) || (ua.indexOf ('firefox/3.0') != -1) || (ua.indexOf ('firefox/3.5') != -1)) {
+				$('body').html('<h1>Sorry</h1><p>You need to <a href="http://mozilla.com" target="_blank">upgrade</a> to FireFox 3.6 or later.</p>');
+			}
+			
+			if ((ua.indexOf ('iphone') != -1) 
+				|| (ua.indexOf ('ipad') != -1) 
+				|| (ua.indexOf ('ipod') != -1) 
+				|| (ua.indexOf ('android') != -1) 
+				|| (ua.indexOf ('iemobile') != -1)
+				|| (ua.indexOf ('msie') != -1)
+				|| (ua.indexOf ('opera mobi') != -1)
+				|| (ua.indexOf ('opera mini') != -1)
+				|| (ua.indexOf ('kindle') != -1)
+				|| (ua.indexOf ('symbian') != -1)
+				|| (ua.indexOf ('blackberry') != -1)
+				|| (ua.indexOf ('playstation portable') != -1)
+			) {
+				$('body').html('<h1 class="fatal-error">Sorry</h1><p>This web application is not suitable for mobile devices.</p>');
+			}	
+
+		</script>
+		<section id="description">
+			<h1>Historic tale construction kit</h1>	
+			<p>Originally conceived as a Flash application and implemented by two german students, Karnebogen and Jungbluth, the Historic Tale Construction Kit is no more.</p>
+			<p>To preserve one of the first meme generators on the web, I have recreated the kit in HTML and JavaScript.</p>
+			<p>A description of the original kit by Björn Karnebogen is still <a href="http://netzspannung.org/cat/servlet/CatServlet?cmd=document&subCommand=show&forward=%2Fnetzkollektor%2Foutput%2Fproject.xml&entryId=84868" target="_blank">available</a>.</p>
+			<p><em>Johannes Jander, 2011</em></p>
+			<h2>Donations</h2>
+			<p>If you like the construction kit, please send some Satoshis to: <strong>1M6J6wnfrAqdvcSoZr5cjfrhSd2nWux1dw</strong></p>
+		</section>
+		
+		
+		
+      </div>
+      
+	</body>
+</html>

@@ -1,0 +1,1318 @@
+http://bitcoincharts.com/charts/btcnCNY
+HTTP/1.1 200 OK
+Server: nginx/1.6.0
+Date: Wed, 23 Jul 2014 03:23:09 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 8073
+Connection: close
+Vary: Accept-Encoding, Cookie
+Content-Encoding: gzip
+X-Frame-Options: DENY
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html>
+	<head>
+		<title>Bitcoin Charts / Charts</title>
+		<meta name="google-site-verification" content="fFq6TRpyqzjemTQBJ2dkMi00mJPMeHbLbGvp195gHuE" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="advertising" content="ask" />
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+		<link rel="stylesheet" href="/static/CACHE/css/4596b7736c1c.css" type="text/css" />
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/static/excanvas.min.js"></script><![endif]-->
+
+		<script type="text/javascript" src="/static/CACHE/js/064763791d59.js"></script>
+		<script type="text/javascript">
+			var cs = new ChartSocket(null);
+			jQuery(document).ready( cs.connect );
+                        if(parent != null && parent != self) {if(parent.location.hostname != self.location.hostname) {top.location.href=self.location.href; }}
+		</script>
+	</head>
+
+	<body class="charts">
+    <div id="header">
+      <div class="container_12">
+        <div class="grid_4" id="logobox">
+          <a href="/"><img width=244 height=36 src="/static/chartslogo.png" /><h1>Bitcoin Charts</h1></a>
+        </div>
+
+        <div class="networkinfo grid_8 right" id="blob1747846754">
+
+
+	<div class="column">
+			<table>
+				<tr><td class="label">Blocks</td><td>312056</td></tr>
+				<tr><td class="label">Total BTC</td><td>13.051M</td></tr>
+			</table>
+	</div>
+	<div class="column">
+			<table>
+				<tr><td class="label">Difficulty</td><td>17336316979</td></tr>
+				<tr><td class="label">Estimated</td><td>18769193670 in 424 blks</td></tr>
+			</table>
+	</div>
+	<div class="column">
+			<table>
+				<tr><td class="label">Network total</td><td>128442.030 Thash/s</td></tr>
+				<tr><td class="label">Blocks/hour</td><td>6.21 / 580 s</td></tr>
+			</table>
+	</div>
+
+</div><script type="text/javascript">cs.addBlob("blob1747846754", "blob.networkinfo");</script>
+
+        <div id="menu" class="grid_12">
+          <div class="grid_6">
+            <ul>
+              
+
+
+              <li><a href="/">Home</a>
+              <li><a href="/bitcoin/">Bitcoin</a>
+              <li><a href="/markets/">Markets</a>
+              <li><a class="active" href="/charts/">Charts</a>
+              <li><a href="/about/">About</a>
+              
+
+            </ul>
+          </div>
+          <div class="grid_6 right misc">
+            <span class="timestamp">Jul 23, 2014 03:23:08 (UTC)</span>
+          </div>
+        </div>
+		  </div>
+		</div>
+
+		
+
+<div class="container adblock">
+  <script type="text/javascript"><!--                                                      
+  google_ad_client = "ca-pub-7496764558485520";                                    
+  /* bitcoincharts markets index */                                             
+  google_ad_slot = "4954207899";                                                
+  google_ad_width = 728;                                                        
+  google_ad_height = 90;                                                        
+  //-->                                                                         
+</script>                                                                       
+<script type="text/javascript"                                                  
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">                
+</script> 
+</div>
+
+
+
+
+
+<div class="container submenu">
+  <ul>
+    <li><a class="active" href="/charts/">Pricechart</a></li>
+    <li><a href="/charts/volumepie/">Volume comparison</a></li>
+  </ul>
+</div>
+
+
+
+
+<script language="Javascript">
+
+  var url = "";
+
+	//Cross browser method to get an object
+	function getObject(id)
+	{
+		if (document.getElementById)
+		//IE 5.x or NS 6.x or above
+		return document.getElementById(id);
+		else if (document.all)
+		//IE 4.x
+		return document.all[id];
+		else
+		//Netscape 4.x
+		return document[id];
+	}
+
+	function setMarket(m) {
+		getObject('m').value = m;
+		updateChart(1);
+	}
+
+	var resizeTimeout = false;
+
+	jQuery(window).resize( function() {
+		clearTimeout(resizeTimeout);
+		resizeTimeout = setTimeout("updateChart(0, true)", 100);
+	});
+
+	//Update the chart according to user selection
+	function updateChart(updateURL, noclear)
+	{
+		resizeTimeout = false;
+		var box = jQuery('#content_chart');
+    var boxwidth = box.innerWidth() - 40;
+		//
+		//we encode the values of all form elements as query parameters
+		//
+		var elements = getObject("chartoptions").elements;
+    url = "";
+		var hash = new Array();
+		var market = "";
+		for (var i = 0; i < elements.length; ++i)
+		{
+			var e = elements[i];
+			if (e.type == "checkbox")
+			url = url + e.id + "=" + (e.checked ? "1" : "0") + "&";
+			else
+			url = url + e.id + "=" + escape(e.value) + "&";
+
+			if(e.id == "m") {
+				market = e.value;
+				} else if (e.type != "submit") {
+        if (e.type == "checkbox") {
+          if(e.checked)
+    				hash.push(e.id)
+        } else if (e.value)
+  				hash.push(e.id + "g" + escape(e.value));
+			}
+		}
+
+    if(updateURL > 0) {
+      urlhash = hash.join("z");
+      new_url = location.href.replace(/\/[^/]+$/, "/") + market + '#' + urlhash;
+      jQuery('#permalink').val(new_url);
+  		if (typeof history.pushState == 'function')  {
+	  		if(updateURL == 2)
+		    	history.replaceState("m=" + market + "," + urlhash, document.title, market + '#' + urlhash);
+	  		else
+	    		history.pushState("m=" + market + "," + urlhash, document.title, market + '#' + urlhash);
+	  	}
+    }
+
+		//Now we update the URL of the image to update the chart
+		var d = new Date;
+
+		var img = getObject("ChartImage");
+		img.src = "chart.png?width=" + boxwidth + "&" + url;
+
+		img.onload = function() {
+			return;
+			var img = jQuery(this);
+			var o = jQuery('#ChartOverlay');
+			o.width(this.width);
+			o.height(this.height);
+
+			o.css('position', 'absolute');
+			o.css('left', img.offset()['left']);
+			o.css('top', img.offset()['top']);
+		};
+
+    if (!noclear) clear_table();
+  }
+
+  function load_table() {
+    var table = jQuery("#chart_table");
+    table.show();
+
+    update_table('chart.json?' + url);
+
+    return false;
+  }
+
+  function clear_table() {
+    var table = jQuery("#chart_table");
+    table.children("tbody tr").remove();
+    table.hide();
+
+  }
+
+  function update_table(url) {
+    var table = jQuery("#chart_table tbody");
+    table.children().remove();
+    table.append("<tr><td colspan=8>Loading...</td></tr>");
+
+    jQuery.getJSON(url, null, function (data) {
+      table.children().remove();
+
+      if (!data) {
+        table.append("<tr><td colspan=8>No data returned.</td></tr>");
+        return;
+      }
+
+      function round(a, n) {
+        return Math.round(a * Math.pow(10,  n)) / Math.pow(10, n);
+      }
+
+      function ISODateString(d) {
+          function pad(n){
+              return n<10 ? '0'+n : n
+          }
+          return d.getUTCFullYear()+'-'
+          + pad(d.getUTCMonth()+1)+'-'
+          + pad(d.getUTCDate())+' '
+          + pad(d.getUTCHours())+':'
+          + pad(d.getUTCMinutes())+':'
+          + pad(d.getUTCSeconds());
+      }
+
+      for (var i = 0; i < data.length; i++){
+        var timestamp = new Date();
+        timestamp.setTime(data[i][0] * 1000);
+        var o = data[i][1];
+        var h = data[i][2];
+        var l = data[i][3];
+        var c = data[i][4];
+        var v = data[i][5];
+        var cv = data[i][6];
+        var avg = data[i][7];
+
+        if (v == 0) continue;
+
+        row = [ISODateString(timestamp), o, h, l, c, round(v, 2), round(cv, 2), round(avg, 2)];
+
+
+        table.append("<tr><td>" + row.join("</td><td>") + "</td></tr>");
+      }
+
+    });
+  }
+
+	function customTime() {
+		var c = document.getElementById("c").checked;
+		if(c) {
+			var d = parseInt(document.getElementById("r").value);
+			if(d == 0) {
+				d = 29;
+			}
+			var x = "-" + (d-1) + "d";
+			jQuery("#s").datepicker("setDate", x);
+			jQuery("#e").datepicker("setDate", "1d");
+			jQuery("#CustomTimeBox").show();
+			jQuery("#r").hide();
+		} else {
+      jQuery("#s").val("");
+      jQuery("#e").val("");
+			jQuery("#CustomTimeBox").hide();
+			jQuery("#r").show();
+    }
+	}
+
+	window.onpopstate = function(e) {
+		if(e.state.length > 0)
+			parseHash(e.state);
+
+		updateChart(0);
+	};
+
+	jQuery(document).ready(function(){
+		jQuery("#CustomTimeBox").hide();
+		var hash = location.hash.substring(1);
+
+		if(hash.length > 0)
+			parseHash(hash);
+
+		customTime();
+
+		jQuery("#s").datepicker({ dateFormat: 'yy-mm-dd' });
+		jQuery("#e").datepicker({ dateFormat: 'yy-mm-dd' });
+
+		updateChart(2);
+		jQuery("#chartoptions").change( function() {
+			updateChart(1);
+		});
+
+		jQuery("#c").change( function() {
+			customTime();
+		});
+
+		jQuery("#r").change( function() {
+			document.getElementById("c").checked = false;
+		});
+
+		jQuery("#Prev").click( function() {
+			if(document.getElementById("c").checked == false) {
+				jQuery("#c").click();
+			}
+			s = document.getElementById("s");
+			e = document.getElementById("e");
+			s.value = Date.parse(s.value).add(-1).days().toString("yyyy-MM-dd");
+			e.value = Date.parse(e.value).add(-1).days().toString("yyyy-MM-dd");
+		});
+		jQuery("#Next").click( function() {
+			if(document.getElementById("c").checked == false) {
+				jQuery("#c").click();
+			}
+			s = document.getElementById("s");
+			e = document.getElementById("e");
+			s.value = Date.parse(s.value).add(1).days().toString("yyyy-MM-dd");
+			e.value = Date.parse(e.value).add(1).days().toString("yyyy-MM-dd");
+		});
+
+		jQuery("#getPermalink").fancybox({'transitionIn': 'none', 'transitionOut': 'none', 'scrolling': 'no', 'titleShow': false, 'overlayShow': false});
+	});
+
+
+  var old_width = "";
+
+  function fullWidth() {
+    if (old_width == "")
+      old_width = jQuery("#content_chart").css("width");
+
+    var w = jQuery("#content_chart").css("width");
+
+    if (w != old_width) {
+      jQuery("#content_chart").css("width", old_width);
+    } else {
+      jQuery("#content_chart").css("width", "auto");
+    }
+
+		updateChart(0);
+
+    return false;
+  }
+
+
+	function parseHash(hash) {
+		/* Reset timerange, volume and chart type if hash is supplied.
+			They expect different 0/none as defaults	*/
+		getObject("v").checked = false;
+		getObject("t").value = "";
+		getObject("r").value = "";
+
+		var data = hash.split('z');
+		for (var i = 0; i < data.length; ++i) {
+			var x = data[i].split('g');
+			if(e = getObject(x.shift())) {
+				if (e.type == "checkbox")
+  				e.checked = true;
+				else
+  				e.value = x.join('g');
+			}
+		}
+	}
+
+</script>
+<div class="container_12 chartoptions content">
+  <form id="chartoptions" action="javascript:updateChart(1)">
+    <div class="grid_2">
+      
+      <h6>Symbol</h6>
+      <select id="m" name="m" class="input" style="width:120px;">
+        
+        <optgroup label="ARS">
+          
+          <option value="localbtcARS">localbtcARS</option>
+          
+          <option value="thARS">thARS</option>
+          
+        </optgroup>
+        
+        <optgroup label="AUD">
+          
+          <option value="anxhkAUD">anxhkAUD</option>
+          
+          <option value="bcmBMAUD">bcmBMAUD</option>
+          
+          <option value="bitmarketAUD">bitmarketAUD</option>
+          
+          <option value="btcmarketsAUD">btcmarketsAUD</option>
+          
+          <option value="cryptoxAUD">cryptoxAUD</option>
+          
+          <option value="localbtcAUD">localbtcAUD</option>
+          
+          <option value="mtgoxAUD">mtgoxAUD</option>
+          
+          <option value="ruxumAUD">ruxumAUD</option>
+          
+          <option value="thAUD">thAUD</option>
+          
+          <option value="wbxAUD">wbxAUD</option>
+          
+          <option value="weexAUD">weexAUD</option>
+          
+        </optgroup>
+        
+        <optgroup label="BRL">
+          
+          <option value="bbmBRL">bbmBRL</option>
+          
+          <option value="btc2uBRL">btc2uBRL</option>
+          
+          <option value="localbtcBRL">localbtcBRL</option>
+          
+          <option value="mrcdBRL">mrcdBRL</option>
+          
+          <option value="thBRL">thBRL</option>
+          
+        </optgroup>
+        
+        <optgroup label="CAD">
+          
+          <option value="anxhkCAD">anxhkCAD</option>
+          
+          <option value="bitaloCAD">bitaloCAD</option>
+          
+          <option value="localbtcCAD">localbtcCAD</option>
+          
+          <option value="lybitCAD">lybitCAD</option>
+          
+          <option value="mtgoxCAD">mtgoxCAD</option>
+          
+          <option value="thCAD">thCAD</option>
+          
+          <option value="virtexCAD">virtexCAD</option>
+          
+          <option value="weexCAD">weexCAD</option>
+          
+        </optgroup>
+        
+        <optgroup label="CHF">
+          
+          <option value="anxhkCHF">anxhkCHF</option>
+          
+          <option value="localbtcCHF">localbtcCHF</option>
+          
+          <option value="mtgoxCHF">mtgoxCHF</option>
+          
+          <option value="ruxumCHF">ruxumCHF</option>
+          
+          <option value="thCHF">thCHF</option>
+          
+        </optgroup>
+        
+        <optgroup label="CLP">
+          
+          <option value="thCLP">thCLP</option>
+          
+        </optgroup>
+        
+        <optgroup label="CNY">
+          
+          <option value="anxhkCNY">anxhkCNY</option>
+          
+          <option value="btcnCNY" selected>btcnCNY</option>
+          
+          <option value="mtgoxCNY">mtgoxCNY</option>
+          
+          <option value="okcoinCNY">okcoinCNY</option>
+          
+          <option value="rmbtbCNY">rmbtbCNY</option>
+          
+          <option value="thCNY">thCNY</option>
+          
+        </optgroup>
+        
+        <optgroup label="CZK">
+          
+          <option value="bitcashCZK">bitcashCZK</option>
+          
+          <option value="bitstockCZK">bitstockCZK</option>
+          
+          <option value="localbtcCZK">localbtcCZK</option>
+          
+          <option value="thCZK">thCZK</option>
+          
+        </optgroup>
+        
+        <optgroup label="DKK">
+          
+          <option value="localbtcDKK">localbtcDKK</option>
+          
+          <option value="mtgoxDKK">mtgoxDKK</option>
+          
+          <option value="thDKK">thDKK</option>
+          
+        </optgroup>
+        
+        <optgroup label="EUR">
+          
+          <option value="anxhkEUR">anxhkEUR</option>
+          
+          <option value="aqoinEUR">aqoinEUR</option>
+          
+          <option value="b7EUR">b7EUR</option>
+          
+          <option value="bcEUR">bcEUR</option>
+          
+          <option value="bitaloEUR">bitaloEUR</option>
+          
+          <option value="bitbayEUR">bitbayEUR</option>
+          
+          <option value="bitcurexEUR">bitcurexEUR</option>
+          
+          <option value="bitmarketEUR">bitmarketEUR</option>
+          
+          <option value="btc24EUR">btc24EUR</option>
+          
+          <option value="btcdeEUR">btcdeEUR</option>
+          
+          <option value="btceEUR">btceEUR</option>
+          
+          <option value="btceurEUR">btceurEUR</option>
+          
+          <option value="btcexEUR">btcexEUR</option>
+          
+          <option value="crytrEUR">crytrEUR</option>
+          
+          <option value="fbtcEUR">fbtcEUR</option>
+          
+          <option value="freshEUR">freshEUR</option>
+          
+          <option value="globalEUR">globalEUR</option>
+          
+          <option value="hitbtcEUR">hitbtcEUR</option>
+          
+          <option value="ibwtEUR">ibwtEUR</option>
+          
+          <option value="imcexEUR">imcexEUR</option>
+          
+          <option value="intrsngEUR">intrsngEUR</option>
+          
+          <option value="itbitEUR">itbitEUR</option>
+          
+          <option value="justEUR">justEUR</option>
+          
+          <option value="krakenEUR">krakenEUR</option>
+          
+          <option value="localbtcEUR">localbtcEUR</option>
+          
+          <option value="mtgoxEUR">mtgoxEUR</option>
+          
+          <option value="rippleEUR">rippleEUR</option>
+          
+          <option value="rockEUR">rockEUR</option>
+          
+          <option value="ruxumEUR">ruxumEUR</option>
+          
+          <option value="thEUR">thEUR</option>
+          
+          <option value="vcxEUR">vcxEUR</option>
+          
+          <option value="zyadoEUR">zyadoEUR</option>
+          
+        </optgroup>
+        
+        <optgroup label="GAU">
+          
+          <option value="bcmBMGAU">bcmBMGAU</option>
+          
+          <option value="bcmPXGAU">bcmPXGAU</option>
+          
+        </optgroup>
+        
+        <optgroup label="GBP">
+          
+          <option value="anxhkGBP">anxhkGBP</option>
+          
+          <option value="bcGBP">bcGBP</option>
+          
+          <option value="bit121GBP">bit121GBP</option>
+          
+          <option value="bitaloGBP">bitaloGBP</option>
+          
+          <option value="bitmarketGBP">bitmarketGBP</option>
+          
+          <option value="britcoinGBP">britcoinGBP</option>
+          
+          <option value="coinfloorGBP">coinfloorGBP</option>
+          
+          <option value="globalGBP">globalGBP</option>
+          
+          <option value="ibwtGBP">ibwtGBP</option>
+          
+          <option value="intrsngGBP">intrsngGBP</option>
+          
+          <option value="localbtcGBP">localbtcGBP</option>
+          
+          <option value="mtgoxGBP">mtgoxGBP</option>
+          
+          <option value="ruxumGBP">ruxumGBP</option>
+          
+          <option value="thGBP">thGBP</option>
+          
+        </optgroup>
+        
+        <optgroup label="HKD">
+          
+          <option value="anxhkHKD">anxhkHKD</option>
+          
+          <option value="btchkexHKD">btchkexHKD</option>
+          
+          <option value="localbtcHKD">localbtcHKD</option>
+          
+          <option value="mtgoxHKD">mtgoxHKD</option>
+          
+          <option value="ruxumHKD">ruxumHKD</option>
+          
+          <option value="thHKD">thHKD</option>
+          
+        </optgroup>
+        
+        <optgroup label="HUF">
+          
+          <option value="ruxumHUF">ruxumHUF</option>
+          
+        </optgroup>
+        
+        <optgroup label="IDR">
+          
+          <option value="btcoidIDR">btcoidIDR</option>
+          
+        </optgroup>
+        
+        <optgroup label="ILS">
+          
+          <option value="bit2cILS">bit2cILS</option>
+          
+          <option value="localbtcILS">localbtcILS</option>
+          
+          <option value="thILS">thILS</option>
+          
+        </optgroup>
+        
+        <optgroup label="INR">
+          
+          <option value="localbtcINR">localbtcINR</option>
+          
+          <option value="thINR">thINR</option>
+          
+        </optgroup>
+        
+        <optgroup label="JPY">
+          
+          <option value="anxhkJPY">anxhkJPY</option>
+          
+          <option value="btcexJPY">btcexJPY</option>
+          
+          <option value="mtgoxJPY">mtgoxJPY</option>
+          
+          <option value="ruxumJPY">ruxumJPY</option>
+          
+          <option value="thJPY">thJPY</option>
+          
+        </optgroup>
+        
+        <optgroup label="KRW">
+          
+          <option value="korbitKRW">korbitKRW</option>
+          
+          <option value="krakenKRW">krakenKRW</option>
+          
+        </optgroup>
+        
+        <optgroup label="LTC">
+          
+          <option value="bitmeLTC">bitmeLTC</option>
+          
+          <option value="ibwtLTC">ibwtLTC</option>
+          
+          <option value="justLTC">justLTC</option>
+          
+          <option value="krakenLTC">krakenLTC</option>
+          
+        </optgroup>
+        
+        <optgroup label="MXN">
+          
+          <option value="localbtcMXN">localbtcMXN</option>
+          
+          <option value="thMXN">thMXN</option>
+          
+        </optgroup>
+        
+        <optgroup label="NMC">
+          
+          <option value="krakenNMC">krakenNMC</option>
+          
+        </optgroup>
+        
+        <optgroup label="NOK">
+          
+          <option value="justNOK">justNOK</option>
+          
+          <option value="localbtcNOK">localbtcNOK</option>
+          
+          <option value="mtgoxNOK">mtgoxNOK</option>
+          
+          <option value="thNOK">thNOK</option>
+          
+        </optgroup>
+        
+        <optgroup label="NZD">
+          
+          <option value="anxhkNZD">anxhkNZD</option>
+          
+          <option value="bitnzNZD">bitnzNZD</option>
+          
+          <option value="localbtcNZD">localbtcNZD</option>
+          
+          <option value="mtgoxNZD">mtgoxNZD</option>
+          
+          <option value="thNZD">thNZD</option>
+          
+        </optgroup>
+        
+        <optgroup label="PEN">
+          
+          <option value="thPEN">thPEN</option>
+          
+        </optgroup>
+        
+        <optgroup label="PLN">
+          
+          <option value="bidxtrmPLN">bidxtrmPLN</option>
+          
+          <option value="bitaloPLN">bitaloPLN</option>
+          
+          <option value="bitbayPLN">bitbayPLN</option>
+          
+          <option value="bitchangePLN">bitchangePLN</option>
+          
+          <option value="bitcurexPLN">bitcurexPLN</option>
+          
+          <option value="bitmarketPLN">bitmarketPLN</option>
+          
+          <option value="bitmarketplPLN">bitmarketplPLN</option>
+          
+          <option value="bitomatPLN">bitomatPLN</option>
+          
+          <option value="freshPLN">freshPLN</option>
+          
+          <option value="globalPLN">globalPLN</option>
+          
+          <option value="intrsngPLN">intrsngPLN</option>
+          
+          <option value="localbtcPLN">localbtcPLN</option>
+          
+          <option value="mtgoxPLN">mtgoxPLN</option>
+          
+          <option value="ruxumPLN">ruxumPLN</option>
+          
+          <option value="thPLN">thPLN</option>
+          
+        </optgroup>
+        
+        <optgroup label="RON">
+          
+          <option value="btcxchangeRON">btcxchangeRON</option>
+          
+        </optgroup>
+        
+        <optgroup label="RUB">
+          
+          <option value="bitmarketRUB">bitmarketRUB</option>
+          
+          <option value="btceRUR">btceRUR</option>
+          
+          <option value="btcexRUB">btcexRUB</option>
+          
+          <option value="btcexWMR">btcexWMR</option>
+          
+          <option value="btcexYAD">btcexYAD</option>
+          
+          <option value="imcexRUB">imcexRUB</option>
+          
+          <option value="localbtcRUB">localbtcRUB</option>
+          
+          <option value="mtgoxRUB">mtgoxRUB</option>
+          
+          <option value="ruxumRUB">ruxumRUB</option>
+          
+        </optgroup>
+        
+        <optgroup label="SEK">
+          
+          <option value="fybseSEK">fybseSEK</option>
+          
+          <option value="kptnSEK">kptnSEK</option>
+          
+          <option value="localbtcSEK">localbtcSEK</option>
+          
+          <option value="mtgoxSEK">mtgoxSEK</option>
+          
+          <option value="ruxumSEK">ruxumSEK</option>
+          
+          <option value="thSEK">thSEK</option>
+          
+        </optgroup>
+        
+        <optgroup label="SGD">
+          
+          <option value="anxhkSGD">anxhkSGD</option>
+          
+          <option value="fybsgSGD">fybsgSGD</option>
+          
+          <option value="itbitSGD">itbitSGD</option>
+          
+          <option value="localbtcSGD">localbtcSGD</option>
+          
+          <option value="mtgoxSGD">mtgoxSGD</option>
+          
+          <option value="ruxumSGD">ruxumSGD</option>
+          
+        </optgroup>
+        
+        <optgroup label="SLL">
+          
+          <option value="rockSLL">rockSLL</option>
+          
+          <option value="virwoxSLL">virwoxSLL</option>
+          
+        </optgroup>
+        
+        <optgroup label="THB">
+          
+          <option value="localbtcTHB">localbtcTHB</option>
+          
+          <option value="mtgoxTHB">mtgoxTHB</option>
+          
+          <option value="ruxumTHB">ruxumTHB</option>
+          
+        </optgroup>
+        
+        <optgroup label="UAH">
+          
+          <option value="ruxumUAH">ruxumUAH</option>
+          
+        </optgroup>
+        
+        <optgroup label="USD">
+          
+          <option value="1coinUSD">1coinUSD</option>
+          
+          <option value="anxhkUSD">anxhkUSD</option>
+          
+          <option value="b2cUSD">b2cUSD</option>
+          
+          <option value="b7USD">b7USD</option>
+          
+          <option value="bcmBMUSD">bcmBMUSD</option>
+          
+          <option value="bcmLRUSD">bcmLRUSD</option>
+          
+          <option value="bcmMBUSD">bcmMBUSD</option>
+          
+          <option value="bcmMLUSD">bcmMLUSD</option>
+          
+          <option value="bcmPPUSD">bcmPPUSD</option>
+          
+          <option value="bitaloUSD">bitaloUSD</option>
+          
+          <option value="bitbayUSD">bitbayUSD</option>
+          
+          <option value="bitboxUSD">bitboxUSD</option>
+          
+          <option value="bitfinexUSD">bitfinexUSD</option>
+          
+          <option value="bitfloorUSD">bitfloorUSD</option>
+          
+          <option value="bitkonanUSD">bitkonanUSD</option>
+          
+          <option value="bitmarketUSD">bitmarketUSD</option>
+          
+          <option value="bitmeUSD">bitmeUSD</option>
+          
+          <option value="bitstampUSD">bitstampUSD</option>
+          
+          <option value="btc24USD">btc24USD</option>
+          
+          <option value="btceUSD">btceUSD</option>
+          
+          <option value="btcexUSD">btcexUSD</option>
+          
+          <option value="btcexWMZ">btcexWMZ</option>
+          
+          <option value="btctreeUSD">btctreeUSD</option>
+          
+          <option value="cbxUSD">cbxUSD</option>
+          
+          <option value="cotrUSD">cotrUSD</option>
+          
+          <option value="cryptoxUSD">cryptoxUSD</option>
+          
+          <option value="crytrUSD">crytrUSD</option>
+          
+          <option value="exchbUSD">exchbUSD</option>
+          
+          <option value="fbtcUSD">fbtcUSD</option>
+          
+          <option value="freshUSD">freshUSD</option>
+          
+          <option value="globalUSD">globalUSD</option>
+          
+          <option value="hitbtcUSD">hitbtcUSD</option>
+          
+          <option value="ibwtUSD">ibwtUSD</option>
+          
+          <option value="imcexUSD">imcexUSD</option>
+          
+          <option value="intrsngUSD">intrsngUSD</option>
+          
+          <option value="itbitUSD">itbitUSD</option>
+          
+          <option value="justUSD">justUSD</option>
+          
+          <option value="krakenUSD">krakenUSD</option>
+          
+          <option value="lakeUSD">lakeUSD</option>
+          
+          <option value="localbtcUSD">localbtcUSD</option>
+          
+          <option value="lybitUSD">lybitUSD</option>
+          
+          <option value="mtgoxUSD">mtgoxUSD</option>
+          
+          <option value="rippleUSD">rippleUSD</option>
+          
+          <option value="rockUSD">rockUSD</option>
+          
+          <option value="ruxumUSD">ruxumUSD</option>
+          
+          <option value="thLRUSD">thLRUSD</option>
+          
+          <option value="thUSD">thUSD</option>
+          
+          <option value="vcxUSD">vcxUSD</option>
+          
+          <option value="weexUSD">weexUSD</option>
+          
+        </optgroup>
+        
+        <optgroup label="XRP">
+          
+          <option value="justXRP">justXRP</option>
+          
+          <option value="krakenXRP">krakenXRP</option>
+          
+          <option value="rippleXRP">rippleXRP</option>
+          
+          <option value="snwcnXRP">snwcnXRP</option>
+          
+        </optgroup>
+        
+        <optgroup label="ZAR">
+          
+          <option value="bitxZAR">bitxZAR</option>
+          
+          <option value="localbtcZAR">localbtcZAR</option>
+          
+          <option value="ruxumZAR">ruxumZAR</option>
+          
+          <option value="thZAR">thZAR</option>
+          
+        </optgroup>
+        
+      </select>
+      <input id="SubmitButton" name="SubmitButton" type="submit" class="input" value="Draw">
+    </div>
+    <div class="grid_2">
+      <h6>Time Period</h6>
+      <select id="r" name="r" class="input" style="width:70px;">
+        <option value="1">1 day</option>
+        <option value="2">2 days</option>
+        <option value="5">5 days</option>
+        <option value="10">10 days</option>
+        <option value="30">1 month</option>
+        <option value="60" selected>2 months</option>
+        <option value="90">3 months</option>
+        <option value="120">4 months</option>
+        <option value="150">5 months</option>
+        <option value="180">6 months</option>
+        <option value="360">1 year</option>
+        <option value="730">2 years</option>
+        <option value="1460">4 years</option>
+        <option value="2920">8 years</option>
+        <option value="">All Data</option>
+      </select>
+      <select id="i" name="i" class="input" style="width:60px;">
+        <option value="">auto</option>
+        
+        <option value="1-min">1-min</option>
+        
+        <option value="5-min">5-min</option>
+        
+        <option value="15-min">15-min</option>
+        
+        <option value="30-min">30-min</option>
+        
+        <option value="Hourly">Hourly</option>
+        
+        <option value="2-hour">2-hour</option>
+        
+        <option value="6-hour">6-hour</option>
+        
+        <option value="12-hour">12-hour</option>
+        
+        <option value="Daily">Daily</option>
+        
+        <option value="Weekly">Weekly</option>
+        
+      </select>
+      <br/>
+      <input type="checkbox" id="c" name="c"/><label for="c">Custom Time</label><br />
+      <div id="CustomTimeBox">
+        <input id="s" name="s" type="text" class="input" style="width:70px;" value="">—<input id="e" name="e" type="text" class="input" style="width:70px;" value=""><br/>
+        <button id="Prev">&lt;</button>
+        day
+        <button id="Next">&gt;</button>
+      </div>
+    </div>
+    <div class="grid_2">
+      <h6>Chart Type</h6>
+      <select id="t" name="t" class="input" style="width:120px;">
+        <option value="">None</option>
+        <option value="S" selected>CandleStick</option>
+        <option value="C">Closing Price</option>
+        <option value="M">Median Price</option>
+        <option value="O">OHLC</option>
+        <option value="T">Typical Price</option>
+        <option value="W">Weighted Close</option>
+      </select>
+      <h6>Price Band</h6>
+      <select id="b" name="b" class="input" style="width:120px;">
+        <option value="">None</option>
+        <option value="B">Bollinger Band</option>
+        <option value="D">Donchian Channel</option>
+        <option value="E">Envelop (SMA 20 +/- 10%)</option>
+      </select>
+    </div>
+    <div class="grid_2">
+      <h6>Moving Averages</h6>
+      <nobr><select id="a1" name="a1" class="input" style="width:105px;">
+        <option value="">None</option>
+        <option value="SMA">Simple</option>
+        <option value="EMA">Exponential</option>
+        <option value="TMA">Triangular</option>
+        <option value="WMA">Weighted</option>
+      </select>
+      <input id="m1" name="m1" type="text" class="input" style="width:30px;" value="10"></nobr><br />
+      <nobr><select id="a2" name="a2" class="input" style="width:105px;">
+        <option value="">None</option>
+        <option value="SMA">Simple</option>
+        <option value="EMA">Exponential</option>
+        <option value="TMA">Triangular</option>
+        <option value="WMA">Weighted</option>
+      </select>
+      <input id="m2" name="m2" type="text" class="input" style="width:30px;" value="25"></nobr><br />
+    </div>
+    <div class="grid_2">
+      <h6>Technical Indicators</h6>
+      <input type="checkbox" id="x" name="x"/><label for="x">large indicators</label><br/>
+      <select id="i1" name="i1" class="input" style="width:120px;">
+        <option value="">None</option>
+        <option value="AccDist">Accumulation/Distribution</option>
+        <option value="AroonOsc">Aroon Oscillator</option>
+        <option value="Aroon">Aroon Up/Down</option>
+        <option value="ADX">Avg Directional Index</option>
+        <option value="ATR">Avg True Range</option>
+        <option value="BBW">Bollinger Band Width</option>
+        <option value="CMF">Chaikin Money Flow</option>
+        <option value="COscillator">Chaikin Oscillator</option>
+        <option value="CVolatility">Chaikin Volatility</option>
+        <option value="CLV">Close Location Value</option>
+        <option value="CCI">Commodity Channel Index</option>
+        <option value="DPO">Detrended Price Osc</option>
+        <option value="DCW">Donchian Channel Width</option>
+        <option value="EMV">Ease of Movement</option>
+        <option value="FStoch">Fast Stochastic</option>
+        <option value="MACD">MACD</option>
+        <option value="MDX">Mass Index</option>
+        <option value="Momentum">Momentum</option>
+        <option value="MFI">Money Flow Index</option>
+        <option value="NVI">Neg Volume Index</option>
+        <option value="OBV">On Balance Volume</option>
+        <option value="Performance">Performance</option>
+        <option value="PPO">% Price Oscillator</option>
+        <option value="PVO">% Volume Oscillator</option>
+        <option value="PVI">Pos Volume Index</option>
+        <option value="PVT">Price Volume Trend</option>
+        <option value="ROC">Rate of Change</option>
+        <option value="RSI">RSI</option>
+        <option value="SStoch">Slow Stochastic</option>
+        <option value="StochRSI">StochRSI</option>
+        <option value="TRIX">TRIX</option>
+        <option value="UO">Ultimate Oscillator</option>
+        <option value="Vol">Volume</option>
+        <option value="WilliamR">William's %R</option>
+      </select><br />
+      <select id="i2" name="i2" class="input" style="width:120px;">
+        <option value="">None</option>
+        <option value="AccDist">Accumulation/Distribution</option>
+        <option value="AroonOsc">Aroon Oscillator</option>
+        <option value="Aroon">Aroon Up/Down</option>
+        <option value="ADX">Avg Directional Index</option>
+        <option value="ATR">Avg True Range</option>
+        <option value="BBW">Bollinger Band Width</option>
+        <option value="CMF">Chaikin Money Flow</option>
+        <option value="COscillator">Chaikin Oscillator</option>
+        <option value="CVolatility">Chaikin Volatility</option>
+        <option value="CLV">Close Location Value</option>
+        <option value="CCI">Commodity Channel Index</option>
+        <option value="DPO">Detrended Price Osc</option>
+        <option value="DCW">Donchian Channel Width</option>
+        <option value="EMV">Ease of Movement</option>
+        <option value="FStoch">Fast Stochastic</option>
+        <option value="MACD">MACD</option>
+        <option value="MDX">Mass Index</option>
+        <option value="Momentum">Momentum</option>
+        <option value="MFI">Money Flow Index</option>
+        <option value="NVI">Neg Volume Index</option>
+        <option value="OBV">On Balance Volume</option>
+        <option value="Performance">Performance</option>
+        <option value="PPO">% Price Oscillator</option>
+        <option value="PVO">% Volume Oscillator</option>
+        <option value="PVI">Pos Volume Index</option>
+        <option value="PVT">Price Volume Trend</option>
+        <option value="ROC">Rate of Change</option>
+        <option value="RSI">RSI</option>
+        <option value="SStoch">Slow Stochastic</option>
+        <option value="StochRSI">StochRSI</option>
+        <option value="TRIX">TRIX</option>
+        <option value="UO">Ultimate Oscillator</option>
+        <option value="Vol">Volume</option>
+        <option value="WilliamR">William's %R</option>
+      </select><br />
+      <select id="i3" name="i3" class="input" style="width:120px;">
+        <option value="" selected>None</option>
+        <option value="AccDist">Accumulation/Distribution</option>
+        <option value="AroonOsc">Aroon Oscillator</option>
+        <option value="Aroon">Aroon Up/Down</option>
+        <option value="ADX">Avg Directional Index</option>
+        <option value="ATR">Avg True Range</option>
+        <option value="BBW">Bollinger Band Width</option>
+        <option value="CMF">Chaikin Money Flow</option>
+        <option value="COscillator">Chaikin Oscillator</option>
+        <option value="CVolatility">Chaikin Volatility</option>
+        <option value="CLV">Close Location Value</option>
+        <option value="CCI">Commodity Channel Index</option>
+        <option value="DPO">Detrended Price Osc</option>
+        <option value="DCW">Donchian Channel Width</option>
+        <option value="EMV">Ease of Movement</option>
+        <option value="FStoch">Fast Stochastic</option>
+        <option value="MACD">MACD</option>
+        <option value="MDX">Mass Index</option>
+        <option value="Momentum">Momentum</option>
+        <option value="MFI">Money Flow Index</option>
+        <option value="NVI">Neg Volume Index</option>
+        <option value="OBV">On Balance Volume</option>
+        <option value="Performance">Performance</option>
+        <option value="PPO">% Price Oscillator</option>
+        <option value="PVO">% Volume Oscillator</option>
+        <option value="PVI">Pos Volume Index</option>
+        <option value="PVT">Price Volume Trend</option>
+        <option value="ROC">Rate of Change</option>
+        <option value="RSI">RSI</option>
+        <option value="SStoch">Slow Stochastic</option>
+        <option value="StochRSI">StochRSI</option>
+        <option value="TRIX">TRIX</option>
+        <option value="UO">Ultimate Oscillator</option>
+        <option value="Vol">Volume</option>
+        <option value="WilliamR">William's %R</option>
+      </select><br />
+      <select id="i4" name="i4" class="input" style="width:120px;">
+        <option value="" selected>None</option>
+        <option value="AccDist">Accumulation/Distribution</option>
+        <option value="AroonOsc">Aroon Oscillator</option>
+        <option value="Aroon">Aroon Up/Down</option>
+        <option value="ADX">Avg Directional Index</option>
+        <option value="ATR">Avg True Range</option>
+        <option value="BBW">Bollinger Band Width</option>
+        <option value="CMF">Chaikin Money Flow</option>
+        <option value="COscillator">Chaikin Oscillator</option>
+        <option value="CVolatility">Chaikin Volatility</option>
+        <option value="CLV">Close Location Value</option>
+        <option value="CCI">Commodity Channel Index</option>
+        <option value="DPO">Detrended Price Osc</option>
+        <option value="DCW">Donchian Channel Width</option>
+        <option value="EMV">Ease of Movement</option>
+        <option value="FStoch">Fast Stochastic</option>
+        <option value="MACD">MACD</option>
+        <option value="MDX">Mass Index</option>
+        <option value="Momentum">Momentum</option>
+        <option value="MFI">Money Flow Index</option>
+        <option value="NVI">Neg Volume Index</option>
+        <option value="OBV">On Balance Volume</option>
+        <option value="Performance">Performance</option>
+        <option value="PPO">% Price Oscillator</option>
+        <option value="PVO">% Volume Oscillator</option>
+        <option value="PVI">Pos Volume Index</option>
+        <option value="PVT">Price Volume Trend</option>
+        <option value="ROC">Rate of Change</option>
+        <option value="RSI">RSI</option>
+        <option value="SStoch">Slow Stochastic</option>
+        <option value="StochRSI">StochRSI</option>
+        <option value="TRIX">TRIX</option>
+        <option value="UO">Ultimate Oscillator</option>
+        <option value="Vol">Volume</option>
+        <option value="WilliamR">William's %R</option>
+      </select>
+    </div>
+    <div class="grid_2">
+      <h6>Options</h6>
+      <input type="checkbox" id="v" name="v" checked/><label for="v">Show Volume Bars</label><br />
+      <input type="checkbox" id="cv" name="cv"/><label for="cv">Volume in Currency</label><br />
+      <input type="checkbox" id="ps" name="ps"/><label for="ps">Parabolic SAR</label><br />
+      <input type="checkbox" id="l" name="l"/><label for="l">Log Scale</label><br />
+      <input type="checkbox" id="p" name="p"/><label for="p">Percentage Scale</label><br />
+    </div>
+  </form>
+</div>
+<div class="container_16 padding content" id="content_chart">
+  <div class="grid_16">
+    <p class="info"><a href="#permalinkbox" title="Permalink" id="getPermalink">Link to this chart</a> · <a href="#" onClick="fullWidth();return false;">Larger chart</a></p>
+    <div style="display: none">
+      <div id="permalinkbox">
+      Use this link to bookmark or share this chart. Select "Custom Time" to create a permanent link to a specific date.<br/>
+      <input id="permalink" readonly/>
+      </div>
+    </div>
+    <img id="ChartImage" />
+    <p style="text-align: center"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/StillImage" rel="dct:type">chart</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
+    <!--  <div id="ChartOverlay"></div> -->
+
+    <div>
+      <a href="#" onClick="load_table();return false;">Load raw data</a>
+      <table class="data" id="chart_table">
+        <thead>
+          <tr>
+            <th>Timestamp</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume (BTC)</th><th>Volume (Currency)</th><th>Weighted Price</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+
+		<div id="footer">
+      <div class="container_12">
+        <div class="grid_5">
+          <h1>About</h1>
+            <p>We are interested in feedback! Email <a href="mailto:info@bitcoincharts.com">info@bitcoincharts.com</a> any questions or comments you might have. Donations are accepted at <code>1kqHKEYYC8CQPxyV53nCju4Lk2ufpQqA2</code></p>
+        </div>
+        <div class="grid_3">
+          <h1>Help</h1>
+          
+          <ul class="unstyled">
+            
+            <li><a href="/about/">About</a></li>
+            
+            <li><a href="/about/exchanges/">Information for exchanges</a></li>
+            
+            <li><a href="/about/markets-api/">Markets API</a></li>
+            
+          </ul>
+        </div>
+        <div class="grid_12 right">
+          &copy; bitcoincharts.com
+        </div>
+      </div>
+		</div>
+		<script type="text/javascript"> var _gaq = _gaq || []; _gaq.push(['_setAccount', 'UA-19696221-1']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();</script>
+	</body>
+</html>
+

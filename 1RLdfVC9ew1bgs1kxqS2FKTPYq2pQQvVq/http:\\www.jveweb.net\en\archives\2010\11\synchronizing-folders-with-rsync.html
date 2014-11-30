@@ -1,0 +1,700 @@
+http://www.jveweb.net/en/archives/2010/11/synchronizing-folders-with-rsync.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 19:49:28 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 10403
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Juan Valencia Escalante" />
+	<title>Synchronizing folders with rsync - Juan Valencia's website</title>
+	<link rel="alternate" href="http://www.jveweb.net/archivo/2010/11/sincronizando-carpetas-con-rsync.html" hreflang="es" lang="es" title="Versi&oacute;n en Espa&ntilde;ol" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 feed" href="http://www.jveweb.net/en/rss.xml" />
+    
+    <meta name="keywords" content="synchronization, copy, rsync, ssh, local, remote, recursive, delete, exclude, exclude-from, delete-before, delete-after, delete-during, delete-delay, progress" />
+    <meta name="description" content="A guide to use rsync to copy and synchronize files and folder in local and remote locations, as well as exclude files." />
+    
+	<!-- style START -->
+	<!-- default style -->
+	<link rel="stylesheet" type="text/css" href="http://www.jveweb.net/en/style.css" media="screen" />
+	<!-- for translations -->
+		<!--[if IE 6]>
+		<link rel="stylesheet" href="http://www.jveweb.net/en/ie6.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+	<!-- script START -->
+	<script type="text/javascript" src="http://www.jveweb.net/en/js/util.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>
+		<!-- script END -->
+</head>
+<body>
+<!-- wrap START -->
+<div id="wrap">
+<!-- container START -->
+<div id="container">
+<!-- header START -->
+<div id="header">
+	<div id="caption">
+		<h1 id="title"><a href="http://www.jveweb.net/en/index.html">Juan Valencia's website</a></h1>
+		<div id="tagline">Linux, Free and Open Source Software, Programming and some thoughts.</div>
+	</div>
+	<!-- navigation START -->
+	<div id="navigation">
+		<ul id="menus">
+			<li class="page_item page-item-1"><a class="home" title="Home" href="http://www.jveweb.net/en/index.html">Home</a></li>
+			<li class="page_item page-item-2"><a href="http://www.jveweb.net/en/linux_foss.html" title="Linux &amp; FOSS">Linux &amp; FOSS</a></li>
+			<li class="page_item page-item-3"><a href="http://www.jveweb.net/en/programming.html" title="Programming">Programming</a></li>
+			<li class="page_item page-item-4"><a href="http://www.jveweb.net/en/thoughts.html" title="Thoughts">Thoughts &amp; Opinion</a></li>
+			<li class="page_item page-item-5"><a href="http://www.jveweb.net/en/photography.html" title="Photography">Photography</a></li>
+			<li class="page_item page-item-6"><a href="http://www.jveweb.net/en/contact.html" title="Contact &amp; About me">Contact &amp; About me</a></li>
+			<li class="page_item page-item-7"><a href="http://www.jveweb.net/en/sitemap.html" title="Sitemap">Sitemap</a></li>
+			<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+		</ul>
+		<div class="fixed"></div>
+	</div>
+	<!-- navigation END -->
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+<!-- content START -->
+<div id="content">
+	<!-- main START -->
+	<div id="main">
+
+			<div class="post">
+			<h2><a class="title" href="http://www.jveweb.net/en/archives/2010/11/synchronizing-folders-with-rsync.html" rel="bookmark">Synchronizing folders with rsync</a></h2>
+			<div class="info">
+				<span class="date">Tuesday, November 02, 2010 | <a href="http://www.jveweb.net/archivo/2010/11/sincronizando-carpetas-con-rsync.html" rel="alternate">En Espa&#241;ol</a></span>
+				<div class="fixed"></div>
+			</div>
+			<div class="info">
+        <p>
+          <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;"
+href="http://www.jveweb.net/en/archives/2010/11/synchronizing-folders-with-rsync.html"></a> <g:plusone size="medium"></g:plusone>
+        </p>
+			</div>
+			<div class="content">
+<p>
+      In this post I cover the basics of <code>rsync</code>, in preparation 
+      for a subsequent post that will cover backups and it's use in 
+      conjunction with cronjobs to automatize the backup process. From the 
+      copying and synchronization of local files and folders, to it's use for 
+      transfer information among computers. Its <a href="http://www.jveweb.net/en/archives/2011/01/running-rsync-as-a-daemon.html">use 
+      as a daemon when SSH is unavailable</a> was moved to it's own section.
+    </p>
+    <p>
+      <b>Topics</b><br /><a href="#jveweb_en_014_01">The basics of rsync</a><br /><a href="#jveweb_en_014_02">Copying 
+      local files and folders</a><br /><a href="#jveweb_en_014_03">Dealing with 
+      whitespace and rare characters</a><br /><a href="#jveweb_en_014_04">Update 
+      the contents of a folder</a><br /><a href="#jveweb_en_014_05">Synchronizing 
+      two folders with rsync</a><br /><a href="#jveweb_en_014_06">Compressing 
+      the files while transferring them</a><br /><a href="#jveweb_en_014_07">Transferring 
+      files between two remote systems</a><br /><a href="#jveweb_en_014_08">Excluding 
+      files and directories</a><br /><a href="http://www.jveweb.net/en/archives/2011/01/running-rsync-as-a-daemon.html">Running 
+      rsync as a daemon</a> (moved to it's own section)<br /><a href="#jveweb_en_014_10">Some 
+      additional rsync parameters</a><br /><a href="#jveweb_en_014_11">Footnotes</a>
+    </p>
+    <h3 id="jveweb_en_014_01">
+      The basics of rsync
+    </h3>
+    <p>
+      <code>rsync</code> is a very versatile copying and backup tool that is 
+      included by default in almost every Linux distribution. It can be used 
+      as an advanced copying tool, allowing us to copy files both locally and 
+      remotely. It can also be used as a backup tool. It supports the creation 
+      of incremental backups.
+    </p>
+    <p>
+      <code>rsync</code> counts with a famous delta-transfer algorithm that 
+      allows us to transfer new files as well as recent changes to existent 
+      files, while ignoring unchanged files. Additionally to this, the 
+      behavior of <code>rsync</code> can be throughly customized, helping us 
+      to automatize backups, it can also be run as a daemon to turn the 
+      computer into a host and allow <code>rsync</code> clients connect to it.
+    </p>
+    <p>
+      Besides the copying of local files and folders, <code>rsync</code> allow 
+      us to copy over SSH (Secure Shell), RSH (Remote Shell) and it can be run 
+      as a daemon in a computer and allow other computers to connect to it, 
+      when <code>rsync</code> is run as a daemon it listens to the port TCP 
+      873.
+    </p>
+    <p>
+      When we use <code>rsync</code> as a daemon or when we use RSH, the data 
+      that is send between computers travels unencrypted, so, if you are 
+      transferring files between two computers in the same local network, this 
+      is useful, but this shouldn't be used to transfer files over insecure 
+      networks, such as the Internet. For this purpose SSH is the way to go.
+    </p>
+    <p>
+      This is the main reason why I favor the use of SSH for my transfers, 
+      besides, since SSH is secure, many servers have the SSH daemon 
+      available. But the use of <code>rsync</code> as a daemon for transfers 
+      over fast connections, as is usually the case in a local network, is 
+      useful. I don't have the RSH daemon running in my computers so you may 
+      find me a bit biased about SSH in the examples. The examples covering 
+      the transfer of files between two computers use SSH as the medium of 
+      transport, but in a separate post I cover the use of rsync as a daemon.
+    </p>
+    <h3 id="jveweb_en_014_02">
+      Copying local files and folders
+    </h3>
+    <p>
+      To copy the contents of one local folder into another, replacing the 
+      files in the destination folder, we use:
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv source_folder/ destination_folder/</code>
+    </p>
+    <p>
+      In the source_folder notice that I added a slash at the end, doing this 
+      prevents a new folder from being created, if we don't add the slash, a 
+      new folder named as the source folder will be created in the destination 
+      folder. So, if you want to copy the contents of a folder called Pictures 
+      into an existent folder which is also called Pictures but in a different 
+      location, you need to add the trailing slash, otherwise, a folder called 
+      Pictures is created inside the Pictures folder that we specify as 
+      destination.
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv source/ destination/</code><br /><img height="240" src="http://www.jveweb.net/en/media/trailingslash.png" alt="A graphical representation of the results of rsync with a trailing slash in the source folder." width="490" />
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv source destination/</code><br /><img height="240" src="http://www.jveweb.net/en/media/notrailingslash.png" alt="A graphical representation of the results of rsync without a trailing slash in the source folder." width="490" />
+    </p>
+    <p>
+      The parameter <code>-r</code> means recursive, this is, it will copy the 
+      contents of the source folder, as well as the contents of every folder 
+      inside it.
+    </p>
+    <p>
+      The parameter <code>-t</code> makes rsync preserve the modification 
+      times of the files that it copies from the source folder.
+    </p>
+    <p>
+      The parameter <code>-v</code> means verbose, this parameter will print 
+      information about the execution of the command, such as the files that 
+      are successfully transferred, so we can use this as a way to keep track 
+      of the progress of rsync.
+    </p>
+    <p>
+      This are the parameters that I frequently use, as I am usually backing 
+      up personal files and this doesn't contain things such as symlinks, but 
+      another very useful parameter to use rsync with is the parameter -a.
+    </p>
+    <p>
+      <code class="snippet">rsync -av source/ destination/</code>
+    </p>
+    <p>
+      The parameter <code>-a</code> also makes the copy recursive and preserve 
+      the modification times, but additionally it copies the symlinks that it 
+      encounters as symlinks, preserve the permissions, preserve the owner and 
+      group information, and preserve device and special files. This is useful 
+      if you are copying the entire home folder of a user, or if you are 
+      copying system folders somewhere else.
+    </p>
+    <h3 id="jveweb_en_014_03">
+      Dealing with whitespace and rare characters
+    </h3>
+    <p>
+      We can escape spaces and rare characters just as in bash, by the use of 
+      \ before any whitespace and rare character. Additionally, we can use 
+      single quotes to enclose the string:
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv so\{ur\ ce/ dest\ ina\{tion/<br />rsync 
+      -rtv 'so{ur ce/' 'dest ina{tion/'</code>
+    </p>
+    <h3 id="jveweb_en_014_04">
+      Update the contents of a folder
+    </h3>
+    <p>
+      In order to save bandwidth and time, we can avoid copying the files that 
+      we already have in the destination folder that have not been modified in 
+      the source folder. To do this, we can add the parameter <code>-u</code> 
+      to <code>rsync</code>, this will synchronize the destination folder with 
+      the source folder, this is where the delta-transfer algorithm enters. To 
+      synchronize two folders like this we use:
+    </p>
+    <p>
+      <code class="snippet">rsync -rtvu source_folder/ destination_folder/</code>
+    </p>
+    <p>
+      By default, <code>rsync</code> will take into consideration the date of 
+      modification of the file and the size of the file to decide whether the 
+      file or part of it needs to be transferred or if the file can be left 
+      alone, but we can instead use a hash to decide whether the file is 
+      different or not. To do this we need to use the <code>-c</code> 
+      parameter, which will perform a checksum in the files to be transferred. 
+      This will skip any file where the checksum coincides.
+    </p>
+    <p>
+      <code class="snippet">rsync -rtvuc source_folder/ destination_folder/</code>
+    </p>
+    <h3 id="jveweb_en_014_05">
+      Synchronizing two folders with rsync
+    </h3>
+    <p>
+      To keep two folders in synchrony, not only do we need to add the new 
+      files in the source folder to the destination folder, as in the past 
+      topics, we also need to remove the files that are deleted in the source 
+      folder from the destination folder. <code>rsync</code> allow us to do 
+      this with the parameter <code>--delete</code>, this used in conjunction 
+      with the previously explained parameter <code>-u</code> that updates 
+      modified files allow us to keep two directories in synchrony while 
+      saving bandwidth.
+    </p>
+    <p>
+      <code class="snippet">rsync -rtvu --delete source_folder/ 
+      destination_folder/</code>
+    </p>
+    <p>
+      The deletion process can take place in different moments of the transfer 
+      by adding some additional parameters:
+    </p>
+    <ul>
+      <li>
+        rsync can look for missing files and delete them before it does the 
+        transfer process, this is the default behavior and can be set with <code>--delete-before</code>
+      </li>
+      <li>
+        rsync can look for missing files after the transfer is completed, with 
+        the parameter <code>--delete-after</code>
+      </li>
+      <li>
+        rsync can delete the files done during the transfer, when a file is 
+        found to be missing, it is deleted at that moment, we enable this 
+        behavior with <code>--delete-during</code>
+      </li>
+      <li>
+        rsync can do the transfer and find the missing files during this 
+        process, but instead of delete the files during this process, waits 
+        until it is finished and delete the files it found afterwards, this 
+        can be accomplished with <code>--delete-delay</code>
+      </li>
+    </ul>
+    <p>
+      e.g.:
+    </p>
+    <p>
+      <code class="snippet">rsync -rtvu --delete-delay source_folder/ 
+      destination_folder/</code>
+    </p>
+    <h3 id="jveweb_en_014_06">
+      Compressing the files while transferring them
+    </h3>
+    <p>
+      To save some bandwidth, and usually it can save some time as well, we 
+      can compress the information being transfer, to accomplish this we need 
+      to add the parameter <code>-z</code> to rsync.
+    </p>
+    <p>
+      <code class="snippet">rsync -rtvz source_folder/ destination_folder/</code>
+    </p>
+    <p>
+      Note, however, that if we are transferring a large number of small files 
+      over a fast connection, rsync may be slower with the parameter -z than 
+      without it, as it will take longer to compress every file before 
+      transfer it than just transferring over the files. Use this parameter if 
+      you have a a connection with limited speed between two computers, or if 
+      you need to save bandwidth.
+    </p>
+    <h3 id="jveweb_en_014_07">
+      Transferring files between two remote systems
+    </h3>
+    <p>
+      <code>rsync</code> can copy files and synchronize a local folder with a 
+      remote folder in a system running the SSH daemon, the RSH daemon, or the 
+      rsync daemon. The examples here use SSH for the file transfers, but the 
+      same principles apply if you want to do this with <code>rsync</code> as 
+      a daemon in the host computer, read <a href="#jveweb_en_014_09">Running 
+      rsync as a daemon when ssh is not available</a> further below for more 
+      information about this.
+    </p>
+    <p>
+      To transfer files between the local computer and a remote computer, we 
+      need to specify the address of the remote system, it may be a domain 
+      name, an IP address, or a the name of a server that we have already 
+      saved in our SSH config file (information about how to do this can be 
+      found in <a href="http://www.jveweb.net/en/archives/2010/08/defining-ssh-servers.html">Defining 
+      SSH servers</a>), followed by a colon, and the folder we want to use for 
+      the transfer. Note that rsync can not transfer files between two remote 
+      systems, only a local folder or a remote folder can be used in 
+      conjunction with a local folder. To do this we use:
+    </p>
+    <p>
+      Local folder to remote folder, using a domain, an IP address and a 
+      server defined in the SSH configuration file:<br /><code class="snippet">rsync 
+      -rtvz source_folder/ user@domain:/path/to/destination_folder/<br />rsync 
+      -rtvz source_folder/ user@xxx.xxx.xxx.xxx:/path/to/destination_folder/<br />rsync 
+      -rtvz source_folder/ server_name:/path/to/destination_folder/</code>
+    </p>
+    <p>
+      Remote folder to local folder, using a domain, an IP address and a 
+      server defined in the SSH configuration file:<br /><code class="snippet">rsync 
+      -rtvz user@domain:/path/to/source_folder/ destination_folder/<br />rsync 
+      -rtvz user@xxx.xxx.xxx.xxx:/path/to/source_folder/ destination_folder/<br />rsync 
+      -rtvz server_name:/path/to/source_folder/ destination_folder/</code>
+    </p>
+    <h3 id="jveweb_en_014_08">
+      Excluding files and directories
+    </h3>
+    <p>
+      There are many cases in which we need to exclude certain files and 
+      directories from rsync, a common case is when we synchronize a local 
+      project with a remote repository or even with the live site, in this 
+      case we may want to exclude some development directories and some hidden 
+      files from being transfered over to the live site. Excluding files can 
+      be done with <code>--exclude</code> followed by the directory or the 
+      file that we want to exclude. The source folder or the destination 
+      folder can be a local folder or a remote folder as explained in the 
+      previous section.
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv --exclude 'directory' source_folder/ 
+      destination_folder/<br />rsync -rtv --exclude 'file.txt' source_folder/ 
+      destination_folder/<br />rsync -rtv --exclude 'path/to/directory' 
+      source_folder/ destination_folder/<br />rsync -rtv --exclude 
+      'path/to/file.txt' source_folder/ destination_folder/</code>
+    </p>
+    <p>
+      The paths are relative to the folder from which we are calling rsync 
+      unless it starts with a slash, in which case the path would be absolute.
+    </p>
+    <p>
+      Another way to do this is to create a file with the list of both files 
+      and directories to exclude from rsync, as well as patterns (all files 
+      that would match the pattern would be excluded, *.txt would exclude any 
+      file with that extension), one per line, and call this file with <code>--exclude-from</code> 
+      followed by the file that we want to use for the exclusion of files. 
+      First, we create and edit this file in our favorite text editor, in this 
+      example I use gedit, but you may use kate, Vim, nano, or any other text 
+      editor:
+    </p>
+    <p>
+      <code class="snippet">touch excluded.txt<br />gedit excluded.txt</code>
+    </p>
+    <p>
+      In this file we can add the following:<br />
+    </p>
+    <p>
+      <code class="snippet">directory<br />relative/path/to/directory<br />file.txt<br />relative/path/to/file.txt<br />/home/juan/directory<br />/home/juan/file.txt<br />*.swp</code>
+    </p>
+    <p>
+      And then we call rsync:
+    </p>
+    <p>
+      <code class="snippet">rsync -rvz --exclude-from 'excluded.txt' 
+      source_folder/ destination_folder/</code>
+    </p>
+    <p>
+      In addition to delete files that have been removed from the source 
+      folder, as explained in <a href="#jveweb_en_014_05">Synchronizing two 
+      folders with rsync</a>, <code>rsync</code> can delete files that are 
+      excluded from the transfer, we do this with the parameter <code>--delete-excluded</code>, 
+      e.g.:
+    </p>
+    <p>
+      <code class="snippet">rsync -rtv --exclude-from 'excluded.txt' 
+      --delete-excluded source/ destination/</code>
+    </p>
+    <p>
+      This command would make <code>rsync</code> recursive, preserve the 
+      modification times from the source folder, increase verbosity, exclude 
+      all the files that match the patterns in the file <code>excluded.txt</code>, 
+      and delete all of this files that match the patternif they exist in the 
+      destination folder.
+    </p>
+    <h3 id="jveweb_en_014_09">
+      Running rsync as a daemon when ssh is not available
+    </h3>
+    <p>
+      This was moved to it's own section, <a href="http://www.jveweb.net/en/archives/2011/01/running-rsync-as-a-daemon.html">Running 
+      rsync as a daemon</a>.
+    </p>
+    <h3 id="jveweb_en_014_10">
+      Some additional rsync parameters
+    </h3>
+    <p>
+      <code>-t</code> Preserves the modification times of the files that are 
+      being transferred.<br /><code>-q</code> Suppress any non-error message, 
+      this is the contrary to -v which increases the verbosity.<br /><code>-d</code> 
+      Transfer a directory without recursing, this is, only the files that are 
+      in the folder are transferred.<br /><code>-l</code> Copy the symlinks as 
+      symlinks.<br /><code>-L</code> Copy the file that a symlink is pointing to 
+      whenever it finds a symlink.<br /><code>-W</code> Copy whole files. When 
+      we are using the delta-transfer algorithm we only copy the part of the 
+      archive that was updated, sometimes this is not desired.<br /><code>--progress</code> 
+      Shows the progress of the files that are being transferred.<br /><code>-h</code> 
+      Shows the information that rsync provides us in a human readable format, 
+      the amounts are given in K's, M's, G's and so on.
+    </p>
+    <h3 id="jveweb_en_014_11">
+      Footnotes
+    </h3>
+    <p>
+      The amount of options that <code>rsync</code> provide us is immense, we 
+      can define exactly which files we want to transfer, what specific files 
+      we want to compress, what files we want to delete in the destination 
+      folder if this files exists, and we can deal with system files as well, 
+      for more information we can use <code>man rsync</code> and <code>man 
+      rsyncd.conf</code>
+    </p>
+    <p>
+      I leave the information concerning backups out of this post, as this 
+      will be covered, together with the automation of the backups, in an 
+      incoming post.
+    </p>
+    <p>
+      It is possible to run rsync on Windows with the use of <a href="http://www.cygwin.com/">cygwin</a>, 
+      however I don't have a Windows box available at the moment (nor do I 
+      plan to aquire one in the foreseeable future), so even thought I have 
+      done it I can't post about this. If you run <code>rsync</code> as a 
+      service in Windows tho, you need to add the line &quot;<code>strict mode 
+      = false</code>&quot; in <code>rsyncd.conf</code> under the modules area, 
+      this will prevent <code>rsync</code> from checking the permissions in 
+      the secrets file and thus failing because they are not properly set (as 
+      they don't work the same as in Linux).
+    </p>
+    <p>
+      This post may be updated if there is something to correct or to add a 
+      little more information if I see it necessary.
+    </p>
+				<p class="under">
+				Categories: <a href="http://www.jveweb.net/en/archives/commands/index.html">Commands</a>, <a href="http://www.jveweb.net/en/archives/foss/index.html">FOSS</a>, <a href="http://www.jveweb.net/en/archives/linux/index.html">Linux</a>, <a href="http://www.jveweb.net/en/archives/rsync/index.html">rsync</a>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+
+<div id="pagenavi">
+		<span class="newer"></span>
+		<span class="older"></span>
+		<div class="fixed"></div>
+</div>
+	</div>
+	<!-- main END -->
+<!-- sidebar START -->
+<div id="sidebar">
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3337979981448667";
+/* jveweb_en_300x250, created 11/7/10 */
+google_ad_slot = "6888076192";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a id="feedrss" title="Subscribe to this blog..." href="http://www.jveweb.net/en/rss.xml"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>
+				<ul id="feed_readers">
+					<li id="google_reader"><a class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Google</span></a></li>
+					<li id="youdao_reader"><a class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Youdao</span></a></li>
+					<li id="xianguo_reader"><a class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Xian Guo</span></a></li>
+					<li id="zhuaxia_reader"><a class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Zhua Xia</span></a></li>
+					<li id="yahoo_reader"><a class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>My Yahoo!</span></a></li>
+					<li id="newsgator_reader"><a class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>newsgator</span></a></li>
+					<li id="bloglines_reader"><a class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Bloglines</span></a></li>
+					<li id="inezha_reader"><a class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>iNezha</span></a></li>
+				</ul>
+			</div>
+						<div class="fixed"></div>
+		</div>
+	</div>
+		  <div class="widget">
+				<a href='http://www.jveweb.net' title='jveweb.net en español' class="lonelink">jveweb.net en español</a>
+		</div>	
+	<!-- posts -->
+	<div class="widget">
+		<h3>Recent Posts</h3>
+		<ul>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/ghosts-from-the-past.html">Ghosts from the past</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/learning-from-a-mistake.html">Learning from a mistake</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/natures-gallery.html">Nature's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/flowerss-gallery.html">Flowers's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/chile-trekking-in-pochoco.html">Chile: Trekking in Pochoco</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-santa-lucia.html">Santiago de Chile: Santa Lucía</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-los-dominicos.html">Santiago de Chile: Los Domínicos</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-downtown.html">Santiago de Chile: Downtown</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/here-comes-the-photographs.html">Here comes the photographs</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/to-chile.html">To Chile!</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/site-updates-im-still-here-the-future-of-this-website.html">Site updates: I'm still here! The future of this website</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/08/economic-uncertainty-in-the-world.html">Economic uncertainty in the world</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/a-journey-of-madness.html">A journey of madness</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/some-regular-expressions-and-how-to-use-them-in-php.html">Some regular expressions and how to use them in PHP</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/starting-the-photography-section.html">Starting the photography section</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/when-you-crash-against-the-wall-of-reality.html">When you crash against the wall of reality</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/now-this-is-bad-security-yet-another-sony-story.html">Now this is bad security (yet another Sony story)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-object-oriented-examples.html">Prepared MySQL statements in PHP (object oriented examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-structured-examples.html">Prepared MySQL statements in PHP (structured examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/an-sql-injection-attack.html">An SQL injection attack</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/split-and-merge-files-from-the-command-line.html">Split and merge files from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">The confusing prefixes for binary multiples</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/05/xorgconf-configuration-for-a-h770-series-monitor.html">xorg.conf configuration for a H770 series monitor</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html">Managing MySQL from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html">Using rsync and cron to automate incremental backups</a></li>
+		</ul>
+	</div>
+	  <div class="widget">
+			<h3>Categories</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/xhtml/index.html' title='(X)HTML'>(X)HTML</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/announcements/index.html' title='Announcements'>Announcements</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/apache/index.html' title='Apache'>Apache</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/commands/index.html' title='Commands'>Commands</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/foss/index.html' title='FOSS'>FOSS</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/kde/index.html' title='KDE'>KDE</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/linux/index.html' title='Linux'>Linux</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/mysql/index.html' title='MySQL'>MySQL</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/photography/index.html' title='Photography'>Photography</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/php/index.html' title='PHP'>PHP</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/programming/index.html' title='Programming'>Programming</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/rsync/index.html' title='rsync'>rsync</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/slackware/index.html' title='Slackware'>Slackware</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/ssh/index.html' title='SSH'>SSH</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/text-manipulation/index.html' title='Text manipulation'>Text manipulation</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/thoughts/index.html' title='Thoughts'>Thoughts</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/vim/index.html' title='Vim'>Vim</a></li>
+				
+				</ul>
+		</div>	
+	  <div id="tag_cloud" class="widget">
+			<h3>Archives</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/12/index.html' title='December 2011'>December 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/10/index.html' title='October 2011'>October 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/09/index.html' title='September 2011'>September 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/08/index.html' title='August 2011'>August 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/07/index.html' title='July 2011'>July 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/06/index.html' title='June 2011'>June 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/05/index.html' title='May 2011'>May 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/04/index.html' title='April 2011'>April 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/03/index.html' title='March 2011'>March 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/02/index.html' title='February 2011'>February 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/01/index.html' title='January 2011'>January 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/12/index.html' title='December 2010'>December 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/11/index.html' title='November 2010'>November 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/10/index.html' title='October 2010'>October 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/09/index.html' title='September 2010'>September 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/08/index.html' title='August 2010'>August 2010</a></li>
+				
+				</ul>
+		</div>		
+		<div class="widget">
+			<h3>Tip Jar</h3>
+			<ul>
+				<li><a href="http://flattr.com/thing/237912/jveweb-on-Flattr">Flattr jveweb.net</a></li>
+				<li>Bitcoin:<br /><small>1RLdfVC9ew1bgs1kxqS2FKTPYq2pQQvVq</small><br />see <a href="http://bitcoinme.com" rel="nofollow">http://bitcoinme.com</a></li>
+				<li>Paypal: paypal@jveweb.net</li>
+				<li>Liberty Reserve: U5664646</li>
+				<li>KoL: #1176202</li>
+				</ul>
+			<p>Tips helps me to keep the website mostly ad free.</p>
+		</div>	
+		<div class="widget">
+			<h3>Miscellaneous</h3>
+			<ul>
+				<li><a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a><br>
+				<small>Except for that G+ button that I just added =/, I'll fix it when I get a chance.</small></li>
+				<li><a href="http://jigsaw.w3.org/css-validator/check/referer">Valid CSS 2.1</a></li>
+				<li><a href="http://lynx.isc.org/">Lynx friendly</a></li>
+				<li><a href="http://www.dreamhost.com/green.cgi?jveweb.net">Green hosting</a></li>
+				<li>Sizes in <a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">KiB, MiB, etc.</a></li>
+				<li>E-mail: contact at jveweb.net</li>
+			</ul>
+		</div>	
+</div>
+<!-- sidebar north END -->
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Go to Top</a>
+	<div id="copyright">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />Copyright &copy; 2011. All the text, images and resources in this website that are not attributed to somebody else were created by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/" rel="cc:attributionURL">Juan Valencia Escalante</a> and are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a> unless is otherwise stated.<br />Permissions beyond the scope of this license may be available by contacting the author at <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/contact.html" rel="cc:morePermissions">http://www.jveweb.net/en/contact.html</a>.
+  </div>
+	<div id="themeinfo">
+	Theme ported to Thingamablog by The <a href="http://www.webdesignwomen.com" rel="nofollow">Web Design Women</a> of <a href="http://www.opensourceresources.org" rel="nofollow">Opensource Resources</a> (although I discontinued the use of Thingamablog, I just keep the design, for now)
+			</div>
+</div>
+<!-- footer END -->
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+<!-- Piwik --> 
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://jveweb.net/st/" : "http://jveweb.net/st/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://jveweb.net/st/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Tag -->
+</body>
+</html>

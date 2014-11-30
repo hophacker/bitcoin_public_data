@@ -1,0 +1,164 @@
+http://benyossef.com/sys_clone-beyond-processes-and-threads/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 16:45:48 GMT
+Server: Apache
+X-Pingback: http://benyossef.com/xmlrpc.php
+Link: <http://benyossef.com/?p=8>; rel=shortlink
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4072
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Gilad Ben-Yossef   &raquo; sys_clone: Beyond Processes and Threads</title>
+
+<link rel="stylesheet" href="http://benyossef.com/wp-content/themes/esther/style.css" type="text/css" media="screen" />
+<!--[if IE]>
+<style type='text/css'>
+<!--
+#headerimg{position: absolute;}
+--></style>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef RSS Feed" href="http://benyossef.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="Gilad Ben-Yossef Atom Feed" href="http://benyossef.com/feed/atom/" />
+<link rel="pingback" href="http://benyossef.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef &raquo; sys_clone: Beyond Processes and Threads Comments Feed" href="http://benyossef.com/sys_clone-beyond-processes-and-threads/feed/" />
+<link rel='stylesheet' id='social-widget-css'  href='http://benyossef.com/wp-content/plugins/social-media-widget/social_widget.css?ver=3.9' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://benyossef.com/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://benyossef.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://benyossef.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Helping The Compiler Help You' href='http://benyossef.com/helping-the-compiler-help-you/' />
+<link rel='next' title='Building an embedded Linux system emulator' href='http://benyossef.com/building-an-embedded-linux-system-emulator/' />
+<meta name="generator" content="WordPress 3.9" />
+<link rel='canonical' href='http://benyossef.com/sys_clone-beyond-processes-and-threads/' />
+<link rel='shortlink' href='http://benyossef.com/?p=8' />
+<style type="text/css">
+#header { background: url(http://benyossef.com/wp-content/uploads/2011/03/cropped-1299389848395.jpg) no-repeat right; background-position: 460px 2px;}
+#header { margin: 0 !important; margin:0 0 0 0;padding: 0 0 0 0; height: 299px; width: 899px; }
+</style>
+</head>
+<body>
+<div id="page">
+
+
+<div id="header">
+	<div id="frames"><img alt="photo frame" src="http://benyossef.com/wp-content/themes/esther/images/frame.gif" width="518px" height="299px" border="0" /></div>
+	<div id="headerimg">
+		<h1><a href="http://benyossef.com/">Gilad Ben-Yossef</a></h1>
+		<div class="description">Since 1998</div>
+	</div>
+</div>
+<div id="frame"></div>
+<hr />
+
+	<div id="content" class="narrowcolumn">
+
+				<div class="post" id="post-8">
+		<h2>sys_clone: Beyond Processes and Threads</h2>
+			<div class="entry">
+				<p><em>Originally posted on January 1st, 2009 on the now defunct Tuxology technoblog</em></p>
+<p>Most Linux developers are aware of the two library calls for creating a new context of execution in Linux:</p>
+<p>fork() and related call vfork(), which create a new process, complete with it’s own process id, private address space and a private copy  set file descriptors, file system attributes (such as working directory) and signal handlers, all distinctly separate from those of the parent that called the fork() function.</p>
+<p>And pthread_create(), which creates a new thread inside the existing process, which shares the same process id, address space, file descriptors, file system attributes and signal handlers with the caller.</p>
+<p>Looking at these two options it would seem that were are faced with a “share all or share nothing” attitude &#8211; either we go the new process route and get a private copy of everything  (actually Linux employs copy on write semantics to make more efficient use of memory), or we can go the new thread route share all resources and for the most, these options are sufficient for most needs.</p>
+<p>Sometimes, however, a less black and white approach is called for &#8211; such as a case where we would like to create a new context of execution sharing the file descriptors and file system attributes of the creator, but not it’s address space (or maybe juts a portion of it) and process id, for example.</p>
+<p>For these cases exactly Linux offers clone(2). Clone is a library function implemented inside the C library, Glibc, which layered on top of the underlying sys_clone system call.</p>
+<p>Clone is similar to fork(2) and pthread_create(3) in that it creates a new execution context which are scheduled independently from the creator.</p>
+<p>Unlike fork and pthread_create, however, clone provides a fine grained level of control of the properties of this new context:</p>
+<ul>
+<li>What it will and what it will not share with its creator.
+</li>
+<li>Which parent process will it belong to.
+</li>
+<li>Which signal, if any, will be delivered to its parent when it terminates.
+</li>
+<li>Where is the location of the new task call stack.
+</li>
+</ul>
+<p>As an example, here a code snippet that creates a new task (for lack of a better word), which implements our previous example &#8211; a new process which has its own process ID, a private address space (with a copy on write semantic of the creator address space) and a separate set of signal handlers, but shares with its creating process the table of file descriptors, file system attributes:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;">&nbsp;
+<span style="color: #339933;">#include &lt;sched.h&gt;</span>
+&nbsp;
+<span style="color: #339933;">#define STACK_SIZE 4096</span>
+&nbsp;
+<span style="color: #993333;">void</span> <span style="color: #339933;">*</span> stack <span style="color: #339933;">=</span> mmap<span style="color: #009900;">&#40;</span>NULL<span style="color: #339933;">,</span> STACK_SIZE <span style="color: #339933;">,</span> \
+   PROT_READ <span style="color: #339933;">|</span> PROT_WRITE<span style="color: #339933;">,</span> MAP_PRIVATE <span style="color: #339933;">|</span> \
+   MAP_ANON <span style="color: #339933;">|</span> MAP_GROWSDOWN<span style="color: #339933;">,</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/* check for alloc errors... */</span>
+&nbsp;
+clone<span style="color: #009900;">&#40;</span>test<span style="color: #339933;">,</span> stack<span style="color: #339933;">,</span> CLONE_FS <span style="color: #339933;">|</span> CLONE_FILES \
+    <span style="color: #339933;">|</span> SIGCHLD<span style="color: #339933;">|</span> CLONE_PARENT<span style="color: #339933;">,</span> NULL<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #808080; font-style: italic;">/* check for clone errors... */</span>
+&nbsp;
+munmap<span style="color: #009900;">&#40;</span>stack<span style="color: #339933;">,</span> STACK_SIZE<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre></td></tr></table></div>
+
+<p>As you can see in the example above, we first allocate a stack for the new task using an anonymous private memory mapping and instruct the kernel to grow the mapping downwards as need be (this is actually not true on all architectures).</p>
+<p>Them, we use the clone library call to create the new task, sharing the file descriptor table and file system attributes, but not the address space with the creator.</p>
+<p>We also ask that the new task will inherit the same parent as the creator and that a SIGCHLD signal will be sent to the parent of the new task, as normally would be the case.</p>
+<p>As you can see, the clone library call and the sys_clone are a powerful tool that can be used to create unique execution contexts beyond the standard thread or process variety. Many more options are detailed in the clone(2) man page.</p>
+
+				
+			</div>
+		</div>
+				</div>
+
+	<div id="sidebar">
+		<ul>
+			<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Menu</h2>		<ul>
+			<li class="page_item page-item-14"><a href="http://benyossef.com/benchmarking-boot-latency-on-x86/">Benchmarking boot latency on x86</a></li>
+<li class="page_item page-item-10"><a href="http://benyossef.com/building-an-embedded-linux-system-emulator/">Building an embedded Linux system emulator</a></li>
+<li class="page_item page-item-6"><a href="http://benyossef.com/helping-the-compiler-help-you/">Helping The Compiler Help You</a></li>
+<li class="page_item page-item-8 current_page_item"><a href="http://benyossef.com/sys_clone-beyond-processes-and-threads/">sys_clone: Beyond Processes and Threads</a></li>
+<li class="page_item page-item-11"><a href="http://benyossef.com/using-a-shared-library-constructor/">Using a shared library constructor</a></li>
+<li class="page_item page-item-2"><a href="http://benyossef.com/">Who is this?</a></li>
+		</ul>
+		</li><li id="social-widget-4" class="widget Social_Widget"><h2 class="widgettitle">Social me</h2><div class="socialmedia-buttons smw_left"><a href="http://www.facebook.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/facebook.png" 
+				alt="Links to various social sites Facebook" 
+				title="Links to various social sites Facebook" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://plus.google.com/116984042169887848341" rel="publisher" target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/googleplus.png" 
+				alt="Links to various social sites Google+" 
+				title="Links to various social sites Google+" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.twitter.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/twitter.png" 
+				alt="Links to various social sites Twitter" 
+				title="Links to various social sites Twitter" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.linkedin.com/in/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/linkedin.png" 
+				alt="Links to various social sites LinkedIn" 
+				title="Links to various social sites LinkedIn" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="skype:gilad.benyossef?add"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/skype.png" 
+				alt="Links to various social sites Skype" 
+				title="Links to various social sites Skype" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://github.com/gby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/github.png" 
+				alt="Links to various social sites Github" 
+				title="Links to various social sites Github" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://foursquare.com/user/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/foursquare.png" 
+				alt="Links to various social sites Foursquare" 
+				title="Links to various social sites Foursquare" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="mailto:gilad@benyossef.com"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/email.png" 
+				alt="Links to various social sites E-mail" 
+				title="Links to various social sites E-mail" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a></div></li><li id="text-3" class="widget widget_text"><h2 class="widgettitle">My bitcoin address</h2>			<div class="textwidget">1FbDDrp8VPhbHs19jdND5xxUKgevEWT8jr</div>
+		</li>		</ul>
+	</div>
+
+
+
+<hr />
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		2014 &copy; Gilad Ben-Yossef is proudly powered by
+		<a href="http://wordpress.org/">WordPress</a>
+		<br /><a class="rsslink" href="http://benyossef.com/feed/">Entries (RSS)</a>
+		 <a class="rsslink" href="http://benyossef.com/comments/feed/">Comments (RSS)</a> | Esther Theme By <a title="Patrick" href="http://patrick.bloggles.info/">Patrick</a>
+		<!-- 13 queries. 0.768 seconds. -->
+	</p>
+</div>
+</div>
+
+<!-- This is designed for Esther Goh, wish her happy birthday and have a happiness life! -->
+
+	</body>
+</html>
+

@@ -1,0 +1,294 @@
+http://fuzzypool.org/pool/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 01:38:46 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.3.10-1ubuntu3.8
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3251
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Fuzzybears Peercoin Mining Pool</title>        <link rel="stylesheet" type="text/css" href="/pool/static/css/style.css">
+        <link rel="icon" type="image/png" href="http://escrow.peercointalk.org/favicon.ico">
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.5/jquery.scrollTo.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.7/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="/pool/static/js/common.js"></script>
+        <script type="text/javascript" src="/pool/static/js/hashrate.js"></script>
+    </head>
+    <body>
+        <header>
+            <a class="logo" href="http://peercointalk.org">
+                FuzzyBear's<br/>
+                PPC Pool
+            </a>
+            <nav>
+    <a class="active" href="/pool/">Home</a><a href="/pool/news">News</a><a href="/pool/gettingstarted">Getting started</a><a href="/pool/rewardmodels">Reward models</a><a href="/pool/faq">FAQ</a><a href="/pool/poolstats">Pool statistics</a><a href="/pool/userstats">User statistics</a><a href="/pool/netstats">Network statistics</a><a href="/pool/chat">Chat</a></nav>
+
+        </header>
+        <section id="content">
+
+<article>
+    <h1>FuzzyBear's Peercoin Mining Pool</h1>
+
+    <section>
+        <h2>Overview</h2>
+        <p>
+            <ul>
+                <li>
+                    <a href="http://www.ppcoin.org/"><span style='font-weight: bold'>Peercoin</span>
+                    (Peer-to-Peer Coin)</a> is a decentralized digital currency system based on
+                    <a href="http://www.bitcoin.org/">Bitcoin</a> technology with major
+                    technological and economical improvements.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>Peercoin mining</span> is the process of
+                    participating in the initial distribution of Peercoins by making computer hardware
+                    do mathematical calculations for the Peercoin network. Mining is a specialized and
+                    competitive market where the rewards are divided up according to how much
+                    calculation is done.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>Mining pools</span> ensure a fair distribution
+                    of rewards even for small-scale miners by redistributing mining rewards in a
+                    fair fashion, similar to how a betting pool works.
+                </li>
+            </ul>
+        </p>
+    </section>
+
+    <section>
+        <h2>Getting started</h2>
+        <p>
+            <ul>
+                <li>
+                    <span style="font-weight: bold;">
+                        This pool does not require or support registration of any kind.
+                    </span> 
+                    See the <a href="/pool/gettingstarted">Getting started</a>
+                    page for details.
+                </li>
+                <li>
+                    Just use you <span class="cur_name">coins</span> address as you username, and
+                    choose a reward distribution model by specifying it as your password.
+                </li>
+                <li>
+                    Please be sure to pass a valid address as your username, as incorrect usernames
+                    will be silently ignored and earnings will be kept by the pool.
+                </li>
+                <li>
+                    You can connect to the pool using the <span style="font-weight: bold;">
+                    Stratum protocol</span> at <code>fuzzypool.org:3333</code>.
+                </li>
+            </ul>
+        </p>
+    </section>
+
+    <section>
+        <h2>Further information</h2>
+        <p>
+            <ul>
+                <li>
+                    Original Pool Developers (TheSeven) donation address:
+                    <a href="ppcoin:PHzeTYyBXoL91N8t9BEqg5SzVXRhvFENai">
+                    PHzeTYyBXoL91N8t9BEqg5SzVXRhvFENai</a> (PPCoin) or
+                    <a href="bitcoin:1LyJVgS9Xhi3CZiKkGm19Mwgaz5jxvp5hf">
+                    1LyJVgS9Xhi3CZiKkGm19Mwgaz5jxvp5hf</a> (Bitcoin).
+                </li>
+                <li>
+                    Miners will be paid once every <span id="payoutdays">(loading...)</span> days,
+                    or when their balance reaches <span id="payoutthreshold">(loading...)</span>
+                    <span class="cur_sym">coins</span>, whichever comes first.
+                </li>
+                <li>
+                    Payouts will be done at most once per
+                    <span id="minpayoutminutes">(loading...)</span> minutes, and balances below
+                    <span id="minpayment">(loading...)</span> <span class="cur_sym">coins</span>
+                    cannot be paid for technical reasons.
+                </li>
+            </ul>
+        </p>
+    </section>
+</article>
+
+<script type="text/javascript">//<![CDATA[
+
+    $(function()
+    {
+        getpoolinfo(function(info)
+        {
+            $("#payoutdays").text(info.max_payout_interval / 86400);
+            $("#payoutthreshold").text(info.payout_threshold / info.coin_divisor);
+            $("#minpayoutminutes").text(info.min_payout_interval / 60);
+            $("#minpayment").text(info.min_payment / info.coin_divisor);
+        });
+    });
+    
+//]]></script>
+
+        </section>
+        <div id="sidebar_background"></div>
+        <section id="sidebar">
+            <section style="margin-top: -50px;">
+    <a href="/pool/poolstats" style="display: block; text-decoration: none; color: inherit;">
+        <h2 style="text-align: right;">Pool Statistics:</h2>
+        <div id="sidebar_pool_hashrate_graph" style="width: 100%; height: 50px;"></div>
+        <p>
+            Pool hashrate: <span id="sidebar_pool_hashrate" style="font-weight: bold;">?</span>
+        </p>
+    </a>
+    <a href="/pool/netstats" style="display: block; text-decoration: none; color: inherit;">
+        <p>
+            Network hashrate: <span id="sidebar_net_hashrate" style="font-weight: bold;">?</span>
+        </p>
+    </a>
+</section>
+
+<section id="sidebar_userstats" style="padding-top: 5px; border-top: 1px solid #ddd; display: none;">
+    <a id="sidebar_userstats_link" style="display: block; text-decoration: none; color: inherit;">
+        <h2 style="text-align: right; margin-bottom: 0;">User Statistics:</h2>
+        <div id="sidebar_userstats_address" style="text-align: center; font-size: 9px; line-height: 12px;"></div>
+        <div id="sidebar_user_hashrate_graph" style="width: 100%; height: 50px;"></div>
+        <p>
+            Your hashrate: <span id="sidebar_user_hashrate" style="font-weight: bold;">?</span><br/>
+            Your balance: <span style="font-weight: bold;"><span id="sidebar_user_balance">?</span> <span class="cur_sym">coins</span></span>
+        </p>
+    </a>
+</section>
+
+<script type="text/javascript">//<![CDATA[
+
+    $(function()
+    {
+        var processor;
+        var graph;
+        var user;
+        
+        function update_sidebar()
+        {
+            var info = window.poolinfo;
+            $("#sidebar_net_hashrate").text((Math.round(info.netstats_powrate / 100000000) / 10) + " GH/s");
+
+            if (!processor) processor = get_hashrate_processor("pool", 60000);
+            if (!graph)
+            {
+                graph = new HashrateGraph(
+                {
+                    "processor": processor,
+                    "area": $("#sidebar_pool_hashrate_graph"),
+                    "legendShow": false,
+                    "axesShow": false,
+                    "fastShow": false,
+                    "lineWidth": 1,
+                });
+                $(graph).on("update", function()
+                {
+                    var hashrate = Math.round(processor.total.slow);
+                    if (isNaN(hashrate)) hashrate = "?";
+                    $("#sidebar_pool_hashrate").text(hashrate + " MH/s");
+                });
+
+                window.sidebar_update_user = function()
+                {
+                    var addr = localStorage.userstats_own_addr;
+                    if (!addr) addr = localStorage.userstats_last_addr;
+                    if (addr == user) return;
+                    if (addr)
+                    {
+                        user = addr;
+                        rpc("get_user_info", {"address": addr}, function(user, error)
+                        {
+                            if (!user) return;
+                            update_balance(user);
+                            var processor = get_hashrate_processor("user:" + addr, 60000, {"args": {"userid": user.userid}});
+                            $("#sidebar_userstats_address").text("(" + addr + ")");
+                            $("#sidebar_userstats_link").attr("href", "/pool/userstats#" + addr);
+                            $("#sidebar_userstats").show();
+                            var initial = true;
+                            var area = $("#sidebar_user_hashrate_graph");
+                            area.triggerHandler("remove");
+                            var graph = new HashrateGraph(
+                            {
+                                "processor": processor,
+                                "area": area.empty(),
+                                "legendShow": false,
+                                "axesShow": false,
+                                "fastShow": false,
+                                "lineWidth": 1,
+                            });
+                            $(graph).on("update", function()
+                            {
+                                var hashrate = Math.round(processor.total.slow);
+                                if (isNaN(hashrate)) hashrate = "?";
+                                $("#sidebar_user_hashrate").text(hashrate + " MH/s");
+                                if (!initial) rpc("get_user_info", {"address": addr}, update_balance);
+                                initial = false;
+                            });
+                        });
+                    }
+                    
+                    function update_balance(user)
+                    {
+                        if (!user) return;
+                        $("#sidebar_user_balance").text(Math.round(user.balance * info.coin_divisor) / info.coin_divisor);
+                    }
+                };
+                window.sidebar_update_user();
+            }
+        }
+
+        getpoolinfo(update_sidebar);
+        $(window).one("pageUnload", function()
+        {
+            $(window).off("gotPoolInfo", update_sidebar);
+        });
+        $(window).on("gotPoolInfo", update_sidebar);
+    });
+
+//]]></script>
+
+<section class="news">
+                    <article>
+                    <a name="20131011_shutdowndown_warning"></a>
+                    <div class="news_date">
+                        <span class="day">31</span>
+                        <span class="month">October</span>
+                        <span class="year">2013</span>
+                        <span class="time">23:59 UTC</span>
+                    </div>
+                    <h2>Fuzzy PPC Pool official opening</h2>
+                    <p>
+                        Pool is set to officially open on this date baring any bugs found in testing.
+                        <span class="news_morebutton"><a href="/pool/news#20131011_shutdowndown_warning">Read More</a></span>
+                    </p>
+                </article>                <article>
+                    <a name="20130601_newsiteonline"></a>
+                    <div class="news_date">
+                        <span class="day">21</span>
+                        <span class="month">October</span>
+                        <span class="year">2013</span>
+                        <span class="time">01:23 UTC</span>
+                    </div>
+                    <h2>New pool Open for testing!</h2>
+                    <p>
+                        We have just switched over to the new pool web site.
+                        <span class="news_morebutton"><a href="/pool/news#20130601_newsiteonline">Read More</a></span>
+                    </p>
+                </article></section>
+
+        </section>
+        <footer>
+            <p>
+                © 2013 FuzzyPool. All Rights Reserved. Pool not possible without TheSeven
+            </p>
+        </footer>
+    </body>
+</html>
+
+
+

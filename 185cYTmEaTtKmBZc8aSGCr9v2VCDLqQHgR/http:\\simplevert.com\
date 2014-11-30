@@ -1,0 +1,572 @@
+http://simplevert.com/
+HTTP/1.1 200 OK
+Server: nginx
+Date: Thu, 24 Jul 2014 08:24:37 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 24989
+Connection: close
+
+
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="og:image" content="/static/img/whale-xs.png">
+  <title>Simple Vert - Home - A custom Vertcoin mining pool with no registration</title>
+  <meta name="description" content="A custom Vertcoin mining pool with no registration and a focus on developing new tools for miners">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+  <link rel="stylesheet" href="/static/css/font-awesome-4.1.0.min.css">
+  <link rel="stylesheet" href="/static/css/bootstrap-superhero.min.css">
+  <link rel="stylesheet" href="/static/css/main.css?revision=f526911">
+  <link rel="stylesheet" href="/static/css/nv.d3.css?revision=f526911">
+  <script src="/static/js/jquery-2.1.0.min.js"></script>
+  <script>window.jQuery || document.write('<script src="//code.jquery.com/jquery-2.1.0.min.js"><\/script>')</script>
+  <script src="/static/js/d3-3.4.2.min.js"></script>
+  <script src="/static/js/ZeroClipboard-1.3.3.min.js"></script>
+  <script src="/static/js/utils.js"></script>
+  <script src="/static/js/nv.d3.min.js"></script>
+  <script src="/static/js/graph.js?revision=f526911"></Script>
+  <script src="/static/js/bootstrap.min.js"></Script>
+  <script src="/static/js/jquery.tablesorter.min.js"></Script>
+  <script>
+    $(document).ready(function() {
+      var shares, seconds, khashpersec, shares_per_sec, luck,
+          round_time, pplns_size;
+
+      
+      shares = 5320276;
+      seconds = 420.122494;
+      pplns_size = 17323454.3142;
+      total_round_shares = pplns_size / 2;
+      khashpersec = 851418.80832;
+      
+      shares_per_sec = ((khashpersec * 1000) / Math.pow(2, 16));
+      
+      round_time = 8661727.15708 / shares_per_sec;
+
+      function n(n){
+          return n > 9 || n < -9 ? "" + n: "0" + n;
+      }
+
+      page_view_seconds = 0;
+      seconds = Math.round(seconds);
+
+      setInterval(set_content = function(){
+
+        seconds += 1;
+        page_view_seconds += 1;
+        additional_shares = shares + (shares_per_sec * page_view_seconds);
+
+        shares_remaining = (total_round_shares) - Math.round(additional_shares);
+        y = seconds%60
+        minutes = n(Math.floor(seconds/60)%60);
+        hours = n(Math.floor(seconds/3600));
+
+        remaining_time = Math.abs(round_time - seconds);
+
+        
+        if (round_time == 'Infinity') { remaining_time = 0;}
+
+        remaining_seconds = Math.floor(remaining_time%60);
+        remaining_minutes = n(Math.floor(remaining_time/60)%60);
+        remaining_hours = n(Math.floor(remaining_time/3600));
+
+        
+        if (round_time - seconds < 0) {
+          remaining_hours = "-" + remaining_hours
+        }
+
+        luck = ((total_round_shares) / additional_shares) * 1000;
+        if (luck > 99999) {
+          luck = 99999;
+        }
+
+        $('.odometer.shares').text(numberWithCommas(Math.round(additional_shares)));
+        $('.total_n').text(numberWithCommas(Math.round(pplns_size)));
+        $('.odometer.blockshares').text(numberWithCommas(Math.round(additional_shares)));
+
+        $('.minutes').text(minutes);
+        $('.seconds').text(n(y));
+        $('.hours').text(hours);
+
+        // for pool stats page
+        $('.est_remaining_minutes').text(remaining_minutes);
+        $('.est_remaining_seconds').text(n(remaining_seconds));
+        $('.est_remaining_hours').text(remaining_hours);
+
+        $('.odometer.hashes').text(numberWithCommas(Math.round(khashpersec/100)/10));
+        $('.odometer.phashrate').text(numberWithCommas(Math.round(khashpersec/100)/10));
+        $('.odometer.luck').text(numberWithCommas(Math.round(luck) / 10));
+        $('.odometer.blockluck').text(numberWithCommas(Math.round(luck) / 10));
+        $('.odometer.remaining_shares').text(numberWithCommas(Math.round(shares_remaining)));
+
+      },1000);
+
+      set_content();
+
+      
+      $('.alert').bind('closed.bs.alert', function () {
+          var id = $(this).attr('data-alert-id');
+          $.get('close/'+id);
+      });
+
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+        <div class="col-md-5 no-padding">
+          <h1 style="font-size:51px;">
+            <a style=" text-decoration:none;" href="/">
+              <div>
+                <img src="/static/img/vertcoin.png" style="padding-bottom: 5px;float:left;width:64px;">
+                <p>&nbsp;Simple&nbsp;Vert</p>
+              </div>
+            </a>
+          </h1>
+        </div>
+        <div class="col-md-7 no-padding">
+          <h5 class="stats">
+            <div class="col-sm-4">
+              <strong data-toggle="tooltip" data-placement="right"
+                title="Total hashrate for the pool, represented in Megahashes per second">Pool&nbsp;Hashrate
+              </strong>:&nbsp;<span class="odometer hashes">...</span> MH/s
+              <br>
+              <strong data-placement="right"
+                title="Total active clients mining on Simple Vert">
+                Active&nbsp;Workers</strong>:&nbsp;1087
+            </div>
+            <div class="col-sm-4">
+              <strong data-placement="right"
+                title="Total time since the last block was solved">Round&nbsp;Time
+              </strong>:&nbsp;
+              <span class="hours">00</span>:<span class="minutes">00</span>:<span class="seconds">00</span>
+              <br>
+              <strong data-placement="right"
+                title="Estimated time remaining until the next block is found. It assumes round luck will be 100% and that difficulty will not change.">
+                Est.&nbsp;Time&nbsp;Left</strong>:&nbsp;<span class="est_remaining_hours">00</span>:<span class="est_remaining_minutes">00</span>:<span class="est_remaining_seconds">00</span>
+            </div>
+            <div class="col-sm-4">
+              <strong data-placement="right"
+                title="Total 1 difficulty shares submitted since the last block was solved">Round&nbsp;Shares
+              </strong>:&nbsp;<span class="odometer shares">...</span>
+              <br>
+              <strong data-placement="right"
+                title="Calculated from (shares expected to solve a block)/(shares currently submitted). This results in a percentage that decreases the unluckier the pool is in finding a block. Additionally, the expected number of shares to solve a block is dependent upon the current difficulty, and so large spikes or drops in difficulty often result in strange jumps in round luck">
+                Round&nbsp;Luck</strong>:&nbsp;<span class="odometer luck">...</span>%
+            </div>
+          </h5>
+        </div>
+    </div>
+    <div class="row">
+      <div class="navbar navbar-default">
+        <div class="navbar-collapse navbar-responsive-collapse">
+          <ul class="nav navbar-nav hidden-xs hidden-sm hidden-md">
+            <li><a href="/news"><i class="fa fa-microphone too-damn-bright"></i> &nbsp;News</a></li>
+            
+            
+            <li><a href="https://kiwiirc.com/client/irc.freenode.net/#simplecrypto" target="_blank"><i class="fa fa-comments too-damn-bright"></i> &nbsp;Chat</a></li>
+            
+            <li class=""><a href="/pool_stats"><i class="fa fa-bar-chart-o too-damn-bright"></i> &nbsp;Pool Stats</a></li>
+            <li class=""><a href="/stats"><i class="fa fa-user too-damn-bright"></i> &nbsp;User Stats</a></li>
+            <li class=""><a href="/network_stats"><i class="fa fa-globe too-damn-bright"></i> &nbsp;Network Stats</a></li>
+            <li class=""><a href="/round_summary"><i class="fa fa-flag too-damn-bright"></i> &nbsp;Round Summary</a></li>
+            <li><a href="/guides/"><i class="fa fa-book too-damn-bright"></i> &nbsp;Guides</a></li>
+          </ul>
+          <ul class="nav navbar-nav hidden-lg">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bar-chart-o too-damn-bright"></i> &nbsp;Stats <b class="caret"></b></a>
+              <ul class="dropdown-menu" style="width:100%;">
+                <li><a href="/pool_stats"><i class="fa fa-dashboard too-damn-bright"></i> &nbsp;Pool Stats</a></li>
+                <li><a href="/stats"><i class="fa fa-user too-damn-bright"></i> &nbsp;User Stats</a></li>
+                <li><a href="/network_stats"><i class="fa fa-globe too-damn-bright"></i> &nbsp;Network Stats</a></li>
+                <li><a href="/round_summary"><i class="fa fa-flag too-damn-bright"></i> &nbsp;Round Summary</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-star too-damn-bright"></i> &nbsp;Extras <b class="caret"></b></a>
+              <ul class="dropdown-menu" style="width:100%;">
+                <li><a href="/news"><i class="fa fa-microphone too-damn-bright"></i> &nbsp;News</a></li>
+                <li><a href="/guides/"><i class="fa fa-book too-damn-bright"></i> &nbsp;Guides</a></li>
+              </ul>
+            </li>
+          </ul>
+          
+          <ul class="nav navbar-nav pull-right hidden-xs">
+            <li>
+              <a href="http://www.simpledoge.com"><img class="too-damn-bright" src="/static/img/dogecoin.png" style="width:20px;"></a>
+            </li>
+            <li class="active">
+              <a href="http://www.simplevert.com"><img class="too-damn-bright" src="/static/img/vertcoin.png" style="width:20px;"></a>
+            </li>
+            <li>
+              <a href="http://www.simpledrk.com"><img class="too-damn-bright" src="/static/img/darkcoin.png" style="width:20px;"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  <!-- Alerts ================================================== -->
+  
+
+  
+<script>
+$(document).ready(function() {
+  //  Action stats form based on input val
+    $('#statsform').submit(function(){
+      var address = $('#inputAddress').val();
+      $(this).attr('action', "/" + address);
+    });
+});
+</script>
+
+<!-- Quick start ================================================== -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div>
+      <div class="row well">
+        <div class="col-lg-7">
+          <h2 style="margin-top:2px;">Some things you'll love about Simple Vert</h2>
+          <ol>
+            <li>Triple merged mining + a 4% bonus increases your profits</li>
+            <li>No registration required. Similar to how p2pool works.</li>
+            <li>Powerful monitoring software <a href="https://github.com/simplecrypto/ppagent#powerpool-agent">PPAgent</a>
+              Remotely view your temperatures, fan speed, voltages, and much more from your phone or anywhere
+              that you have internet. </li>
+            <li>Nice graphs. See data back as far as a month, broken out by worker.</li>
+            <li>Payout after every 4 hours, no minimum balance, no payout fees.</li>
+          </ol>
+        </div>
+        <div class="col-lg-5 text-center">
+          <img class=" hidden-xs" src="/static/img/whale.png" width="350">
+          <img class="hidden-sm hidden-md hidden-lg" src="/static/img/whale-sm.png" width="300">
+        </div>
+      </div>
+      <div class="row well" style="padding-right:30px;">
+      <h2>Quick start for mining: </h2>
+      <ol>
+          <li><h3>Pick the best stratum for you</h3>
+            <div class="alert alert-dismissable alert-warning">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              <b>If you have 8MH or more you need to use the high difficulty port -
+              Our anti-DOS settings may autoban or rate limit you from lower difficulties</b>
+            </div>
+            <div class="row">
+              
+              <div class="col-lg-4">
+                <div class="well well-lg" style="height:180px;background-color:#212F3D;">
+                  <h3><img src="/static/img/ca.svg"
+                           style="width:25px;" class="too-damn-bright"> &nbsp;Beauharnois, Canada</h3>
+                  <b>Address</b>: ca.simplevert.com
+                  <ul>
+                  
+                    <li><b>Standard Port:</b> 3343 (diff 128)</li>
+                  
+                    <li><b>Vardiff Port:</b> 3344 (diff 8-512)</li>
+                  
+                    <li><b>Hidiff Port:</b> 3345 (diff 512)</li>
+                  
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="col-lg-4">
+                <div class="well well-lg" style="height:180px;background-color:#212F3D;">
+                  <h3><img src="/static/img/gb.svg"
+                           style="width:25px;" class="too-damn-bright"> &nbsp;London, Great Britain</h3>
+                  <b>Address</b>: uk.simplevert.com
+                  <ul>
+                  
+                    <li><b>Standard Port:</b> 3343 (diff 64)</li>
+                  
+                    <li><b>Hidiff Port:</b> 3345 (diff 512)</li>
+                  
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="col-lg-4">
+                <div class="well well-lg" style="height:180px;background-color:#212F3D;">
+                  <h3><img src="/static/img/jp.svg"
+                           style="width:25px;" class="too-damn-bright"> &nbsp;Tokyo, Japan</h3>
+                  <b>Address</b>: jp.simplevert.com
+                  <ul>
+                  
+                    <li><b>Standard Port:</b> 3343 (diff 128)</li>
+                  
+                    <li><b>Hidiff Port:</b> 3345 (diff 512)</li>
+                  
+                  </ul>
+                </div>
+              </div>
+              
+            </div>
+          </li>
+
+          <li><h3>Configure your miner. Worker name can be anything you'd like:</h3>
+            <small>
+              <pre>
+<b>Username: </b>[Your wallet address].[Worker Name]
+<b>Password: </b>anything
+<b>Simple example:</b> ./sgminer -o stratum+tcp://ca.simplevert.com:3343 -u VkbHY8ua2TjxdL7gY2uMfCz3TxMzMPgmRR.worker1 -p x -I 13</pre>
+
+            </small>
+          </li>
+          <li>Check your stats and estimated payout by entering your Vert address below:</li>
+          <div class="form-group">
+            <form class="bs-example form-horizontal" id="statsform">
+              <fieldset>
+                <div class="form-group">
+                  <div class="col-lg-9">
+                    <input type="text" class="form-control" id="inputAddress" placeholder="Vert Address">
+                    <span class="help-block">
+                        Paste your Vert address for quick access to individualized stats.
+                        
+                    </span>
+                  </div>
+                  <button type="submit" class="btn btn-default">View Stats</button>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+          <li>(Optional) Setup advanced stats to track GPU temps and actual hashrate with
+            <a href="https://github.com/simplecrypto/ppagent">Powerpool Agent</a>
+          </li>
+          <li>(Optional) Setup your MON and PLX merged mining address by clicking the edit button on your stats page next to your Vertcoin address.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Value points ================================================== -->
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="well well-lg" style="height: 180px;">
+      <h3><i class="fa fa-times too-damn-bright"></i> &nbsp;No registration</h3>
+      Unlike most pools, we don't require, or even provide, registration. Simply connect to our stratum servers with your wallet address.
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="well well-lg" style="height: 180px;">
+      <h3><i class="fa fa-lock too-damn-bright"></i> &nbsp;Secure</h3>
+      No registration means your credentials can't become compromised, because
+      you don't have any! All pool funds are kept off server for increased
+      security.
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="well well-lg" style="height: 180px;">
+      <h3><i class="fa fa-clock-o too-damn-bright"></i> &nbsp;No minimum Payout</h3>
+      Payouts are processed every time a block is solved. No minimum balance required. Payouts are computed using PPLNS with a 1% fee.
+    </div>
+  </div>
+</div>
+
+<!-- Contact us ================================================== -->
+
+<div class="row row-header">
+  <div class="col-lg-3 text-center">
+      <h2><i class="fa fa-bullhorn too-damn-bright"></i> &nbsp;Contact us</h2>
+  </div>
+  <div class="col-lg-2">
+    <a href="https://kiwiirc.com/client/irc.freenode.net/#simplecrypto" class="contact" target="_blank">
+      <div class="well well-clear text-center">
+        <h3>
+          <i class="fa fa-comments too-damn-bright"></i> &nbsp;IRC
+        </h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-lg-2">
+    <a href="http://www.reddit.com/r/simplecrypto" class="contact" target="_blank">
+      <div class="well well-clear text-center">
+        <h3>
+          <i class="fa fa-reddit too-damn-bright"></i> &nbsp;Reddit
+        </h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-lg-2">
+    <a href="https://github.com/simplecrypto" class="contact" target="_blank">
+      <div class="well well-clear text-center">
+        <h3>
+          <i class="fa fa-github too-damn-bright"></i> &nbsp;Github
+        </h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-lg-2">
+    <a href="mailto:simplecryptogroup@gmail.com" class="contact">
+      <div class="well well-clear text-center">
+        <h3>
+          <i class="fa fa-envelope too-damn-bright"></i> &nbsp;Email
+        </h3>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- Cool Features ================================================== -->
+
+<h2>Features</h2>
+<br>
+<div class="row row-header">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-body row">
+        <div class="col-md-7 text-center no-padding">
+          <img src="/static/img/worker_status_small2.png" style="box-shadow: -1px -1px 1px #777;margin-top:35px;max-width:98%;">
+        </div>
+        <div class="col-md-5">
+          <h3>Monitor your rig's health, from anywhere</h3>
+          <p>This setup allows you to monitor multiple rigs easily, without setting up a pool manager,
+          and view actual data from each of your rigs, rather than approximations.</p>
+          <ul>
+            <li>Quick and easy setup, see the
+              <a href="http://www.github.com/simplecrypto/ppagent" target="_blank">Installation Guide</a>
+            </li>
+            <li>View stats from rigs remotely - including WUE, Hashrate, Temps, Fan %, and more</li>
+            <li>Overheat/Low hashrate status indicators and email notifications</li>
+            <li>More features coming soon - including graphs of hashrate and temperature</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-body row">
+        <div class="col-md-7 text-center no-padding">
+          <img src="/static/img/graphs.png" style="box-shadow: -1px -1px 1px #777;margin-top:15px;max-width:98%;">
+        </div>
+        <div class="col-md-5">
+          <h3>Insightful statistics</h3>
+          <p>Graphs broken down by worker give you a good at-a-glance picture of what is going on.</p>
+          <ul>
+            <li>Easily name a worker anything you want</li>
+            <li>Drill down graphs to an individual worker with a click</li>
+            <li>Tooltips display your hash rate for each worker at a given point</li>
+            <li>View in 'expanded' mode to see what percentage of your hashing power each of your rigs is</li>
+            <li>Easily see your overall hash rate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- News/Announcements ================================================== -->
+<h2>News</h2>
+<div class="row row-header">
+  <div class="col-lg-12">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">Server and frontend upgrades
+        <span class="text-muted pull-right">7/9/2014</span>
+      </div>
+      <div class="panel-body">
+        <p><p>Over the last few weeks we've been working on various tweaks, features,
+and performance improvements around the site. You may have noticed a few of
+them showing up here and there, but here they are officially listed:</p>
+<b>Website Modifications</b>
+<ul>
+<li>Significant backend modifications have been made to make stats pages load at a reasonable speed. Everything should be significantly snappier now.</li>
+<li>A new detailed block statistics section has been added to the pool stats page, showing stats at various time intervals.</li>
+<li>Pool Efficiency and Block statistics now by default show for the last month instead of all time</li>
+<li>Payout records are now only kept for 1 week. Summaries of payouts will be added in the near future that will be kept forever.</li>
+<li>A table on pool stats now shows all of the online servers, along with how many users and how much hashrate they're handling</li>
+</ul>
+<b>Mining Server Modifications</b>
+<ul>
+<li>Heavy optimization of how we distribute new jobs to users, resulting in approximately 30% reduction in stale shares.</li>
+<li>Push block notifications are now supported, which should reduce orphan blocks by approx 0.3%</li>
+<li>Many other performance optimizations to help keep our servers running fast, including share batching and aggregation and a more advanced per-user vardiff.</li>
+<li><a href="https://github.com/simplecrypto/powerpool/releases/tag/v0.5.0-RC">Technical details here</a></li>
+</ul>
+</p>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">Brief Downtime on UK Server
+        <span class="text-muted pull-right">5/30/2014</span>
+      </div>
+      <div class="panel-body">
+        <p>This morning from about 4:00pm GMT to 4:45 GMT our UK server was offline
+because of a hardware failure at our service provider. This failure also
+caused our main server to get behind processing tasks on the frontend
+because of it's attempts to contact the now offline server. These issues
+have now been resolved. If you're using a geo stratum we recommend
+setting primary stratum as a backup to help prevent downtimes like this
+from effecting you.
+</p>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">Share count bug fix
+        <span class="text-muted pull-right">5/29/2014</span>
+      </div>
+      <div class="panel-body">
+        <p><p>We've isolated a bug that was occasionally double reporting shares. This means hashrate for EVERYONE was artificially
+high by about 4-8%. Because this bug effected everyone equally
+there was no net impact on payouts, but this did impact
+the pool luck because it showed a higher number of accepted shares required to solve each block.</p>
+
+<p>So today we pushed up a fix and restarted everything, you may notice a slight dip in your hashrate graph,
+but it is actually reporting your hashrate more accurately now.</p>
+
+<p>To summarize:</p>
+
+<ul>
+<li>No payouts were effected</li>
+<li>User's shares/hashrate were over inflated by 4-8%</li>
+<li>Overall pool shares/hashrate were inflated by 4-8%</li>
+<li>The pool's luck was deflated by 4-8%</li>
+</ul>
+<p>As always, feel free to drop by in chat if you have any questions about this</p>
+</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+  
+  <div class="row" style="padding-top:30px;padding-bottom:20px;">
+    <div class="col-lg-8 col-lg-offset-2 text-center">
+      <br>Email us feature requests or bugs at <a href="mailto:simplecryptogroup@gmail.com">simplecryptogroup@gmail.com</a>.
+      <br>
+      <small>
+        
+        Running revision <a href="https://github.com/simplecrypto/simplevert/commit/f526911">f526911</a>
+        released on 2014-07-17 13:58:51 -0500.
+        
+        <br>
+        Donate to the devs:
+        DOGE <a href="dogecoin:DAbhwsnEq5TjtBP5j76TinhUqqLTktDAnD">DAbhwsnEq5TjtBP5j76TinhUqqLTktDAnD</a><br>
+        BTC <a href="bitcoin:185cYTmEaTtKmBZc8aSGCr9v2VCDLqQHgR">185cYTmEaTtKmBZc8aSGCr9v2VCDLqQHgR</a><br>
+        VTC <a href="vertcoin:VkbHY8ua2TjxdL7gY2uMfCz3TxMzMPgmRR">VkbHY8ua2TjxdL7gY2uMfCz3TxMzMPgmRR</a>
+        DRK <a href="darkcoin:XyYNnKZqdCW3EHDQpYjTAQCKrHh66okgkw">XyYNnKZqdCW3EHDQpYjTAQCKrHh66okgkw</a>
+    </div>
+  </div>
+  
+  </div>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-49492149-1', 'simplevert.com');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+</html>

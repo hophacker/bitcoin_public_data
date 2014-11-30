@@ -1,0 +1,128 @@
+http://blog.linuxprogrammer.org/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Wed, 23 Jul 2014 11:45:06 GMT
+Content-Type: text/html
+Content-Length: 6657
+Last-Modified: Fri, 21 Mar 2014 22:18:33 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html class="no-js lt-ie9" lang="en" >
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en" >
+<!--<![endif]-->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="description" content="How to get more precise exception messages.">
+<meta name="keywords" content="python, debugging">
+<meta name="author" content="David Huseby">
+  <title>LPo</title>
+  <link rel="stylesheet" href="/css/normalize.css" />
+  <link rel="stylesheet" href="/css/foundation.css" />
+  <link rel="stylesheet" href="/css/font-awesome.css" />
+  <link rel="stylesheet" href="/css/custom.css" />
+  <link rel="stylesheet" href="/css/tomorrow-night-bright.css" />
+</head>
+<body>
+
+  <div id="wrap"> <!-- only purpose of this div: sticky footer -->
+
+    <!-- Navigation -->
+    <nav class="top-bar">
+      <ul class="title-area">
+        <li class="name">
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+      </ul>
+      <section class="top-bar-section">
+      <ul class="left">
+        <li class="has-dropdown"><a href="#">Posts</a>
+          <ul class="left dropdown">
+            <li><a href="http://blog.linuxprogrammer.org/Python%3A%20More%20Precise%20Exception%20Messages.html">Python: More Precise Exception Messages<br /><span style="font-size: .8em">March 21, 2014</span></a></li>
+<li><a href="http://blog.linuxprogrammer.org/Hacking%20B2G%3A%20Building%20with%20Distcc.html">Hacking B2G: Building with Distcc<br /><span style="font-size: .8em">March  5, 2014</span></a></li>
+<li><a href="http://blog.linuxprogrammer.org/My%20B2G%20.Userconfig.html">My B2G .Userconfig<br /><span style="font-size: .8em">September 23, 2013</span></a></li>
+<li><a href="http://blog.linuxprogrammer.org/How%20a%20Patch%20Becomes%20a%20Revision.html">How a Patch Becomes a Revision<br /><span style="font-size: .8em">August 10, 2013</span></a></li>
+<li><a href="http://blog.linuxprogrammer.org/Hacking%20B2G%3A%20What%20Are%20All%20of%20These%20Repos.html">Hacking B2G: What Are All of These Repos<br /><span style="font-size: .8em">August  8, 2013</span></a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://twitter.com/dwhuseby"><i class="icon-twitter"><span class="show-for-small">@dwhuseby</span></i></a></li>
+        <li><a href="http://github.com/dhuseby"><i class="icon-github"><span class="show-for-small">dhuseby</span></i></a></li>
+        <li><a href="/rss.xml"><i class="icon-rss"><span class="show-for-small">RSS</span></i></a></li>
+        <li><a href="bitcoin:1DLZKjieKe5pDGMqRHFiz38FUayPDWhgVP?label=LPo%20Tip%20Jar"><i class="icon-btc"><span class="show-for-small">Bitcoin</span></i></a></li>
+      </ul>
+      </section>
+    </nav>
+
+    <!-- Content -->
+    <div class="row">
+      <div class="large-12 columns"><h2>Python: More Precise Exception Messages</h2>
+<p><em>Posted at March 21, 2014</em></p>
+<p>I have been writing a lot of Python code lately.  One of aspects of Python that has always bugged me was that debugging exception has never been as easy as it should be.  In my python apps, I usually wrap the body of the <code>def main():</code> in a <code>try: except:</code> pair so that I catch all unhandled exceptions before the application is aborted.  While I am writing code, I also put a <code>pdb.set_trace()</code> in the <code>except:</code> block so that exceptions drop me into the debugger.  The only problem is, by the time I get into the debugger, the stack has been unwound by the exception processsing code.  So if I dump the backtrace to find where the exception came from, I am out of luck and will see something like this:
+<pre><code class="sh">-&gt; load_entry_point('demo==0.1', 'console_scripts', 'demo')()
+-&gt; /usr/lib/python2.7/dist-packages/demo-0.1-py2.7.egg/demo/demo.py(61)main()
+-&gt; print("\nERROR: %s\n" % e)
+</code></pre></p>
+<p>That is not much help.  If I then take a look at the exception instance, I will find that there isn't much in there either.  To make things worse, the string conversion of the exceptions are typically devoid of any information about their origin. For instance, access to a non-existent member of a class will throw an exception with the message:
+<pre><code class="sh">'MyDemoClass' object has no attribute 'myattr'
+</code></pre></p>
+<p>True, the class <code>MyDemoClass</code> has no attribute <code>myattr</code>, but where in my code am I trying to access that member?  Recently, I learned about the <code>inspect</code> module which gives me access to the runtime environment and can help in these situations.  By using it in the <code>except:</code> block, I can turn the anemic error messages into a much more precise and helpful message like so:
+<pre><code class="sh">Exception:
+  from /usr/lib/python2.7/site-packages/demo-0.1-py2.7.egg/demo/demo.py, line 63: 
+    'MyDemoClass' object has no attribute 'myattr'
+</code></pre></p>
+<p>With the new error message, not only does it tell me the exception error string, but it also reports the exact file and line that the exception was thrown from.  Now that is helpful.  You can do it too.  The gist below shows you how.  This is now a permanent part of my python app skeleton code:</p>
+<script src="https://gist.github.com/dhuseby/9696993.js"></script></div>
+    </div>
+
+    <div id="push"></div> <!-- push footer down -->
+  </div> <!-- wrap -->
+
+  <!-- Footer -->
+  <hr />
+  <footer class="row">
+    <div class="large-12 columns">
+      <div class="row">
+
+        <p class="text-center">
+          <small>
+          Built with <a href="http://bitbucket.org/obensonne/poole">Poole</a>
+          &middot;
+          Using <a href="http://jquery.com">jQuery</a>, 
+          <a href="http://foundation.zurb.com/">Foundation</a>, and
+          <a href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>
+          &middot;
+          Licensed as <a href="http://creativecommons.org/licenses/by-sa/3.0">CC-SA</a>
+          &middot;
+          <a href="http://validator.w3.org/check?uri=referer">Validate me</a>
+          </small>
+        </p>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    document.write('<script src='
+        + ('__proto__' in {} ? 'js/vendor/zepto'
+            : 'js/vendor/jquery') + '.js><\/script>')
+  </script>
+  <script src="/js/foundation.min.js"></script>
+  <script src="/js/vendor/custom.modernizr.js"></script>
+  <script src="/js/highlight.pack.js"></script>
+  <script>
+    $(document).foundation();
+    hljs.configure({tabReplace: '  '});
+    hljs.initHighlightingOnLoad();
+  </script>
+</body>
+</html>
+

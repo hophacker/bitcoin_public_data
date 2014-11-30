@@ -1,0 +1,892 @@
+http://www.cpan.org/modules/by-module/XML/ZOFFIX/WebService-Cryptsy-1.007.readme
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 11:25:05 GMT
+Server: Apache/2.2.15 (Red Hat)
+Last-Modified: Sat, 18 Jan 2014 02:27:52 GMT
+ETag: "791ee-8142-4f03567c8fa00"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 7012
+Connection: close
+Content-Type: text/plain
+
+NAME
+    WebService::Cryptsy - implementation of www.cryptsy.com API
+
+SYNOPSIS
+        use WebService::Cryptsy;
+        use Data::Dumper;
+
+        my $cryp = WebService::Cryptsy->new(
+            public_key  => 'YOUR PUBLICE KEY',
+            private_key => 'YOUR PRIVATE KEY',
+        );
+
+        print Dumper( $cryp->getinfo      || $cryp->error ) . "\n";
+        print Dumper( $cryp->marketdatav2 || $cryp->error ) . "\n";
+
+        my $generated_address
+        = $cryp->generatenewaddress( $currency_id, $currency_code )
+            or die "Error: " . $cryp->error;
+
+
+        my $cryp = WebService::Cryptsy->new; # no need for keys for some methods
+        my $data = $cryp->marketdatav2
+            or die "Error: $cryp";  # error checking and using interpolation
+                                    # to get the error message
+
+        printf "%s: %f\n", @{ $data->{markets}{$_} }{qw/label  lasttradeprice/}
+            for sort keys %{ $data->{markets} };
+
+DESCRIPTION
+    This module implements the www.cryptsy.com API
+    <https://www.cryptsy.com/pages/api> whose description is available here:
+    <https://www.cryptsy.com/pages/api>
+
+INSTALLATION NOTES
+    Depending on your configuration, you might need to install
+
+        cpan LWP::Protocol::https  Net::SSLeay
+
+    Or some such, to make LWP::UserAgent work over HTTPS, as that's what
+    Cryptsy's API requires.
+
+GETTING API KEY
+    To use this module, you'll need to obtain the API key from
+    www.cryptsy.com <https://www.cryptsy.com/>. Once logged in, go to
+    account settings page <https://www.cryptsy.com/users/settings> and
+    scroll all the way to the bottom. Click the *Generate New Key* button to
+    generate new key.
+
+    IMPORTANT!!! Ensure to toggle the "API Disabled" button into the "on"
+    position, otherwise your API will be off and this module will give a
+    confusing error message.
+
+CONSTRUCTOR
+  "new"
+        my $cryp = WebService::Cryptsy->new(
+            public_key  => 'YOUR PUBLIC  KEY',
+            private_key => 'YOUR PRIVATE KEY',
+            timeout     => 30,
+        );
+
+        # or if you're only going to use the public methods:
+        my $cryp = WebService::Cryptsy->new;
+
+    Creates and returns a new "WebService::Cryptsy" object. Takes three
+    optional arguments as key/value pairs. The "public_key" and
+    "private_key" are optional only for the *Public Methods* of the API.
+    They both are required for calling the *Authenticated Methods*. To
+    obtain your keys, see the "GETTING API KEY" section above.
+
+   "public_key"
+        my $cryp = WebService::Cryptsy->new(
+            public_key  => '479c5eee116f8f5972bdaf12dd0a3f82562c8a7c',
+            private_key => 'b408e899526142eee13304669a657c8782435ccda2f65dbea05270fe8dfa5d3d2ef7eb4812ce1c35',
+        );
+
+    This is the key from the *Public Key* box on Cryptsy's settings page
+    <https://www.cryptsy.com/users/settings>.
+
+   "private_key"
+        my $cryp = WebService::Cryptsy->new(
+            public_key  => '479c5eee116f8f5972bdaf12dd0a3f82562c8a7c',
+            private_key => 'b408e899526142eee13304669a657c8782435ccda2f65dbea05270fe8dfa5d3d2ef7eb4812ce1c35',
+        );
+
+    This is the key from the *Private Key* box on Cryptsy's settings page
+    <https://www.cryptsy.com/users/settings>.
+
+   "timeout"
+        my $cryp = WebService::Cryptsy->new(
+            timeout => 30,
+        );
+
+    Optional. Specifies the timeout, in seconds, of the API requests.
+    Default: 60
+
+MODULE METHODS / OVERLOADS
+  "error"
+        # these two are equivalent
+        my $data = $cryp->marketdata
+            or die "Error: $cryp";
+
+
+        my $data = $cryp->marketdata
+            or die "Error: " . $cryp->error;
+
+    The API methods will return "undef" or an empty list, depending on the
+    context, and the human-readable error will be available using the
+    "->error" method. This method is overloaded for object interpolation,
+    thus you can simply interpolate the object in a string to get the error
+    message.
+
+  "timeout"
+        printf "Current API request timeout is %d\n", $cryp->timeout;
+
+        $cryp->timeout( 30 );
+
+    Gets/sets the "timeout" constructor's argument. Takes one optional
+    argument that specifies the new timeout in seconds. Returns the current
+    timeout in seconds.
+
+GENERAL CONVENTION FOR API METHODS
+    All methods are named exactly the same as in Cryptsy's API
+    <https://www.cryptsy.com/pages/api>. If the API method takes any
+    arguments, you'd supply them to the method, in the same order (e.g.
+    "$cryp->mytrades( $market_id, $limit );")
+
+PUBLIC API METHODS
+    These methods do not require API keys.
+
+  "marketdata"
+        my $data = $cryp->marketdata
+            or die "Error: $cryp";
+
+    *General Market Data (All Markets): (OLD METHOD)*. Takes no arguments.
+    On failure returns "undef" or an empty list, depending on the context,
+    and sets "->error" to the error message. On success returns a data
+    structure that looks something like this:
+
+        {
+            'markets' => {
+                'CSC' => {
+                        'primaryname' => 'CasinoCoin',
+                        'volume' => '192807.99239834',
+                        'lasttradeprice' => '0.00006507',
+                        'marketid' => '68',
+                        'secondarycode' => 'BTC',
+                        'primarycode' => 'CSC',
+                        'lasttradetime' => '2013-12-26 01:16:24',
+                        'label' => 'CSC/BTC',
+                        'secondaryname' => 'BitCoin',
+                        'buyorders' => [
+                            {
+                                'quantity' => '0.00000000',
+                                'price' => '0.00007348',
+                                'total' => '1.17579218'
+                            },
+                        ],
+                        'sellorders' => [
+                            {
+                                'quantity' => '0.00000000',
+                                'price' => '0.00005005',
+                                'total' => '0.01253232'
+                            },
+                        ],
+                        'recenttrades' => [
+                            {
+                              'time' => '2013-12-26 01:27:33',
+                              'quantity' => '2.69061569',
+                              'price' => '0.00007095',
+                              'id' => '9622421',
+                              'total' => '0.00019090'
+                            },
+                        ],
+                },
+            },
+        };
+
+  "marketdatav2"
+        my $data = $cryp->marketdatav2
+            or die "Error: $cryp";
+
+    *General Market Data (All Markets): (NEW METHOD)*. Takes no arguments.
+    On failure returns "undef" or an empty list, depending on the context,
+    and sets "->error" to the error message. On success returns a data
+    structure that looks something like this:
+
+        {
+            'markets' => {
+                'IFC/LTC' => {
+                    'primaryname' => 'InfiniteCoin',
+                    'secondaryname' => 'LiteCoin',
+                    'label' => 'IFC/LTC',
+                    'volume' => '413934622.38106910',
+                    'lasttradeprice' => '0.00000289',
+                    'marketid' => '60',
+                    'primarycode' => 'IFC',
+                    'secondarycode' => 'LTC',
+                    'lasttradetime' => '2013-12-26 01:37:09',
+                    'sellorders' => [
+                        {
+                            'quantity' => '0.00000000',
+                            'price' => '0.00000286',
+                            'total' => '8.64783388'
+                        },
+                    ],
+                    'buyorders' => [
+                        {
+                            'quantity' => '0.00000000',
+                            'price' => '0.00000293',
+                            'total' => '2.15336758',
+                        },
+                    ],
+                    'recenttrades' => [
+                        {
+                            'time' => '2013-12-26 01:40:36',
+                            'quantity' => '10000.00000000',
+                            'price' => '0.00000292',
+                            'id' => '9626105',
+                            'total' => '0.02920000',
+                        },
+                    ],
+                },
+            }
+        };
+
+  "singlemarketdata"
+        my $market_id = 60; #  IFC/LTC market
+        my $data = $cryp->singlemarketdata( $market_id )
+            or die "Error: $cryp";
+
+    *General Market Data (Single Market)*. Takes one mandatory argument,
+    which is the market ID. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message. On
+    success returns a data structure that looks something like this:
+
+        {
+            'markets' => {
+                'IFC' => {
+                    'primaryname' => 'InfiniteCoin',
+                    'volume' => '405825211.07019660',
+                    'lasttradeprice' => '0.00000292',
+                    'marketid' => '60',
+                    'secondarycode' => 'LTC',
+                    'primarycode' => 'IFC',
+                    'lasttradetime' => '2013-12-26 01:45:50',
+                    'label' => 'IFC/LTC',
+                    'secondaryname' => 'LiteCoin',
+                    'buyorders' => [
+                        {
+                           'quantity' => '0.00000000',
+                           'price' => '0.00000293',
+                           'total' => '2.15336758'
+                        },
+                    ],
+                    'sellorders' => [
+                        {
+                            'quantity' => '0.00000000',
+                            'price' => '0.00000286',
+                            'total' => '8.64783388'
+                        },
+                    ],
+                    'recenttrades' => [
+                        {
+                            'time' => '2013-12-26 01:45:50',
+                            'quantity' => '100000.00000000',
+                            'price' => '0.00000292',
+                            'id' => '9627226',
+                            'total' => '0.29200000'
+                        },
+                    ]
+                }
+            }
+        };
+
+  "orderdata"
+        my $data = $cryp->orderdata
+            or die "Error: $cryp";
+
+    *General Orderbook Data (All Markets)*. Takes no arguments. On failure
+    returns "undef" or an empty list, depending on the context, and sets
+    "->error" to the error message. On success returns a data structure that
+    looks something like this:
+
+        {
+            'CSC' => {
+                'primaryname' => 'CasinoCoin',
+                'secondaryname' => 'BitCoin',
+                'marketid' => '68',
+                'secondarycode' => 'BTC',
+                'primarycode' => 'CSC',
+                'label' => 'CSC/BTC',
+                'sellorders' => [
+                    {
+                        'quantity' => '0.00000000',
+                        'price' => '0.00005005',
+                        'total' => '0.01253232'
+                    },
+                ],
+                'buyorders' => [
+                    {
+                        'quantity' => '0.00000000',
+                        'price' => '0.00007348',
+                        'total' => '1.17579218'
+                    },
+                ],
+            },
+        };
+
+  "singleorderdata"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->singleorderdata( $market_id )
+            or die "Error: $cryp";
+
+    *General Orderbook Data (Single Market)*. Takes one mandatory argument,
+    which is the market ID. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message. On
+    success returns a data structure that looks something like this:
+
+        {
+            'CSC' => {
+                'primaryname' => 'CasinoCoin',
+                'marketid' => '68',
+                'secondarycode' => 'BTC',
+                'primarycode' => 'CSC',
+                'label' => 'CSC/BTC',
+                'secondaryname' => 'BitCoin',
+                'buyorders' => [
+                    {
+                        'quantity' => '0.00000000',
+                        'price' => '0.00007348',
+                        'total' => '1.17579218'
+                    },
+                ],
+                'sellorders' => [
+                    {
+                        'quantity' => '0.00000000',
+                        'price' => '0.00005005',
+                        'total' => '0.01253232'
+                    },
+                ],
+            }
+        };
+
+AUTHENTICATED API METHODS
+  "getinfo"
+        my $data = $cryp->getinfo
+            or die "Error: $cryp";
+
+    Takes no arguments. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message. On
+    success returns a data structure that looks something like this:
+
+        {
+            'openordercount' => 0,
+            'servertimestamp' => 1388083631,
+            'servertimezone' => 'EST',
+            'balances_available' => {
+                'DBL' => '0.00000000',
+                'CMC' => '0.00000000'
+            },
+            'serverdatetime' => '2013-12-26 13:47:11',
+            'balances_hold' => {
+                'CSC' => '0.00000000',
+                'HYC' => '0.00000000',
+            }
+        };
+
+    And according to Cryptsy's API <https://www.cryptsy.com/pages/api>, the
+    meaning of these keys is:
+
+    *   "balances_available" Array of currencies and the balances available
+        for each
+
+    *   "balances_hold" Array of currencies and the amounts currently on
+        hold for open orders
+
+    *   "servertimestamp" Current server timestamp
+
+    *   "servertimezone" Current timezone for the server
+
+    *   "serverdatetime" Current date/time on the server
+
+    *   "openordercount" Count of open orders on your account
+
+  "getmarkets"
+        my $data = $cryp->getmarkets
+            or die "Error: $cryp";
+
+    *Outputs: Array of Active Markets*. Takes no arguments. On failure
+    returns "undef" or an empty list, depending on the context, and sets
+    "->error" to the error message. On success returns a data structure that
+    looks something like this:
+
+        [
+            {
+                'current_volume' => '1147913.14033064',
+                'marketid' => '57',
+                'created' => '2013-07-04 01:01:09',
+                'high_trade' => '0.00001638',
+                'primary_currency_name' => 'AlphaCoin',
+                'secondary_currency_name' => 'BitCoin',
+                'last_trade' => '0.00001366',
+                'primary_currency_code' => 'ALF',
+                'label' => 'ALF/BTC',
+                'secondary_currency_code' => 'BTC',
+                'low_trade' => '0.00001067'
+            },
+        ];
+
+    And according to Cryptsy's API <https://www.cryptsy.com/pages/api>, the
+    meaning of these keys is:
+
+    *   "marketid" Integer value representing a market
+
+    *   "label" Name for this market, for example: "AMC/BTC"
+
+    *   "primary_currency_code" Primary currency code, for example: "AMC"
+
+    *   "primary_currency_name" Primary currency name, for example:
+        "AmericanCoin"
+
+    *   "secondary_currency_code" Secondary currency code, for example:
+        "BTC"
+
+    *   "secondary_currency_name" Secondary currency name, for example:
+        "BitCoin"
+
+    *   "current_volume" 24 hour trading volume in this market
+
+    *   "last_trade" Last trade price for this market
+
+    *   "high_trade" 24 hour highest trade price in this market
+
+    *   "low_trade" 24 hour lowest trade price in this market
+
+    *   "created" Datetime (EST) the market was created
+
+  "mytransactions"
+        my $data = $cryp->mytransactions
+            or die "Error: $cryp";
+
+    *Outputs: Array of Deposits and Withdrawals on your account*. Takes no
+    arguments. On failure returns "undef" or an empty list, depending on the
+    context, and sets "->error" to the error message. On success returns a
+    data structure. Since I don't actually use Cryptsy, I've no transactions
+    and can't see what structure the method returns. If you can, please dump
+    it and submit it as a bug report. My best guess is it returns an
+    arrayref of hashrefs, and according to Cryptsy's API
+    <https://www.cryptsy.com/pages/api>, the meaning of the keys in each
+    hashref is:
+
+    *   "currency" Name of currency account
+
+    *   "timestamp" The timestamp the activity posted
+
+    *   "datetime" The datetime the activity posted
+
+    *   "timezone" Server timezone
+
+    *   "type" Type of activity. (Deposit / Withdrawal)
+
+    *   "address" Address to which the deposit posted or Withdrawal was sent
+
+    *   "amount" Amount of transaction (Not including any fees)
+
+    *   "fee" Fee (If any) Charged for this Transaction (Generally only on
+        Withdrawals)
+
+    *   "trxid" Network Transaction ID (If available)
+
+  "markettrades"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->markettrades( $market_id )
+            or die "Error: $cryp";
+
+    *Outputs: Array of last 1000 Trades for this Market, in Date Decending
+    Order*. Takes one mandatory argument, which is the market ID. On failure
+    returns "undef" or an empty list, depending on the context, and sets
+    "->error" to the error message. On success returns a data structure that
+    looks something like this:
+
+        [
+            {
+                'quantity' => '73.90140550',
+                'tradeid' => '9811863',
+                'initiate_ordertype' => 'Sell',
+                'total' => '0.00423825',
+                'tradeprice' => '0.00005735',
+                'datetime' => '2013-12-26 16:22:52'
+            },
+        ];
+
+    And according to Cryptsy's API <https://www.cryptsy.com/pages/api>, the
+    meaning of the keys in each hashref is:
+
+    *   "tradeid" A unique ID for the trade
+
+    *   "datetime" Server datetime trade occurred
+
+    *   "tradeprice" The price the trade occurred at
+
+    *   "quantity" Quantity traded
+
+    *   "total" Total value of trade (tradeprice * quantity)
+
+    *   "initiate_ordertype" The type of order which initiated this trade
+
+  "marketorders"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->marketorders( $market_id )
+            or die "Error: $cryp";
+
+    *Outputs: 2 Arrays. First array is sellorders listing current open sell
+    orders ordered price ascending. Second array is buyorders listing
+    current open buy orders ordered price descending.* Takes one mandatory
+    argument, which is the market ID. On failure returns "undef" or an empty
+    list, depending on the context, and sets "->error" to the error message.
+    On success returns a data structure that looks something like this:
+
+        {
+            'sellorders' => [
+                {
+                    'sellprice' => '0.00005740',
+                    'quantity' => '212.47116097',
+                    'total' => '0.01219584'
+                },
+            ],
+            'buyorders' => [
+                {
+                    'quantity' => '200.00000000',
+                    'buyprice' => '0.00005737',
+                    'total' => '0.01147400'
+                },
+            ],
+        };
+
+    And according to Cryptsy's API <https://www.cryptsy.com/pages/api>, the
+    meaning of the keys in each hashref is:
+
+    *   "sellprice" If a sell order, price which order is selling at
+
+    *   "buyprice" If a buy order, price the order is buying at
+
+    *   "quantity" Quantity on order
+
+    *   "total" Total value of order (price * quantity)
+
+  "mytrades"
+        my $market_id = 68; #  CSC/BTC market
+        my $limit = 200;
+        my $data = $cryp->mytrades( $market_id, $limit )
+            or die "Error: $cryp";
+
+    *Outputs: Array your Trades for this Market, in Date Decending Order.*
+    Takes one mandatory argument, which is the market ID, and one optional
+    argument, which is the limit of the number of results (defaults to 200).
+    On failure returns "undef" or an empty list, depending on the context,
+    and sets "->error" to the error message. On success returns a data
+    structure. Since I don't actually use Cryptsy, I've no transactions and
+    can't see what structure the method returns. If you can, please dump it
+    and submit it as a bug report. My best guess is it returns an arrayref
+    of hashrefs, and according to Cryptsy's API
+    <https://www.cryptsy.com/pages/api>, the meaning of the keys in each
+    hashref is:
+
+    *   "tradeid" An integer identifier for this trade
+
+    *   "tradetype" Type of trade (Buy/Sell)
+
+    *   "datetime" Server datetime trade occurred
+
+    *   "tradeprice" The price the trade occurred at
+
+    *   "quantity" Quantity traded
+
+    *   "total" Total value of trade (tradeprice * quantity)- Does not
+        include fees
+
+    *   "fee" Fee Charged for this Trade
+
+    *   "initiate_ordertype" The type of order which initiated this trade
+
+    *   "order_id" Original order id this trade was executed against
+
+  "allmytrades"
+        my $data = $cryp->allmytrades
+            or die "Error: $cryp";
+
+    *Outputs: Array your Trades for all Markets, in Date Decending Order*.
+    Takes no arguments. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message. On
+    success returns a data structure. Since I don't actually use Cryptsy,
+    I've no transactions and can't see what structure the method returns. If
+    you can, please dump it and submit it as a bug report. My best guess is
+    it returns an arrayref of hashrefs, and according to Cryptsy's API
+    <https://www.cryptsy.com/pages/api>, the meaning of the keys in each
+    hashref is:
+
+    *   "tradeid" An integer identifier for this trade
+
+    *   "tradetype" Type of trade (Buy/Sell)
+
+    *   "datetime" Server datetime trade occurred
+
+    *   "marketid" The market in which the trade occurred
+
+    *   "tradeprice" The price the trade occurred at
+
+    *   "quantity" Quantity traded
+
+    *   "total" Total value of trade (tradeprice * quantity) - Does not
+        include fees
+
+    *   "fee" Fee Charged for this Trade
+
+    *   "initiate_ordertype" The type of order which initiated this trade
+
+    *   "order_id" Original order id this trade was executed against
+
+  "myorders"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->myorders( $market_id )
+            or die "Error: $cryp";
+
+    *Outputs: Array of your orders for this market listing your current open
+    sell and buy orders.* Takes one mandatory argument, which is the market
+    ID. On failure returns "undef" or an empty list, depending on the
+    context, and sets "->error" to the error message. On success returns a
+    data structure. Since I don't actually use Cryptsy, I've no transactions
+    and can't see what structure the method returns. If you can, please dump
+    it and submit it as a bug report. My best guess is it returns an
+    arrayref of hashrefs, and according to Cryptsy's API
+    <https://www.cryptsy.com/pages/api>, the meaning of the keys in each
+    hashref is:
+
+    *   "orderid" Order ID for this order
+
+    *   "created" Datetime the order was created
+
+    *   "ordertype" Type of order (Buy/Sell)
+
+    *   "price" The price per unit for this order
+
+    *   "quantity" Quantity remaining for this order
+
+    *   "total" Total value of order (price * quantity)
+
+    *   "orig_quantity" Original Total Order Quantity
+
+  "depth"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->depth( $market_id )
+            or die "Error: $cryp";
+
+    *Outputs: Array of buy and sell orders on the market representing market
+    depth.* Takes one mandatory argument, which is the market ID. On failure
+    returns "undef" or an empty list, depending on the context, and sets
+    "->error" to the error message. On success returns a data structure that
+    looks something like this:
+
+        {
+            'buy' => [
+                [
+                    '0.00005633', # price
+                    '2.70000000'  # quantity
+                ],
+            ],
+            'sell' => [
+                [
+                    '0.00005641', # price
+                    '73.44390000' # quantity
+                ],
+            ]
+        };
+
+  "allmyorders"
+        my $data = $cryp->allmyorders
+            or die "Error: $cryp";
+
+    *Outputs: Array of all open orders for your account.* Takes no
+    arguments. On failure returns "undef" or an empty list, depending on the
+    context, and sets "->error" to the error message. On success returns a
+    data structure. Since I don't actually use Cryptsy, I've no transactions
+    and can't see what structure the method returns. If you can, please dump
+    it and submit it as a bug report. My best guess is it returns an
+    arrayref of hashrefs, and according to Cryptsy's API
+    <https://www.cryptsy.com/pages/api>, the meaning of the keys in each
+    hashref is:
+
+    *   "orderid" Order ID for this order
+
+    *   "marketid" The Market ID this order was created for
+
+    *   "created" Datetime the order was created
+
+    *   "ordertype" Type of order (Buy/Sell)
+
+    *   "price" The price per unit for this order
+
+    *   "quantity" Quantity remaining for this order
+
+    *   "total" Total value of order (price * quantity)
+
+    *   "orig_quantity" Original Total Order Quantity
+
+  "createorder"
+        my $order_id = $cryp->createorder(
+            $marketid,   # Market ID for which you are creating an order for
+            $ordertype,  # Order type you are creating (Buy/Sell)
+            $quantity,   # Amount of units you are buying/selling in this order
+            $price,      # Price per unit you are buying/selling at
+        ) or die "Error: $cryp";
+
+    Takes four mandatory arguments that are (in order): market id, order
+    type (Buy or Sell), quantity, price. On failure returns "undef" or an
+    empty list, depending on the context, and sets "->error" to the error
+    message. On success returns the order ID.
+
+  "cancelorder"
+        $cryp->cancelorder( $order_id )
+            or die "Error: $cryp";
+
+    Takes one mandatory argument, which is the order ID of the order you
+    wish to cancel. On failure returns "undef" or an empty list, depending
+    on the context, and sets "->error" to the error message. On success
+    returns a true value.
+
+  "cancelmarketorders"
+        my $market_id = 68; #  CSC/BTC market
+        my $data = $cryp->cancelmarketorders( $market_id )
+            or die "Error: $cryp";
+
+    *Cancel all open orders in the market.* Takes one mandatory argument,
+    which is the market ID. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message.
+    According to the API docs, on success returns an arrayref that contains
+    *"return information on each order cancelled."* I don't have the means
+    to create/cancel orders; if you can dump the returned data structure and
+    submit it to me via a bug report, it would be appreciated. It is likely
+    the return is a hashref with a single key "return" whose value is an
+    arrayref.
+
+  "cancelallorders"
+        my $data = $cryp->cancelallorders
+            or die "Error: $cryp";
+
+    *Outputs: Array of all open orders for your account.* Takes no
+    arguments. On failure returns "undef" or an empty list, depending on the
+    context, and sets "->error" to the error message. According to the API
+    docs, on success returns an arrayref that contains *"return information
+    on each order cancelled."* I don't have the means to create/cancel
+    orders; if you can dump the returned data structure and submit it to me
+    via a bug report, it would be appreciated. It is likely the return is a
+    hashref with a single key "return" whose value is an arrayref.
+
+  "calculatefees"
+        my $data = $cryp->calculatefees(
+            $ordertype,  # Order type you are calculating for (Buy/Sell)
+            $quantity,   # Amount of units you are buying/selling
+            $price,      # Price per unit you are buying/selling at
+        ) or die "Error: $cryp";
+
+    Takes three mandatory arguments that are (in order): order type (Buy or
+    Sell), quantity, price. On failure returns "undef" or an empty list,
+    depending on the context, and sets "->error" to the error message. On
+    success returns a data structure that looks like this:
+
+        {
+            'fee' => '11.94000000',
+            'net' => '3968.06000000'
+        }
+
+    And according to Cryptsy's API <https://www.cryptsy.com/pages/api>, the
+    meaning of the keys in the hashref is:
+
+    *   "fee" The that would be charged for provided inputs
+
+    *   "net" The net total with fees
+
+  "generatenewaddress"
+        my $address = $cryp->generatenewaddress(
+            3,      # Currency ID for the coin you want to
+                    # generate a new address for (ie. 3 = BitCoin)
+            'BTC',  # Currency Code for the coin you want to generate a new
+                    # address for (ie. BTC = BitCoin)
+        ) or die "Error: $cryp";
+
+        my $address = $cryp->generatenewaddress( 3 )
+            or die "Error: $cryp";
+
+        my $address = $cryp->generatenewaddress( undef, 'BTC' )
+            or die "Error: $cryp";
+
+    Takes two optional arguments, but at least one of them must be provided.
+    The first argument is the currency ID, the second is the currency code.
+    If you're providing the currency code but wish not to provide the
+    currency ID, then provide currency ID as "undef". On failure returns
+    "undef" or an empty list, depending on the context, and sets "->error"
+    to the error message. On success returns a data structure that looks
+    something like this:
+
+        {
+            'address' => '16zJ1sR9RBEsWsAzy8uZYM2Lr65691kwqD'
+        };
+
+AUTHOR
+    Zoffix Znet, "<zoffix at cpan.org>"
+
+BUGS
+    Please report any bugs or feature requests to "bug-webservice-cryptsy at
+    rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Cryptsy>. I
+    will be notified, and then you'll automatically be notified of progress
+    on your bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc WebService::Cryptsy
+
+    You can also look for information at:
+
+    *   RT: CPAN's request tracker (report bugs here)
+
+        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-Cryptsy>
+
+    *   AnnoCPAN: Annotated CPAN documentation
+
+        <http://annocpan.org/dist/WebService-Cryptsy>
+
+    *   CPAN Ratings
+
+        <http://cpanratings.perl.org/d/WebService-Cryptsy>
+
+    *   Search CPAN
+
+        <http://search.cpan.org/dist/WebService-Cryptsy/>
+
+ACKNOWLEDGEMENTS
+LICENSE AND COPYRIGHT
+    Copyright 2013 Zoffix Znet.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the the Artistic License (2.0). You may obtain a copy
+    of the full license at:
+
+    <http://www.perlfoundation.org/artistic_license_2_0>
+
+    Any use, modification, and distribution of the Standard or Modified
+    Versions is governed by this Artistic License. By using, modifying or
+    distributing the Package, you accept this license. Do not use, modify,
+    or distribute the Package, if you do not accept this license.
+
+    If your Modified Version has been derived from a Modified Version made
+    by someone other than you, you are nevertheless required to ensure that
+    your Modified Version complies with the requirements of this license.
+
+    This license does not grant you the right to use any trademark, service
+    mark, tradename, or logo of the Copyright Holder.
+
+    This license includes the non-exclusive, worldwide, free-of-charge
+    patent license to make, have made, use, offer to sell, sell, import and
+    otherwise transfer the Package with respect to any patent claims
+    licensable by the Copyright Holder that are necessarily infringed by the
+    Package. If you institute patent litigation (including a cross-claim or
+    counterclaim) against any party alleging that the Package constitutes
+    direct or contributory patent infringement, then this Artistic License
+    to you shall terminate on the date that such litigation is filed.
+
+    Disclaimer of Warranty: THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER
+    AND CONTRIBUTORS "AS IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+    PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED TO THE EXTENT PERMITTED BY
+    YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
+    CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
+    CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+

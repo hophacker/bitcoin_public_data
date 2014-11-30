@@ -1,0 +1,444 @@
+http://www.dslreports.com/forum/r28869660-Config-New-router-NAT-issue
+[Config] New router NAT issue - Cisco | DSLReports Forums
+login · registerfoodsite Home
+Reviews
+Tools
+Forums
+FAQs
+Find Service
+News
+Maps
+About
+All Forums
+Hot Topics
+Gallery
+how-to block ads
+Forums → Equipment Support → Hardware By Brand → Cisco > [Config] New router NAT issue
+Search Topic: uniqs842
+share
+« [H/W] EHWIC-4ESG • [H/W] What module i need to connect my ISR3845 to GPON Wan? »page: 1 · 2 · next DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix [Config] New router NAT issueCisco IOS Software, 3800 Software (C3845-ADVENTERPRISEK9-M), Version 12.4(25d),
+RELEASE SOFTWARE (fc1)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2010 by Cisco Systems, Inc.
+Compiled Wed 18-Aug-10 09:04 by prod_rel_team
+ 
+ROM: System Bootstrap, Version 12.4(13r)T11, RELEASE SOFTWARE (fc1)
+ 
+RLH-Router uptime is 35 minutes
+System returned to ROM by reload at 09:40:57 central Sun Dec 8 2013
+System restarted at 09:49:09 central Sun Dec 8 2013
+System image file is "flash:c3845-adventerprisek9-mz.124-25d.bin"
+ 
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+ 
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+ 
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+ 
+Cisco 3845 (revision 1.0) with 991232K/57344K bytes of memory.
+Processor board ID FTX1444A0XP
+5 Gigabit Ethernet interfaces
+3 terminal lines
+1 Virtual Private Network (VPN) Module
+DRAM configuration is 64 bits wide with parity enabled.
+479K bytes of NVRAM.
+125440K bytes of ATA System CompactFlash (Read/Write)
+ 
+Configuration register is 0x2142
+ 
+the basic Nat setup isinterface interface GigabitEthernet0/0
+ip nat outside
+interface interface GigabitEthernet1/0
+ip nat inside
+interface interface GigabitEthernet3/0
+ip nat inside
+interface interface GigabitEthernet4/0
+ip nat inside
+ 
+ip nat pool RLH1 75.y.x.35 75.y.x.35 netmask 255.255.255.248
+ip nat pool RLH2 75.y.x.36 75.y.x.36 netmask 255.255.255.248
+ip nat pool RLH3 75.y.x.37 75.y.x.37 netmask 255.255.255.248
+ip nat inside source list 1 pool RLH1 overload
+ip nat inside source list 2 pool RLH2 overload
+ip nat inside source list 3 pool RLH3 overload
+ 
+access-list 1 permit 10.0.2.0 0.0.0.255
+access-list 1 deny   any
+access-list 2 permit 10.0.3.0 0.0.0.255
+access-list 2 deny   any
+access-list 3 permit 10.0.4.0 0.0.0.255
+access-list 3 deny   any
+ 
+From my computer I can ping a loopback I put on the router (to confirm that I was getting through the router) also I can ping 4.2.2.2 from the routerbut I can't ping 4.2.2.2 or even the Comcast SMC from my computerand the sh nat t looks backwards--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 11:26 am · HELLFIREPremiumjoin:2009-11-25kudos:15 HELLFIRE What's "show ip nat trans" show anyways, just as a question?Can't see anything obviously wrong with the config... I'll have to dig around for my notes on policy NAT to be sure...Regardsactions · 2013-Dec-8 12:03 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix the outside local has 10.254.254.x addresses, which I'm not even using in my networkto get a copy I'll have to disable my onboard nic and enable my intel nic's (I'm using one of my static on the onboard to get to the site and bypass the router)BTW IPv6 routing seems fine--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:06 pm · HELLFIREPremiumjoin:2009-11-25kudos:15 HELLFIRE reply to DarkLogix Also as a dumb question, what are the IP address(es) configured on each of the gig interfaces.I'm guessing gig0/0 is set for a static public IP address in the 75.x.x.x range?Regardsactions · 2013-Dec-8 12:11 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM reply to DarkLogix How about a copy of your full config so we can see the rest of the goings on (or not.)Test: try to ping 4.2.2.2 while sourcing from an internal interface, if that works, NAT is fine.I also dont see any mention of how youve done your routing (hence wanting full config.)Is this a straight copy paste from one router to the other? Or did you try to incorporate other changes in to it at the same time (excluding necessary changes like renaming interfaces)?Also you should probably fix your config register before the next power outage.actions · 2013-Dec-8 12:15 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix Strait copy from the other router (just changed from GI2/0 for wan to gi 0/0 (as the 3745 had 2 FE onboard so it had a NM-1GE in slot 2 and that's not needed on the 3845)same IOS version though 124 25dI'll get the config, was just trying some stuff (thought maybe NVI might work on the 3845 but um no change and on issuing "no ip nat source list 1 pool RLH1 overload" then typing yes it crashedso I'm going to stick with in/out nat instead of nvi--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:23 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix ok arrg not going to try NVI till I can get a newer IOSwould c3845-adventerprisek9-mz.124-24.T.bin be worth trying?looks like I'm going to have to delete the start reload and put in the config again because issuing "no ip nat source list 1 pool RLH1 overload" then typing yes causes a router crash--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:27 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix reply to TomS_ said by TomS_:Also you should probably fix your config register before the next power outage.ya I noticed that and fixed it, though now I've unfixed it and will refix it--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:32 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:31 edit DarkLogix reply to DarkLogixhere is the full config from the 3745 that I'm adapting to the 3845 (should only be minor things like GI 2/0 to GI 0/0) 
+!
+! No configuration change since last restart
+!
+version 12.4
+service timestamps debug uptime
+service timestamps log uptime
+service password-encryption
+!
+hostname RLH_router
+!
+boot-start-marker
+boot system flash:c3745-adventerprisek9-mz.124-25d.bin
+boot-end-marker
+!
+no logging buffered
+!
+no aaa new-model
+clock timezone central -6
+clock summer-time -0500 recurring
+ip cef
+!
+!
+!
+!
+ip domain name RLH-domain.net
+ip name-server 10.0.3.5
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username rlh privilege 15 password 5 blabla
+archive
+ log config
+  hidekeys
+!
+!
+ip ftp username (leaving this out for now)
+ip ftp password (leaving this out for now)
+!
+class-map match-all game (leaving this out for now)
+ match access-group 101 (leaving this out for now)
+class-map match-any Xbox360 (leaving this out for now)
+ match ip dscp ef (leaving this out for now)
+!
+!
+policy-map game (leaving this out for now)
+ class game (leaving this out for now)
+  set ip dscp ef (leaving this out for now)
+policy-map Xbox360 (leaving this out for now)
+ class Xbox360 (leaving this out for now)
+  bandwidth 1024 (leaving this out for now)
+!
+! 
+!
+!
+!
+!
+interface Tunnel0
+ description Hurricane Electric IPv6 Tunnel Broker
+ bandwidth 30000
+ no ip address
+ ipv6 address 2001:ZZZZ:1F0E:2::2/64
+ ipv6 enable
+ ipv6 traffic-filter Internet in
+ ipv6 ospf 1 area 0
+ keepalive 10 3
+ tunnel source 75.x.y.33
+ tunnel destination 216.218.224.42
+ tunnel mode ipv6ip
+ tunnel checksum
+!
+interface FastEthernet0/0 (won't exist on 3845)
+ no ip address
+ shutdown
+ speed auto
+ full-duplex
+!
+interface FastEthernet0/1 (won't exist on 3845)
+ no ip address
+ shutdown
+ duplex auto
+ speed 100
+!
+interface GigabitEthernet1/0
+ description Link to NME-16ES-1G-p
+ ip address 10.255.255.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ ipv6 address 2001:470:B801:FFFF::/127
+ ipv6 ospf 1 area 0
+!
+interface GigabitEthernet2/0 (moving this config to GI 0/0 and the NM-1GE won't be needed and I plan to put an etherswitch here)
+ description Link to Comcast
+ bandwidth 76000
+ ip address 75.x.y.35 255.255.255.248 secondary
+ ip address 75.x.y.36 255.255.255.248 secondary
+ ip address 75.x.y.37 255.255.255.248 secondary
+ ip address 75.x.y.33 255.255.255.248
+ ip access-group 110 in (holding off till all's working)
+ ip nat outside
+ ip virtual-reassembly
+ negotiation auto 
+!
+interface GigabitEthernet3/0
+ description Link to NME-16ES-1G-p (number 3)
+ ip address 10.255.255.9 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ ipv6 address 2001:470:B801:FFFF::4/127
+ ipv6 ospf 1 area 0
+!
+interface GigabitEthernet4/0
+ description Link to NME-16ES-1G-p (number 4)
+ ip address 10.255.255.13 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ ipv6 address 2001:470:B801:FFFF::6/127
+ ipv6 ospf 1 area 0
+!
+router eigrp 1
+ redistribute static
+ network 10.255.255.0 0.0.0.3
+ network 10.255.255.4 0.0.0.3
+ network 10.255.255.8 0.0.0.3
+ network 10.255.255.12 0.0.0.3
+ auto-summary
+!
+no ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 75.x.y.38
+!
+!
+no ip http server
+ip http port 1025
+ip http authentication local
+no ip http secure-server
+ip nat translation timeout 2
+ip nat pool RLH1 75.x.y.35 75.x.y.35 netmask 255.255.255.248
+ip nat pool RLH2 75.x.y.36 75.x.y.36 netmask 255.255.255.248
+ip nat pool RLH3 75.x.y.37 75.x.y.37 netmask 255.255.255.248
+ip nat inside source list 1 pool RLH1 overload
+ip nat inside source list 2 pool RLH2 overload
+ip nat inside source list 3 pool RLH3 overload
+ 
+(leaving out static NAT translations till things are working, deleting this part so I don't have to filter it, leaving one here as an example of how I have them0
+ 
+ip nat inside source static udp 10.0.3.10 27178 75.x.y.36 27178 extendable
+!
+access-list 1 permit 10.0.2.0 0.0.0.255
+access-list 1 deny   any
+access-list 2 permit 10.0.3.0 0.0.0.255
+access-list 2 deny   any
+access-list 3 permit 10.0.4.0 0.0.0.255
+access-list 3 deny   any
+access-list 4 permit 10.255.255.0 0.0.0.3
+access-list 4 deny   any
+access-list 50 permit 10.0.0.0 0.0.0.255
+access-list 50 deny   any
+access-list 101 permit ip host 10.0.3.11 any
+access-list 101 deny   ip any any
+(Holding ACL 110 till things work so deleting it from this post)
+ 
+snmp-server community (edited) RW
+ipv6 route ::/0 Tunnel0
+ipv6 router ospf 1
+(IPv6 is working so I'm editing this part out)
+!
+!
+!
+!
+ipv6 access-list Internet
+ 
+!
+ipv6 access-list VTY (IPv6 is working so I'm editing this part out)
+ sequence 40 permit tcp 2001:470:B801::/48 any
+ permit udp 2001:470:B801::/48 any
+ deny ipv6 any any
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner motd &#3;Keep Out&#3;
+!
+line con 0
+ speed 19200 (not putting this line in yet)
+line 33
+ exec-timeout 0 0
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output lat pad telnet rlogin lapb-ta mop udptn v120 ssh
+line 97
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output lat pad telnet rlogin lapb-ta mop udptn v120 ssh
+line 129
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output lat pad telnet rlogin lapb-ta mop udptn v120 ssh
+line aux 0
+line vty 0 4
+ exec-timeout 0 0
+ ipv6 access-class VTY in
+ login local
+ telnet refuse-negotiations
+line vty 5 15
+ exec-timeout 0 0
+ ipv6 access-class VTY in
+ login local
+ telnet refuse-negotiations
+!
+ntp clock-period 17179186
+ntp master 2
+ntp server 128.138.140.44
+ntp server 207.200.81.113
+ntp server 132.163.4.101
+ntp server 132.163.4.102
+ntp server 132.163.4.103
+ntp server 201.155.229.129
+ntp server 131.107.1.10
+ntp server 69.25.96.13
+ntp server 207.126.98.204
+ntp server 129.6.15.29
+ntp server 129.6.15.28
+ntp server 216.200.93.8
+ntp server 64.236.96.53
+ntp server 208.184.49.9
+ntp server 68.216.79.113
+!
+end
+ 
+Ok heres a sanitized copy of the config--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:43 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix and sourcing from a router interface other than its wan actually shouldn't work, note the ACL used for nat.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:46 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM It should, because the packet gets NAT'ed before tx. Its a very simple "does NAT work" test that I use all the time.Also you left one of your IPs in the tunnel interface config. :-PTo be a pain, can you post a translated config, rather than one littered with comments about what youre going to do?actions · 2013-Dec-8 12:54 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix even though the router's own interfaces are denied via ACL to nat?the allowed nets are 10.0.2.x .3.x .4.x but not 10.255.255.x--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 12:56 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM Well obviously in a case like that it wont. But as long as the IP being sourced from is NATable, then yes it would work.e.g. from my parents place:interface BVI1
+ ip address 172.25.145.65 255.255.255.192
+!
+ip nat inside source list nat-permits interface Dialer0 overload
+!
+ip access-list extended nat-permits
+ permit ip 172.25.145.0 0.0.0.255 any
+!
+ 
+#ping 8.8.8.8 source bvi1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:
+Packet sent with a source address of 172.25.145.65 
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 56/60/68 ms
+ 
+actions · 2013-Dec-8 1:02 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix as you can see from the config the router only has pblic and 10.255.255.x addresses, the etherswitches then do the vlan routing to connect the 10.0.2.x ect nets.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:04 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM reply to DarkLogix I'd try a 15.1 image if you can get your hands on it.The 877W at my parents is running 15.1 just fine with a traditional NAT config.A friend with a 3825 is also running a traditional NAT config just fine with 15.1.actions · 2013-Dec-8 1:04 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM reply to DarkLogix Right. So add a simple rule to allow the subnets used between the router and etherswitches. Its worth it for troubleshooting, even if you just take it out afterwards.But probably also worth leaving in for troubleshooting out from an etherswitch. Probably no real reason why everything on your network should be allowed out, but you deny those couple of subnets. They are the devices least likely to cause issues. :Pactions · 2013-Dec-8 1:06 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix here's a copy of "sh ip nat t"Pro Inside global      Inside local       Outside local      Outside global
+icmp 75.148.235.35:768 10.0.2.5:768       4.2.2.1:768        4.2.2.1:768
+icmp 75.148.235.35:768 10.0.2.5:768       4.2.2.2:768        4.2.2.2:768
+icmp 75.148.235.35:768 10.0.2.5:768       73.2.80.1:768      73.2.80.1:768
+icmp 75.148.235.35:768 10.0.2.5:768       75.148.235.34:768  75.148.235.34:768
+udp 75.148.235.35:3955 10.0.2.5:3955      10.254.254.6:161   10.254.254.6:161
+udp 75.148.235.35:3956 10.0.2.5:3956      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3957 10.0.2.5:3957      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3958 10.0.2.5:3958      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3961 10.0.2.5:3961      10.254.254.2:161   10.254.254.2:161
+udp 75.148.235.35:3965 10.0.2.5:3965      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3967 10.0.2.5:3967      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3968 10.0.2.5:3968      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3970 10.0.2.5:3970      10.254.254.2:161   10.254.254.2:161
+udp 75.148.235.35:3971 10.0.2.5:3971      10.254.254.6:161   10.254.254.6:161
+udp 75.148.235.35:3975 10.0.2.5:3975      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3976 10.0.2.5:3976      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3977 10.0.2.5:3977      10.254.254.1:161   10.254.254.1:161
+udp 75.148.235.35:3979 10.0.2.5:3979      10.254.254.2:161   10.254.254.2:161
+udp 75.148.235.35:3980 10.0.2.5:3980      10.254.254.2:161   10.254.254.2:161
+udp 75.148.235.35:3982 10.0.2.5:3982      10.254.254.6:161   10.254.254.6:161
+udp 75.148.235.35:3983 10.0.2.5:3983      10.254.254.6:161   10.254.254.6:161
+udp 75.148.235.35:3985 10.0.2.5:3985      10.254.254.1:161   10.254.254.1:161
+ 
+--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:13 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix shouldn't the outside ones be outside addresses?I don't have 10.254.254.x in use anywhere anymore--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:15 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM »www.cisco.com/en/US/tech/tk648/t···37.shtmlexplains what each of the different addresses are.actions · 2013-Dec-8 1:22 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM reply to DarkLogix What does a "show ip ro" look like?Compare it with your 3745s routing table.actions · 2013-Dec-8 1:27 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix the gateway of last resort disappears when I unplug the cable in port gi 0/0 (because well its down then)Gateway of last resort is not set
+ 
+     10.0.0.0/8 is variably subnetted, 9 subnets, 3 masks
+C       10.255.255.8/30 is directly connected, GigabitEthernet3/0
+C       10.255.255.12/30 is directly connected, GigabitEthernet4/0
+D       10.0.2.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:27:52, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:27:52, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:27:52, GigabitEthernet1/0
+D       10.0.3.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:27:52, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:27:53, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:27:53, GigabitEthernet1/0
+C       10.255.255.0/30 is directly connected, GigabitEthernet1/0
+D       10.0.0.0/24 &#91;90/3072&#93; via 10.255.255.10, 00:27:53, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:27:53, GigabitEthernet1/0
+D       10.0.4.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:27:53, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:27:53, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:27:55, GigabitEthernet1/0
+D       10.0.5.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:27:55, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:27:55, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:27:55, GigabitEthernet1/0
+D       10.255.255.16/29
+           &#91;90/3072&#93; via 10.255.255.14, 00:27:55, GigabitEthernet4/0
+           &#91;90/3072&#93; via 10.255.255.10, 00:27:55, GigabitEthernet3/0
+           &#91;90/3072&#93; via 10.255.255.2, 00:27:55, GigabitEthernet1/0
+LOGIX-Router#
+ 
+and unless I want to ether remove one of the IP's from 0/0 or unplug my ripe probe then I have to unplug the rotuer to get online right now--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:29 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix I added 10.255.255.x to acl 1 and tried a source ping from gi 1/0 and it failed but a normal ping worksso I'm sure something about this nat isn't workingso far I've only added the IPv4 routing IPv6 routing interface IP's (4 and 6) and the nat config (minus the static trans.)--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:31 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix reply to TomS_odes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route
+ 
+Gateway of last resort is 75.148.235.38 to network 0.0.0.0
+ 
+     10.0.0.0/8 is variably subnetted, 9 subnets, 3 masks
+C       10.255.255.8/30 is directly connected, GigabitEthernet3/0
+C       10.255.255.12/30 is directly connected, GigabitEthernet4/0
+D       10.0.2.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:12:40, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:12:40, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:12:40, GigabitEthernet1/0
+D       10.0.3.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:12:40, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:12:41, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:12:41, GigabitEthernet1/0
+C       10.255.255.0/30 is directly connected, GigabitEthernet1/0
+D       10.0.0.0/24 &#91;90/3072&#93; via 10.255.255.10, 00:12:41, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:12:41, GigabitEthernet1/0
+D       10.0.4.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:12:41, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:12:41, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:12:43, GigabitEthernet1/0
+D       10.0.5.0/24 &#91;90/3072&#93; via 10.255.255.14, 00:12:43, GigabitEthernet4/0
+                    &#91;90/3072&#93; via 10.255.255.10, 00:12:43, GigabitEthernet3/0
+                    &#91;90/3072&#93; via 10.255.255.2, 00:12:43, GigabitEthernet1/0
+D       10.255.255.16/29
+           &#91;90/3072&#93; via 10.255.255.14, 00:12:43, GigabitEthernet4/0
+           &#91;90/3072&#93; via 10.255.255.10, 00:12:43, GigabitEthernet3/0
+           &#91;90/3072&#93; via 10.255.255.2, 00:12:43, GigabitEthernet1/0
+     75.0.0.0/29 is subnetted, 1 subnets
+C       75.148.235.32 is directly connected, GigabitEthernet0/0
+S*   0.0.0.0/0 &#91;1/0&#93; via 75.148.235.38
+ 
+--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 1:59 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix I just can't think of what I'm missing here(and frankly don't wan to have to swap back to the 3745 as I have my router mounted at the top of the rack and my arms are hurting from the gym)--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 2:02 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix so any more ideas?or should I get started switching back to the 3745?--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 2:47 pm · cramerPremiumjoin:2007-04-10Raleigh, NCkudos:8 cramer debug ip nat ...actions · 2013-Dec-8 5:50 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:31 edit DarkLogix power cycled smc seems good now/undec-facepalm (prefix from undecillion)someone please make a pic with 11 of my avatar all facepalming--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-8 8:09 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix That SMC is very annoying. (I wonder about the netgear that comcast is using in some areas as I haven't heard much about it)once it's learned what mac to expect to get info from a given IP it just locks down to it.so since the 33 IP is pretty much just the IP of the router it might not have sent any data from the 33 IP so teh SMC never "learned" itI guess its like having an arp table that's in stone once it learns it you have to power cycle the SMC before it'll forget it.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-9 10:07 am · tubbynetreminds me of the danse russePremium,MVMjoin:2008-01-16Chandler, AZkudos:1 tubbynet MVM said by DarkLogix:That SMC is very annoying. (I wonder about the netgear that comcast is using in some areas as I haven't heard much about it)once it's learned what mac to expect to get info from a given IP it just locks down to it.pretty standard cable modem behaviour here.nothing to see. move on.q.--"...if I in my north room dance naked, grotesquely before my mirror waving my shirt round my head and singing softly to myself..."actions · 2013-Dec-9 11:20 am · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix said by tubbynet:said by DarkLogix:That SMC is very annoying. (I wonder about the netgear that comcast is using in some areas as I haven't heard much about it)once it's learned what mac to expect to get info from a given IP it just locks down to it.pretty standard cable modem behavior here.nothing to see. move on.q.well its not really a cable modem is a modem/router/switch combo (its required for statics from comcast) but its not doing anything but routing my statics (IE its not doing NAT or DHCP or any of the other stuff its able to be configured for in its interface)so in effect it's like if I were plugging my router into the switchport of some consumer router, would you still expect that?now if I were plugging into a SB6141 (a plain modem) then ya I'd expect that.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-9 11:24 am · Forums → Equipment Support → Hardware By Brand → Cisco« [H/W] EHWIC-4ESG • [H/W] What module i need to connect my ISR3845 to GPON Wan? »page: 1 · 2 · nextMost commented news this week[104] Verizon: Our Review Shows No Congestion; Netflix to Blame[95] Wall Street Whines About New 10 Mbps Min. Broadband Definition[66] Aereo's Plan B: Argue It's a Bonafide Cable Company[58] Sprint Testing New Lower Cost Data Plans[52] Alcatel Lucent Sets New 10 Gbps Copper Speed Record[50] Comcast Latest to Test Super Ultra Mega DVR[49] Groups, Leaders Want Verizon Investigated for Network Neglect[48] FCC Shot Clock on Comcast Merger Begins[42] Dish Internet TV to Target Cord Cutters and 'Cord Haters'[40] Public Knowledge Criticizes T-Mobile's Speed Test Cap ExemptionHot Forum TopicsProblems again with Rcable [Start Communications]ABP being sued for blocking ads. [Security][rCable] CBC FIFA football stream keeps choking [Start Communications][Updated] Flash Player 14.0.0.145 [Software]Microsoft Security Bulletins for July 8 2014 [Security]Theoretical question about MD5 sum, Not about how secure it's not. [Security]Been waiting 3 mths for U-Verse installation...what are our options? [AT&T U-verse][Electrical] Laser printer and A/C on same circuit [Home Improvement][CFL] Brighthouse Echo Whole House Network Solution [Bright House Networks][Plumbing] Pipe bang when water turn off [Home Improvement]© DSLReports · Est.1999 · Saturday, 12-Jul 11:13:56 · feedback · terms · Mobile mode
+

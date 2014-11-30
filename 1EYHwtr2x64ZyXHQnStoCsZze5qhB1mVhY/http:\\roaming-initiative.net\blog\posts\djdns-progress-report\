@@ -1,0 +1,137 @@
+http://roaming-initiative.net/blog/posts/djdns-progress-report/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Thu, 24 Jul 2014 04:26:09 GMT
+Content-Type: text/html
+Content-Length: 11712
+Last-Modified: Sun, 20 Jul 2014 17:58:40 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/blog/css/main.css">
+        <link rel="alternate" type="application/atom+xml"
+            href="/blog/posts/index.xml" title="Atom Feed">
+        <title>DJDNS Progress Report</title>
+    </head>
+    <body>
+        <div id="wrap">
+            <header>
+                <h1><a href="/blog/">ri/blog</a></h1>
+                <ul class="nav">
+                    <li class="home"> <a href="/blog/">home</a></li>
+                    <li class="about"><a href="/blog/about/">about</a></li>
+                    <li class="posts"><a href="/blog/posts/">posts</a></li>
+                    <li class="tags"> <a href="/blog/tags/">tags</a></li>
+                </ul>
+            </header>
+            <ul class="sidebar">
+    
+    <li>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY"><img src="/blog/images/bitcoinLogo.png" alt="Bitcoin Logo"/></a>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY">Bitcoin!</a>
+    </li>
+    <li><script data-gittip-username="campadrenalin"
+        src="//gttp.co/v1.js"></script>
+    </li>
+    <li><a href="http://validator.w3.org/feed/check.cgi?url=http%3A//roaming-initiative.com/blog/posts/index.xml"><img src="/blog/images/valid-atom.png" alt="[Valid Atom 1.0]" title="Validate my Atom 1.0 feed" /></a></li>
+    <li><a href="/blog/posts/index.xml">Atom feed</a></li>
+</ul>
+
+            <div id="main">
+
+<article>
+    <div class="metadata">
+        <h1>DJDNS Progress Report</h1>
+        <div class="facts">
+    <span class="date">1/3/2013</span>
+    -
+    
+        
+            
+            <a href="/blog/tags/deje/">deje</a>
+        
+             - 
+            <a href="/blog/tags/dns/">dns</a>
+        
+             - 
+            <a href="/blog/tags/djdns/">djdns</a>
+        
+    
+</div>
+
+    </div>
+    <div class="content">
+        
+
+<p>In my last post, I crowed a lot about how ready I was to start working on DJDNS, and things were finally lined up for a quick path to a working proof of concept. Actually starting work on the project was a bit of a reality check, so I&rsquo;d like to document the challenges I&rsquo;m running into, as much to organize my own thoughts as to be open about the development process (and no, I don&rsquo;t count simply using Github and its issue tracker and keeping the public repo up-to-date as &ldquo;enough openness&rdquo; in isolation).</p>
+
+<h1 id="toc_0">EJTP</h1>
+
+<h2 id="toc_1">Identity migration</h2>
+
+<p>The primary issue is that I did a lot of formalization work regarding EJTP identities as part of the DEJE project, instead of EJTP itself, originally thinking that the code would be DEJE-specific. It ended up being very generic and valuable, establishing a standard for storing identity information for use in EJTP applications. So the biggest thing in the way is that I have to migrate the code out of DEJE, into EJTP.</p>
+
+<p>This isn&rsquo;t necessarily easy. Identities are fairly well hooked into DEJE, and not at all in EJTP. The churn on both sides will be pretty big, especially secondary goals. For example, identities being a standard part of EJTP means writing a few helper scripts for managing idcache files. On the DEJE side, there&rsquo;s already lots of problems of ambiguity regarding what&rsquo;s accepted where - some functions take string nicknames, others only accept Identity-class instances, and some have extra logic to handle both. It&rsquo;s not even documented, really, what accepts what - and that&rsquo;s icky and insane. So part of the cleanup will involve making definite, documented choices of where to take nicknames, and where to take objects.</p>
+
+<h2 id="toc_2">Router upgrades</h2>
+
+<p>Much less necessary, and part of the ultimate goals of the 1.0 release, but I suspect any serious usage is going to run into the limits of the simplistic routing mechanisms used to determine where a message ought to be delivered to/through. Most use cases will likely be able to be patched over with a BounceJack, which tells the router that it&rsquo;s a given jack type (say, email), but forwards all traffic through another jack object (say, https). So when the router needs to send something it doesn&rsquo;t have a jack for, you can initialize a <code>BounceJack(&quot;udp4&quot;, my_https_jack)</code> and fold the traffic through any medium as you see fit.</p>
+
+<p>Ultimately, though, that&rsquo;s a hacky patch, and what we really need is a more thought-out and powerful model inspired by Linux&rsquo;s packet routing mechanisms (or at least, the nice parts). And that&rsquo;s going to take some time to work out how I want to do it.</p>
+
+<h1 id="toc_3">DEJE</h1>
+
+<h2 id="toc_4">Develop a standard way of loading documents from scratch</h2>
+
+<p>One of the sillier things that made it into the current design of the code (and believe me, my work always has a plethora of terrible ideas that are abandoned anywhere from 0-70% of their implementation being written), was the idea that third-party projects using DEJE would roll their own mechanisms to agree on the initial state of a document and provide it to others. Once you have a starting point, DEJE can guarantee your safety from there on out. Yay.</p>
+
+<p>Except that it&rsquo;s retarded to put that responsibility on third parties, as I immediately realized when I started writing a third party application. I found myself wistfully looking at my call to an imaginary Owner.load_document function, wishing it existed, and realizing that writing one was basically a necessity. That doesn&rsquo;t make it easy, but it&rsquo;s a lot easier and more logical to tackle a hard thing once now, than a thousand times down the road.</p>
+
+<h3 id="toc_5">Potential solution</h3>
+
+<p>So far, my thinking is to use a hash-based system. I&rsquo;m already identifying documents by arbitrary names, and was getting into the creeping problems of needing more and more data as part of the name - arbitrary aesthetic component plus reliable bootstrapping source plus this plus that - and using hashes just makes sense. You can then pull the initial version out of a DHT, with as much rich metadata as you want as part of the document itself. You have your starting ground that you can then update based on queries of the listed participants.</p>
+
+<h3 id="toc_6">Participant drift</h3>
+
+<p>This does run into the problem of participant drift - people who were participants at the time the snapshot was put on the DHT, may not be participants now, and may be malicious. Being able to forge consensus and trick your client down the wrong path is really unlikely, so you&rsquo;re pretty much safe from forged information (even if you&rsquo;re knocking on the bad guy&rsquo;s door looking for your cup of sugar), but that doesn&rsquo;t mean anyone you ask will provide you with new, accurate updates.</p>
+
+<p>So an important principle is that much like a car, or ancient chinese teapots, some things have to be maintained through a bit of regular exercise. Every once in awhile, you ought to freshen up your documents, make sure they&rsquo;re all up to date, so you don&rsquo;t get left behind in drift. Documents designed for high availability will probably never experience this problem, but small documents being completely handed off to a different set of maintainers (and the old maintainers not hosting the bridge blocks that made it happen) can leave a person high and dry, and in need of resolving the situation manually by finding a more recent DHT snapshot or a block archive through alternative means, like a forum or IRC chat. The block archive is preferable since it&rsquo;s difficult to forge and can guarantee the accuracy of the change of ownership step by step - always nice security guarantees.</p>
+
+<h1 id="toc_7">DJDNS</h1>
+
+<p>I ran into all the above troubles almost immediately when I started working on DJDNS, during a car ride back from a vacation with friends and family. I expected to encounter bugs and deficiencies in the relatively untested and immature foundation libraries, but it surprised me how quickly I ran into brick walls. And I will almost certainly run into more once I get these things straightened out, which is especially exhausting to think about when I consider that I have pretty much the whole thing still to write, and have barely written a line of open source code since closing my laptop lid to save power around 6 hours into the aforementioned long ride home.</p>
+
+<p>The good news is, while I will probably have to do most of the stuff I&rsquo;ve talked about here on my own, being that I have specific intentions for how I want them done, most of the complications I run into from there can probably be solved by other people, being paid to do so.</p>
+
+<h1 id="toc_8">FreedomSponsors.org</h1>
+
+<p>I freaking love this site, although it&rsquo;s still very glitchy and not so popular yet. I&rsquo;m planning to get lots of exposure and introduce other developers to my code, by funding parts of development that I don&rsquo;t feel like doing myself. That means there are other people familiar with the way this stuff works on the inside, I can be lazy sometimes without breaking the entire progress of an important project (as the sole maintainer of many personal projects, this is a familiar burden already), I&rsquo;ll be financially supporting freelance FOSS, and I&rsquo;ll probably get a bit of free maintenance out of it as well, or at least respect and publicity.</p>
+
+<p>Whenever I work on the DJDNS stack, I am constantly looking for opportunities to outsource my first ticket to freelance FOSS coders. I&rsquo;ve mostly been held back by the immaturity of the libraries. But EJTP, thanks to its bounty of long-term planned enhancements and relative stability (even if that&rsquo;s analogous to being the thinnest person on Day 1 of The Biggest Loser), has a lot of potential for this, and I&rsquo;d like to post bounties for some of the simpler changes that I simply haven&rsquo;t got around to doing. Such as <a href="https://github.com/campadrenalin/EJTP-lib-python/issues/26">throwing an exception instead of silently overwriting jacks</a>, or <a href="https://github.com/campadrenalin/EJTP-lib-python/issues/20">gzip message compression support</a>, which can developed fairly orthogonal to any priority or architectural work I need to do myself.</p>
+
+<p>It&rsquo;s very exciting to be contributing this way for the first time, and I hope that others find it a positive experience as well, but if not, I&rsquo;m open to any criticism that makes next time better.</p>
+
+<h1 id="toc_9">Oh, and the video&hellip;</h1>
+
+<p>I plan to do a screencast via Hangouts on Air as soon as DJDNS is a semi-working installable thing, so that everyone can help test it. I may or may not jump on that sooner for the more fundamental libraries, depending on how much difficulty people end up having contributing. So if you want to help develop but run into problems getting things set up as-is, let me know via <a href="mailto:campadrenalin@gmail.com">email</a> or <a href="http://reddit.com/u/rainfly_x">reddit</a>, since that&rsquo;s what&rsquo;s going to inform when I do my screencast, and what I&rsquo;ll focus on.</p>
+
+    </div>
+</article>
+            </div>
+        </div>
+        <footer>
+            <ul>
+                <li class="item">&copy; Philip Horger 2012-2014</li>
+                <li class="item"><a href="mailto:philip@roaming-initiative.com">philip@roaming-initiative.com</a></li>
+                <li class="item"><a href="http://reddit.com/u/rainfly_x">rainfly_x</a></li>
+                <li class="filler"></li>
+            </ul>
+        </footer>
+    </body>
+</html>
+
+

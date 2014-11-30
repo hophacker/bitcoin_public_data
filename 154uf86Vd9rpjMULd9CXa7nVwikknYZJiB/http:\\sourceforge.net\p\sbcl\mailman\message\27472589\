@@ -1,0 +1,295 @@
+http://sourceforge.net/p/sbcl/mailman/message/27472589/
+Steel Bank Common Lisp / Mailing Lists
+Error: CSS did not load.
+This may happen on the first request due to CSS mimetype issues.
+Try clearing your browser cache and refreshing.
+SourceForge
+Browse
+Enterprise
+Blog
+Help
+Jobs
+Log In
+or
+Join
+Solution Centers
+Smarter Commerce
+Go Parallel
+HTML5
+Smarter IT
+Resources
+Newsletters
+Work at SourceForge, help us to make it a better place! We have an immediate need for a Support Technician in our San Francisco or Denver office.
+Close
+Home
+Browse
+Projects
+Steel Bank Common Lisp
+Mailing Lists
+Steel Bank Common Lisp
+Brought to you by:
+crhodes,
+demoss,
+jsnell,
+pkhuong,
+wnewman
+Summary
+Files
+Reviews
+Support
+Wiki
+Mailing Lists
+Git ▾
+sbcl-cvs-import
+sbcl-page
+sbcl
+sbcl-git-hooks
+CVS
+sbcl-announce
+sbcl-bugs
+sbcl-commits
+sbcl-devel
+sbcl-help
+Re: [Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept
+NIL as a function designator.
+Re: [Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept
+NIL as a function designator.
+From: Attila Lendvai <attila.lendvai@gm...> - 2011-05-09 09:18:56
+&gt; Another solution is as follows:
+&gt;
+&gt; (if old-definition
+&gt;     (set-macro-character char old-definition old-non-term)
+&gt;     (set-syntax-from-char char char))
+&gt;
+&gt; Set-syntax-from-char will copy the definition of that character from
+&gt; the standard readtable to the current readtable, thus losing any macro
+&gt; definition.
+
+
+i was looking for that, but it didn&#39;t occur to me that i can do that
+with set-syntax-from-char.
+
+unfortunately this solution is not perfect either, because there could
+be another reader on the char which i don&#39;t necessarily want to
+completely disable, just revert to it... but that&#39;s more of a
+theoretical issue, it&#39;ll be fine in practice.
+
+thanks for both of you for the ideas!
+
+-- 
+ attila
+
+Notice your eroding (digital) freedom, and do something about it!
+
+PGP: 2FA1 A9DC 9C1E BA25 A59C  963F 5D5F 45C7 DFCD 0A39
+OTR XMPP: 8647EEAC EA30FEEF E1B55146 573E52EE 21B1FF06
+BitCoin: 154uf86Vd9rpjMULd9CXa7nVwikknYZJiB
+
+
+Thread view
+[Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept NIL as
+a function designator.
+From: Attila Lendvai <attila.lendvai@gm...> - 2011-05-08 14:51:29
+dear list,
+
+in hu.dwim.quasi-quote i have this pattern of code sometimes:
+
+1) enable custom reader
+
+2) custom reader processes the stream and decides to recurse with
+itself disabled
+
+3) copies the readtable and sets the original reader (as returned by
+get-macro-character at installation time; it&#39;s sometimes NIL) in the
+copied readtable before calling READ recursively
+
+before the mentioned patch, setting NIL was fine and disabled the
+custom reader, but now i get an error.
+
+(this use-case is needed for dealing with a standalone #\&lt; character
+in our &lt;foo &gt; xml syntax)
+
+i guess the new behavior is mandated by CLHS... but how could i deal
+with the above use-case?
+
+returning to the standard readtable is not an option, because that
+would eliminate other possibly enabled readers.
+
+any ideas?
+
+-- 
+ attila
+
+Notice your eroding (digital) freedom, and do something about it!
+
+PGP: 2FA1 A9DC 9C1E BA25 A59C  963F 5D5F 45C7 DFCD 0A39
+OTR XMPP: 8647EEAC EA30FEEF E1B55146 573E52EE 21B1FF06
+BitCoin: 154uf86Vd9rpjMULd9CXa7nVwikknYZJiB
+
+
+Re: [Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept
+NIL as a function designator.
+From: Pascal J. Bourguignon <pjb@in...> - 2011-05-08 15:38:16
+Attila Lendvai &lt;attila.lendvai@...&gt; writes:
+
+&gt; dear list,
+&gt;
+&gt; in hu.dwim.quasi-quote i have this pattern of code sometimes:
+&gt;
+&gt; 1) enable custom reader
+&gt;
+&gt; 2) custom reader processes the stream and decides to recurse with
+&gt; itself disabled
+&gt;
+&gt; 3) copies the readtable and sets the original reader (as returned by
+&gt; get-macro-character at installation time; it&#39;s sometimes NIL) in the
+&gt; copied readtable before calling READ recursively
+&gt;
+&gt; before the mentioned patch, setting NIL was fine and disabled the
+&gt; custom reader, but now i get an error.
+&gt;
+&gt; (this use-case is needed for dealing with a standalone #\&lt; character
+&gt; in our &lt;foo &gt; xml syntax)
+&gt;
+&gt; i guess the new behavior is mandated by CLHS... but how could i deal
+&gt; with the above use-case?
+&gt;
+&gt; returning to the standard readtable is not an option, because that
+&gt; would eliminate other possibly enabled readers.
+
+Change the order:
+
+1) copies the readtable.
+
+2) enable custom reader.
+
+3) custom reader processes the stream and decides to recurse with itself
+   disabled.
+
+4) and sets the original reader (as returned by get-macro-character at
+   installation time; it&#39;s sometimes NIL).
+
+
+Basically:
+
+    (defparameter *standard-readtable*
+         (copy-readtable nil nil)
+      &#34;The standard readtable.&#34;)
+
+    (defparameter *other-enabled-readers-readtable*
+         (copy-readtable *readtable* nil)
+      &#34;The readtable we inherit so far.&#34;)
+
+    (defparameter *thissy-readtable*
+      (let ((rt (copy-readtable *readtable* nil)))
+        (set-syntax-from-char #\[ #\( rt)
+        (set-syntax-from-char #\] #\) rt)
+        (set-macro-character #\[ &#39;this-expression-reader-macro nil rt)
+        (set-macro-character #\@ &#39;this-definition-reader-macro t   rt)
+        rt)
+      &#34;The readtable to read this.&#34;)
+
+    (defparameter *thatsy-readtable*
+      (let ((rt (copy-readtable *readtable* nil)))
+        (set-syntax-from-char #\[ #\( rt)
+        (set-syntax-from-char #\] #\) rt)
+        (set-macro-character #\[ &#39;that-expression-reader-macro nil rt)
+        (set-macro-character #\@ &#39;that-definition-reader-macro t   rt)
+        (setf (readtable-case rt) :preserve)
+        rt)
+      &#34;The readtable to read that.&#34;)
+
+and then you bind *readtable* according to what you want to read.
+
+    (setf *readtable* *thissy-readtable*)
+
+    (defun this-expression-reader-macro (stream arg sub)
+       (if (need-to-disable-thissy-and-thatsy-p)
+         (let ((*readtable* *other-enabled-readers-readtable*))
+           (read stream))
+         (read stream)))
+
+
+-- 
+__Pascal Bourguignon__                     http://www.informatimago.com/
+A bad day in () is better than a good day in {}.
+
+
+Re: [Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept
+NIL as a function designator.
+From: Stig Hemmer <stighemmer@gm...> - 2011-05-08 20:03:45
+I suspect Bourguignon&#39;s solution doesn&#39;t really help Lendvai as it
+depends on the order in which various readtable-modifying libraries
+are loaded.
+
+Another solution is as follows:
+
+(if old-definition
+     (set-macro-character char old-definition old-non-term)
+     (set-syntax-from-char char char))
+
+Set-syntax-from-char will copy the definition of that character from
+the standard readtable to the current readtable, thus losing any macro
+definition.
+
+
+Re: [Sbcl-devel] 1.0.47.31: set-macro-character shouldn't accept
+NIL as a function designator.
+From: Attila Lendvai <attila.lendvai@gm...> - 2011-05-09 09:18:56
+&gt; Another solution is as follows:
+&gt;
+&gt; (if old-definition
+&gt;     (set-macro-character char old-definition old-non-term)
+&gt;     (set-syntax-from-char char char))
+&gt;
+&gt; Set-syntax-from-char will copy the definition of that character from
+&gt; the standard readtable to the current readtable, thus losing any macro
+&gt; definition.
+
+
+i was looking for that, but it didn&#39;t occur to me that i can do that
+with set-syntax-from-char.
+
+unfortunately this solution is not perfect either, because there could
+be another reader on the char which i don&#39;t necessarily want to
+completely disable, just revert to it... but that&#39;s more of a
+theoretical issue, it&#39;ll be fine in practice.
+
+thanks for both of you for the ideas!
+
+-- 
+ attila
+
+Notice your eroding (digital) freedom, and do something about it!
+
+PGP: 2FA1 A9DC 9C1E BA25 A59C  963F 5D5F 45C7 DFCD 0A39
+OTR XMPP: 8647EEAC EA30FEEF E1B55146 573E52EE 21B1FF06
+BitCoin: 154uf86Vd9rpjMULd9CXa7nVwikknYZJiB
+
+
+SourceForge
+About
+Site Status
+@sfnet_ops
+Powered by Allura
+Find and Develop Software
+Create a Project
+Software Directory
+Top Downloaded Projects
+Community
+Blog
+@sourceforge
+Job Board
+Resources
+Help
+Site Documentation
+Support Request
+Real-Time Support
+Copyright © 2014 SourceForge. All Rights Reserved.
+SourceForge is a Dice Holdings, Inc. company.
+Terms
+Privacy
+Opt Out Choices
+Advertise
+SourceForge.JP
+

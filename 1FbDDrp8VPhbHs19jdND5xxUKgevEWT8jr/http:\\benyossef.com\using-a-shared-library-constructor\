@@ -1,0 +1,159 @@
+http://benyossef.com/using-a-shared-library-constructor/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 23:22:09 GMT
+Server: Apache
+X-Pingback: http://benyossef.com/xmlrpc.php
+Link: <http://benyossef.com/?p=11>; rel=shortlink
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3354
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Gilad Ben-Yossef   &raquo; Using a shared library constructor</title>
+
+<link rel="stylesheet" href="http://benyossef.com/wp-content/themes/esther/style.css" type="text/css" media="screen" />
+<!--[if IE]>
+<style type='text/css'>
+<!--
+#headerimg{position: absolute;}
+--></style>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef RSS Feed" href="http://benyossef.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="Gilad Ben-Yossef Atom Feed" href="http://benyossef.com/feed/atom/" />
+<link rel="pingback" href="http://benyossef.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef &raquo; Using a shared library constructor Comments Feed" href="http://benyossef.com/using-a-shared-library-constructor/feed/" />
+<link rel='stylesheet' id='social-widget-css'  href='http://benyossef.com/wp-content/plugins/social-media-widget/social_widget.css?ver=3.9' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://benyossef.com/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://benyossef.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://benyossef.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Building an embedded Linux system emulator' href='http://benyossef.com/building-an-embedded-linux-system-emulator/' />
+<link rel='next' title='Benchmarking boot latency on x86' href='http://benyossef.com/benchmarking-boot-latency-on-x86/' />
+<meta name="generator" content="WordPress 3.9" />
+<link rel='canonical' href='http://benyossef.com/using-a-shared-library-constructor/' />
+<link rel='shortlink' href='http://benyossef.com/?p=11' />
+<style type="text/css">
+#header { background: url(http://benyossef.com/wp-content/uploads/2011/03/cropped-1299389848395.jpg) no-repeat right; background-position: 460px 2px;}
+#header { margin: 0 !important; margin:0 0 0 0;padding: 0 0 0 0; height: 299px; width: 899px; }
+</style>
+</head>
+<body>
+<div id="page">
+
+
+<div id="header">
+	<div id="frames"><img alt="photo frame" src="http://benyossef.com/wp-content/themes/esther/images/frame.gif" width="518px" height="299px" border="0" /></div>
+	<div id="headerimg">
+		<h1><a href="http://benyossef.com/">Gilad Ben-Yossef</a></h1>
+		<div class="description">Since 1998</div>
+	</div>
+</div>
+<div id="frame"></div>
+<hr />
+
+	<div id="content" class="narrowcolumn">
+
+				<div class="post" id="post-11">
+		<h2>Using a shared library constructor</h2>
+			<div class="entry">
+				<p><em>Originally posted on May 15th, 2008 on the now defunct Tuxology technoblog</em></p>
+<p>Shared libraries, sometime also referred to as DSO (for Dynamic Shared Objects) or DLL (for Dynamically Loadable Modules), offer an easy way to pack together useful functions and data as a code library that can be easily reused, updated separately from all the application making use of it and most important &#8211; under certain conditions allows most the code and data of the library to only be loaded once to the machine RAM regardless of the number of applications using it.</p>
+<p>A shared library is thus normally comprised of a set of global functions which may be called by applications (or other libraries) that link with the library.</p>
+<p>Given the shared nature of shared libraries, it is often useful to provide a constructor for the code library which will run each time the library is loaded by an application. Doing this is very simple, using the GNU specific constructor attribute.</p>
+<p>Here is a code example:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/* init_demo.c */</span>
+&nbsp;
+<span style="color: #339933;">#include &lt;unistd.h&gt;</span>
+<span style="color: #339933;">#include &lt;stdlib.h&gt;</span>
+<span style="color: #339933;">#include &lt;string.h&gt;</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #993333;">void</span> __attribute__ <span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>constructor<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> \
+  lib_init<span style="color: #009900;">&#40;</span><span style="color: #993333;">void</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #993333;">void</span> lib_init<span style="color: #009900;">&#40;</span><span style="color: #993333;">void</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+&nbsp;
+  <span style="color: #000066;">printf</span><span style="color: #009900;">&#40;</span><span style="color: #ff0000;">&quot;Library ready. <span style="color: #000099; font-weight: bold;">\n</span>&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+  <span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Then build the the shared library using the following GNU Makefile:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="makefile" style="font-family:monospace;">.PHONY: clean
+&nbsp;
+libinitdemo.so.1.0.0: init_demo.c 
+  $(CC) -fPIC init_demo.c -shared \
+  -Wl,-soname,libinitdemo.so.1 -o \
+  libinitdemo.so.1.0.0
+&nbsp;
+clean:
+  $(RM) -f libinitdemo.so.1.0.0</pre></td></tr></table></div>
+
+<p><strong>TIP<br />
+</strong><br />
+Combining a shared library constructor as shown above with use of LD_PRELOAD can be a powerful way to add construction code to existing programs without changing their source code and indeed, without requiring access to their source code at all.</p>
+
+				
+			</div>
+		</div>
+				</div>
+
+	<div id="sidebar">
+		<ul>
+			<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Menu</h2>		<ul>
+			<li class="page_item page-item-14"><a href="http://benyossef.com/benchmarking-boot-latency-on-x86/">Benchmarking boot latency on x86</a></li>
+<li class="page_item page-item-10"><a href="http://benyossef.com/building-an-embedded-linux-system-emulator/">Building an embedded Linux system emulator</a></li>
+<li class="page_item page-item-6"><a href="http://benyossef.com/helping-the-compiler-help-you/">Helping The Compiler Help You</a></li>
+<li class="page_item page-item-8"><a href="http://benyossef.com/sys_clone-beyond-processes-and-threads/">sys_clone: Beyond Processes and Threads</a></li>
+<li class="page_item page-item-11 current_page_item"><a href="http://benyossef.com/using-a-shared-library-constructor/">Using a shared library constructor</a></li>
+<li class="page_item page-item-2"><a href="http://benyossef.com/">Who is this?</a></li>
+		</ul>
+		</li><li id="social-widget-4" class="widget Social_Widget"><h2 class="widgettitle">Social me</h2><div class="socialmedia-buttons smw_left"><a href="http://www.facebook.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/facebook.png" 
+				alt="Links to various social sites Facebook" 
+				title="Links to various social sites Facebook" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://plus.google.com/116984042169887848341" rel="publisher" target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/googleplus.png" 
+				alt="Links to various social sites Google+" 
+				title="Links to various social sites Google+" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.twitter.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/twitter.png" 
+				alt="Links to various social sites Twitter" 
+				title="Links to various social sites Twitter" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.linkedin.com/in/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/linkedin.png" 
+				alt="Links to various social sites LinkedIn" 
+				title="Links to various social sites LinkedIn" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="skype:gilad.benyossef?add"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/skype.png" 
+				alt="Links to various social sites Skype" 
+				title="Links to various social sites Skype" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://github.com/gby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/github.png" 
+				alt="Links to various social sites Github" 
+				title="Links to various social sites Github" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://foursquare.com/user/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/foursquare.png" 
+				alt="Links to various social sites Foursquare" 
+				title="Links to various social sites Foursquare" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="mailto:gilad@benyossef.com"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/email.png" 
+				alt="Links to various social sites E-mail" 
+				title="Links to various social sites E-mail" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a></div></li><li id="text-3" class="widget widget_text"><h2 class="widgettitle">My bitcoin address</h2>			<div class="textwidget">1FbDDrp8VPhbHs19jdND5xxUKgevEWT8jr</div>
+		</li>		</ul>
+	</div>
+
+
+
+<hr />
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		2014 &copy; Gilad Ben-Yossef is proudly powered by
+		<a href="http://wordpress.org/">WordPress</a>
+		<br /><a class="rsslink" href="http://benyossef.com/feed/">Entries (RSS)</a>
+		 <a class="rsslink" href="http://benyossef.com/comments/feed/">Comments (RSS)</a> | Esther Theme By <a title="Patrick" href="http://patrick.bloggles.info/">Patrick</a>
+		<!-- 13 queries. 0.593 seconds. -->
+	</p>
+</div>
+</div>
+
+<!-- This is designed for Esther Goh, wish her happy birthday and have a happiness life! -->
+
+	</body>
+</html>
+

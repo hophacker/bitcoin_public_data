@@ -1,0 +1,322 @@
+http://www.advogato.org/person/joey/diary.html?start=535
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 06:31:29 GMT
+Server: Apache/2.2.3 (CentOS)
+ETag: "m0W2h599nPLiSp9nV8HRgA=="
+Content-MD5: m0W2h599nPLiSp9nV8HRgA==
+Content-Length: 21515
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><title>Advogato: Blog for joey</title>
+<link rel="stylesheet" type="text/css" href="/css/global.css" />
+<link rel="shortcut icon" href="/images/favicon.ico" />
+<script language="javascript" type="text/javascript" src="/css/v.js"></script>
+</head>
+
+<body>
+<div id="header"><img src="/images/advogato-rodent.png" width="300" height="100" alt="Advogato" /><span class="sitemap">&nbsp;[ <a href="/">Home</a> | <a href="/article/">Articles</a> | <a href="/acct/">Account</a> | <a href="/person/">People</a> | <a href="/proj/">Projects</a> | <a href="/faq.html">FAQ</a> ]&nbsp;</span><form id="searchbox_001849165863570039063:cqpkt1u7yfe" action="http://www.advogato.org/search.html"><input type="hidden" name="cx" value="001849165863570039063:cqpkt1u7yfe" /><input id="gi" name="q" type="text" size="16" /><input id="gs" type="submit" name="sa" value="Search" /><input type="hidden" name="cof" value="FORID:9" /></form><script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_001849165863570039063%3Acqpkt1u7yfe"></script></div><div id="wrap"><div id="col1"><div id="people"><h1>Older blog entries for <a href="/person/joey/">joey</a> (starting at number 535)</h1>
+<div class="node joey">
+<div class="blogdate"><a name="535"><b>25 Aug 2013</b></a> <a href="/person/joey/diary/535.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>southern fried science fiction with plum sauce</b></p>
+<p>Had an afternoon of steak and science fiction. Elysium is only so-so, but
+look what we found in a bookstore that was half religious materials and
+half SF, local books, and carefully hidden romance novels:</p>
+
+<table><caption>Star Wars, Star Trek and the 21st Century Christians</caption>
+  <tr><td>
+      <a href="http://joeyh.name/blog/./pics/starwarsstartrekchristians.jpg">
+        <img src="http://joeyh.name/blog/./pics/starwarsstartrekchristians.jpg" width="800" height="710" class="img"/></a>
+    </td>
+  </tr></table><p>Best part was at the end, when I finally found one of the local asian
+markets Tomoko tells us about when she casually pulls out the good stuff at
+family gatherings. I will be back for whole ducks, fresh fish, squid, 50
+lb bags of rice, tamarind paste, fresh ginger that has not sat on the shelf
+for 2 months because only I buy it, etc. Only an hour from home in the woods!
+Between the garlic sprouts, bean sprouts, enoki mushrooms, etc that I
+got for $10 today and this week's CSA surprise of 18 inch
+<a href="http://en.wikipedia.org/wiki/Vigna_unguiculata_subsp._sesquipedalis">snake beans</a>
+and smoked pork knuckles, I have the epic stir fry potential..</p>
+
+<p>
+  <a href="http://joeyh.name/blog/./pics/starwarsstartrekchristiansinside.jpg">
+    <img src="http://joeyh.name/blog/./pics/starwarsstartrekchristiansinside.jpg" width="800" height="665" alt="Spock and R2D2" class="img"/></a>
+</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/southern_fried_science_fiction_with_plum_sauce/">Syndicated 2013-08-25 22:25:16  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="534"><b>25 Aug 2013</b></a> <a href="/person/joey/diary/534.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>idea: git push requests</b></p>
+<p>This is an idea that Keith Packard told me. It's a brilliant way to reduce
+GitHub's growing lockin, but I don't know how to implement it. And I almost
+<em>forgot</em> about it, until I had another annoying "how do I send you a patch
+with this amazing git technology?" experience and woke up with my memory
+refreshed.</p>
+
+<p>The idea is to allow anyone to <code>git push</code> to any anonymous git://
+repository. But the objects pushed are not stored in a public part of the
+repository (which could be abused). Instead the receiving repository emails
+them off to the repository owner, in a <code>git-am</code>-able format.</p>
+
+<p>So this is like a github pull request except it can be made on any git
+repository, and you don't have to go look up the obfuscated contact email
+address and jump through git-format-patch hoops to make it. You just commit
+changes to your local repository, and <code>git push</code> to wherever you cloned
+from in the first place. If the push succeeds, you know your patch is on
+its way for review.</p>
+
+<p>Keith may have also wanted to store the objects in the repository in some
+way that a simple git command run there could apply them without the git-am
+bother on the receiving end. I forget. I think git-am would be good enough
+-- and including the actual diffs in the email would actually make this far
+superior to github pull request emails, which are maximally annoying by not
+doing so.</p>
+
+<hr/><p>Hmm, I said I didn't know how to implement this, but I do know one way.
+Make the git-daemon run an arbitrary script when receiving a push request.
+A <code>daemon.pushscript</code> config setting could enable this.</p>
+
+<p>The script could be something like this:</p>
+
+<pre>
+#!/bin/sh
+set -e
+tmprepo="$(mktemp -d)"
+# this shared clone is *really* fast even for huge repositories, and uses
+# only a few 100 kb of disk space!
+git clone --shared --bare "$GIT_DIR" "$tmprepo"
+git-receive-pack "$tmprepo"
+# XXX add email sending code here.
+rm -rf "$tmprepo"
+</pre>
+
+
+<p>Of course, this functionality could be built into the git-daemon too. I
+suspect a script hook and an example script in <code>contrib/</code> might be an
+easier patch to get accepted into git though.</p>
+
+<p>That may be as far as I take this idea, at least for now..</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/idea:_git_push_requests/">Syndicated 2013-08-25 13:07:32  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="533"><b>21 Aug 2013</b></a> <a href="/person/joey/diary/533.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>experimental multiuser git-annex repository</b></p>
+<p>On the last day of DebConf 13, RichiH and Ganneff and I set up a
+git-annex repository that all Debian developers have automatic
+commit access to, and
+<a href="http://annex.debconf.org/debconf-share/">everyone can clone and browse</a>.
+See <a href="http://lists.debconf.org/lurker/message/20130817.192726.d50afadf.en.html">the announcement email</a>.</p>
+
+<p>This is an interesting repository for me for several reasons. Selfishly, I
+have always wanted an easy way to download lots of DebConf photos for
+offline viewing, and never seem to get around to downloading everything
+from gallery.debconf.org when I have bandwidth. I've also wanted an example
+repository that shows how git-annex can be used by a large group for
+collaboration. Finally, the way this repository is set up with an incoming
+queue is fairly unique.</p>
+
+<p>With 430 files in the repository, totaling over 3.5 gigabytes (which doesn't
+include all the talk videos that are #included into it),
+and at least 18 people having cloned the repository so far,
+the debconf-share repository is well on its way to being a sort of large
+git-annex repository.</p>
+
+<p>Just running <code>git annex whereis</code> is interesting; many of the files already
+have 8 copies. Some talk videos are more popular than others and you can
+see when they're downloaded too. But enough snooping.. ;)</p>
+
+<p>So far people have uploaded mostly photos and talk slides. Other places
+exist to store those things in the DebConf infrastructure, but it's nice
+to have them all available in one tree. I particularly like today's
+addition of <a href="http://annex.debconf.org/debconf-share/debconf13/photos/chrysn/">chrysn's files</a>
+which include the raw photos and hugin files used to produce panoramas,
+and then pull those together into a postcard which has all its sources
+available.</p>
+
+<p>In my corner of the debconf-share repository, I'm collecting together files
+regarding the possibly-historic <a href="http://annex.debconf.org/debconf-share/debconf13/dpkg-source-git-re-re-redesign/">dpkg-source-git-re-re-redesign process</a>
+that would have otherwise been scattered around various places and probably
+not all published. This includes an hour long recording of the main
+design session (recorded with permissions) made by my laptop's mic, which,
+surprisingly, turned out to be pretty listenable. I will probably have more
+to say about this process later, once Ian announces dgit.</p>
+
+<p>So, we're still seeing how usage develops. I hope that having this
+available during the next DebConf, and other Debian meetings, rather
+than only at the end, will further facilitate file sharing and storage.
+Especially if a fast clone is available right on the DebConf LAN. ;)</p>
+
+<hr/><p>The technical details of how the repository is put together are:</p>
+
+<ul><li>There's a repository on git.debian.org, which piggy-backs on the collab-maint
+group, so most Debian people have commit access to it.</li>
+<li>git-annex is used to upload files to that repository, as an incoming
+queue.</li>
+<li>A git-annex-shell <code>annex-content</code> hook is run whenever someone uploads
+a file to there. It moves all annexed content over to annex.debconf.org
+for publication.
+This involves some ugly but safe stuff to do with publically readable
+restricted use ssh private keys. It was the hardest piece to get working,
+and is only necessary because we don't want to bloat git.debian.org with this
+stuff and it's not practical to give everyone logins to
+annex.debconf.org.</li>
+<li>As an additional guard against accidental bloat, the git.debian.org
+repository will refuse to accept uploads when there is less than 5 gb
+free disk.</li>
+<li>annex.debconf.org was set up following the
+<a href="http://git-annex.branchable.com/tips/setup_a_public_repository_on_a_web_site/">git-annex public repository on a web site howto</a>.</li>
+</ul><p>I've found at least 4 bugs in git-annex as a result of this repository,
+which is a rather unusual use case. And fixed 2 of them so far..</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/experimental_multiuser_git-annex_repository/">Syndicated 2013-08-21 20:20:18  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="532"><b>16 Aug 2013</b></a> <a href="/person/joey/diary/532.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>Debian at 20</b></p>
+<p>RichiH used flint and steel to light the bonfire. We carefully fed it up
+from those sparks to a blaze. Put on the biggest logs we could find
+to make it last. Now I'm sitting on the hill above it watching folks
+gathered around. A poem is being read, in Hindi, then
+translated for us to English. Others have shared songs and poems in a dozen
+languages, both classics and their own. Out below the darkness of
+the lake. This is Debian at 20.</p>
+
+<p>At the start of this DebConf, I gave a talk on
+"<a href="http://meetings-archive.debian.net/pub/debian-meetings/2013/debconf13/high/976_Debian_Cosmology.ogv">Debian Cosmology</a>.
+In that (and a later
+"<a href="http://meetings-archive.debian.net/pub/debian-meetings/2013/debconf13/high/975_dh_busfactor.ogv">dh_busfactor</a>"
+talk) I shared my hopes and my fears.
+I was conflicted about giving the this talk, worked on it for weeks,
+felt it might not work, or be depressing. I've had nothing but good
+comments about it.</p>
+
+<p>20 years is ages in internet time and technical projects ossify over time.
+The last session I was in this afternoon was a presentation of a new tool,
+which I hope &amp; feel has the potential to fundamentally change an important
+and suboptimal part of Debian. Then I walked outside to a rainbow over
+crystal clear Swiss alps on the horizon. How encouraging, and what a nice
+story that will be around some future campfire.</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/Debian_at_20/">Syndicated 2013-08-16 22:16:42  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="531"><b>15 Aug 2013</b></a> <a href="/person/joey/diary/531.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>words fail me</b></p>
+<p><a href="http://joeyh.name/blog/./pics/CERN/LHC_tube.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/512x-LHC_tube.jpg" width="512" height="334" class="img"/></a>
+<a href="http://joeyh.name/blog/./pics/CERN/magnet_patrol.jpg"><img src="http://joeyh.name/blog/./pics/CERN/magnet_patrol.jpg" width="512" height="287.121568627451" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/dosimeter.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/512x-dosimeter.jpg" width="512" height="505" class="img"/></a>
+<a href="http://joeyh.name/blog/./pics/CERN/safty_belts.jpg"><img src="http://joeyh.name/blog/./pics/CERN/safty_belts.jpg" width="512" height="501.960784313725" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/LHC_section.jpg"><img src="http://joeyh.name/blog/./pics/CERN/LHC_section.jpg" width="1024" height="768" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/revealing_error.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/1024x-revealing_error.jpg" width="1024" height="263" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/danger_of_liquid_air.jpg"><img src="http://joeyh.name/blog/./pics/CERN/danger_of_liquid_air.jpg" width="1024" height="578" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/boat.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/1024x-boat.jpg" width="1024" height="471" class="img"/></a><br/><a href="http://joeyh.name/blog/./pics/CERN/castle.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/512x-castle.jpg" width="512" height="420" class="img"/></a>
+<a href="http://joeyh.name/blog/./pics/CERN/TBL_box.jpg"><img src="http://joeyh.name/blog/./entry/words_fail_me/512x-TBL_box.jpg" width="512" height="398" class="img"/></a></p><p class="syndicated"><a href="http://joeyh.name/blog/entry/words_fail_me/">Syndicated 2013-08-14 23:16:34  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="530"><b>13 Aug 2013</b></a> <a href="/person/joey/diary/530.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>swiss cheese</b></p>
+<p><a href="http://joeyh.name/blog/./pics/cheese_table.jpg"><img src="http://joeyh.name/blog/./pics/cheese_table.jpg" width="1024" height="1365" alt="typical DebConf cheese &amp; wine table" class="img"/></a>
+<a href="http://joeyh.name/blog/./pics/whale_milk_cheese.jpg"><img src="http://joeyh.name/blog/./pics/whale_milk_cheese.jpg" width="1024" height="1365" alt="Organic smelly mystery cheese (Vogon planet Whalke milk)" class="img"/></a></p><p class="syndicated"><a href="http://joeyh.name/blog/entry/swiss_cheese/">Syndicated 2013-08-13 07:53:31  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="529"><b>12 Aug 2013</b></a> <a href="/person/joey/diary/529.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>please build a haskell to perl compiler</b></p>
+<p>The <a href="http://fay-lang.org/">Fay compiler</a> is a simple way to build fairly
+comprehensible javascript code from Haskell source.</p>
+
+<p>It occurs to me that it should be rather easy to modify Fay to emit perl
+code rather than javascript. This would allow contributing things like
+plugins to various perl programs, without writing perl.</p>
+
+<p>Of course, the same idea could probably be used to compile Haskell to other
+languages like python, but perl seems particularly well suited as a second
+Fay target, since javascript and it have quite similar syntax and similar
+support for features like closures which Fay relies on.</p>
+
+<p>I do not have time to work on this idea myself. It would be a good project
+for a beginning Haskell programmer. You probably don't even need to fully
+understand monads to do it! Essentially, look at
+<a href="https://github.com/faylang/fay/wiki/Generated-code">Fay output examples</a>,
+translate them from javascript to perl, and then much of the code changes
+in Fay would probably be in simple string generation code.</p>
+
+<hr/><p>I will forward any bitcoins sent to the address
+<a href="https://blockchain.info/address/149eBtWS6i8cwQdPQJJ8hAGpDuEqNidyTj">149eBtWS6i8cwQdPQJJ8hAGpDuEqNidyTj</a>
+to whoever makes this. If it doesn't happen in 1 year, any donations will
+be forwarded to the EFF instead.</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/please_build_a_haskell_to_perl_compiler/">Syndicated 2013-08-12 12:40:54  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="528"><b>12 Aug 2013</b></a> <a href="/person/joey/diary/528.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>good morning</b></p>
+<p>
+  <a href="http://joeyh.name/blog/./pics/swiss-morning-pano.jpg">
+    <img src="http://joeyh.name/blog/./entry/good_morning/1024x-swiss-morning-pano.jpg" width="1024" height="190" alt="panorama of sunrise" class="img"/></a>
+</p>
+
+<p>Woken at 3 am by fil singing
+"<a href="https://www.gnu.org/music/free-software-song.html">Join Us Now And Share The Software</a>"
+(all verses!) I could not get back to sleep and spent 3 hours thinking up
+a new take on the hopelessly blocked dpkg-source v3 (git) format.</p>
+
+<p>A diagram of the new plan, which should meet all ftpmaster requirements,
+is posted in Hacklab 1. I am looking for reviewers.</p>
+
+<p>A rather hard to read photo (DebConf needs mandatory whiteboards!)
+is available here:
+<a href="http://tmp.kitenet.net/brownboard.jpg">
+<img src="http://tmp.kitenet.net/brownboard.jpg" width="128" height="100"/></a></p>
+
+<p>Fil has paid me back in full for his drunken carousing by gifting me a
+<a href="http://rhombus-tech.net/">Rhombus-Tech</a> system on a chip on a PCMCIA card.
+I've checked this new computer, which features a modern multicore ARM CPU,
+into my wallet.</p>
+
+<p>And that's 10% of what went on today at DebConf for me, and we've not
+even gotten to the cheese and wine party tonight.</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/good_morning/">Syndicated 2013-08-12 12:21:19  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="527"><b>10 Aug 2013</b></a> <a href="/person/joey/diary/527.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>unexpected Switzerland</b></p>
+<p>
+  <a href="http://joeyh.name/blog/./pics/unexpected_switzerland.jpg">
+    <img src="http://joeyh.name/blog/./entry/unexpected_Switzerland/1024x-unexpected_switzerland.jpg" width="1024" height="603" class="img"/></a>
+</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/unexpected_Switzerland/">Syndicated 2013-08-10 18:45:06  from see shy jo</a></p></div>
+</div>
+<div class="node joey">
+<div class="blogdate"><a name="526"><b>3 Aug 2013</b></a> <a href="/person/joey/diary/526.html" style="text-decoration: none">&raquo;</a></div><div class="content">
+<p><b>apple day</b></p>
+<p>
+  <a href="http://joeyh.name/blog/./pics/apples/topdown.jpeg">
+    <img src="http://joeyh.name/blog/./pics/apples/topdown.jpeg" width="1024" height="768" class="img"/></a>
+</p>
+
+<p>
+  <a href="http://joeyh.name/blog/./pics/apples/sorting.jpeg">
+    <img src="http://joeyh.name/blog/./pics/apples/sorting.jpeg" width="1024" height="768" class="img"/></a>
+</p>
+
+<p>
+  <a href="http://joeyh.name/blog/./pics/apples/keepers.jpeg">
+    <img src="http://joeyh.name/blog/./pics/apples/keepers.jpeg" width="1024" height="768" class="img"/></a>
+</p><p class="syndicated"><a href="http://joeyh.name/blog/entry/apple_day/">Syndicated 2013-08-03 20:03:08  from see shy jo</a></p></div>
+</div>
+<p><a href="/person/joey/diary.html?start=525">526 older entries...</a></p>
+</div></div></div><div id="col2"><div class="login"><form method="post" action="/acct/loginsub.html" accept-charset="UTF-8"><p><input class="in" name="u" type="text" value="" alt="user name" title="user name" /></p><p><input class="in" name="pass" type="password" value="" alt="password" title="password" /></p><input class="lsub" type="submit" value="Login" /></form></div><p align="center"><script type="text/javascript"><!--
+google_ad_client = "pub-5939771709775559";
+google_ad_width = 200;
+google_ad_height = 200;
+google_ad_format = "200x200_as";
+google_ad_channel ="3783292610";
+google_color_border = "ffffff";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_url = "008000";
+google_color_text = "000000";
+//--></script><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></p><div id="info"><b>New Advogato Features</b><p><b>New HTML Parser</b>: The long-awaited libxml2 based HTML parser
+code is live. It needs further work but already handles most
+markup better than the original parser.</p><p>Keep up with the latest Advogato features by reading the
+<a href="/person/robogato/diary.html">Advogato 
+status blog</a>.</p><p>If you're a C programmer with some spare time, take a look at the 
+<a href="http://www.advogato.org/proj/mod_virgule/">mod_virgule project 
+page</a> and help us with one of the tasks on the ToDo list!</p></div></div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2968274-1";
+urchinTracker();
+</script>
+</body>
+</html>
+

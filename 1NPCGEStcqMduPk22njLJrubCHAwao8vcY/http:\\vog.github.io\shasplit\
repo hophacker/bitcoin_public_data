@@ -1,0 +1,366 @@
+http://vog.github.io/shasplit/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Content-Type: text/html; charset=utf-8
+Last-Modified: Fri, 18 Oct 2013 13:12:41 GMT
+Expires: Tue, 22 Jul 2014 17:36:36 GMT
+Cache-Control: max-age=600
+Content-Encoding: gzip
+Content-Length: 3497
+Accept-Ranges: bytes
+Date: Tue, 22 Jul 2014 17:26:36 GMT
+Via: 1.1 varnish
+Age: 0
+Connection: close
+X-Served-By: cache-jfk1026-JFK
+X-Cache: MISS
+X-Cache-Hits: 0
+X-Timer: S1406049996.480681896,VS0,VE8
+Vary: Accept-Encoding
+
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Shasplit – Efficient backups by SHA-based data splitting</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 11pt;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500pt;
+      }
+      h1 {
+        text-align: center;
+        font-size: 18pt;
+        background-color: #afa;
+        padding-top: 6pt;
+        padding-bottom: 6pt;
+        margin-top: 30pt;
+        margin-bottom: 15pt;
+        line-height: 1.5;
+      }
+      h2 {
+        padding-left: 10pt;
+        padding-top: 2pt;
+        padding-bottom: 2pt;
+        margin-top: 20pt;
+        margin-bottom: 15pt;
+        text-align: left;
+        font-size: 16pt;
+        background-color: #bdf;
+      }
+      p {
+        text-align: justify;
+      }
+      pre, code {
+        border: 1px dotted #44f;
+      }
+      pre {
+        padding-left: 4pt;
+        padding-right: 4pt;
+        padding-top: 2pt;
+        padding-bottom: 2pt;
+      }
+      code {
+        padding-left: 2pt;
+        padding-right: 2pt;
+        padding-top: 0pt;
+        padding-bottom: 0pt;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      ul.remark {
+        padding-left: 30pt;
+        list-style: none;
+      }
+      .tree {
+        font-family: monospace;
+      }
+      footer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 5px;
+      }
+      .ribbon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shasplit<br>Efficient backups by SHA-based data splitting</h1>
+    <p>
+      Shasplit takes a large data block, splits it into smaller parts,
+      and puts those into an SHA-based content-addressed store.
+      Reassembling those parts is a trivial <q>cat</q> invocation.
+      Repeating parts (e.g. from previous split operations)
+      are stored only once,
+      which allows for efficient incremental backups
+      of whole LVM snapshots via Rsync.
+      Shasplit shows its strengths on encrypted block devices,
+      but might be useful for non-encrypted data, too.
+    </p>
+    <p>
+      If you like this tool, feel free to donate:
+    </p>
+    <ul>
+      <li>Bitcoin: <a href="bitcoin:1NPCGEStcqMduPk22njLJrubCHAwao8vcY">1NPCGEStcqMduPk22njLJrubCHAwao8vcY</a>
+    </ul>
+    <p>
+      Have fun!
+    </p>
+    <h2 id="preparation">Preparation</h2>
+    <p>
+      Installation for a single user (assuming that <q>~/bin</q> is in PATH):
+    </p>
+    <pre>
+git clone https://github.com/vog/shasplit.git
+ln -s $(pwd)/shasplit/shasplit.py ~/bin/shasplit</pre>
+    <ul class="remark">
+      <li>
+      <p>
+        Or, if you prefer a system-wide installation:
+      </p>
+      <pre>
+git clone https://github.com/vog/shasplit.git /opt/shasplit
+ln -s /opt/shasplit/shasplit.py /usr/bin/shasplit</pre>
+    </ul>
+    <p>
+      Shasplit stores everything in the
+      <q>~/.shasplit</q>
+      directory.
+    </p>
+    <ul class="remark">
+      <li>
+      <p>
+        If you don't like that,
+        place a symlink to the desired location
+        (here: <q>/backup</q>):
+      </p>
+      <pre>ln -sT /backup ~/.shasplit</pre>
+    </ul>
+    <p>
+      By default, Shasplit splits the data
+      into parts of size <a href="https://en.wikipedia.org/wiki/Binary_prefix">256&nbsp;KiB</a>
+      and hashes each part with
+      <a href="https://en.wikipedia.org/wiki/SHA-1">SHA-1</a>,
+      but will work equally well with any other part size and any other strong
+      <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms">secure hash algorithm</a>.
+    </p>
+    <h2 id="backup">Backup</h2>
+    <p>
+      Add a new backup
+      from <q>/dev/vg0/foobar</q>
+      with name <q>foobar</q>,
+      keeping at most 7 completed backups:
+    </p>
+    <pre>shasplit add foobar 7 &lt; /dev/vg0/foobar</pre>
+    <ul class="remark">
+      <li>
+      <p>
+        If you backup a running system,
+        don't forget to create a snapshot before backup
+        and to release it afterwards.
+        For LVM volumes,
+        Shasplit takes care of snapshots automatically
+        if you specify the volume group:
+      </p>
+      <pre>shasplit add vg0 foobar 7</pre>
+    </ul>
+    <p>
+      If <q>~/.shasplit</q> is located
+      on a remote file system such as NFS or SSHFS,
+      you are done.
+      Otherwise, you'll have to sync the
+      <q>~/.shasplit</q>
+      directory to the backup system.
+    </p>
+    <p>
+      When using Rsync,
+      you should use the options
+      <q>-W</q> for improved performance
+      and
+      <q>--delete-after</q> to keep the old backups
+      until the new backups are complete:
+    </p>
+    <pre>rsync -aW --delete-after ~/.shasplit/ backup@backupserver:.shasplit/</pre>
+    <h2 id="status">Status and Checks</h2>
+    <p>
+      Show status information for all instances:
+    </p>
+    <pre>shasplit status</pre>
+    <ul class="remark">
+      <li>
+      <p>
+        Example output:
+      </p>
+      <pre>
+foobar
+  2013-05-23T03:42:42  268435456  100%
+  2013-05-22T03:42:47  268435456   75%  incomplete
+  2013-05-21T03:42:23  268435456  100%
+raboof
+  2013-05-23T03:38:24  (unknown)    0%  incomplete
+  2013-05-22T03:38:27  671088640  100%</pre>
+    </ul>
+    <p>
+      Perform a thorough integrity check
+      and report all parts and instances
+      that are incomplete or inconsistent:
+    </p>
+    <pre>shasplit check</pre>
+    <p>
+      Run the internal tests:
+    </p>
+    <pre>shasplit test</pre>
+    <h2 id="recovery">Recovery</h2>
+    <p>
+      Recover the latest complete backup of <q>foobar</q> with:
+    </p>
+    <pre>shasplit recover foobar > /dev/vg0/foobar</pre>
+    <p>
+      Recover the backup of <q>foobar</q> at <q>2013-05-23T03:42:42</q>:
+    </p>
+    <pre>shasplit recover foobar 2013-05-23T03:42:42 > /dev/vg0/foobar</pre>
+    <h2 id="manual-recovery">Manual Recovery and Checking</h2>
+    <p>
+      If Shasplit is not available on the target system,
+      it is very simple
+      to recover your data manually,
+      using standard Unix tools.
+    </p>
+    <p>
+      First, you have to decide which instance you want to look at:
+    </p>
+    <pre>cd ~/.shasplit/foobar/2013-05-23T034242</pre>
+    <p>
+      Then, recovery is a trivial <q>cat</q> invocation:
+    </p>
+    <pre>cat */* > /dev/vg0/foobar</pre>
+    <ul class="remark">
+      <li>
+      <p>
+        In case of <q>Argument list too long</q> errors,
+        do instead:
+      </p>
+      <pre>find . -mindepth 2 | sort | xargs cat > /dev/vg0/foobar</pre>
+    </ul>
+    <p>
+      Before recovery,
+      you may want to run a
+      fast check for completeness by hand:
+    </p>
+    <pre>wc -c */*; cat size</pre>
+    <p>
+      To be safe, you can also run an integrity check for that instance by hand:
+    </p>
+    <pre>cat */* | sha1sum; cat hash</pre>
+    <h2 id="debug">Debug</h2>
+    <p>
+      You can always enable debuging output
+      via the <q>SHASPLIT_DEBUG</q> environment variable:
+    </p>
+    <pre>SHASPLIT_DEBUG=1 shasplit add vg0 foobar 7</pre>
+    <h2 id="layout">Directory Layout</h2>
+    <p>
+      Design goals:
+    </p>
+    <ol>
+      <li>Trivial recovery by hand via <q>cat</q>
+      <li>Integrity check possible by hand
+      <li>Human-readable directory layout
+      <li>Support for large, possibly encrypted, block devices
+      <li>Efficient transfer by standard tools like Rsync, NFS or SSHFS (i.e. reuse repeating parts from previous splits)
+      <li>Fast check for completeness (i.e. robust against interrupted transfers)
+      <li>Avoid creating more than 4096 entries per directory
+    </ol>
+    <p>
+      Base directory layout:
+    </p>
+    <ul class="tree">
+      <li>~/.shasplit/
+      <ul>
+        <li>.data/
+        <li>foobar/
+        <ul>
+          <li>2013-05-21T034223/
+          <li>2013-05-22T034247/
+          <li>2013-05-23T034242/
+        </ul>
+        <li>raboof/
+        <ul>
+          <li>2013-05-22T033827/
+          <li>2013-05-23T033824/
+        </ul>
+      </ul>
+    </ul>
+    <p>
+      Directory layout of each instance:
+    </p>
+    <ul class="tree">
+      <li>~/.shasplit/foobar/2013-05-23T034242/
+      <ul>
+        <li>hash
+        <li>size
+        <li>0000/
+        <ul>
+          <li>000 &rarr; ../../../.data/dea/6ef7bab6cb210
+          <li>001 &rarr; ../../../.data/39e/fe6a053f13729
+          <li>...
+          <li>999 &rarr; ../../../.data/dea/fa22baa89298e
+        </ul>
+        <li>0001/
+        <ul>
+          <li>000 &rarr; ../../../.data/39e/c950863e06cbb
+          <li>001 &rarr; ../../../.data/dea/dbeef00b68016
+          <li>...
+          <li>023 &rarr; ../../../.data/dea/dbeef00b68016
+        </ul>
+      </ul>
+    </ul>
+    <p>
+      Directory layout of <q>.data</q>:
+    </p>
+    <ul class="tree">
+      <li>~/.shasplit/.data/
+      <ul>
+        <li>39e/
+        <ul>
+          <li>c950863e06cbb
+          <li>fe6a053f13729
+        </ul>
+        <li>dea/
+        <ul>
+          <li>6ef7bab6cb210
+          <li>dbeef00b68016
+          <li>fa22baa89298e
+        </ul>
+      </ul>
+    </ul>
+    <h2 id="related">Related Projects</h2>
+    <ul>
+      <li><a href="http://zbackup.org">ZBackup</a>
+      <li><a href="http://theshed.hezmatt.org/lvmsync/">lvmsync</a>
+      <li><a href="http://www.bouncybouncy.net/programs/blocksync.py">blocksync.py</a>
+      <li><a href="http://vog.github.com/bscp/">Bscp</a>
+      <li><a href="https://github.com/vog/scs">Scs</a>
+    </ul>
+    <footer>
+      <a href="https://njh.eu/">&#x2190; Not Just Hacking</a>
+    </footer>
+    <a href="https://github.com/vog/shasplit" target="_blank">
+      <!-- https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png -->
+      <img class="ribbon" src="index-forkme.png" alt="Fork me on GitHub">
+    </a>
+  </body>
+</html>
+

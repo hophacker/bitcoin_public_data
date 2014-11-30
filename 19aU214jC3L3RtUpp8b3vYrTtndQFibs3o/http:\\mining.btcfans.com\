@@ -1,0 +1,328 @@
+http://mining.btcfans.com/
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 23 Jul 2014 05:07:25 GMT
+Content-Type: text/html
+Connection: close
+Vary: Accept-Encoding
+X-Powered-By: PHP/5.3.17
+Content-Encoding: gzip
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>比特币挖矿收益计算器 | 比特范</title>
+<meta name="keywords" content="挖矿计算器,挖矿收益计算器,比特币挖矿计算,比特币挖矿收益计算器,比特币挖矿收益,比特币矿机挖矿收益" />
+<meta name="description" content="比特币挖矿收益计算器，为您精确计算当前难度下1天的挖矿收益，并同时提供常用比特币矿机的收益计算数据和回本时间，为您选择比特币矿机提供参考。" />
+<link rel="stylesheet" type="text/css" href="images/comm.css"/>
+<script type="text/javascript" src="js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="js/btc.js?0.14"></script>
+<script type="text/javascript" src="js/DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+var wid=wid2=0;
+var defaultTime=stime=60;
+
+$(document).ready(function() {
+	wid=setInterval('startTimer()', 1000);
+	wid2=setInterval('getPrices()', defaultTime*1000);
+	trHoverInit();
+});
+
+var leavetime=62;
+</script>
+</head>
+
+<body leftmargin='8' topmargin='8'>
+
+<div id="top" style="left: 0;background-color:#fff;width: 100%;text-align:center;border-bottom:1px solid #7d8f9d;margin-top:5px;">
+<div style="margin:0px auto;padding:0px auto;border:0px;width:900px;height:40px;">
+<div style="float:left;width:300px;">
+本页面由
+<a href="http://www.btcfans.com/" title="比特范" target="_blank"><img valign="middle" width="100" src="http://www.btcfans.com/template/comiis_lssy/comiis_pic/comiis_logo.gif" alt="比特范" border="0"></a>
+提供,[比特范]还提供：
+</div>
+<div style="float:left;width:600px;text-align:left;">
+<a href="http://price.btcfans.com/" target="_blank">比特币市场实时行情</a> | 
+<a href="http://price.btcfans.com/fees.php" target="_blank">比特币市场手续费比较</a> | 
+<a href="http://mining.btcfans.com/" target="_blank">比特币挖矿收益计算器</a> | 
+<a href="http://mining.btcfans.com/difficulty.php" target="_blank">比特币挖矿难度增幅</a> | 
+<a href="http://ltc.btcfans.com/" target="_blank">莱特币市场实时行情</a> | 
+<a href="http://ltc.btcfans.com/mining.php" target="_blank">莱特币挖矿收益计算器</a> | 
+<a href="http://ltc.btcfans.com/difficulty.php" target="_blank">莱特币挖矿难度增幅</a>
+</div>
+<div style="clear:float;"></div>
+</div>
+</div>
+<div class="msg">
+<font color=red>*风险提示*:挖矿行业收益巨大、风险极高</font>，本站尽可能给您提供真实、详尽的挖矿收益数据，但并不因此而构成任何投资建议。<font color=red>请务必自行判断投资风险</font><br/>
+使用此页面，即代表您已认可并完全接受 <a href="http://www.btcfans.com/laws" target="_blank">免责声明</a> 的全部内容。
+</div>
+
+<table width="900" border="0" cellpadding="2" cellspacing="1" style="margin-top:10px" align="center">
+<tr>
+<td colspan="6" height="22" align="center" class="title"><strong>比特币挖矿收益计算器</strong>
+</td>
+<tr align="center"> 
+<th height="20" width="13%">计算难度</th><td width="20%" align="left"><input type="text" id="cdifficulty" value="17,336,316,979"  size="10"> *必填</td>
+<th width="13%">人民币汇率</th><td width="20%" align="left"><input type="text" id="cBTCCNY" value="3,824.7" size="10"> <b>¥/฿</b> *必填</td>
+<th width="13%">美元汇率</th><td width="20%" align="left"><input type="text" id="cBTCUSD" value="620.8" size="10"> <b>$/฿</b> *必填</td>
+</tr>
+<tr align="center"> 
+<th height="20">计算力</th><td align="left"><input type="text" id="chashRateG" value="" size="10"> <b>GH/s</b> *必填</td>
+<th>设备成本</th><td align="left">
+<input type="text" id="cCost" value="" size="6">
+<select id='cCurrency'>
+<option value="RMB" selected>RMB</option>
+<option value="BTC">BTC</option>
+<option value="USD">USD</option>
+</select>
+&nbsp;选填
+</td>
+<th><div class="adv">到货时间</div><div class="advShow">更多选项</div></th>
+<td align="left">
+<div class="adv"><input type="text" id="cPreTime" value="" size="10" onclick="WdatePicker()"> 选填</div>
+<div class="advShow"><input type="button" value="↓↓展开更多选项↓↓" onclick='showAdvOptions();'></div>
+</td>
+</tr>
+
+<tr align="center" class="adv"> 
+<th height="20" title='每11天计算难度调整一次，增幅平均25%'>*计算难度增幅</th><td align="left"><input type="text" id="cAddRate" value="" size="6" > <b>%</b> 选填 ,默认25%</td>
+<th >难度调整周期</th><td align="left"><input type="text" id="cRoundDay" value="" size="5"> <b>天</b> 选填 ,默认11天</td>
+<th title='从【到货时间】到【截止时间】，一个时间段内的挖矿收益。如果只填了【截止时间】没有填【到货时间】，那么【到货时间】默认为当天'>*截止时间</th><td align="left"><input type="text" id="cEndTime" value="" size="10" onclick="WdatePicker()"> 选填</td>
+</tr>
+
+<tr align="center" class="adv"> 
+<th height="20" title='这里按照每千瓦时(每度电)价格为0.6元计算，实际情况或有偏差。'>*设备功率</th><td align="left"><input type="text" id="cPower" value="" size="10"> <b>W</b> 选填</td>
+<th >电费</th><td align="left" colspan="3"><input type="text" id="cPcost" value="" size="10"> <b>元/度</b> 选填 ,默认0.6元/度</td>
+</tr>
+
+<tr align="center"> 
+<td colspan="2" height="30" align="center">
+<input type="button" value="计算收益" onclick="doCalculator2();">
+</td>
+<td colspan="4" align="left">
+比特币挖矿收益计算器，为您精确计算当前难度下1天的挖矿收益，并同时提供常用比特币矿机的收益计算数据和回本时间，为您选择比特币矿机提供参考。
+您只需要输入计算力(单位为GH/s)，点击【计算收益】按钮即可得出挖矿收益。当然您也可以自己更改计算难度以及比特币汇率。
+</td>
+</tr>
+<tr align="center" style="display:none"> 
+<td colspan="6" align="center" id="calculator"></td>
+</tr>
+</table>
+
+<div style="margin:0px auto;padding:0px auto;border:0px;width:900px;height:60px;margin-top:20px;">
+<a rel="nofollow" href="http://www.bitxixi.com/" target="_blank" style="float:left;"><img width="450" height="60" src="http://www.btcfans.com/template/comiis_lssy/ad/bitxixi_450x60.gif" border="0" alt="比西西商城" /></a>
+<a rel="nofollow" href="http://www.btcfans.com/go/adminbtc/" target="_blank" style="float:left;"><img src="http://www.btcfans.com/template/comiis_lssy/ad/adminbtc_450x60.gif" border="0" alt="比特管家" /></a>
+</div>
+<table width="900" border="0" cellpadding="2" cellspacing="1" style="margin-top:20px" align="center">
+<tr>
+<td colspan="8" height="22" align="center" class="title"><strong>比特币挖矿收益</strong>
+(自动刷新:<span class="timer">60秒</span>)
+</td>
+</tr>
+<tr align="center"> 
+<th height="25" width="20%">挖矿设备</th>
+<th width="12%">售价</th>
+<th width="10%">计算力</th>
+<th width="12%" title="">算力成本</th>
+<th width="10%">功率</th>
+<th width="12%" title="这里按照每千瓦时(每度电)价格为0.6元计算1000小时的电力成本，实际情况或有偏差">*电力成本</th>
+<th width="14%" title="没有扣除电力成本,如需扣除请在上面【挖矿收益计算器】里面计算">*一日收益</th>
+<th width="10%" title="应根据计算难度增加而修正，这里预设为每11天计算难度增加25%">*回本时间</th>
+</tr>
+<tr class='tr1' height="30" align="center">
+<td><a rel="nofollow" href="http://www.btcfans.com/go/HD7970/" target="_blank">AMD HD7950 BE 显卡</a></td>
+<td>
+<b>￥</b><span id='0rmb'>2,099</span></td>
+<td><span id='0speed'>0.69 G</span></td>
+<td><b>￥</b><span id='0perGhs'>3,042</span> /G</td>
+<td><span id='0watt'>375 瓦</span></td>
+<td><b>￥</b><span id='0perPGhs'>326.09</span> /G</td>
+<td><span id='0perDay'>0</span> BTC<br/><b>￥</b><span id='0perDayCNY'>0.08</span></td>
+<td><span id='0costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr2' height="30" align="center">
+<td><a rel="nofollow" href="http://www.btcfans.com/go/avalon2_single/" target="_blank">AVALON2单模组<img src="/images/hot.gif" border="0"><br/>(芯片频率1500MH/s)</a></td>
+<td>
+<b>￥</b><span id='1rmb'>488</span></td>
+<td><span id='1speed'>100 G</span></td>
+<td><b>￥</b><span id='1perGhs'>4.9</span> /G</td>
+<td><span id='1watt'>340 瓦</span></td>
+<td><b>￥</b><span id='1perPGhs'>2.04</span> /G</td>
+<td><span id='1perDay'>0.0029</span> BTC<br/><b>￥</b><span id='1perDayCNY'>11.1</span></td>
+<td><span id='1costRecovery'>135</span> 天</td>
+</tr>
+<tr class='tr1' height="30" align="center">
+<td><a rel="nofollow" href="http://www.btcfans.com/it618_scoremall-scoremall_page.html?pid=36" target="_blank">AVALON3单模组<img src="/images/hot.gif" border="0"><br/>(芯片频率5.9GHs)</a></td>
+<td>
+<b>￥</b><span id='2rmb'>1,799</span></td>
+<td><span id='2speed'>290 G</span></td>
+<td><b>￥</b><span id='2perGhs'>6.2</span> /G</td>
+<td><span id='2watt'>342 瓦</span></td>
+<td><b>￥</b><span id='2perPGhs'>0.71</span> /G</td>
+<td><span id='2perDay'>0.0084</span> BTC<br/><b>￥</b><span id='2perDayCNY'>32.18</span></td>
+<td><span id='2costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr2' height="30" align="center">
+<td><a rel="nofollow" href="http://www.btcfans.com/it618_scoremall-scoremall_page.html?pid=42" target="_blank">Avalon3 1.2T套装<img src="/images/new.gif" border="0"></a></td>
+<td>
+<b>￥</b><span id='3rmb'>7,099</span></td>
+<td><span id='3speed'>1200 G</span></td>
+<td><b>￥</b><span id='3perGhs'>5.9</span> /G</td>
+<td><span id='3watt'>1400 瓦</span></td>
+<td><b>￥</b><span id='3perPGhs'>0.7</span> /G</td>
+<td><span id='3perDay'>0.0348</span> BTC<br/><b>￥</b><span id='3perDayCNY'>133.14</span></td>
+<td><span id='3costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr1' height="30" align="center">
+<td><a rel="nofollow" href="http://www.bitxixi.com/goods-29.html" target="_blank">比特大陆蚂蚁S3矿机<img src="/images/hot.gif" border="0"></a></td>
+<td>
+<b>￥</b><span id='4rmb'>2,950</span></td>
+<td><span id='4speed'>478 G</span></td>
+<td><b>￥</b><span id='4perGhs'>6.2</span> /G</td>
+<td><span id='4watt'>366 瓦</span></td>
+<td><b>￥</b><span id='4perPGhs'>0.46</span> /G</td>
+<td><span id='4perDay'>0.0139</span> BTC<br/><b>￥</b><span id='4perDayCNY'>53.03</span></td>
+<td><span id='4costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr2' height="30" align="center">
+<td><a rel="nofollow" href="http://www.bitxixi.com/goods-12.html" target="_blank">比特大陆蚂蚁S2矿机</a></td>
+<td>
+<b>￥</b><span id='5rmb'>7,800</span></td>
+<td><span id='5speed'>1000 G</span></td>
+<td><b>￥</b><span id='5perGhs'>7.8</span> /G</td>
+<td><span id='5watt'>1000 瓦</span></td>
+<td><b>￥</b><span id='5perPGhs'>0.6</span> /G</td>
+<td><span id='5perDay'>0.029</span> BTC<br/><b>￥</b><span id='5perDayCNY'>110.95</span></td>
+<td><span id='5costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr1' height="30" align="center">
+<td><a rel="nofollow" href="http://www.bitxixi.com/goods-23.html" target="_blank">阿杰夏级1T矿机</a></td>
+<td>
+<b>￥</b><span id='6rmb'>7,799</span></td>
+<td><span id='6speed'>1000 G</span></td>
+<td><b>￥</b><span id='6perGhs'>7.8</span> /G</td>
+<td><span id='6watt'>895 瓦</span></td>
+<td><b>￥</b><span id='6perPGhs'>0.54</span> /G</td>
+<td><span id='6perDay'>0.029</span> BTC<br/><b>￥</b><span id='6perDayCNY'>110.95</span></td>
+<td><span id='6costRecovery'>999</span> 天</td>
+</tr>
+<tr class='tr2' height="30" align="center">
+<td><a rel="nofollow" href="http://www.bitxixi.com/goods-28.html" target="_blank">花园AM-V1静音1.2T套装<img src="/images/new.gif" border="0"></a></td>
+<td>
+<b>￥</b><span id='7rmb'>5,999</span></td>
+<td><span id='7speed'>1200 G</span></td>
+<td><b>￥</b><span id='7perGhs'>5</span> /G</td>
+<td><span id='7watt'>1296 瓦</span></td>
+<td><b>￥</b><span id='7perPGhs'>0.65</span> /G</td>
+<td><span id='7perDay'>0.0348</span> BTC<br/><b>￥</b><span id='7perDayCNY'>133.14</span></td>
+<td><span id='7costRecovery'>157</span> 天</td>
+</tr>
+<tr>
+<td colspan="8" height="20" align="left">
+*回本时间上限<b title="回本时间可能无限大，大到一定的程度即没有意义也浪费计算资源，所以人为设置回本时间上限为999天。可以近似认为999天就是永不可能回本。">999天(?)</b>，是按照平均每11天计算难度增加25%来计算的，点这里查看近期的&gt;&gt; <a href="http://mining.btcfans.com/difficulty.php" target="_blank">比特币挖矿难度增幅</a>
+</td>
+</tr>
+</table>
+
+<a name="price" ></a>
+<table width="900" border="0" cellpadding="2" cellspacing="1" style="margin-top:20px" align="center">
+<tr>
+<td colspan="8" height="22" align="center" class="title"><strong>比特币市场实时行情</strong>(自动刷新:<span class="timer">60秒</span>)
+&nbsp;&nbsp;&nbsp;<a href="http://price.btcfans.com/#btc" target="_blank">&gt;&gt;更多[比特币市场实时行情]</a>
+&nbsp;&nbsp;&nbsp;<a href="http://price.btcfans.com/fees.php" target="_blank">&gt;&gt;手续费比较</a>
+</td>
+</tr>
+<tr align="center"> 
+<th height="25" width="15%">市场名称</th>
+<th width="12%">最新成交价</th>
+<th width="12%">买一价</th>
+<th width="12%">卖一价</th>
+<th width="12%">最高价</th>
+<th width="12%">最低价</th>
+<th width="15%">成交量</th>
+<th width="10%">手续费</th>
+</tr>
+<tr class='tr1' height="30" align="center">
+<td>
+<a rel="nofollow" href="http://www.btctrade.com/" target="_blank">BTCTRADE <img src="/images/hot.gif" border="0"><br/>(比特币交易网)</a>
+</td>
+<td> <b>￥</b><span id='0lastPrice'>3,824.7</span></td>
+<td> <b>￥</b><span id='0buy1'>3,824.5</span></td>
+<td> <b>￥</b><span id='0sell1'>3,825</span></td>
+<td> <b>￥</b><span id='0highPrice'>3,841</span></td>
+<td> <b>￥</b><span id='0lowPrice'>3,821</span></td>
+<td><span id='0volume'>10,587</span> BTC</td>
+<td><a rel="nofollow" href="http://www.btctrade.com/rate.html" target="_blank">0%</a></td>
+</tr>
+<tr class='tr2' height="30" align="center">
+<td>
+<a rel="nofollow" href="http://www.btcfans.com/go/bitstamp/" target="_blank">BITSTAMP</a>
+</td>
+<td> <b>$</b><span id='1lastPrice'>620.8</span></td>
+<td> <b>$</b><span id='1buy1'>620.8</span></td>
+<td> <b>$</b><span id='1sell1'>620.8</span></td>
+<td> <b>$</b><span id='1highPrice'>625</span></td>
+<td> <b>$</b><span id='1lowPrice'>618</span></td>
+<td><span id='1volume'>3,338</span> BTC</td>
+<td><a rel="nofollow" href="http://price.btcfans.com/" target="_blank">0.2%</a></td>
+</tr>
+</table>
+
+
+<a name="btcBase" ></a>
+<table width="900" border="0" cellpadding="2" cellspacing="1" style="margin-top:20px" align="center">
+<tr>
+<td colspan="8" height="22" align="center" class="title"><strong>比特币全网基本信息</strong>
+(自动刷新:<span class="timer">60秒</span>)
+</td>
+</tr>
+<tr align="center"> 
+<th height="20" width="11%">货币名称</th><td width="14%">比特币/Bitcoin/BTC</td>
+<th width="11%">全网运算力</th><td width="14%"><span id='hashRate'>117,203,847</span>GH/s</td>
+<th width="11%">总计BTC</th><td width="14%"><span id='totalbtc'>13,042,400</span></td>
+<th width="11%">未开采BTC</th><td width="14%"><span id='leavebtc'>7,957,600</span></td>
+</tr>
+<tr align="center">
+<th height="20">总市值</th><td><b>$</b><span id='totalusd'>8,096,721,920</span></td>
+<th>Block总数</th><td><span id='blockcount'>312,062</span></td>
+<th>24h开采</th><td><span id='blocks24h'>131</span> blocks <br/> <span id='btcs24h'>3,275</span> BTC</td>
+<th>平均1h开采</th><td><span id='blocksavg'>5.5</span> blocks <br/> <span id='btcsavg'>137</span> BTC</td>
+</tr>
+<tr align="center"> 
+<th height="20">当前难度</th><td><span id='difficulty'>17,336,316,979</span></td>
+<th>预计下次难度</th>
+<td>
+<font id='nextdifficulty'>18,693,275,663</font><br/>
+(<span id='difficultyrate'>+8</span>%)
+</td>
+<th>难度调整</th><td><span id='nextblock'>417</span> blocks以后</td>
+<th>预计需时</th><td><span id='leavetime'>62</span>小时
+</td>
+</tr>
+</table>
+
+<div class="footer" style="left: 0;background-color:#fff;width: 100%;text-align:center;border-top:1px solid #7d8f9d;margin:0 auto;margin-top:20px;margin-bottom:10px;padding-top:10px;">
+<a href="http://price.btcfans.com/" target="_blank">比特币市场实时行情</a> | 
+<a href="http://price.btcfans.com/fees.php" target="_blank">比特币市场手续费比较</a> | 
+<a href="http://mining.btcfans.com/" target="_blank">比特币挖矿收益计算器</a> | 
+<a href="http://mining.btcfans.com/difficulty.php" target="_blank">比特币挖矿难度增幅</a>
+| | 
+
+<a href="http://ltc.btcfans.com/" target="_blank">莱特币市场实时行情</a> | 
+<a href="http://ltc.btcfans.com/mining.php" target="_blank">莱特币挖矿收益计算器</a> | 
+<a href="http://ltc.btcfans.com/difficulty.php" target="_blank">莱特币挖矿难度增幅</a>
+| |  
+
+<a href="http://www.btcfans.com/bugs" target="_blank">汇报BUG</a>
+<br/>
+Copyright&copy;  2013-2014 <a href="http://www.btcfans.com/" target="_blank">比特范</a>
+All Rights Reserved | 
+联系:oldfox126(alt)foxmail.com | 
+沪ICP备13031123号-1 | 
+<script src="http://s6.cnzz.com/stat.php?id=5291371&web_id=5291371" language="JavaScript"></script>
+<br/>如果您觉得此页面对您有所帮助,可以略表心意:-) 19aU214jC3L3RtUpp8b3vYrTtndQFibs3o
+</div>
+</body>
+</html>

@@ -1,0 +1,947 @@
+http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/
+HTTP/1.1 200 OK
+Date: Thu, 10 Jul 2014 07:50:08 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 10-Jul-2015 07:50:08 GMT; path=/
+Set-Cookie: lw_user_sid=b8e921f99c4ff736ce394d38226c03e3; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 15938
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-10T09:50:08Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Setting up dual monitors system-wide with XRandR on Debian Lenny - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/" class="entry-title">Setting up dual monitors system-wide with XRandR on Debian Lenny</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>I have been playing with my monitor setup again on my Dell D530 laptop. The internal monitor of the laptop is 1400x1050 pixels, but I usually use a 19" external monitor set to 1280x1024. With Etch this worked flawlessly. When the external monitor was hooked up and the lid on my laptop was closed, then my desktop would be 1280x1024. When I booted with the lid open and no monitor attached, the desktop would be 1400x1050. When I upgraded to Lenny this stopped working. I had to change the resolution each time I changed from external screen to internal screen and back. I <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=483314">reported a bug about this</a> but the answer came down to &ldquo;It&#8217;s not a bug but a feature. Use XRandR to change your displays if you don&#8217;t like it.&rdquo;</p>
+
+<p>So, I dove into XRandR. I wanted this to work for all users, so simply sticking some XRandR commands in the gnome session startup wasn&#8217t going to suffice. At the same time I also got interested in trying a dual-head setup instead of only an external monitor when one was connected. I was going to need completely different layouts depending on the external monitor. It took a while before I figured out how to do it, it took a little longer to fight GNOME into submission, but here is how to make it work.</p>
+
+<h4>Figure out the correct XRandR settings</h4>
+
+<p>I'm not going in to the gory details of XRandR. The Debian wiki has an <a href="http://wiki.debian.org/XStrikeForce/HowToRandR12">excellent explanation of XRandR 1.2</a>. It is possible to set XRandR configurations in the xorg.conf file but I didn&#8217;t do that. Such a setup does not allow me to specify things like &ldquo;If monitor X is attached, do Y else do Z&rdquo;. Here are the XRandR settings/commands that I want. LVDS is my internal monitor and VGA is the external 19" monitor.</p>
+
+<p>When an external monitor is present, set up a dual head configuration. Note that I have placed the screens above each other instead of side-by-side and that they overlap by 26 pixels. That is because the Intel 945 chipset/driver only support a total combined size of 2048x2048 pixels. If you use any other driver or chipset (like an ATI or Intel 965) then you can use a bigger combined size, like 2560x1024 for two 19" monitors side-by-side.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">xrandr --output VGA --mode 1280x1024 --pos 0x0 --output LVSD --mode 1400x1050 --pos 0x998</div></li>
+</ol></div></div>
+
+<p>If you want to use only the external monitor then you would use this instead:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">xrandr --output VGA --mode 1280x1024 --output LVDS --off</div></li>
+</ol></div></div>
+
+<p>And this is the setting I want when there is no external monitor connected:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">xrandr --output LVDS --mode 1400x1050 --output VGA --off</div></li>
+</ol></div></div>
+
+<h4>Applying the XRandR settings at login time</h4>
+
+<p>I want these settings to apply when I log in. Like I said, I do not put anything in the xorg.conf. When the laptop boots with an external monitor attached then the GDM login screen will be shown on all monitors. After logging in the dual head setup will be configured. To do that I created a file called <tt>45custom_xrandr</tt> in <tt>/etc/X11/Xsession.d/</tt>. That script will be executed when an Xsession starts (after logging in to GNOME, KDE or any other desktop environment.</p>
+
+<div class="geshi-wrap"><div class="bash geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">xrandr <span class="sy0">|</span> <span class="kw2">grep</span> VGA <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st0">&quot; connected &quot;</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">if</span> <span class="br0">&#91;</span><span class="re4">$?</span> <span class="re5">-eq</span> <span class="nu0">0</span><span class="br0">&#93;</span>; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="co0"># External monitor is connected</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; xrandr <span class="re5">--output</span> VGA <span class="re5">--mode</span> 1280x1024 <span class="re5">--pos</span> 0x0 <span class="re5">--output</span> LVDS <span class="re5">--mode</span> 1400x1050 <span class="re5">--pos</span> 0x998</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span><span class="re4">$?</span> <span class="re5">-ne</span> <span class="nu0">0</span><span class="br0">&#93;</span>; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># Something went wrong. Autoconfigure the internal monitor and disable the external one</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; xrandr <span class="re5">--output</span> LVDS <span class="re5">--mode</span> auto <span class="re5">--output</span> VGA <span class="re5">--off</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">else</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="co0"># External monitor is not connected</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; xrandr <span class="re5">--output</span> LVDS <span class="re5">--mode</span> 1400x1050 <span class="re5">--output</span> VGA <span class="re5">--off</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">fi</span></div></li>
+</ol></div></div>
+
+<p>Now if you log in, the correct settings should be applied. Only it doesn&#8217;t work on GNOME&hellip;</p>
+
+<h4>Stopping GNOME from overriding your XRandR configuration</h4>
+
+<p>As it turns out, GNOME tries to guess the best XRandR settings for you based on your connected monitors and the display configuration you set. But the GNOME 2.20/2.22 mix on Debian Lenny does not support a dual-head configuration. That option only <a href="http://library.gnome.org/misc/release-notes/2.24/#rnusers.xrandr">became available in GNOME 2.24</a> and thus is not available in Debian Lenny. You need to turn off the XRandR plugin for the gnome-settings-daemon. Open up a terminal and start gconf-editor. Now browse to /apps/gnome-settings-daemon/plugins/xrandr and uncheck the "active" entry.</p>
+
+<img src="http://www.jejik.com/images/articles/xrandr/gconf-xrandr.png" />
+
+<p>Now GNOME will simply adapt to whatever XRandR layout configuration already exists. Many thanks to jm_ and enouf on #debian to help debug this issue. I hope this helps any of you!</p>
+
+<h4>References</h4>
+<ul>
+<li><a href="http://wiki.debian.org/XStrikeForce/HowToRandR12">http://wiki.debian.org/XStrikeForce/HowToRandR12</a></li>
+<li><a href="http://www.thinkwiki.org/wiki/Xorg_RandR_1.2">http://www.thinkwiki.org/wiki/Xorg_RandR_1.2</a>
+</ul>
+
+<p>Digg this article: <a href="http://digg.com/linux_unix/Setting_up_dual_monitors_system_wide_with_XRandR_on_Debian_L"><img src="http://digg.com/img/digg-it-tiny.gif/" alt="This article on Digg"></a></p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-10-23T23:41:00Z">2008-10-23@23:41</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+															&nbsp;<a href="http://www.jejik.com/tag/lenny" rel="tag">lenny</a>
+															&nbsp;<a href="http://www.jejik.com/tag/x.org" rel="tag">x.org</a>
+															&nbsp;<a href="http://www.jejik.com/tag/xrandr" rel="tag">xrandr</a>
+															&nbsp;<a href="http://www.jejik.com/tag/gnome" rel="tag">gnome</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-24@14:37
+																																			</div>
+																How does xrandr know the difference to what device I am referring to with the various initial commands?<br />
+> xrandr --output VGA --mode 1280x1024 --pos 0x0 --output LVSD --mode 1400x1050 --pos 0x998<br />
+> xrandr --output VGA --mode 1280x1024 --output LVDS --off<br />
+<br />
+Additionally what type of setup is needed in xorg.conf � you seem to not need any?  No various 'screen' sections?  Is this dependent on a 3d-capable driver?  I have an ATI 3450 card with dual outputs (analog, digital, or s-video) and I've been trying to figure this out to clone the monitor onto the tele with s-video; the radeonhd driver doesn't have many capabilities yet for my card, and the fglrx driver is just a headache...<br />
+<br />
+well perhaps i should be reading the xrandr wiki on debian's pages...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-24@17:02
+																																			</div>
+																Hi AC,<br />
+<br />
+<blockquote>How does xrandr know the difference to what device I am referring to with the various initial commands?</blockquote><br />
+<br />
+This depends on your driver. It will always name the devices the same way. In my case my Intel driver always refers to the internal display as LVDS and to the external display as VGA.<br />
+<br />
+<blockquote>Additionally what type of setup is needed in xorg.conf � you seem to not need any?</blockquote><br />
+<br />
+You only need a very bare bones xorg.conf file. A modern X server can autodetect pretty much anything, so you only need to meddle with the configuration file when you think that Xorg detected something wrong. Here are the relevant snippets from my xorg.conf:<br />
+<br />
+<pre>
+Section &quot;Device&quot;
+	Identifier	&quot;Intel Corporation Mobile 945GM/GMS/940GML Express Integrated Graphics Controller&quot;
+	Driver		&quot;intel&quot;
+	BusID		&quot;PCI:0:2:0&quot;
+	Option		&quot;Monitor-LVDS&quot;	&quot;Internal monitor&quot;
+	Option		&quot;Monitor-VGA&quot;	&quot;External monitor&quot;
+EndSection
+
+Section &quot;Monitor&quot;
+	Identifier	&quot;Internal monitor&quot;
+	Option		&quot;DPMS&quot;
+EndSection
+
+Section &quot;Monitor&quot;
+	Identifier	&quot;External monitor&quot;
+EndSection
+
+Section &quot;Screen&quot;
+	Identifier	&quot;Default screen&quot;
+	Device		&quot;Intel Corporation Mobile 945GM/GMS/940GML Express Integrated Graphics Controller&quot;
+	Monitor		&quot;Internal monitor&quot;
+	DefaultDepth	24
+	SubSection &quot;Display&quot;
+		Depth		24
+		Virtual		2048 2048
+	EndSubSection
+EndSection
+</pre><br />
+<br />
+The only changes I made were adding the Monitor-LVDS and Monitor-VGA options in the Devices section, and adding the Virtual option in Screen-&gt;Display. See my second reference to <a href="http://www.thinkwiki.org/wiki/Xorg_RandR_1.2" rel="nofollow">http://www.thinkwiki.org/wiki/Xorg_RandR_1.2</a> for more information about that.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c3" class="number" id="c3">#3</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-24@18:20
+																																			</div>
+																In the true path of the if/else statement, you mispelled LVDS (Low-voltage differential signaling) in the posted script. The initial command will fail due to an unidentified output and on the nested if statement it will always return the default auto setup.<br />
+<br />
+Just incase someone were to copy and paste.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-24@20:05
+																																			</div>
+																Thanks, I corrected it!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c5" class="number" id="c5">#5</a>
+																			Familia
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-26@04:15
+																																			</div>
+																I've noticed, that intel graphic card 965 always choose the primary screen as the VGA or external one, which is kind of a messy if you're using gnome. And if that you're using two monitors with different resolutions, let's say 1280x800 and 1280x1024 it forms a square virtual screen, which also is annoying because now you have a bigger screen (vertically) in one of the monitors in which things get lost... like icons, windows, etc...<br />
+Have you found this problems, does anyone know how to workaround them?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c6" class="number" id="c6">#6</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-11-26@10:26
+																																			</div>
+																@Familia: Using xrandr you can override which screen is the primary screen. The first output mentioned on the xrandr command will become the primary screen. Not that Gnome always puts your panels of the primary screen. So, to make the internal LVDS the primary one, use this:<br />
+<br />
+<pre>xrandr --output LVDS &lt;options&gt; --output VGA &lt;options&gt;</pre><br />
+<br />
+I do not know of a solution to the square desktop problem. I did lay out my monitors in such a way that I do not lose icons though. Gnome always tries to add icons on the bottom first. If you have two screens side-by-side, simply make sure that the one with the highest vertical resolution (in your case the 1280x1024) is the left most screen.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c7" class="number" id="c7">#7</a>
+																			Kumar
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-24@21:07
+																																			</div>
+																Thanks for the simple xrandr fix. I am still unable to set different resolutions for my laptop and external monitor (when they are both on, the default resolution is that of the monitor,no matter which order they are specified in the xrandr call, but at least I can enjoy the full resolution of the monitor.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c8" class="number" id="c8">#8</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-25@01:14
+																																			</div>
+																@Kumar: Do you have XrandR 1.2 and compatible Xserver? Older versions aren't really useful. Better use Xinerama or MergedFB on such configurations.<br />
+<br />
+What does `xrandr -q` say? Does it list the resolutions that you want? If not, then you may want to add a few modelines to your xorg.conf so that xrandr can pick the correct resolution.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c9" class="number" id="c9">#9</a>
+																			emk2203
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-15@19:44
+																																			</div>
+																Many, many thanks for this. I have almost exactly the same problem (using a Dell D830 laptop in a docking station with Xfce on Sidux) and I have arrived at a similar way to solve it - but I suck at scripting, so your Xsession script is really a lifesaver for me!<br />
+<br />
+Actually, I am going via the acpi event of the closed lid to switch between two monitors, avoiding the virtual screen altogether. I hope I can get it working, maybe I return for a question if you don't mind...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c10" class="number" id="c10">#10</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-17@00:11
+																																			</div>
+																For whatever reason, I cannot login again (emk2203), but my new solution is the script 45lidclosedLVDSoff :<br />
+<br />
+grep -q -w closed /proc/acpi/button/lid/LID/state && xrandr --output LVDS --off --output TMDS-1 --auto --output VGA --auto --output TV --auto<br />
+<br />
+Only when the lid is closed when X starts, the internal panel gets switched off and whatever is connected gets autoconfigured.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c11" class="number" id="c11">#11</a>
+																			Amitz Sekali
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-17@11:33
+																																			</div>
+																After customizing my debian lenny, my xrandr no longer identify all possible connectors. If I run xrandr in terminal window on monitor A, the xrandr can only identify monitor A and it's connector (DVI,VGA, etc). If I run xrandr in terminal window on monitor B. the xrandr can only identify monitor B and it's connector.<br />
+<br />
+Is this problem related to the gnome version of Lenny since I'm using XFCE instead of Gnome? How to check whether gnome libraries I use don't somehow make xrandr problematic? Thank you in advance, will really appreciate your pointer.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c12" class="number" id="c12">#12</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-17@14:07
+																																			</div>
+																@Amtiz: XrandR is much lower level. It doesn't touch Gnome. It's straight X.org. Are you *sure* that your video driver supports XrandR? Only very few drivers do. Basically just the Intel drivers and teh X.org radeon drivers (for older ATI cards). In theory the closed-source ATI Catalyst drivers also support XrandR 1.2 but you have to do some commandline magic to enable it. I tried it on my machine but it simply crashed the entire machine. Anything else does not support XrandR.<br />
+<br />
+@emk2203: There's a bug in my login script. I am hunting it down now. If you type in the correct username and password then it works, but if you enter the wrong password then something goes wrong and you get an Apache 500 internal server error instead of a nice error message telling you that you entered the wrong password.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c13" class="number" id="c13">#13</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-17@14:13
+																																			</div>
+																@emk2203: The login bug has been fixed. I have some custom .htaccess rule meant to keep spammers out of the article comments. One of them was interfering with the HTTP POST request to login. Everything works now. Thanks for the report!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c14" class="number" id="c14">#14</a>
+																			Giorgos S
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-28@23:40
+																																			</div>
+																Thanks for this. I have an external monitor connected to a laptop (intel 945GM). What do I need to include in the xorg.conf so that the laptop's monitor is always off (even in the GDM login screen)??? Thanks in advance!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c15" class="number" id="c15">#15</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-25@09:45
+																																			</div>
+																Thanks a lot, I've successfully configured two screen to use virtual desktop (2048x768 in my case) accordingly to your guide on my Ubuntu 8.04 box<br />
+<br />
+But I still have one problem that my Internal Monitor now treated as "Virtual Screen" , and the Extend Monitor is now become my Primary screen, and I can't switch it other way round, I've tried the following without any luck:<br />
+<br />
+> xrandr --output LVDS --left-of VGA<br />
+> xrandr --output LVDS --right-of VGA<br />
+> xrandr --output VGA --left-of LVDS<br />
+> xrandr --output VGA --right-of LVDS<br />
+> xrandr --output VGA --right-of LVDS --mode=1024x768 <br />
+<br />
+My OS is Ubuntu 8.04<br />
+<br />
+Any suggestions will be highly appreciated.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c16" class="number" id="c16">#16</a>
+																			Bryan
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-25@10:14
+																																			</div>
+																I also observed that my "VGA" has been recognized as the "Internal Monitor", <br />
+<br />
+and my "LVDS" has been recognized as the "External/Extend Monitor"<br />
+<br />
+Is there a way to configure the xorg.conf or xrandr to choose the "LVDS" as the "Internal/Main Monitor"?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c17" class="number" id="c17">#17</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-02-27@01:52
+																																			</div>
+																Sorry Bryan and Anonymous. XRandR has no notion of "primary" or "secondary" monitors. All monitors are equal. They appear whatever order the driver detects them which is entirely arbitrary and desktop environments shouldn't care what order they are in.<br />
+<br />
+If you're using Gnome then you can simply drag your toolbars and panels to the other monitor and be done with it.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c18" class="number" id="c18">#18</a>
+																			<a href="http://motin.eu" class="name">Motin<small> (http://motin.eu)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-02@00:49
+																																			</div>
+																"If you're using Gnome then you can simply drag your toolbars and panels to the other monitor and be done with it. "<br />
+<br />
+But this is exactly what we want to not have to do. I connect the laptop every afternoon, and dragging those toolbars doesn't get more amuzing over time...<br />
+<br />
+Does anyone know maybe a way to tell Gnome what monitor is the primary one?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c19" class="number" id="c19">#19</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-02@08:30
+																																			</div>
+																That's a known bug in Gnome. I suggest you file a bug about it or update/vote on an existing bug.<br />
+<br />
+There does seem to be <a href="http://ballard.blogspot.com/2008/04/intel-gm945-causes-gnome-to-choose.html" rel="nofollow">a workaround</a> but it's kind of a nasty trick...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c20" class="number" id="c20">#20</a>
+																			Dourado
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-13@23:53
+																																			</div>
+																OK, I didn't read EVERY post, so this suggestion might not be for everyone involved.<br />
+<br />
+However, I just installed the "grandr" package and then went to System->Administration->Multiple screens<br />
+<br />
+This tool made it quite easy for me to make this work as desired.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c21" class="number" id="c21">#21</a>
+																			PapaJ
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-15@20:32
+																																			</div>
+																#1 This is perfect.  For the past couple of days I've been customizing Xubuntu for my 2,1 MacBook, and this is the best solution so far for my external monitor.  In my case I had to make some mod's; perhaps the default scripting language is not [precisely] the same as Debian's.<br />
+Here's how my "45custom_xrandr" looks now:<br />
+	xrandr | grep "TMDS-1   connected"<br />
+	if [ $? != 0 ]; then<br />
+	   xrandr --output LVDS --mode 1280x800 --pos 0x26 --output TMDS-1 --mode 1920x1200 --pos 1280x0<br />
+	   if [ $? -ne 0 ]; then<br />
+	      xrandr --output LVDS --mode auto --output TMDS-1 --off<br />
+	   fi<br />
+	#debug   echo "'if [ 1 != 0 ]; then' worked"<br />
+	else<br />
+	   xrandr --output LVDS --mode 1280x800 --output TMDS-1 --off<br />
+	#debug   echo "'if [ 1 != 0 ]; then' did not work"<br />
+	fi<br />
+<br />
+#2 .. Looking forward to implementing the close-lid-script ...<br />
+<br />
+#3 And yes, grandr rocks too.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c22" class="number" id="c22">#22</a>
+																			PapaJ
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-16@21:50
+																																			</div>
+																Sorry... Thought I needed "!=" instead of "-eq" - but I was [dead] wrong.  (Sure would like to be able to edit my posts  ;^)<br />
+<br />
+BTW, occasionally a couple of horizontal pixel-lines are written to the wrong place on the screen(s).  I monkey with settings and after a reboot it looks OK, but then comes back after some other reboot.  My most recent tweak attempt is to set both monitors to "--rate 60", and once again the bad lines are gone.  I thought since the MacBook screen might [inappropriately] be going into its 59.9 rate, then perhaps forcing it into its 60 rate (which the external 1920x1200 screen also reports) might make stuff just work.<br />
+(Just another example of why most people *buy* operating systems.)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c23" class="number" id="c23">#23</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-12-29@07:38
+																																			</div>
+																I am running stock Jaunty on an IBM X40 (Intel video), xrandr 1.3. If I run IceWM or Xfce, xrandr works perfectly. I use xrandr to attach an external 1280x1024 VGA and let the internal LVDS pan over it while being 1024x768. Gnome, however, tries to be too smart. As soon as I issue the xrandr command, a 1280x1024 canvas is scaled down to fit into the 1024x768 LVDS (looking horrible). At the same time, mousing down or right lets me pan over a real 1280x1024 pixel area, except that an L-shaped boundary in 1280x1024 setminus 1024x768 is black.<br />
+<br />
+I thought I'd hit the jackpot when I found this page and the xrandr gnome plugin configuration, but no luck. I restarted X, but do I have to reboot?<br />
+<br />
+I am fine with Xfce except that even with UXA and DRI2, 2d rendering of GTK+ apps suck. Xterms leave a transient trail of destruction as you drag them across Firefox, and Google spreadsheets are horribly sluggish. The situation seems a little better in Gnome which is why I want to switch.<br />
+<br />
+Many thanks for any tips.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c24" class="number" id="c24">#24</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-12-29@11:58
+																																			</div>
+																What do you mean by canvas? The actual desktop? The wallpaper? When I used dual monitors of different size I didn't have problems with one desktop scrolling.<br />
+<br />
+Perhaps you should try Gnome's built-in XRandR tool grandr. There's almost two years between Jaunty's Gnome and the Gnome version in Lenny that this article is about. It should work a lot better now.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c25" class="number" id="c25">#25</a>
+																			Tonypm
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-10-16@11:00
+																																			</div>
+																I have been trying to find out how to set the primary screen and any solutions I have found seem to be complex.  Then I stubmled on this<br />
+http://www.phoronix.com/scan.php?page=news_item&px=NzAzMQ<br />
+<br />
+Which says the new version of xrandr now has a --primary option.  So on fedora 13 this worked to switch my primary screen.<br />
+xrandr --output DVI-I-2 --primary
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c26" class="number" id="c26">#26</a>
+																			Amit
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-05-11@11:46
+																																			</div>
+																Thanks a lot , Its worked for me.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c27" class="number" id="c27">#27</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-09-07@18:56
+																																			</div>
+																gconftool-2 --set --type=bool /apps/gnome_settings_daemon/plugins/xrandr false
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c28" class="number" id="c28">#28</a>
+																			CPG
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-10-10@03:57
+																																			</div>
+																Thanks for the post. It helped me get a Dell Inspiron D630 1280x800 (laptop) display to work with an external 1280x1024 monitor.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c29" class="number" id="c29">#29</a>
+																			merwok
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-03-19@20:19
+																																			</div>
+																Thanks for your helpful post!  I was using ARandR (a graphical frontend for xrandr) and thought I could not get the displays to be side-on-side instead of duplicating the same output, but using your first xrandr command it Just Worked�<br />
+<br />
+Cheers
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c30" class="number" id="c30">#30</a>
+																			merwok
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-09-01@00:49
+																																			</div>
+																Heh, today a game reset my screen configuration, and I found this post again to help me :)  This time I bookmarked it and saved the command in a shell script for future use.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c31" class="number" id="c31">#31</a>
+																			merwok
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-09-01@01:04
+																																			</div>
+																This helpful page mentions the handy --left-of/etc options to xrandr: <a href=https://wiki.debian.org/XStrikeForce/HowToRandR12#II.5._Placing_outputs_in_a_virtual_screen>Debian wiki page on RandR</a>
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c32" class="number" id="c32">#32</a>
+																			frank
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-10-07@15:20
+																																			</div>
+																Hello Marechal i read your article about xrandr but i dont found a solution for my problem :-(<br />
+<br />
+I have a ThinkPad T420 an HD300 Intel Card OS archlinux with no corg.conf and my Laptop is connected in a Dockingstation per Display Port.<br />
+The Problem is when i boot archlinux the resolution in the console is as big as the Laptop Window 1600x900 my NEC PA241W has 1920x1200.<br />
+<br />
+i have in my .xinitrc<br />
+#!/bin/sh<br />
+#<br />
+# ~/.xinitrc<br />
+#<br />
+# Executed by startx (run your window manager from here)<br />
+<br />
+xrandr --output DP2 --mode 1920x1200 --output LVDS --off<br />
+#xrandr --output DP2 --auto --output LVDS --right-of LVDS<br />
+#xrandr --output DP1 --auto --output LVDS --auto --same-as DP1<br />
+#xrandr -d DP2 -s 1920x1200<br />
+if [ -d /etc/X11/xinit/xinitrc.d ]; then<br />
+for f in /etc/X11/xinit/xinitrc.d/*; do<br />
+[ -x "$f" ] && . "$f"<br />
+done<br />
+unset f<br />
+fi<br />
+<br />
+# exec gnome-session<br />
+# exec startkde<br />
+# exec startxfce4<br />
+# ...or the Window Manager of your choice<br />
+exec openbox-session<br />
+<br />
+when i type startx as user my NEC shows me the 1920x1200 but when i will resize a window to Full Size it wont work and when i switch in a console and type for examble dmesg they will be not shown all the output to the NEC at the end of the Monitor so ca 4-5 cm are crop<br />
+<br />
+what can i do? do i need an xorg if yes what has to be inside the conf?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c33" class="number" id="c33">#33</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-10-09@06:33
+																																			</div>
+																It sounds like your laptop monitor isn't really off, but mirrorring your laptop screen. Are you sure that your laptop screen is referred to as LVDS? It's different per driver.<br />
+<br />
+You also need to make sure that your desktop isn't overriding youd XRandR settings again. Gnome 2.x did that. I don't know if Gnome 3 or KDE 4 do something similar.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c34" class="number" id="c34">#34</a>
+																			Junkman
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-02-06@20:20
+																																			</div>
+																Excellent guide man! I found this because the arandr gui tool crashes when I connect a 2nd screen, and I'm not sure why. In any case doing it this way is much better than my previous arandr experiences. I only had to change the xrandr settings around a bit to suit my needs. In my case the default screen is LVSD1 and I wanted to use HDMI1 for the second screen. A little tweaking to what you provided and I can enjoy 1080p movies while still being able to do whatever on my laptop. My hdtv is usually hooked up to my ps3 so I decided to just paste my custom xrandr settings in a terminal when I need it. Very cool and many thanks.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c35" class="number" id="c35">#35</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-04-05@12:59
+																																			</div>
+																Thanks for the valuable help. I fixed my resolution problem but I experience the following problem.<br />
+<br />
+I created a 45custom_xrandr.sh file in /etc/X11/Xsession.d with the following lines   <br />
+<br />
+  1 xrandr | grep VGA1 | grep " connected "<br />
+  2 if [$? -eq 0]; then<br />
+  3     # External monitor is connected<br />
+  4     xrandr --newmode "1368x768_60.00" 85.25 1368 1440 1576 1784 768 771 781 798 -hsync +vsync<br />
+  5     xrandr --addmode VGA1 1368x768_60.00<br />
+  6     xrandr --output VGA1 --mode 1368x768_60.00<br />
+  7     if [$? -ne 0]; then<br />
+  8         # Something went wrong. Autoconfigure the internal monitor and disable the external one<br />
+  9         xrandr --output LVDS1 --mode auto --output VGA1 --off<br />
+ 10     fi<br />
+ 11 else<br />
+ 12     # External monitor is not connected<br />
+ 13     xrandr --output LVDS1 --mode 1366x768 --output VGA1 --off<br />
+ 14 fi<br />
+<br />
+saved it and then tried to run it as ./45custom_xrandr.sh . All i get is <br />
+<br />
+VGA1 connected (normal left inverted right x axis y axis)<br />
+./45custom_xrandr.sh: line 2: [0: command not found<br />
+<br />
+It seems that it cannot run the if command...Why?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c36" class="number" id="c36">#36</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-05-10@18:46
+																																			</div>
+																Try adding a shebang to the top. Example <tt>#!/bin/bash</tt>. Are you running an alternative shell like csh or zsh?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c37" class="number" id="c37">#37</a>
+																			Jhonas Nascimento
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-08-16@09:12
+																																			</div>
+																Wonderful! Thanks A LOT BRO! I was looking for this for months! I Use LXDE and de LXRandR not is sufficiently smarth to do this then I really pleased.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c38" class="number" id="c38">#38</a>
+																			Jhonas Nascimento
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-08-16@11:46
+																																			</div>
+																Hello there! I've posted in a few hours a thankfulness for your code but I don't tested him, then I tested and doesn't work for me. It's for some syntax errors and for my "monitor numbers" (ex.: VGA0/LVDS0) doesn't be zero neither one neither no number (VGA/LVDS). I'm searching for this solution for months then I stay whole night trying to this *#%!@ works! and I get!<br />
+<br />
+I do a condition while to search my 'monitor number' then I used a part his code to set the configuration of my monitors. Here's my code case anyone want test.<br />
+<br />
+<blockquote> <code><br />
+nm=-99 #contains the right(if found) number your monitors.<br />
+<br />
+#Search for the right number your monitors.<br />
+x=-10<br />
+while [ $x -le 10 ]<br />
+do	<br />
+	x=$(( $x+1 ))<br />
+	xrandr | grep &amp;quot;VGA$x&amp;quot;<br />
+	<br />
+	if [ $? -eq 0 ]; then<br />
+		#echo &amp;quot;Monitor valido: $x&amp;quot;<br />
+		nm=$x<br />
+		break<br />
+	#else<br />
+	#	echo &amp;quot;Monitor $x inv�lido...&amp;quot;<br />
+	fi<br />
+done<br />
+<br />
+#verify if don't founded the right number<br />
+if [ $nm -eq -99 ]; then<br />
+	xrandr --auto<br />
+else<br />
+	#if founded the number then set the configuration for your monitor <br />
+	xrandr | grep VGA | grep &amp;quot; connected &amp;quot;<br />
+	if [ $? -eq 0 ]; then<br />
+		#if VGA is connected set this configuration<br />
+		xrandr --output &amp;quot;VGA$nm&amp;quot; --mode 1024x768 --rate 60.0 --output &amp;quot;LVDS$nm&amp;quot; --off<br />
+	else<br />
+		#if VGA isn't connected set this configuration<br />
+		xrandr --output &amp;quot;LVDS$nm&amp;quot; --mode 1024x768 --rate 60.0 --output &amp;quot;VGA$nm&amp;quot; --off<br />
+	fi<br />
+fi<br />
+</code> </blockquote><br />
+<br />
+Thanks bro' You've my inspiration to try make this works, and sorry for my bad English.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c39" class="number" id="c39">#39</a>
+																			milgrad
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-12-04@15:45
+																																			</div>
+																Sander, many thanks for the script! <br />
+- my problem is that both laptop monitor and external one are activated at start (and I only need the external one)<br />
+- the separate commands of script work in console, however, the script either gets overridden by smthg or doesn't work on restart<br />
+- after I manually change monitor settings and log-off, settings get saved on log on, but once I restart the problem comes back<br />
+<br />
+Happy to hear your thoughts<br />
+<br />
+I'm using Ubuntu 13.10 Unity.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#c40" class="number" id="c40">#40</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2013-12-05@06:35
+																																			</div>
+																@milgrad: I don't know how to help you, sorry. These days Ubuntu is very different from stock Debian (which I use). The problem has probably to do that the custom XSession file isn't executed by Ubuntu. I suggest you ask on the Ubuntu forums and show them this article. They can probably tell you what you should use instead of an XSession file.
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/10/setting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="f472de3b69043b741057a115e05d32ec" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F10%2Fsetting_up_dual_monitors_system-wide_with_xrandr_on_debian_lenny%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://rainfalcon.wordpress.com/2008/11/17/setting-up-dual-monitors-system-wide-with-xrandr-on-debian-lenny/">rainfalcon.wordpress.com/20...</a></li>
+															<li><a href="http://home.gedrim.co.uk/wordpress/?p=9">home.gedrim.co.uk/wordpress...</a></li>
+															<li><a href="http://henry.sage-vision.com/blog/2009/07/17/dual-monitors/">henry.sage-vision.com/blog/...</a></li>
+															<li><a href="http://www.ruinelli.ch/kubuntu-10-10-and-dual-screen">www.ruinelli.ch/kubuntu-10-...</a></li>
+															<li><a href="http://www.linuxquestions.org/questions/linux-newbie-8/dual-head-config-on-debian-5-0-7-default-is-the-only-listed-output-852925/#post4206168">www.linuxquestions.org/ques...</a></li>
+															<li><a href="http://cutler.mit.edu/?p=72">cutler.mit.edu/?p=72</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c9">RPW: Maximum respect!
+This repacked...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,274 @@
+http://bitcoincharts.com/about/exchanges/
+HTTP/1.1 200 OK
+Server: nginx/1.6.0
+Date: Wed, 23 Jul 2014 20:07:15 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Vary: Cookie
+X-Frame-Options: DENY
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html>
+	<head>
+		<title>Bitcoin Charts / Information for exchanges</title>
+		<meta name="google-site-verification" content="fFq6TRpyqzjemTQBJ2dkMi00mJPMeHbLbGvp195gHuE" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="advertising" content="ask" />
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+		<link rel="stylesheet" href="/static/CACHE/css/4596b7736c1c.css" type="text/css" />
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/static/excanvas.min.js"></script><![endif]-->
+
+		<script type="text/javascript" src="/static/CACHE/js/064763791d59.js"></script>
+		<script type="text/javascript">
+			var cs = new ChartSocket(null);
+			jQuery(document).ready( cs.connect );
+                        if(parent != null && parent != self) {if(parent.location.hostname != self.location.hostname) {top.location.href=self.location.href; }}
+		</script>
+	</head>
+
+	<body class="">
+    <div id="header">
+      <div class="container_12">
+        <div class="grid_4" id="logobox">
+          <a href="/"><img width=244 height=36 src="/static/chartslogo.png" /><h1>Bitcoin Charts</h1></a>
+        </div>
+
+        <div class="networkinfo grid_8 right" id="blob3722577578">
+
+
+	<div class="column">
+			<table>
+				<tr><td class="label">Blocks</td><td>312159</td></tr>
+				<tr><td class="label">Total BTC</td><td>13.054M</td></tr>
+			</table>
+	</div>
+	<div class="column">
+			<table>
+				<tr><td class="label">Difficulty</td><td>17336316979</td></tr>
+				<tr><td class="label">Estimated</td><td>18679815585 in 321 blks</td></tr>
+			</table>
+	</div>
+	<div class="column">
+			<table>
+				<tr><td class="label">Network total</td><td>130553.007 Thash/s</td></tr>
+				<tr><td class="label">Blocks/hour</td><td>6.31 / 570 s</td></tr>
+			</table>
+	</div>
+
+</div><script type="text/javascript">cs.addBlob("blob3722577578", "blob.networkinfo");</script>
+
+        <div id="menu" class="grid_12">
+          <div class="grid_6">
+            <ul>
+              
+
+
+              <li><a href="/">Home</a>
+              <li><a href="/bitcoin/">Bitcoin</a>
+              <li><a href="/markets/">Markets</a>
+              <li><a href="/charts/">Charts</a>
+              <li><a class="active" href="/about/">About</a>
+              
+
+            </ul>
+          </div>
+          <div class="grid_6 right misc">
+            <span class="timestamp">Jul 23, 2014 20:07:15 (UTC)</span>
+          </div>
+        </div>
+		  </div>
+		</div>
+
+		
+<div class="content gap padding container_12">
+  <div class="grid_3">
+    <h1>Documents</h1>
+    
+    <ul>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/about/exchanges/">Information for exchanges</a></li>
+        
+          <li><a href="/about/markets-api/">Markets API</a></li>
+        
+    </ul>
+  </div>
+  <div class="grid_9">
+    <h1>Information for exchanges</h1>
+    <p>
+In order to integrate with bitcoincharts your exchange is required to provide both complete trade history as well as the full orderbook.
+Both must conform to the format specified below and be available using HTTP(S).
+</p>
+
+<p>
+As an example, your URLs could look like this:
+<p>
+<pre>
+Trade history: https//exchange.bitcoin/api/trades
+Complete orderbook: https//exchange.bitcoin/api/orderbook
+</pre>
+
+<ul>
+<li>The data must be JSON encoded.</li>
+<li>Both URLs must respond to HEAD and GET requests.
+<li>Responses may be GZip'ed if the <code>Accept-Encoding: gzip</code> header is received.
+<li>The orderbook URL may return an <code>ETag</code> header. In this case, a HEAD request will be sent to fetch the ETag and a GET will only be issued if it has changed. This will reduce bandwidth demands considerably.
+</ul>
+
+<p>If your markets supports multiple currencies it's best to provide data for each currency at separate URLs. E.g. /api/USD/trades, /api/EUR/trades</p>
+
+<p>Once you have implemented this API send me an email at <a href="mailto:info@bitcoincharts.com">info@bitcoincharts.com</a> and I'll add your exchange.</p>
+
+<h3>Error handling</h3>
+
+<p>Unparsable JSON responses will disable the crawler requring manual intervention. Don't let that happen.<p>
+<p>The following HTTP error codes will disable the crawler, too:
+401, 403, 404, 410
+</p>
+
+<h3>Trade history</h3>
+
+<p>The trade history must be an JSON array containing successive trades.
+Each trade must be represented by a JSON object having at least these properties:
+<p>
+
+<ul>
+<li><strong>date</strong> - the unixtimestamp of the trade
+<li><strong>tid</strong> - a positive unique integer for referencing the trade
+<li><strong>price</strong> - the price in currency
+<li><strong>amount</strong> - the amount of bitcoins traded
+</ul>
+
+<p>The <code>tid</code> must be monotonically increasing.
+Gaps are allowed, however, you must not fill them in the future.
+If there a no trades to report, the response must be an empty array: <code>[]</code>
+</p>
+
+<h4>Incremental updates</h4>
+
+<p>The URL must accept a parameter named <em>since</em>.
+<em>since</em> will be set to the last <code>tid</code> received, or 0 for bootstrapping.
+Your server must return trades newer than that <code>tid</code>.
+It may, however, return older trades. They will be ignored.
+This is mainly helps with reducing bandwidth as you'll often be returning empty arrays this way.
+</p>
+
+<h4>Timing</h4>
+
+<p>The crawler will hit this URL every 2 seconds.
+When an error (timeout, HTTP 5xx, ...) occurs, it'll slow down to 60 seconds eventually.
+</p>
+
+<h4>Example</h4>
+
+<pre>
+GET https://exchange.bitcoin/api/trades?since=5
+
+Response:
+[
+   {
+      "tid" : 6,
+      "price" : 3190.00,
+      "amount" : 0.24843000,
+      "date" : 1399210160
+   },
+   {
+      "price" : 3195.00,
+      "tid" : 7,
+      "amount" : 0.08800000,
+      "date" : 1399210708
+   },
+   {
+      "price" : 3050.01,
+      "tid" : 9,
+      "amount" : 0.80000000,
+      "date" : 1399213161
+   },
+   {
+      "price" : 3195.00,
+      "tid" : 10,
+      "date" : 1399214944,
+      "amount" : "0.05000000"
+   },
+   {
+      "date" : 1399214983,
+      "amount" : 0.00800000,
+      "tid" : 17,
+      "price" : "3195.00"
+   }
+]
+
+</pre>
+
+<h2>Orderbook</h2>
+
+<p>The orderbook URL must return the full orderbook.
+It's an JSON object containing two properties: <em>bids</em> and <em>asks</em>
+Both properties consist of an array of arrays where the first element is the price and the second element is the amount.<p>
+
+<h4>Timing</h4>
+
+<p>The orderbook will be queried every 2 seconds (120 seconds with ETag).
+It must respond to a HEAD request.
+The HEAD response may contain an ETag that may be any string.
+If two successive HEAD requests yield the same ETag, no GET request to fetch the actual orderbook will be issued.
+This provides both low latency and low bandwidth consumption.
+</p>
+
+<h4>Example</h4>
+
+<pre>
+{
+   "bids" : [
+      [ 3050.02, 0.06215041 ],
+      [ 3050.01, 0.06215061 ],
+      [ 3050.00, 0.07577000 ],
+      [ 3010.47, 0.03280710 ],
+      [ 3010.46, 1.50000000 ]
+   ],
+   "asks" : [
+      [ 3195.00, 0.10400000 ],
+      [ 3199.99, 0.25000000 ],
+      [ 3200.00, 0.01879926 ],
+      [ 3210.00, 0.25000000 ],
+      [ 3279.98, 0.26560800 ]
+   ]
+}
+</pre>
+
+  </div>
+</div>
+
+
+		<div id="footer">
+      <div class="container_12">
+        <div class="grid_5">
+          <h1>About</h1>
+            <p>We are interested in feedback! Email <a href="mailto:info@bitcoincharts.com">info@bitcoincharts.com</a> any questions or comments you might have. Donations are accepted at <code>1kqHKEYYC8CQPxyV53nCju4Lk2ufpQqA2</code></p>
+        </div>
+        <div class="grid_3">
+          <h1>Help</h1>
+          
+          <ul class="unstyled">
+            
+            <li><a href="/about/">About</a></li>
+            
+            <li><a href="/about/exchanges/">Information for exchanges</a></li>
+            
+            <li><a href="/about/markets-api/">Markets API</a></li>
+            
+          </ul>
+        </div>
+        <div class="grid_12 right">
+          &copy; bitcoincharts.com
+        </div>
+      </div>
+		</div>
+		<script type="text/javascript"> var _gaq = _gaq || []; _gaq.push(['_setAccount', 'UA-19696221-1']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();</script>
+	</body>
+</html>
+

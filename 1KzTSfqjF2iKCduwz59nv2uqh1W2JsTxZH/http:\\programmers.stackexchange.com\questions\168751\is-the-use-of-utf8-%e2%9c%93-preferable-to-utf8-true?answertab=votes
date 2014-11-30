@@ -1,0 +1,234 @@
+http://programmers.stackexchange.com/questions/168751/is-the-use-of-utf8-%e2%9c%93-preferable-to-utf8-true?answertab=votes
+validation - Is the use of "utf8=✓" preferable to "utf8=true"? - Programmers Stack Exchange
+current community
+chat
+blog
+Programmers
+Programmers Meta
+your communities Sign up
+or
+log in
+to customize your list.
+more stack exchange communities
+Stack Exchange
+sign up
+log in
+tour
+help
+Tour
+Start here for a quick overview of the site
+Help Center
+Detailed answers to any questions you might have
+Meta
+Discuss the workings and policies of this site
+Programmers
+Questions
+Tags
+Users
+Badges
+Unanswered
+Ask Question
+Take the 2-minute tour
+×
+Programmers Stack Exchange is a question and answer site for professional programmers interested in conceptual questions about software development. It's 100% free, no registration required.
+Is the use of “utf8=✓” preferable to “utf8=true”?
+up vote
+428
+down vote
+favorite
+191 I have recently seen a few URIs containing the query parameter "utf8=✓". My first impression (after thinking "mmm, looks cool") was that this could be used to detect a broken character encoding. So, is this a better way to resolve potential problems with character encoding, or is it just a developer having fun with a hack?
+validation http-request utf-8 share|improve this question asked Oct 13 '12 at 11:57
+Gary Rowe
+17.8k54490
+5
+I disagree. There are schemes out there that look like URNs and that take query parameters - such as Bitcoin. URIs are not confined to browsers. See en.wikipedia.org/wiki/URI_scheme. This question may also address the general case where character encoding is required when a browser accesses a protocol handler.
+– Gary Rowe
+Oct 19 '12 at 8:29
+2
+Give examples of these URLs or didn't happen.
+– hakre
+Oct 22 '12 at 12:59
+7
+Off topic, but OK. Here's my personal donation Bitcoin URI: bitcoin:1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH?amount=0.5&label=Agile%20Stack. Notice that the scheme is essentially a URN with query parameters, but it hands off to a protocol handler. This kind of URI could probably benefit from the “utf8=✓” workaround as well.
+– Gary Rowe
+Oct 22 '12 at 17:47
+add comment
+2 Answers
+active
+oldest
+votes
+up vote
+627
+down vote
+accepted
+By default, older versions of IE (<=8) will submit form data in Latin-1 encoding if possible. By including a character that can't be expressed in Latin-1, IE is forced to use UTF-8 encoding for its form submissions, which simplifies various backend processes, for example database persistence.
+If the parameter was instead utf8=true then this wouldn't trigger the UTF-8 encoding in these browsers.
+share|improve this answer edited Oct 18 '12 at 12:57
+ChrisF♦
+33.5k799153
+answered Oct 13 '12 at 12:45
+Gareth
+3,0171713
+58
+I didn't know that, really interesting!
+– Florian Margaine
+Oct 13 '12 at 12:50
+9
+Ah, so it's an IE workaround... nice. Saves a lot of validation too.
+– Gary Rowe
+Oct 13 '12 at 13:03
+7
+@LarsViklund I should have been clearer with my comment. I meant that the validation associated with character encoding is simplified, not bypassed.
+– Gary Rowe
+Oct 13 '12 at 13:48
+3
+@Lars Correct, it doesn't absolve you from having to check your input. But it does mean that encoding tweaks only become part of your security handling and don't taint the concept of your "standard processing" path
+– Gareth
+Oct 14 '12 at 10:08
+27
+Also see stackoverflow.com/questions/3222013/…. Apparently Ruby on Rails used to use a snowman character, and was changed to a checkmark which was less ambiguous but less funny.
+– Jack V.
+Oct 17 '12 at 10:06
+show 12 more comments
+up vote
+1
+down vote
+Another approach is to specify the encoding in the head: <meta charset="UTF-8">. And use JavaScript's encodeURI(), and PHP's urlencode() before sending the get/post data.
+share|improve this answer edited Nov 18 '13 at 20:00
+gnat
+16.1k950103
+answered Oct 18 '12 at 19:37
+s shepard
+351
+12
+And when JavaScript is disabled what do you do then?
+– Gary Rowe
+Oct 18 '12 at 20:01
+16
+You tell the client to upgrade their browser...
+– quickshiftin
+Oct 19 '12 at 19:25
+8
+Please think of the poor NoScript users.
+– jah
+Nov 20 '12 at 19:08
+9
+@jah Nope.
+– MasterMastic
+Oct 12 '13 at 15:23
+I think most of us here don't realize NoScript users are just a tiny fraction of the user base. Supporting this small number of users may not be viable for everyone.
+– user
+Nov 19 '13 at 4:43
+add comment
+protected by MichaelT Nov 18 '13 at 19:58
+Thank you for your interest in this question. Because it has attracted low-quality answers, posting an answer now requires 10 reputation on this site.
+Would you like to answer one of these unanswered questions instead?
+Not the answer you're looking for?	Browse other questions tagged validation http-request utf-8 or ask your own question.	asked
+1 year ago
+viewed
+54486 times
+active
+7 months ago
+Related
+1
+Where to validate domain model rules that depend on database content?
+3
+Validation and data persistence in a domain model
+Hot Network Questions
+How do I know when I'm singing in key?
+Perspiration after drinking water
+How to blow a 0.6 ampere fuse
+When to turn on the water for my washing machine?
+Why are these periods the same: a low earth orbit and oscillations through the center of the earth?
+The FizzBuzz challenge in Java 8 written in a short, readable and interesting way
+In the movies - Do wire transfers really work?
+How can I convert .MTS file (AVCHD) to .mp4 by ffmpeg without re-encoding H264 video stream correctly?
+Image Processing: Detecting and counting small objects
+Photomosaics or: How Many Programmers Does it Take to Make a Light Bulb?
+American Gothic in the palette of Mona Lisa: Rearrange the pixels
+How to fight underfitting in deep neural net
+What might the editor do if my supervisor contacts a journal to claim authorship of a paper?
+Can technicians track my computer which has an image on it if I use Tor?
+If I use these three expression, Is there anything wrong?
+square-root of a transcendental number
+Is there any example of an inelastic collision where final kinetic energy of the system is greater than its initial kinetic energy?
+-d option for split is illegal on OS X 10.9
+Why fontspec breaks extarrows package
+Why does int i = 1024 * 1024 * 1024 * 1024 compile without error?
+Computing complex number
+Defining macros with arguments
+I want to do research but I'm too old for a PHD
+Is "the oft-cited XKCD scheme [...] no longer good advice"?
+more hot questions
+question feed
+tour
+help
+badges
+blog
+chat
+data
+legal
+privacy policy
+work here
+advertising info
+mobile
+contact us
+feedback
+Technology
+Life / Arts
+Culture / Recreation
+Science
+Other
+Stack Overflow
+Server Fault
+Super User
+Web Applications
+Ask Ubuntu
+Webmasters
+Game Development
+TeX - LaTeX
+Programmers
+Unix & Linux
+Ask Different (Apple)
+WordPress Development
+Geographic Information Systems
+Electrical Engineering
+Android Enthusiasts
+Information Security
+Database Administrators
+Drupal Answers
+SharePoint
+User Experience
+Mathematica
+more (14)
+Photography
+Science Fiction & Fantasy
+Graphic Design
+Seasoned Advice (cooking)
+Home Improvement
+Personal Finance & Money
+Academia
+more (10)
+English Language & Usage
+Skeptics
+Mi Yodeya (Judaism)
+Travel
+Christianity
+Arqade (gaming)
+Bicycles
+Role-playing Games
+more (21)
+Mathematics
+Cross Validated (stats)
+Theoretical Computer Science
+Physics
+MathOverflow
+more (7)
+Stack Apps
+Meta Stack Exchange
+Area 51
+Stack Overflow Careers
+site design / logo © 2014 stack exchange inc; user contributions licensed under cc by-sa 3.0 with attribution required
+rev 2014.7.11.1706
+Programmers Stack Exchange works best with JavaScript enabled
+

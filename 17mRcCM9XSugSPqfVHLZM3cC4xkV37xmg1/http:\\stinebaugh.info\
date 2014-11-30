@@ -1,0 +1,514 @@
+http://stinebaugh.info/
+Stine-Blog | I Talk To Machines
+Stine-Blog
+Search
+Primary Menu
+Skip to content
+Home
+Personal Info
+Gift Ideas
+Search for:
+Blah, Rants
+Free to Vape!
+June 9, 2014 Daniel Stinebaugh	Leave a comment
+I don’t make many of these posts, but this is important to me, if you haven’t heard yet, the FDA is planning on changing the rules in regards to e-cigarettes and the vaping community as a whole.
+So I HIGHLY recommend you take a few moments to let congress and your state representatives know how you feel and visit the website: http://freetovape.com/
+But do it soon as you only have until July 9th before your voice will fall on deaf ears.
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	congresse-cigvaping
+howto, linux, security
+Add DKIM Signing to your ISPConfig server (Ubuntu 12.04 LTS)
+January 27, 2014 Daniel Stinebaugh	Leave a comment
+So a few starters, I’ve updated the site to the latest wordpress and I have to say, I LOVE This default theme! So much so I’ve gone ahead and made the switch! Nice work automatic! (The backend rocks too!)
+Also sorry for the delay in postings, work’s kept me busy! (That’s a good thing ) and I’m in the process of moving all my ispconfig severs to AWS (which is what I do!), so I’m busy after work as well!
+Anyways, on to the subject!
+I originally was just looking to add greylisting to my server, when I came across this post to “harden” postfix and it’s really a great post! I highly recommend if you’re using postfix to at least look at this guide!
+However I noticed that there was no mention of DKIM signing, which is another good layer of security to add and helps you’re mail go through to servers such as yahoo etc.
+But here’s the good news, amavisd-new that’s already installed on your system is already setup to do DKIM Signing!
+Sweet! Let’s just get to making key’s already!
+First we’re (root) going to create the .pem file in /var/db/dkim then chown the pem file to amavisd:amavisd
+You might need to create this directory if it doesn’t exist
+Shell
+mkdir -p /var/db/dkim
+1
+mkdir -p /var/db/dkim
+Shell
+cd /var/db/dkim
+amavisd-new genrsa example.com.key.pem
+chown amavisd:amavisd example.com.key.pem
+123
+cd /var/db/dkimamavisd-new genrsa example.com.key.pemchown amavisd:amavisd example.com.key.pem
+Next we’re going to add this key to the amavis-new config. This location has changed now that we’re using amavis-new. It parses multiple config files now instead of just one. nano /etc/amavis/conf.d/50-user
+1
+nano /etc/amavis/conf.d/50-user
+Add a line for each key you generated (one per domain) into that file
+dkim_key('example.com', 'mail', '/var/db/dkim/example.com.key.pem');
+1
+dkim_key('example.com', 'mail', '/var/db/dkim/example.com.key.pem');
+While you’re in there let’s go ahead and define our internal networks to this file as well, something like this example should work for most.
+@dkim_signature_options_bysender_maps = (
+{ '.' => { ttl => 21*24*3600, c => 'relaxed/simple' } } );
+@mynetworks = qw(0.0.0.0/8 127.0.0.0/8 10.254.0.0/16 172.16.0.0/12 192.168.0.0/16); # list your internal networks
+123
+@dkim_signature_options_bysender_maps = ( { '.' => { ttl => 21*24*3600, c => 'relaxed/simple' } } );@mynetworks = qw(0.0.0.0/8 127.0.0.0/8 10.254.0.0/16 172.16.0.0/12 192.168.0.0/16); # list your internal networks
+Restart amavis
+service amavis restart
+1
+service amavis restart
+Now view the key:
+amavisd-new showkeys example.com.key.pem
+1
+amavisd-new showkeys example.com.key.pem
+you can leave your key name off if you want to view all keys at once.
+Copy the output to a notepad file and edit it removing the (“) so it starts with v=DKIM1 and ends at the last letter of the key. In other words make this a single line. One long string.
+This needs to be added to the DNS server as a TXT record. The host name will be something like “mail._domainkey.example.com” add the long string as the answer.
+Finally after you’ve given DNS long enough to propagate (test with nslookup)
+Test the key on the server
+amavisd-new testkeys
+1
+amavisd-new testkeys
+You should get a result with your domain in it like this:
+TESTING#1: mail._domainkey.example.com => pass
+1
+TESTING#1: mail._domainkey.example.com => pass
+You’re golden!
+If you’d like to see more results and test other things like SPF records etc, go to the appmaildev.com SPF test site, click next and send them an email. At the bottom of the reply email, you’ll see the DKIM section which should show pass!
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	clidkimemaillinuxubuntu
+bitcoin, howto
+Use iframes to monitor your bitcoin world
+November 29, 2013 Daniel Stinebaugh	Leave a comment
+So first off, I hope your thanksgiving was delicious, and YES your seeing that right! Bitcoin has just recently broken through the $1000.00 ceiling and it’s still on the rise! Obviously this has sparked a lot of attention, but I wonder how much attention people spend on the actual mining of the coin’s everyone’s buzzing about?
+So I figured I’d share a very simple solution I’ve been using for keeping an eye on my hardware and the roller-coaster ride of activity on the exchanges!
+It’s a pretty simple method, I just create an iframe in the size of the page I want displayed and refresh the page until everything line’s up like I want.
+To go over the fields before I post the code, the bitcoin price at the top of the page I use as a marker for reference of what the price was while I’ve had the page open, it’s exciting to see sometimes just how quickly these swings have been happening!
+Below that is my miner’s over at CEX.IO which are silently hashing away under someone else’s control, but hell, as long as the payout’s keep coming in I’m strangely ok with that! (plus with the price increasing, my hardware prices are taking a hit…)
+Below that is just the tip of my minepeon home page (running on a raspberry pi) showing that it’s crunching away with my newly arrived butterfly labs box that’s been hashing quite nicely now that it’s (FINALLY) arrived!
+Below that and to the left, is a website using my api key to give me the basic’s of what’s happening on my BTC Guild account without me needing to have the full page loaded, which I like alot! (even if the page does error out now and again.)
+Then to the right the main focus, the bitcoinity.org charts which are a super awesome resource for watching the exchange markets. MtGoxLive is neat, but it’s limited to mtgox, where as bitcoinity.org‘s chart does the top 5 exchanges which I prefer as I use several of them.
+So now onto the code! It’s a pretty simple page as basically all we’re doing is adding 5 “windows” into other web pages. here’s what it looks like (with some private url info removed) Just replace your content and sizes as you see fit.
+I’ve also added some extra url’s in the bottom comments for you to play with if you like.
+<html>
+<head>
+<title>Miner Overview</title>
+<style type="text/css">
+body { color: green; background-color: #000; }
+</style>
+</head>
+<body>
+<h3><center>Welcome to Dan's Miner Overview</center></h3>
+<center>
+1btc &#8776 <img src="http://btcticker.appspot.com/mtgox/1btc.png"><br>
+<a href="https://cex.io/r/0/Scar3cr0w/0/" title="CEX.io - Bitcoin Commodity Exchange" target="_blank"><img src="http://cex.io/informer/Scar3cr0w/466fd....bfc1/" width="500" height="35" border="0"></a>
+<br>
+<iframe src="https://192.168.0.59/advanced.html#/status" name="MinePeon" height="100" width="1300">Enable Frames to view.</iframe>
+<br>
+<!--<iframe src="http://bitcoin.clarkmoody.com/" name="RTBTC" height="800" width="1300">Yup.</iframe>
+<br>-->
+<iframe src="http://btc.imnotacyb.org/bcg/bcg_monitor.php?api_key=a.....d1a&dead_time=5" name="BTC Guild" height="800" width="320">Ditto.</iframe>&nbsp;<iframe src="http://bitcoinity.org/markets?theme=dark" name="bitcoinity.org" height="800" width="1500">bitcoinity.org</iframe>
+<!-- <iframe src="http://mtgoxlive.com/orders" name="BTC Guild" height="800" width="975">Ditto.</iframe> -->
+</center>
+</body>
+</html>
+<!-- http://mtgoxlive.com/orders -->
+<!-- http://bitcoincharts.com/markets/mtgoxUSD.html -->
+<!-- https://www.btcguild.com/index.php?page=dashboard -->
+12345678910111213141516171819202122232425
+<html><head><title>Miner Overview</title> <style type="text/css"> body { color: green; background-color: #000; } </style></head><body><h3><center>Welcome to Dan's Miner Overview</center></h3><center>1btc &#8776 <img src="http://btcticker.appspot.com/mtgox/1btc.png"><br><a href="https://cex.io/r/0/Scar3cr0w/0/" title="CEX.io - Bitcoin Commodity Exchange" target="_blank"><img src="http://cex.io/informer/Scar3cr0w/466fd....bfc1/" width="500" height="35" border="0"></a><br><iframe src="https://192.168.0.59/advanced.html#/status" name="MinePeon" height="100" width="1300">Enable Frames to view.</iframe><br><!--<iframe src="http://bitcoin.clarkmoody.com/" name="RTBTC" height="800" width="1300">Yup.</iframe><br>--><iframe src="http://btc.imnotacyb.org/bcg/bcg_monitor.php?api_key=a.....d1a&dead_time=5" name="BTC Guild" height="800" width="320">Ditto.</iframe>&nbsp;<iframe src="http://bitcoinity.org/markets?theme=dark" name="bitcoinity.org" height="800" width="1500">bitcoinity.org</iframe><!-- <iframe src="http://mtgoxlive.com/orders" name="BTC Guild" height="800" width="975">Ditto.</iframe> --></center></body></html><!-- http://mtgoxlive.com/orders --><!-- http://bitcoincharts.com/markets/mtgoxUSD.html --><!-- https://www.btcguild.com/index.php?page=dashboard -->
+So yea, like I said not much to it! However if you like it, I do take bitcoin donations! 17mRcCM9XSugSPqfVHLZM3cC4xkV37xmg1
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	bitcoinhowto
+Blah, Humor, windows
+Office Taskbar PWNage!
+May 19, 2013 Daniel Stinebaugh	Leave a comment
+So I just recently re-installed windows on my desktop and was installing my office365 suite (I’m doing the annual 5 seat license, so far I’m very happy with it other than trying to find the installer for each system, but that’s a different rant).
+I happened to pin them to my task-bar and it spelt out “pwn” and I found that funny so I wanted to share. (I’m using Powerpoint a lot for my capstone at ITT if you curious why it made it to the task-bar. It won’t be there much longer.)
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	funnyoffice365pwnageshort
+Blah, Hacks, howto, programming, scripting, Technology, windows
+Vanity Bitcoin Keys
+May 11, 2013 Daniel Stinebaugh	1 Comment
+So it’s been a while since I’ve talked about bitcoin and I’ve recently gotten more interested now that the prices have grown significantly. So I started explaining it to some friends at school and have gotten them interested as well. So of course I wanted a nice and custom key to show off, and it’s really quite easy with tools like vanitygen by samr7 over on the bitcoin forums which is the tool that we will be using for this post.
+Because it’s actually doing alot of math to figure out (or more correctly guess) at the key, the longer you want your custom key to be, the longer you will have to crunch these numbers so don’t get too crazy with it.
+The tool has several options but most of them won’t be used, in fact I only use one of the possible flags below, but there are more, you can view them by running vanitygen.exe with the “-h” flag, or just save this as something like help.bat in the same folder as vanitygen.exe and double-click the .bat file to run the help command for you.
+help.bat
+@echo off
+vanitygen.exe -h
+pause
+123
+@echo offvanitygen.exe -hpause
+Now that you have read the options the batch file below might make more sense, we are going to ask you for the pattern you want your custom key to have, and decided if you want it case-sensitive which takes MUCH longer, and might have strings that are not allowed, but it’ll error out if it does so you can try something different.
+So save this file as something like vanity.bat in the same folder as vanitygen and run it. (Change the highlighted lines 19 and 23 to reflect the executable you are going to use for your system. (ie: if on a 64 bit system you would use vanitygen64.exe, on a gpu you would use oclvanitygen.exe)
+vanity.bat
+PowerShell
+@echo off
+echo You can always press ctrl+c to stop this script from running.
+CALL :GETINPUT
+GOTO :EOF
+:GETINPUT
+set /p Name=Enter your desiered pattern (The leading 1 has been added for you): 1
+set /p ConfirmName=Your pattern will be 1%name% Is this correct [y/n]?:
+if "%ConfirmName%"=="" (GOTO GETINPUT)
+if "%ConfirmName%"=="y" (GOTO STRICTNESS) else (GOTO EXIT)
+:STRICTNESS
+set /p Eieye=Do you require your pattern to be CaSe SenSitvE [y/n]? if "%Eieye%"=="y" (GOTO CASEYES)
+if "%Eieye%"=="n" (GOTO CASENO) else (GOTO EXIT)
+:CASEYES
+vanitygen.exe 1%name%
+(GOTO EOF)
+:CASENO
+vanitygen.exe -i 1%name%
+(GOTO EOF)
+:EOF
+pause
+:EXIT
+exit
+123456789101112131415161718192021222324252627282930
+@echo off echo You can always press ctrl+c to stop this script from running.CALL :GETINPUTGOTO :EOF :GETINPUTset /p Name=Enter your desiered pattern (The leading 1 has been added for you): 1set /p ConfirmName=Your pattern will be 1%name% Is this correct [y/n]?:if "%ConfirmName%"=="" (GOTO GETINPUT)if "%ConfirmName%"=="y" (GOTO STRICTNESS) else (GOTO EXIT) :STRICTNESSset /p Eieye=Do you require your pattern to be CaSe SenSitvE [y/n]? if "%Eieye%"=="y" (GOTO CASEYES)if "%Eieye%"=="n" (GOTO CASENO) else (GOTO EXIT) :CASEYESvanitygen.exe 1%name%(GOTO EOF) :CASENOvanitygen.exe -i 1%name%(GOTO EOF) :EOFpause :EXITexit
+Here is what the output of the script does (note, I’ve highlighted the user input for clarity, there is no color in the actual script results, and No this key should NOT be used!):
+Then create a shortcut on your desktop for vanity.bat and change the icon to something that you prefer, I’ve added the image I use below for fun, and then just run this anytime you (or a friend) want a custom wallet key!
+As for wallet’s, I use the Armory wallet but for most users I would recommend multibit as it’s much faster, and much smaller, but you do give up some freedom and security relying on others where armory can offer a true TNO security standpoint, just my 2 bitcents on that topic, now get mining!
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	bitcoinscriptingvanity
+bash, howto, linux, security
+All in one webserver from the ground up. A Virtualized Debian How-to
+January 17, 2013 Daniel Stinebaugh	2 Comments
+< This is the only image you get, as this is going to be a very text centered post.
+I figured after virtualizing my entire network a few weeks ago and while learning alot, I also rebuilt several machines, and documented the rebuild. So from those notes, I’m going to finally get around to how to securely host and build a website, from the ground up.
+We’ll start with a bare bones debian 6 install (this guide will work for ubuntu server 12.04 as well) on a virtual host.
+I’m also using this guide as a walk-through for myself, so I’ve included the instructions on getting vmware-tools installed, if you’re doing this on bare metal, skip that part. Most of this should be done as the root user. In ubuntu, to gain root use the command:
+sudo su
+1
+sudo su
+Also to get the basics out of the way I will be using nano as my text editor, to save in nano use the keys
+Ctrl+o
+1
+Ctrl+o
+or to save and exit use the command
+Ctrl+x
+1
+Ctrl+x
+I will assume you know how to save a file from this point forward.
+To get started let’s get our environment setup, it makes life easier in the end.
+cd ~
+nano .bashrc
+12
+cd ~nano .bashrc
+Uncomment the lines in the root .bashrc file
+export LS-OPTIONS=' --color=auto'
+eval "'dircolors'"	alias ls='ls $LS-OPTIONS'
+alias ll='ls $LS_OPTIONS -lha' // I added the letters 'ha' to this, I just prefer it YMMV*
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias nano='nano -c'
+alias arestart='/etc/init.d/apache2 restart'
+123456789
+export LS-OPTIONS=' --color=auto'eval "'dircolors'" alias ls='ls $LS-OPTIONS'alias ll='ls $LS_OPTIONS -lha' // I added the letters 'ha' to this, I just prefer it YMMV*alias rm='rm -i'alias cp='cp -i'alias mv='mv -i'alias nano='nano -c'alias arestart='/etc/init.d/apache2 restart'
+Save and exit * I won’t be telling you this again, if the files done being edited, save and close it! :)*
+Force your current session to use the new .bashrc file.
+source .bashrc
+1
+source .bashrc
+You should now have colors when displaying the contents of your directories and have a shortcut to restart apache once we have it installed.
+But before we install the web server let’s finish getting prepped. (ubuntu users, don’t add the netselect-apt in the next command, it’s not available in your repos.)
+apt-get install sudo most ntp ntpdate unzip denyhosts htop curl clamav netselect-apt screen byobu build-essential linux-headers-`uname -r` psmisc
+1
+apt-get install sudo most ntp ntpdate unzip denyhosts htop curl clamav netselect-apt screen byobu build-essential linux-headers-`uname -r` psmisc
+If your curious on how any of these programs work in more detail, you can always turn to the “man” command. I do often, so I like my man pages in color. If you do as well, use this, and select the option that references “most” (usually 3 in my experience)
+update-alternatives --config pager
+1
+update-alternatives --config pager
+Now let’s create another normal user (if you already have all the normal users you want, skip this part)
+*replace <yourname> with Your name.*
+adduser
+1
+adduser
+and then answer the questions it asks as best you want.
+Now let’s also give this user the ability to manage this server using sudo.
+nano /etc/sudoers
+1
+nano /etc/sudoers
+Find the line for the root user and copy it on a new line, replacing root with your username.
+Or better yet, just add them to either the “admin” or “sudo” groups (On some distro’s you might know this as the “wheel” group)
+Shell
+usermod -a -G sudo username
+1
+usermod -a -G sudo username
+If you just added yourself to the sudo group, you’ll need to log off and back on for this to take effect.
+Now Debian users with netselect installed, use this list of commands:
+netselect-apt -n squeeze
+cp /etc/apt/source.list /etc/apt/source.list.bak
+cp sources.list /etc/apt/source.list
+nano /etc/apt/source.list #*Uncomment the line's you want, probably wanting all 3 *#
+1234
+netselect-apt -n squeezecp /etc/apt/source.list /etc/apt/source.list.bakcp sources.list /etc/apt/source.listnano /etc/apt/source.list #*Uncomment the line's you want, probably wanting all 3 *#
+then
+apt-get update
+1
+apt-get update
+Now we can start installing the vmware-tools. First click the option on your vmware console to install tools or guest additions.
+This will insert a virtual cd-rom in your virtual machine. I know right!?! How deep DOES the rabbit hole go?! Anyways.
+mount /dev/cdrom /media/cdrom
+cd /tmp/
+cp /media/cdrom/VMWareTools*.tar.gz .
+tar xvf VMwareTools*.tar.gz
+cd vmware-tools-distrib
+./vmware-install.pl
+#* Answer the questions *#
+umount /media/cdrom
+reboot
+123456789
+mount /dev/cdrom /media/cdromcd /tmp/cp /media/cdrom/VMWareTools*.tar.gz .tar xvf VMwareTools*.tar.gzcd vmware-tools-distrib./vmware-install.pl #* Answer the questions *#umount /media/cdromreboot
+Welcome back Login as your normal user from here on out and gain root using “sudo su“. It’s just good practice.
+sudo su
+nano /etc/network/interfaces
+12
+sudo sunano /etc/network/interfaces
+Comment out the default settings for the eth0 interface as we want a static IP address for a server and add something like this (changing the values as needed for your network of course!)
+auto eth0
+iface eth0 inet static
+address 192.168.0.100
+netmask 255.255.255.0
+network 192.168.0.0
+broadcast 192.168.0.255
+gateway 192.168.0.1
+dns-nameservers 192.168.0.111 8.8.8.8
+dns-search foo.org bar.com
+123456789
+auto eth0iface eth0 inet static address 192.168.0.100 netmask 255.255.255.0 network 192.168.0.0 broadcast 192.168.0.255 gateway 192.168.0.1 dns-nameservers 192.168.0.111 8.8.8.8 dns-search foo.org bar.com
+Then restart your network.
+/etc/init.d/networking restart
+1
+/etc/init.d/networking restart
+You will probably get disconnected if you’re using ssh to connect. This is to be expected and you should now be able to ssh to the IP address you just set.
+Now let’s set the hostname of the server.
+nano /etc/hosts
+#* Should look something like this *#
+127.0.0.1 localhost.localdomain localhost
+192.168.0.100 server1.example.com server1
+1234
+nano /etc/hosts #* Should look something like this *#127.0.0.1 localhost.localdomain localhost192.168.0.100 server1.example.com server1
+And append the same name to the hostname file and restart the service.
+(Note the &gt; should be a > but my syntax highlighter breaks these… keep an eye out!)
+echo server1.example.com &gt; /etc/hostname
+/etc/init.d/hostname.sh start
+12
+echo server1.example.com &gt; /etc/hostname/etc/init.d/hostname.sh start
+Being ssh is probably going to be left open, let’s start to automate banning of brute force attempts for our ssh login (moving ssh to a non standard port is also a good idea!)
+nano /etc/denyhosts.conf
+1
+nano /etc/denyhosts.conf
+Setup the times and purge options as you see fit and then restart denyhosts.
+/etc/init.d/denyhosts restart
+1
+/etc/init.d/denyhosts restart
+And let’s FINALLY get to installing that webserver like I promised!
+apt-get install apache2
+1
+apt-get install apache2
+That’s it! your webserver’s installed! Now let’s configure it!
+a2enmod rewrite
+a2enmod ssl
+a2enmod include
+/etc/init.d/apache2 restart
+1234
+a2enmod rewritea2enmod ssla2enmod include/etc/init.d/apache2 restart
+Now let’s build the config for the website you’ll be hosting.
+cd /etc/apache2/sites-available/
+1
+cd /etc/apache2/sites-available/
+touch example.com
+nano example.com
+12
+touch example.comnano example.com
+There are alot of options you can define in here, but to get you started make sure you have the DocumentRoot, ErrorLog and CustomLog defined in this config file.
+(again the &lt; and &gt; should be < and > respectivly, stay sharp!!!)
+&lt;VirtualHost *:80&gt;
+ServerAdmin HIDDEN EMAIL ADDRESS
+ServerName domain.com
+ServerAlias www.domain.com
+DocumentRoot /var/www/example.com/public_html/
+ErrorLog /var/log/example.com/logs/error.log
+CustomLog /var/log/example.com/logs/access.log combined
+1234567
+&lt;VirtualHost *:80&gt; ServerAdmin webmaster@domain.com ServerName domain.com ServerAlias www.domain.com DocumentRoot /var/www/example.com/public_html/ ErrorLog /var/log/example.com/logs/error.log CustomLog /var/log/example.com/logs/access.log combined
+Using our example above, let’s create those directories.
+mkdir -p /var/www/example.com/public_html
+mkdir -p /var/log/example.com/logs
+12
+mkdir -p /var/www/example.com/public_htmlmkdir -p /var/log/example.com/logs
+And bring this site online, and remove the default site
+a2ensite domain.com
+a2dissite default
+12
+a2ensite domain.coma2dissite default
+Your website should now be online! w00t!
+Let’s get the rest going so we can get something more dynamic then html websites.
+apt-get install mysql-server
+1
+apt-get install mysql-server
+Enter in a SQL root password when prompted. (SHOULDNT BE THE SAME AS YOUR ROOT PASSWORD!!!!!!!!!!!!!)
+And let’s harden our SQL environment as this is not a developer server.
+mysql_secure_installation
+1
+mysql_secure_installation
+You don’t need to change your SQL root password if you set a good one above. if it’s the same as your normal root user’s password, change it ffs! Answer yes to the rest of the questions.
+Now this next line will install php. Lot’s of php. This command should be entered in as one single line!
+apt-get install php-pear php5-suhosin php5-mysql libapache2-mod-php5 libapache2-mod-ruby libapache2-mod-python php5 php5-common php5-curl php5-dev php5-gd php5-idn php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-ming php5-mysql php5-pspell php5-recode php5-intl php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl memcached
+1
+apt-get install php-pear php5-suhosin php5-mysql libapache2-mod-php5 libapache2-mod-ruby libapache2-mod-python php5 php5-common php5-curl php5-dev php5-gd php5-idn php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-ming php5-mysql php5-pspell php5-recode php5-intl php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl memcached
+These settings will get you off to a good start, but more tuning can be done. Search for the following and make the needed changes in this file. (search in nano using “Ctrl+w” and typing in the keyword.
+nano /etc/php5/apache2/php.ini
+1
+nano /etc/php5/apache2/php.ini
+max_execution_time = 30
+memory_limit = 64M
+error_reporting = E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERROR
+display_errors = Off
+log_errors = On
+error_log = /var/log/php.log
+register_globals = Off
+1234567
+max_execution_time = 30memory_limit = 64Merror_reporting = E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERRORdisplay_errors = Offlog_errors = Onerror_log = /var/log/php.logregister_globals = Off
+/etc/init.d/apache2 restart
+1
+/etc/init.d/apache2 restart
+(You do remember you can type in ^ arestart ^ instead of that line throughout this gude if you used my .bashrc edits, right? )
+And of course a web-gui to your SQL server is super handy, so let’s add that as well.
+apt-get install phpmyadmin
+1
+apt-get install phpmyadmin
+Select apache2 when asked, and choose yes to create the default database. Enter in the SQL root password, and then leave the next password prompt blank to have a random one generated, as you won’t need it.
+Almost done!
+Let’s set the permissions on the folders we created.
+chown -R www-data:www-data /var/www/example.com/public_html
+chmod 774 /var/www/example.com/public_html
+12
+chown -R www-data:www-data /var/www/example.com/public_htmlchmod 774 /var/www/example.com/public_html
+And your set!
+Let’s go one step further and setup a firewall to finish it up, just in case you’re not behind a seperate firewall (Check out untangle if you’re looking for a good one!)
+apt-get install ufw
+1
+apt-get install ufw
+This will install the “Uncomplicated Firewall” that works with iptables, and makes life alot easier!
+For more help with ufw settings check out this guys site, it’s got a pretty good rundown and examples.
+ufw logging on
+ufw default deny
+ufw allow ssh
+ufw allow www
+ufw allow https
+ufw enable
+#* Answer yes when it asks to proceed *#
+ufw status
+12345678
+ufw logging onufw default denyufw allow sshufw allow wwwufw allow httpsufw enable #* Answer yes when it asks to proceed *#ufw status
+You should now get a result that says the following:
+Status: active
+To Action From
+-- ------ ----
+22 ALLOW Anywhere
+80 ALLOW Anywhere
+443 ALLOW Anywhere
+1234567
+Status: active To Action From-- ------ ----22 ALLOW Anywhere80 ALLOW Anywhere443 ALLOW Anywhere
+Of course this is the basic setup, you can further limit ssh to local connections only etc.
+And your website is ready for stage 2, Content! You now have a memcached apache http server with php5 and mysql ready for the world wide web! Good luck!
+(The stage 2 post will come soon!)
+** EDIT **
+After a few month’s with this setup I’ve started getting several mail objects that say:
+This is a RAID status update from mpt-statusd.
+The mpt-status program reports that one of the RAIDs changed state:
+Report from /etc/init.d/mpt-statusd on virtual-proxy
+Being it’s a virtual machine there’s no raid state to worry about (at least not from the guest side…) so unless you have a reason for it, just stop the mpt-status daemon. Do the following:
+sudo /etc/init.d/mpt-statusd stop
+1
+sudo /etc/init.d/mpt-statusd stop
+to stop it from it’s currently running state, and then
+sudo update-rc.d-insserv -f mpt-statusd remove
+1
+sudo update-rc.d-insserv -f mpt-statusd remove
+which will remove it from several startup scripts that run on boot.
+That’s it, no more mail from that problem Hope your install is running as smoothly as mine has been!
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	debiandiyhostinghowtolinuxmysqlphpubuntwebserverwebsite
+Hacks, howto, windows
+Remotely add a domian user to the local machines remote desktop group (win7)
+October 8, 2012 Daniel Stinebaugh	2 Comments
+So here’s another problem that I’ve run into at work, that I just wasn’t able to find a good resource to answer, so I’ll go ahead and post my workaround so that it might help someone, or myself sometime later.
+Let me first explain the problem I was running into so that you get an idea of why and how this happened.
+I work for a managed service provider, and we were just getting ready to migrate them away from their old POP3 email to office365′s hosted exchange server, and at the same time we were replacing about 20 pc’s.
+The computers were built in house, and most of the work, adding updates, software, users, and enabling remote desktop etc was done locally before the computers got delivered to the remote offices as well.
+The computers were delivered, and installed, and everything was going fine, their old email was setup in outlook, and they were able to connect to the main remote desktop server running a few select pieces of software just fine. Sweet!
+A week goes by and it’s time to start making sure all of my ducks are in a row before pushing out the new settings for outlook to connect to the new email service, so I tried to use remote desktop (RDP herein) just to test it out. I get an error along the line’s of:
+To log on to this computer, you must be granted the Allow log on through Terminal Services right. By default, members of the Remote Desktop Users group have this right…
+Now first, understand I was logged in as a domain admin. This error was definitely unexpected.
+I try logging in as the local machine’s admin account, and get the same error message. Now I’m starting to get worried, these remote offices are not exactly close, and I really don’t want to spend the next 2 days running all over the place to add the user to the local machines Remote Desktop Users group, but it’s starting to look like that’s what’s going to have to be done, as I can’t just call the end-user, give them the local admin’s login info, then have them start a teamviewer session so that I can add the users to the local RDP group.
+But wait! Now I remember, there’s a “Run As” option in windows!
+We’re going to need some kind of remote access to the machine to get this configured so I call the user, have them run the teamviewer quick support app (No I don’t get paid by them I just really love the service!) while still logged in as the domain user.
+Then here’s the workaround.
+Click the start button, type in powershell, but DONT click it yet!
+Hold down “Shift” then right-click it. You should see an option for “Run As a different user”
+Then you will get a login prompt!
+Sweet! Go ahead and enter in your cred’s.
+This will open a powershell prompt as the user you just entered the creds for (in my case the domain admin). Neat! Now I just need to open the local machines user and groups settings to add the users. Type in “lusrmgr”.
+This will open a window I hope your familiar with,
+Now you should be able to add users the same way you usually do! Nice!
+If you need a hand actually adding the users to the RDP group, I’ll go ahead and finish walking you through adding a user, but for everyone else, you should be good to go! Enjoy!
+To add someone to the RDP group, first click Groups in the left side window (1) in the Local Users and Groups window, then in the main window section, double-click Remote Desktop Users (2).
+From this next window, Click Add:
+This will open up another window, if you already know the name’s go ahead and start typing them in, click “Check names”(1) and “OK” this will add a user, I don’t usually know all the name’s so I go this route:
+Click “Advanced…” (2)
+Then hit the “Find Now” button to populate the list with all of the members and groups of your domain (I’ve already done this in the following picture).
+Select all of the users and groups you want added and click “OK” and viola! They’ve now been added to the local machines Remote Desktop Users group, remotely, and without giving up the admin’s account info to the end-user! Yea! You should now be able to login as the users you selected to that machine, and can disconnect your teamviewer session, and continue administering that machine via RDP like you wanted to before.
+Good Luck!
+Also a side note, I don’t believe that Windows XP had the command “lusrmgr” so you might need some tweaking of this to make it work for you. But then again, it’s time to upgrade if you’re still using XP anyways, End of life support for XP is April 8, 2014 just in case you needed to start thinking of that!
+Help this spread:EmailGoogleLinkedInMoreTwitterStumbleUponDiggFacebookRedditPrint	domaingroupsuserswindows 7windows server
+Posts navigation
+1
+2
+…
+17
+Next →	I Talk To Machines
+QR Code for this page	Archives	June 2014 (1)
+January 2014 (1)
+November 2013 (1)
+May 2013 (2)
+January 2013 (1)
+October 2012 (1)
+August 2012 (1)
+July 2012 (3)
+June 2012 (2)
+May 2012 (2)
+April 2012 (1)
+March 2012 (1)
+February 2012 (1)
+January 2012 (3)
+December 2011 (2)
+November 2011 (2)
+September 2011 (2)
+July 2011 (2)
+June 2011 (1)
+May 2011 (1)
+April 2011 (3)
+March 2011 (2)
+February 2011 (1)
+January 2011 (1)
+November 2010 (3)
+October 2010 (1)
+September 2010 (2)
+August 2010 (4)
+July 2010 (3)
+June 2010 (3)
+May 2010 (3)
+April 2010 (2)
+March 2010 (5)
+February 2010 (6)
+January 2010 (4)
+December 2009 (3)
+November 2009 (2)
+October 2009 (4)
+September 2009 (8)
+August 2009 (5)
+July 2009 (7)
+June 2009 (16)
+Proudly powered by WordPress
+Stine-Blog	Proudly powered by WordPress Theme: Twenty Fourteen.	Send to Email Address
+Your Name
+Your Email Address
+Cancel
+Post was not sent - check your email addresses!	Email check failed, please try again	Sorry, your blog cannot share posts by email.	

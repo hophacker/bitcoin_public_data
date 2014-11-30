@@ -1,0 +1,285 @@
+http://www.vimdrills.com/posts/drill-6-windows
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 13:03:48 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: Phusion Passenger (mod_rails/mod_rack) 3.0.11
+X-Request-Id: 84178fd4fccdbf91cfb7a97483308760
+X-UA-Compatible: IE=Edge,chrome=1
+Cache-Control: max-age=0, private, must-revalidate
+ETag: "6da8bcc27fa5bbca6607e810a2b7ef5b"
+X-Rack-Cache: miss
+X-Runtime: 0.164447
+Set-Cookie: _vimdrills_session=BAh7ByIPc2Vzc2lvbl9pZCIlMzhhYTIyZjdjNGZkN2FmNTA4MDQzMDg3MGYxMTlkZWUiEF9jc3JmX3Rva2VuIjFzZFZ0TDlWemZXdGV0b2NheDdwOHFOMTMwTFNZTlEycm9OcGtrbzFQTnN3PQ%3D%3D--8d16d1a822f8ac8c43c0c6eaf8165f30e737e15a; path=/; HttpOnly
+Status: 200
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4208
+Connection: close
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/rss.xml" rel="alternate" title="RSS" type="application/rss+xml" />
+
+  <title>Drill 6: Buffers, Windows &amp; Tabs</title>
+  <meta content="authenticity_token" name="csrf-param" />
+<meta content="sdVtL9VzfWtetocax7p8qN130LSYNQ2roNpkko1PNsw=" name="csrf-token" />
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+  <![endif]-->
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/application-c41525fbdc22be35702b71a2dc9cd20d.css" media="all" rel="stylesheet" type="text/css" />
+</head>
+
+
+  <body>
+    <div class="navbar navbar-fluid-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">VimDrills</a>
+          <div class="container-fluid nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/posts">Posts</a></li>
+              <li><a href="/rss.xml">Feed</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+          <div>Weekly Focused Practice to Improve Your Vim Skills</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+        </div>
+
+
+        <div class="span7">
+          
+          <h1>Drill 6: Buffers, Windows &amp; Tabs</h1>
+
+<h2>Screencast</h2>
+
+<iframe width="960" height="720" src="http://www.youtube.com/embed/FS1kaKebX0Y" frameborder="0" allowfullscreen></iframe>
+
+
+<h2>Review of Last Week</h2>
+
+<p>Last week's drill was focused on customizing Vim to our own needs, and creating
+custom keys that perform some more complex tasks in one quick keystroke.  In
+future drills, we'll be revisiting this idea from several different angles.
+For now though, I want you to keep the idea of mappings in the back of your
+head while you do your work.  It's so easy to both know that mappings exist and
+how they work, but never actually stop to think about how to apply them to your
+own workflow.  Hopefully by being concious of them you can find some obvious
+mappings for yourself that will pay off.</p>
+
+<h2>This Week's Drill</h2>
+
+<p>This week we're going to go back to the idea of navigating around files and
+keeping the work you're interested in at hand.</p>
+
+<p>Vim has a complex view of the files it edits.  The terms <code>window</code>, <code>buffer</code>,
+<code>tab</code>, <code>split</code> get thrown around, and while they are all related, they all mean
+very distinct things to Vim.</p>
+
+<h2>Buffer</h2>
+
+<p>A buffer is an open file. For any given file, there will be only one buffer
+reflecting it.</p>
+
+<p><code>:ls</code> - Get a list of all open buffers</p>
+
+<p><code>:buffer n</code> - goes to buffer number n, where that number is found in the <code>ls</code> listing</p>
+
+<p><code>:bdelete [id]</code> - Delete a buffer by number. If you don't give the id, it
+closes the currently open buffer.  Just like <code>:q</code>, it has a more aggressive
+version <code>:bdelete!</code> which won't ask to save the buffer first.</p>
+
+<h2>Windows</h2>
+
+<p>A window is your view into a buffer.  Think of it like a porthole of a ship.
+You can see a piece of the ocean. And a different porthole will see a different
+piece.</p>
+
+<p>A single buffer can be viewed by several windows. Which is useful to be able to
+see several parts of a file at a time.</p>
+
+<h3>Moving Between Windows</h3>
+
+<p><code>CTRL-W h</code> - Goto the window on the left</p>
+
+<p><code>CTRL-W l</code> - Goto the window on the right</p>
+
+<p><code>CTRL-W j</code> - Goto the window below the cursor</p>
+
+<p><code>CTRL-W k</code> - Goto the window above the cursor</p>
+
+<p><code>CTRL-W w</code> - Goto the next window, clockwise.  This will rotate you through all
+the windows. Also <code>CTRL-W CTRL-W</code> does the same thing, so no worries if you
+don't release the control key quick enough.</p>
+
+<h3>Rearranging Windows</h3>
+
+<p><code>CTRL-W H</code> - Push the current window to the far left</p>
+
+<p><code>CTRL-W L</code> - Push the current window to the far right</p>
+
+<p><code>CTRL-W J</code> - Push the current window to the bottom</p>
+
+<p><code>CTRL-W K</code> - Push the current window to the top</p>
+
+<p><code>&lt;C-w&gt;-</code> - Make the current window a bit smaller height</p>
+
+<p><code>&lt;C-w&gt;+</code> - Make the current window a bit bigger height</p>
+
+<p><code>&lt;C-w&gt;&lt;</code> - Make the current window a bit smaller width</p>
+
+<p><code>&lt;C-w&gt;&gt;</code> - Make the current window a bit bigger width</p>
+
+<h3>Closing Windows</h3>
+
+<p><code>:q</code> - Our old friend!  This actually just closes a window.  If the tab page is
+now empty, it closes.  If it was the last window open in the whole Vim
+instance, Vim exits.</p>
+
+<h2>Split</h2>
+
+<p>Just like it sounds, it splits a window into two.  This opens a new window into
+the same buffer.</p>
+
+<p><code>:split</code> - Horizontal split, the line splitting the windows is horizontal, so
+the newly created windows are stacked on each other.</p>
+
+<p><code>:vsplit</code> - Vertical split, the line splitting the windows is vertical, so the
+windows created are side by side.</p>
+
+<h2>Tab Page</h2>
+
+<p>Holds several windows together. Even if you never use the ability to switch
+tabs, you still have one. It holds all the windows together.</p>
+
+<p><code>:tabnew</code> - Creates a new tab, after the current one.</p>
+
+<p><code>gt</code> - Tab forward</p>
+
+<p><code>gT</code> - Tab back</p>
+
+<h2>Mappings</h2>
+
+<h3>OSX + MacVim Specific</h3>
+
+<p><code>nnoremap &lt;D-1&gt; 1gt</code> - Go to the first open tab page.  This matches up with how
+most OSX applications with tabs work as well (chrome, iterm, etc). It's nice
+for consistency. Of course, I have these mapped all the way up to 9.</p>
+
+<h3>Window Changes</h3>
+
+<p><code>nnoremap , &lt;C-w&gt;&lt;C-w&gt;</code> - This one is both very convenient, moving you forward
+a window, but might be a bit controversial, since it clobbers the rather useful
+<code>,</code> command.  It's up to you, but I highly recommend an easily accessible key
+for this mapping</p>
+
+<p><code>nnoremap - &lt;C-w&gt;-</code> - Resizes the window to be a bit smaller vertically</p>
+
+<p><code>nnoremap = &lt;C-w&gt;+</code> - Resizes the window to be a bit bigger vertically</p>
+
+<p><code>nnoremap _ &lt;C-w&gt;&lt;</code> - Resizes the window to be smaller horizontally</p>
+
+<p><code>nnoremap + &lt;C-w&gt;&gt;</code> - Resizes the window to be bigger horizontally</p>
+
+<h3>Tab Changing</h3>
+
+<p><code>nnoremap ; gt</code> - Forwards a tab.  Similarly to the <code>,</code> remap I have, this one
+steps on the useful <code>;</code> command.</p>
+
+<p><code>nnoremap &lt;TAB&gt;; gT</code> - And backwards a tab</p>
+
+<h2>Practice</h2>
+
+<p>Get fast at opening, and switching windows, tabs, and buffers. Identify your
+normal workflow (maybe use mine? Tweak it maybe?) and optimize with windows and
+buffers and tabs. Keep everything in its place, but make your use consistent.</p>
+
+
+          <!-- Begin MailChimp Signup Form -->
+<div id="mc_embed_signup">
+  <form action="http://razormoosellc.us1.list-manage2.com/subscribe/post?u=35003ea04a2b5f4325136907d&amp;id=f3ef4591d6" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate form-search" target="_blank" novalidate>
+  <h2>Subscribe to the VimDrills Mailing List</h2>
+  <p>You'll get weekly drills, screencasts, cheatsheets, and exclusive tips.</p>
+
+  <div class="mc-field-group">
+    <label for="mce-EMAIL"><strong>Email:</strong></label>
+    <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+    <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-danger">
+  </div>
+</form>
+</div>
+<!--End Mailchimp Signup Form -->
+
+
+          <h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'vimdrills'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </div>
+
+        <div class="span2"></div>
+      </div><!--/row-->
+
+      <div class="row-fluid">
+  <footer class="offset3 span9" >
+    <p>Donate Bitcoins to: 1Chris11Zho59oV9ttzbtHCtDMr5zS1S2h &mdash; &copy; Razormoose LLC 2012</p>
+  </footer>
+</div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Javascripts
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/assets/application-b78dfc03a6f9cacc2b79cfe8906e9766.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36870854-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </body>
+</html>
+

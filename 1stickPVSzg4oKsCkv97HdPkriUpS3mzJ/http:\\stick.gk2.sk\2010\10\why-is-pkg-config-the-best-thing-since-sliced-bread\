@@ -1,0 +1,303 @@
+http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/
+HTTP/1.0 200 OK
+Content-Type: text/html
+Accept-Ranges: bytes
+ETag: "1928210335"
+Last-Modified: Wed, 08 Jan 2014 19:33:20 GMT
+Content-Length: 10706
+Connection: close
+Date: Thu, 24 Jul 2014 08:24:31 GMT
+Server: lighttpd/1.4.35
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Why is pkg-config the best thing since sliced bread - stick's corner</title>
+  <meta name="author" content="stick">
+
+  
+  <meta name="description" content="For those of you who haven&rsquo;t met pkg-config yet a short introduction from its project page: &ldquo;pkg-config is a helper tool used when &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="stick's corner" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15639638-4']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">stick's corner</a></h1>
+  
+    <h2>All composite phenomena are impermanent. All contaminated things and events are unsatisfactory.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:stick.gk2.sk" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Why Is Pkg-config the Best Thing Since Sliced Bread</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-22T21:59:37+02:00" pubdate data-updated="true">Oct 22<span>nd</span>, 2010</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>For those of you who haven&rsquo;t met pkg-config yet a short introduction from its <a href="http://pkg-config.freedesktop.org/">project page</a>:</p>
+
+<blockquote><p>&ldquo;pkg-config is a helper tool used when compiling applications and libraries. It helps you insert the correct compiler options on the command line so an application can use gcc -o test test.c <code>pkg-config --libs --cflags glib-2.0</code> for instance, rather than hard-coding values on where to find glib (or other libraries). It is language-agnostic, so it can be used for defining the location of documentation tools, for instance.&rdquo;</p></blockquote>
+
+<p><img src="/content/sliced-bread.jpg"></p>
+
+<p>More and more projects are using pkg-config already, but there is still a very high number of projects that don&rsquo;t. This post tries to describe why using pkg-config is a good idea.</p>
+
+<p>We try to build software packages for all major Linux distributions in the <a href="http://build.opensuse.org/">Build Service</a>. Unfortunately there are lots differences in package names. Let&rsquo;s take a look at KDE 4 development library for example:</p>
+
+<ul>
+<li>libkde4-devel (openSUSE)</li>
+<li>kdelibs-devel (Fedora)</li>
+<li>kdelibs4-devel (Mandriva)</li>
+<li>kdelibs5-dev (Debian/Ubuntu)</li>
+</ul>
+
+
+<p>Confusing, right? When I want to build a KDE application in the Build Service for all these distributions I have to use conditionals, which clutters the spec file. What&rsquo;s even worse is that I have to actually find out these names, which is not always an easy task.</p>
+
+<p>RPM has a nice feature: if a file <code>/usr/lib/pkgconfig/foo.pc</code>or <code>/usr/share/pkgconfig/foo.pc</code> exists in the package, rpmbuild adds a <code>pkgconfig(foo)</code> provides symbol. But what does that mean effectively?</p>
+
+<p>We don&rsquo;t have to require a particular package name in the list of build requirements. We just specify pkgconfig symbol instead. Once we have replaced all of these &hellip; Crash, boom, bang &ndash; cross-distro packaging made easy! What&rsquo;s even more great is that it would be possible to write tools that are able to auto-generate build requirements in the spec files by simple detection of pkgconfig symbols in configure, qmake, cmake, whatever build scripts.</p>
+
+<p>The most packaging headaches are caused by libraries, but often we use some utilities during the build as well. Fortunately, they tend to have the same name across distributions &ndash; e.g. <code>desktop-file-utils</code>, so it probably does not make sense to use pkgconfig everywhere.</p>
+
+<p>I talked with lots of people at the openSUSE Conference and all are in favor of pkg-config usage. I would like to encourage everyone in the FOSS community to include pkgconfig files in their releases and even help others doing so! For example, the distribution package maintainers could create these files and send them to upstream. I will try to push a new rpmlint check into openSUSE, which will print warning (if the package contains a library without pkgconfig file) and a link how to add a proper one to the package.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">stick</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-22T21:59:37+02:00" pubdate data-updated="true">Oct 22<span>nd</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/" data-via="pavolrusnak" data-counturl="http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2010/09/froscamp-fudcon-zurich-and-cern/" title="Previous Post: FrOSCamp, FUDCon Zurich and CERN">&laquo; FrOSCamp, FUDCon Zurich and CERN</a>
+      
+      
+        <a class="basic-alignment right" href="/2010/11/making-delicious-coffee-cake-with-opensuse/" title="Next Post: Making a delicious coffee cake with openSUSE">Making a delicious coffee cake with openSUSE &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/01/love2d-on-android/">LÖVE (Love2D) on Android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/02/idea-factory-mycelium-animated-photos/">Idea Factory: Mycelium Animated Photos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/02/idea-factory-facebook-random-comics/">Idea Factory: Facebook Random Comics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/02/idea-factory-pack-my-stuff/">Idea Factory: Pack My Stuff</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/02/idea-factory-github-semantic-patches/">Idea Factory: Semantic Patches on Github</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Donate</h1>
+  <a href="http://blockchain.info/address/1stickPVSzg4oKsCkv97HdPkriUpS3mzJ" style="background: url('/content/bitcoin-button.png'); display: block; width: 168px; height: 64px; margin: 8px;"></a>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("pavolrusnak", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/pavolrusnak" class="twitter-follow-button" data-show-count="false">Follow @pavolrusnak</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - stick -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gk2sk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/';
+        var disqus_url = 'http://stick.gk2.sk/2010/10/why-is-pkg-config-the-best-thing-since-sliced-bread/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+

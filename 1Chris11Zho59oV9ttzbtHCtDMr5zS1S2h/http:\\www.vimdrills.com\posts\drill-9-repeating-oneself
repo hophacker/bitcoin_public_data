@@ -1,0 +1,248 @@
+http://www.vimdrills.com/posts/drill-9-repeating-oneself
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 18:04:07 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: Phusion Passenger (mod_rails/mod_rack) 3.0.11
+Cache-Control: max-age=0, private, must-revalidate
+ETag: "e91558091afde8c3b5ed35674838f1e4"
+X-Request-Id: 26acbe8a0e5d79a3ab79d0616cf5ac75
+X-UA-Compatible: IE=Edge,chrome=1
+X-Runtime: 0.008166
+X-Rack-Cache: miss
+Set-Cookie: _vimdrills_session=BAh7ByIPc2Vzc2lvbl9pZCIlNGVkZGQzZDkzMDY3OWI0MGViMTAxNGNkOTRmMWNhM2QiEF9jc3JmX3Rva2VuIjFkRjNNREgzZlZvOUpSSTJ1clFKcW12ZFJQM2xIcHRHRXVwZXBEdlo1ZThNPQ%3D%3D--bfe03496bf19c550cbece234b676ba90cec2a3cf; path=/; HttpOnly
+Status: 200
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4065
+Connection: close
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/rss.xml" rel="alternate" title="RSS" type="application/rss+xml" />
+
+  <title>Drill 9: Repeating Oneself</title>
+  <meta content="authenticity_token" name="csrf-param" />
+<meta content="dF3MDH3fVo9JRI2urQJqmvdRP3lHptGEupepDvZ5e8M=" name="csrf-token" />
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+  <![endif]-->
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/application-c41525fbdc22be35702b71a2dc9cd20d.css" media="all" rel="stylesheet" type="text/css" />
+</head>
+
+
+  <body>
+    <div class="navbar navbar-fluid-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">VimDrills</a>
+          <div class="container-fluid nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/posts">Posts</a></li>
+              <li><a href="/rss.xml">Feed</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+          <div>Weekly Focused Practice to Improve Your Vim Skills</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+        </div>
+
+
+        <div class="span7">
+          
+          <h1>Drill 9: Repeating Oneself</h1>
+
+<h2>This Week's Drill</h2>
+
+<p>A thread on the Ruby Parley email list caught my attention a while back.  The
+author mentioned that he had accidentally hit <code>ff</code> in Vim, when he had meant to
+hit <code>gg</code> to go to the top of the file.  This lead him to think about what all
+the duplicated letter commands do in Vim.</p>
+
+<p>What I find really interesting about this line of thought isn't what the
+specific commands do, but instead the patterns in them, and how Vim parses and
+executes the commands.</p>
+
+<p>I came up with  four totally distinct ways that Vim interprets duplicate
+patterns.  (which conveniently each get a section below!)</p>
+
+<h2>Two Separate Commands</h2>
+
+<p>The first major group of the duplicated-letter commands I saw was simply where
+Vim interpreted them as duplicated commands.</p>
+
+<p><code>jj</code> is an excellent instance of this. The first <code>j</code> says to go down a line. And
+the second <code>j</code> says to go down a second line.  Two totally separate commands.</p>
+
+<p>Not much more to say here...</p>
+
+<h2>One Command with a Motion</h2>
+
+<p>A second major grouping appears after filtering out the simply duplicated
+single-letter commands.  This is the group of commands that take a motion
+afterward.</p>
+
+<p><code>d</code> is an excellent prototype to examine.  If you simply hit <code>d</code> in Vim. Nothing
+visible happens. Vim knows you're about to delete something, but is waiting for
+you to tell it what. You tell it with a motion.</p>
+
+<h3>Examples With Motions</h3>
+
+<p><code>dw</code> - Delete word</p>
+
+<p><code>d$</code> - Delete until end of line</p>
+
+<p><code>di)</code> - Delete inner parenthesis (see also: a refresher on <a href="http://www.vimdrills.com/posts/drill-3-text-objects">Text Objects</a>)</p>
+
+<h3>Yeah, but What about dd?</h3>
+
+<p>So when we type <code>d</code>, then Vim waits for a motion, just as every time above. But
+if we hit <code>d</code> again, it knows to delete the entire line. BUT WAIT! <code>d</code> is not a
+motion command. How does it know what to delete?</p>
+
+<p>It turns out this is a clever standard that Vim uses.  Every command that I've
+run across (I'd guess all, but I am not 100% sure) that waits for a motion
+interprets its own keystroke again as an instruction to operate on the entire
+line.</p>
+
+<p><code>dd</code> - Deletes the entire line</p>
+
+<p><code>&gt;&gt;</code> - Indents the entire line</p>
+
+<p>But if we try to mix the two:</p>
+
+<p><code>&gt;d</code> - Whoops, Vim doesn't know what to do with this, and beeps at you.</p>
+
+<p><code>d&gt;</code> - No luck again. Only confused beeps from our editor.</p>
+
+<p>So only duplicates have this behavior.</p>
+
+<h2>One Command with an Argument</h2>
+
+<p>This is another distinct way that Vim could interpret a duplicated letter.</p>
+
+<p><code>tt</code> is the best example of this style of commands.  The first <code>t</code> is the "until"
+command. But Vim needs to know "until WHAT", and so it waits for an argument.
+When it hears the second <code>t</code> it can finish the command.  But that second <code>t</code> is
+not a motion, it's not another command, it's the argument to the command.</p>
+
+<p><code>@@</code> is similar.  <code>@</code> is the command to run a macro. But any register could be
+holding a macro in it, so it waits for you to tell it which macro to run.  In
+this case, it borrows the thought process from <code>dd</code> and it special cases the
+otherwise nonsensical <code>@</code> argument (which is not a register), it executes a
+smart default, which in this case is rerunning the last macro.</p>
+
+<h2>Namespaced Commands</h2>
+
+<p><code>gg</code> doesn't match any of the previous categories.  <code>g</code> isn't a command by
+itself. It's not waiting for an argument, or a motion. Instead, it's a whole
+namespace of distinct commands.  If you go to <code>:help g</code>, you get an entire
+section of distinct commands.</p>
+
+<p>Cool enough, some of those namespaced commands in turn follow the rules laid out above.  For example
+<code>g?</code> takes a motion to rot13 some text.  <code>g?g?</code> rot13s the current line. <code>gq</code> to
+reformat text does the same, 'gqgq' operates on the current line.</p>
+
+<p>So back to <code>gg</code>. What's up here?  It's just a single command inside the <code>g</code>
+namespace, the way the unnamespaced <code>j</code> and <code>k</code> are.  Vim parses it as a single
+entity, not as any fancy combination.</p>
+
+<p><code>z</code> is a similar namespace to 'g', holding such amazing commands as <code>zz</code> to
+center the viewport around your cursor (moves the window, but not your cursor
+inside the text)</p>
+
+<h2>Conclusion</h2>
+
+<p>Vim has its own logic.  It's consistent in ways I hadn't even realized before
+writing this article.  Send me some feedback below in the comments, or via
+email at chris@vimdrills.com.  I'd love to know if I missed anything in this
+analysis.</p>
+
+
+          <!-- Begin MailChimp Signup Form -->
+<div id="mc_embed_signup">
+  <form action="http://razormoosellc.us1.list-manage2.com/subscribe/post?u=35003ea04a2b5f4325136907d&amp;id=f3ef4591d6" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate form-search" target="_blank" novalidate>
+  <h2>Subscribe to the VimDrills Mailing List</h2>
+  <p>You'll get weekly drills, screencasts, cheatsheets, and exclusive tips.</p>
+
+  <div class="mc-field-group">
+    <label for="mce-EMAIL"><strong>Email:</strong></label>
+    <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+    <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-danger">
+  </div>
+</form>
+</div>
+<!--End Mailchimp Signup Form -->
+
+
+          <h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'vimdrills'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </div>
+
+        <div class="span2"></div>
+      </div><!--/row-->
+
+      <div class="row-fluid">
+  <footer class="offset3 span9" >
+    <p>Donate Bitcoins to: 1Chris11Zho59oV9ttzbtHCtDMr5zS1S2h &mdash; &copy; Razormoose LLC 2012</p>
+  </footer>
+</div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Javascripts
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/assets/application-b78dfc03a6f9cacc2b79cfe8906e9766.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36870854-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </body>
+</html>
+

@@ -1,0 +1,470 @@
+http://www.codeproject.com/Articles/28050/Generate-PDF-Using-C?fid=1517061&df=90&mpp=10&noise=1&prof=True&sort=Position&view=Expanded&spc=None&fr=11
+Generate PDF Using C# - CodeProject Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » Desktop Development » Files and Folders » Utilities
+ArticleAlternatives
+Comments (78)
+Generate PDF Using C# Predrag Tomasevic, 1 Feb 2009
+4.74 (40 votes)
+1
+2
+3
+4
+5
+4.74/5 - 40 votes4 removedμ 4.45, σa 1.95 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+Using OpenOffice to convert different document types to PDF.	Download source - 286 KB
+OpenOffice 2.4.1 was used during writing of article. At the end of the article there is link to the instructions that will make code work with OpenOffice 3.
+Introduction
+I must confess that I’m not a big fan of PDF. Still, it somehow manages to wiggle in almost every project I'm on – clients want to send out documents, Word is bounded to Windows, HTML is lame, PDF it is. Unfortunately, the situation with it and C# haven’t changed much in couple past years - if there were no new, fancy, priced components, I would conclude that it’s almost the same as it was in .NET 1.1 times – it is a pain to create PDFs.
+For those of you who have access to components which can convert popular formats to PDF, this article is pretty much useless. But, for those who don’t want or simply can’t shell out over $1000 for a chance to convert other formats to PDF – I hope that this solution will prove as an attractive alternative.
+Idea
+During a talk with my friend Toni Ruža (who is primarily a Python developer) about a way to easily convert some WordML reports to PDF, he pointed me to the headless OpenOffice mode. It seems that it has been around for quite some time, but as it is mainly targeted at Java developers, it is no wonder that there were no big fuss about it in C# groups. Still, it promises much – you install OpenOffice, start it in Service mode, send commands over the API, and get to use any feature it provides. More than anything else, my interest was to load any supported format into OpenOffice and then export it as PDF.
+Just to note, in this article, I'll talk about creating PDF from other documents, not from scratch. If you are looking for a way to do that, I'm encouraging you to first take a look at my Generating Word Reports / Documents article. Follow it, and you'll easily create WordML files (like the one used here) from a database or XML.
+Solution architecture
+I was saddened to find out that the headless mode of OpenOffice just minimizes GUI operations, not totally avoiding them. As someone who has a pretty nasty experience with Word.Application.Open() (using interactive applications such as Word by programmatically mimicking user actions), I started thinking on how to isolate OpenOffice and query it independently of the main application process, thus enabling loose coupling and a more stable environment. The result was a Windows Service which wraps the OpenOffice process, taking care of the security context and the usage, while providing the needed functionality over Remoting (am I a service-oriented freak or what? ).
+Here is a diagram presenting the classes used in the process:
+Figure 1 – Class diagram
+ConversionToPDF is the main class when it comes to performing useful work. It employs various classes from the unoidl.com.sun namespace to communicate with OpenOffice, and mimics operations such as opening a file, exporting it as PDF, etc. It also uses the OfficeController class which is responsible for the lifecycle of OpenOffice’s process – it starts, monitors, and finally kills soffice.exe when not used, to preserve resources.
+Receiver is the class that my Windows Service registers for usage over Remoting. It implements the IReceiver interface (needed functionality), and serves as the bridge between the main applications and OpenOffice.
+Finally, I’ve created the GenericSender class for those not familiar with Remoting. It provides the Init method that accepts an address on which the Windows Service wrapper listens (by default, it is tcp://localhost:6543/OpenOfficeServiceReceiver) and initializes a proxy receiver (available as a property). From that point forwards, everything is simple as GenericSender.Receiver.ConvertToPDF(...).
+How to start everything on my machine?
+Let’s do this in a step-by-step fashion:
+Download OpenOffice from here, and perform the standard installation. I’ve developed and tested a solution using version 2.4 of OO. If you are setting up everything on an x64 machine, be sure to add the OO program directory (by default: c:\Program Files (x86)\OpenOffice.org 2.4\program) to the PATH environment variable as described in this forum post. If you change the environment variable, be sure to restart the machine in order to commit and reload the changes. Download the source code that accompanies this article, and Build Solution using the Release configuration in Visual Studio 2008. When the build is complete, check OpenOfficeService/bin/Release and run svc_inst.bat. After that, you should see the OpenOffice Wrapper Service in the list of services when you go to Control Panel -> Administrative Tools -> Services. Right click on it, select Properties, go to the Log on tab, and check Allow service to interact with desktop. Before you can start the service, you need to tweak the license agreement. Because the wrapper service will run under the LocalSystem account, you need to somehow tell OpenOffice that the LocalSystem user “accepted” the terms of use. To prevent the license agreement dialog from popping up and blocking everything, you need to modify the file at %OOInstallPath%\share\registry\data\org\openoffice\Setup.xcu by finding this part:
+&lt;prop oor:name="ooSetupInstCompleted"&gt;
+  &lt;value&gt;false&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="ooSetupShowIntro"&gt;
+  &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+and replacing it with (note that LicenseAcceptDate must be later than the OpenOffice installation time):
+&lt;prop oor:name="ooSetupInstCompleted" oor:type="xs:boolean"&gt;
+ &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="LicenseAcceptDate" oor:type="xs:string"&gt;
+ &lt;value&gt;2008-07-22T14:00:00&lt;/value&gt;
+&lt;/prop&gt;
+&lt;prop oor:name="FirstStartWizardCompleted" oor:type="xs:boolean"&gt;
+ &lt;value&gt;true&lt;/value&gt;
+&lt;/prop&gt;
+This step is taken from here, and I would like to thank Mirko Nasato for his great guide.
+Be sure to start any OpenOffice application (Start -> Programs -> OpenOffice.org -> OpenOffice.org Writer, for example), and validate that it loads without any glitches in order to be sure that OO is properly installed and setup.
+Verify the service configuration (next chapter), start the OpenOffice Wrapper Service, and use it to convert a document. If you have downloaded the source code, you can right click on Default.aspx (Test Applications -> PDFWeb project) in Solution Explorer and choose View in Browser... Here is a code excerpt that uses the GenericSender from OpenOfficeService.Objects.dll to perform the conversion:
+protected void GiveMePDFButton_Click(object sender, EventArgs e)
+{
+    // Initialize Receiver in GenericSender
+    OpenOfficeService.Objects.GenericSender.Init(
+        "tcp://localhost:6543/OpenOfficeServiceReceiver");
+
+    // Translate path and load up file in byte array, convert it
+    string source = Server.MapPath("~/SomeWordML.xml");
+    byte[] wordML = File.ReadAllBytes(source);
+
+    byte[] result = 
+      OpenOfficeService.Objects.GenericSender.Receiver.ConvertToPDF(wordML);
+
+    // Write response to client
+    Response.AddHeader("content-type", "application/pdf");
+    Response.AddHeader("Content-Disposition", 
+                       "attachment; filename=result.pdf");
+
+    Response.BinaryWrite(result);
+}
+Figure 2 – Testing page
+Believe it or not, that’s it! You now have a functioning PDF converter which can be queried from C#, by Remoting.
+During the wrapper implementation, I thought about multi-threading and (hopefully) made calling the ConvertToPDF thread safe. Conversion requests are queued and processed one by one, so the Open Office Wrapper Service can be used by more than one application and, why not, from multiple machines too (the generic sender for the application running on other machines should then be initialized with tcp://%machineHostingService%:6543/OpenOfficeServiceReceiver).
+Configuration
+Currently, there are the following settings for the Open Office Wrapper Service:
+Port – It’s the port on which the service will listen for requests. By default, it is 6543. ProcessName – The name of the OpenOffice process (used when searching the process list to see if OO is alive). When you start OpenOffice in headless mode, it is soffice.bin (instead of soffice.exe). PathToOpenOffice – Self-explanatory, eh? If you have installed OpenOffice on a path other than the default, you should change this setting (the default path is c:\Program Files\OpenOffice.org 2.4\program\soffice.exe; on x64 machines, add (x86) after Program Files). SecondsIdleAllowed – When a conversion request is submitted, OpenOfficeController checks if OO is running in the background, and if not, starts soffice.exe in headless mode. By default, if no new request is made in 60 seconds, the OpenOffice process will be killed. CheckIntervalInSeconds – The interval in which the service evaluates OpenOffice usage (bound to the previous setting). By default, it is 30 seconds. RequestTimeoutInSeconds – The time in which a response is expected from OpenOffice. If the item stays in the queue for too long or OpenOffice gets too big a file for processing, a Timeout Exception will be thrown. The default wait is 30 seconds. Running in-process?
+I would like to mention once again that the Windows Service I wrote is only there to provide a security context and serve as a bridge to OpenOfficeWrapper.dll that implements the main stuff when it comes to communicating with OpenOffice. If you wish, you can directly reference OpenOfficeWrapper.dll and perform PDF conversions in-process, but you must be sure that your application will be run with sufficient security privileges! In my testing, the conversion was successful only if I run the application under an account that belonged to the Administrator group.
+Also, you could run into trouble when trying to run OpenOfficeWrapper on x64 versions of Windows. I’ve had tons of trouble trying to get my Web Application to convert PDF by using the OpenOfficeWrapper in process on a Windows 2003 x64 machine. So, if you really do not need to have everything in your application’s process, leave the code that wraps OpenOffice separated, and use it through a Windows Service.
+Words of warnings and words of thanks
+To me, the documentation of OpenOffice is terrible. OK, I could be another C# "quasi-developer" who finds it easier to look at examples than to crawl through bunch of Wiki pages, diagrams, and forum posts just to get a couple lines of code that opens a document. But, for me - after an absolute champion of useless information, unrelated links, and broken searches in the MSDN - the OO developer portal is one more example of how you do not want your documentation to be organized. From what I’ve seen, OpenOffice is a great product considering the cost ($0), and it is a shame that I can’t say the same for its documentation.
+On the other hand, posts of server users on the OOoForum are really helpful; I would specifically like to thank LarsB, tcedi, and DannyB. Most of the conversion code in ConvertToPDF.cs is taken from LarsB’s Commandline PDF convertor; so, thank you man – I hope you’ll continue to post useful snippets.
+Conclusion
+With this article, I aimed at a simple goal – to provide an easy-to-follow, free, and versatile solution for converting documents to PDF by using C#. I am aware that there are technically more robust solutions, but I do not know any of them that’s free. If you know – please post it in the comments section along with an impression of this article.
+Enjoy! References
+Instructions on making code work with OpenOffice 3, (thanks to goa_kiwi)
+History
+January 8th, 2009 - Added references.
+July 22nd, 2008 - Initial version of the article.
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+FirstPrevNext
+Re: i´m missing something? general_aelius21-Jun-12 5:35 I've got also the same issue on another installation of mine..did you manage to solve it?
+My vote of 1 gowthammanju10-May-11 21:02 i can not find the solution for this problem can u guide me
+Securing the PDF marc lang6-Jan-11 1:39 Hi,
+I have got the conversion working fine now in 2.4.1.
+I now want to manipulate the PDF to amend the permissions.
+I have used this page as a reference:
+http://wiki.services.openoffice.org/wiki/API/Tutorials/PDF_export#Security
+And my code in saveDocument now looks like:
+
+&nbsp;
+// Exporting to PDF consists of giving the proper
+            // filter name in the property "FilterName"
+            // With only this, the WHOLE document will be exported
+            // using the existing PDF export settings
+            // (the one used the last time, or the default if the first time)
+            unoidl.com.sun.star.beans.PropertyValue[] aMediaDescriptor = new unoidl.com.sun.star.beans.PropertyValue[2];
+&nbsp;
+            aMediaDescriptor[0] = new unoidl.com.sun.star.beans.PropertyValue();
+            aMediaDescriptor[0].Name = "FilterName";
+            aMediaDescriptor[0].Value = new uno.Any("writer_pdf_Export");
+&nbsp;
+            // By adding the "FilterData" we can control what is exported and how
+            // For example, we will export ONLY the current selection
+            // it's a collection of 5 properties
+            unoidl.com.sun.star.beans.PropertyValue[] aFilterData 
+                = new unoidl.com.sun.star.beans.PropertyValue[5];
+&nbsp;
+
+            aFilterData[0] = new unoidl.com.sun.star.beans.PropertyValue();
+            aFilterData[0].Name = "Printing";
+            //* 0 = The document cannot be printed.
+            //* 1 = The document can be printed at low resolution only.
+            //* 2 = The document can be printed at maximum resolution. 
+            if (permitPrinting)
+            { aFilterData[0].Value = new uno.Any(2); }
+            else
+            { aFilterData[0].Value = new uno.Any(0); }
+            
+&nbsp;
+            aFilterData[1] = new unoidl.com.sun.star.beans.PropertyValue();
+            aFilterData[1].Name = "Changes";
+            //* 0 = The document cannot be changed.
+            //* 1 = Inserting deleting and rotating pages is allowed.
+            //* 2 = Filling of form field is allowed.
+            //* 3 = Both filling of form field and commenting is allowed.
+            //* 4 = All the changes of the previous selections are permitted, with the only exclusion of page extraction (copy).  
+            if (permitChanges)
+            { aFilterData[1].Value = new uno.Any(4); }
+            else
+            { aFilterData[1].Value = new uno.Any(0); }
+&nbsp;
+
+&nbsp;
+            aFilterData[2] = new unoidl.com.sun.star.beans.PropertyValue();
+            aFilterData[2].Name = "EnableCopyingOfContent";
+            if (permitCopyingOfContent)
+            { aFilterData[2].Value = new uno.Any(true); }
+            else
+            { aFilterData[2].Value = new uno.Any(false); }
+&nbsp;
+
+            aFilterData[3] = new unoidl.com.sun.star.beans.PropertyValue();
+            aFilterData[3].Name = "RestrictPermissions";
+            aFilterData[3].Value = new uno.Any(true);
+&nbsp;
+
+            aFilterData[4] = new unoidl.com.sun.star.beans.PropertyValue();
+            aFilterData[4].Name = "PermissionPassword";
+            aFilterData[4].Value = new uno.Any("password");
+&nbsp;
+
+            // Apply filter settings to the media (document)
+            aMediaDescriptor[1] = new unoidl.com.sun.star.beans.PropertyValue();
+            aMediaDescriptor[1].Name = "FilterData";
+            aMediaDescriptor[1].Value = new uno.Any(typeof(unoidl.com.sun.star.beans.PropertyValue[]), aFilterData);
+&nbsp;
+            //RestrictPermissions
+
+&nbsp;
+            if (isDebugEnabled) { log.DebugFormat("Attempting to store to URL {0}", fileName); }
+&nbsp;
+            ((XStorable)xComponent).storeToURL(fileName, aMediaDescriptor);
+&nbsp;
+The document does come out with "SECURE" in the Window title when opened, so something has happened, but all the permissions such as Allow Printing still seem to be set as "Allowed"
+Has anyone had any luck with this?
+Re: Securing the PDF marc lang6-Jan-11 1:55 Spent an hour on this, then as soon as I posted I realised what it was.
+The values being passed in above (permitChanges etc) were incorrect.
+The code above works perfectly, so anyone wanting to implement security - there it is!
+Files being locked marc lang23-Dec-10 4:18 Hi,
+I have this working - kinda!
+Using OO 3.2, followed the steps in other thread and have it generating a PDF.
+However. in the "finally" block after it has read the bytes from the PDF and returns them, my client is getting the error:
+The process cannot access the file 'C:\Documents and Settings\Default User\Local Settings\Application Data\gnr-source-541841103-634287140951073780.xml' because it is being used by another process.
+So looks as though the XML file is locked?
+Has anyone else experienced this?
+Bit of a shame, looks like it's going to leave the temp files on the server.
+I may try roll back to OO 2.4 to see if it helps
+Re: Files being locked marc lang23-Dec-10 5:36 Ahhh!
+Rolled back to 2.4, implemented log4net
+now getting:
+RROR 2010-12-23 16:32:49,580 ConversionToPDF Generate - Exception caught: unoidl.com.sun.star.uno.RuntimeException: [map_to_uno():[]com.sun.star.beans.PropertyValue] conversion failed
+[map_to_uno():unoidl.com.sun.star.beans.PropertyValue.Value [map_to_uno():any] could not convert type!
+Server stack trace: Exception rethrown at [0]: at System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)
+at System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)
+at unoidl.com.sun.star.frame.XStorable.storeToURL(String sURL, PropertyValue[] lArguments)
+at OpenOfficeWrapper.ConversionToPDF.saveDocument(XComponent xComponent, String fileName)
+Looks like it's the line storeToURL
+propertyValue[0] = new unoidl.com.sun.star.beans.PropertyValue();
+propertyValue[0].Name = "FilterName";
+propertyValue[0].Value = new uno.Any("writer_pdf_Export");
+if (isDebugEnabled) { log.DebugFormat("Attempting to store to URL {0}", fileName); }
+((XStorable)xComponent).storeToURL(fileName, propertyValue);
+Is it not recognising the "writer_pdf_Export"?
+Windows Service tiutababo29-Dec-09 22:46 Is there a way to get this to run with as localsystem instead of admin groups?
+problem suppergosc7-Jun-09 4:41 i, I've tried to run this code and I god exception:
+No connection could be made because the target machine actively refused it 127.0.0.1:6542
+in line:
+[Default.aspx.cs - line: 22] byte[] result = OpenOfficeService.Objects.GenericSender.Receiver.ConvertToPDF(wordML); any ideas what can be wrong?
+Re: problem Wilmer Cárdenas9-Jun-11 11:01 did you check if the service is properly installed and started?, when the connection is refussed it´s due there's nothing listening in that port
+Timeout for Loading Member 438015726-Apr-09 9:15 Great code, thanks for the contribution. I made a small modification to support an application I developed that performs batch processing. After 20 seconds of trying to load a file I have the system stop. In my case, when trying to load a file that was password protected the system would hang indefinitely. Additional recommendations would be to set the time out as a function of the input file size. //Load the sourcefile XComponent xComponent = aLoader.loadComponentFromURL(sourcePath, "_blank", 0, new unoidl.com.sun.star.beans.PropertyValue[0]); //Wait for loading int sleepCount = 0; while (xComponent == null) { System.Threading.Thread.Sleep(1000); sleepCount++; if (sleepCount > 20) { return ""; } } Document is no good in OO mrdajma6662-Mar-09 6:12 I created XML document (WordML) and when opened in OpenOffice, there are no pictures and formatting of text is quite different.
+Is there any way for the document to looks the same in MS Office and Open Office ?
+Another easy solution to create PDF from C# bazooka7628-Feb-09 7:24 This was a good article.. If you are looking to create PDF with data in XML another easy and free option is to use NFOP. Check this article out for a clear step by step instruction to generate PDF from C#
+http://www.codelathe.com/blog/index.php/2009/02/28/generate-pdf-from-cnet/
+Performance mjmim2-Feb-09 5:51 Great idea! how is it performance wise?
+Approximately how much time does it take for an average web page (in seconds)?
+Re: Performance Predrag Tomasevic2-Feb-09 15:56 This solution definitely isn't for hi-load scenarios... but you can expect about 1 conversion per 3 seconds (on average 1 page A4 document).
+Alternative solution zlezj1-Feb-09 21:09 When creating reports from third party applications, an alternative solution could be printing the document using PDF Creator[^]
+Re: Alternative solution Predrag Tomasevic2-Feb-09 16:04 The problem with PDF Creator (and all other free PDF printers) is that something needs to trigger them (Word, OpenOffice, some other program), unless developer wishes to send direct print commands (and most of the developers don't want to do that).
+So, for conversion from other document types PDF Creator is pretty much useless. But, if someone wants to go with PDF Creator using C# for whatever reason, take a look at this link -> http://angrez.blogspot.com/2007/06/create-pdf-in-net-using-pdfcreator.html[^]
+Will this support Unicode characters? DINTO22-Jan-09 2:33 I need help in generating PDF with Unicode characters, like I want to make PDFs in different languages like Russian, Japanese, Arabic, german etc. Is it possible with this component?
+D
+Re: Will this support Unicode characters? Predrag Tomasevic29-Jan-09 19:15 I don't see why it wouldn't work. Download source, run it and try processing your documents...
+Re: Will this support Unicode characters? Dev. Heba11-Feb-09 9:06 I also need a way to support Arabic text I tried to search and I found solutions but none was ideal to solve the problem!
+Re: Will this support Unicode characters? Dev. Heba20-Feb-09 12:08 No need for $1000 worth libraries Sasa Popovic19-Jan-09 10:51 Nice article but in my oppinion too much workarounds when there is a free and open source library for elegant PDF generation. You can check it here: http://itextsharp.sourceforge.net/[^].
+I used it on commercial products with heavy load and a lot of PDF generation. Works like a charm and you don't need to install anything on production server in order for it to generate PDF files. Vega IT Sourcing
+http://www.codeplex.com/aspnetlibrary
+Re: No need for $1000 worth libraries Predrag Tomasevic29-Jan-09 18:02 http://www.codeproject.com/KB/files/generatepdf.aspx?fid=1517061&df=90&mpp=50&noise=3&sort=Position&view=Quick&select=2650633#xx2650633xx[^]
+Re: No need for $1000 worth libraries Sasa Popovic29-Jan-09 22:00 I'm sorry, I didn't saw the other comment about iTextSharp. You have a point about it being a matter of taste Vega IT Sourcing
+http://www.codeplex.com/aspnetlibrary
+I need help, please. [modified] ducero19-Jan-09 3:56 Hello, first sorry for my English. I am Spanih.
+I am trying to use the code of this article, into web app (ASP.NET) with .net framework 2.0 into VS2005, and OO 3.0, but not work. I run my app into VS2005 own web server. When i run app, an error was occurred in this line: Dim Resul As Byte() = OpenOfficeService.Objects.GenericSender.Receiver.ConvertToPDF(PDF)
+that say: Method not found. 'unoidl.com.sun.star.uno.XComponentContext uno.util.Bootstrap.bootstrap()'
+Thanks a lot. modified on Monday, January 19, 2009 10:06 AM
+Re: I need help, please. Predrag Tomasevic19-Jan-09 7:28 The problem is that you are using OpenOffice 3.0 - code is made for OpenOffice 2.4.1
+I've found OpenOffice 2.4.2 on this address -> http://download.openoffice.org/2.4.2/index.html[^]. Until I port code for OO 3.0 can you try to use that version?
+Re: I need help, please. Predrag Tomasevic29-Jan-09 19:12 http://www.codeproject.com/KB/files/generatepdf.aspx?fid=1517061&select=2903150&fr=1#xx2903150xx[^]
+How to avoid Random string on the top of PDFs generated Vijay Pandey15-Jan-09 22:14 Hi,
+Thank you for posting some good article on open office. When I convert an HTML file to PDF, PDF file always contains a string ï»¿ . Can we avoid this string.
+Thank You
+Re: How to avoid Random string on the top of PDFs generated Predrag Tomasevic29-Jan-09 19:16 I can't reproduce your problem (and I never got ï»¿ when converting my files). If you can, send me a link to your HTML and I'll try to help you.
+Re: How to avoid Random string on the top of PDFs generated mindking6-May-09 22:18 I need help with this as well , is there a way to remove the characters
+Re: How to avoid Random string on the top of PDFs generated Marek.T18-Jan-10 7:33 What you are seeing is the byte order mark. There is a bug in the code that binds it to a particular Encoding.Default for the environment it is running in. I have not looked at the code though, so I have no idea where the bug may be. For details, see e.g. here: http://stackoverflow.com/questions/288111/remove-byte-order-mark-from-a-file-readallbytes-byte[^]
+OpenOffice 3 agentone7-Jan-09 3:55 Can you maybe explain detailed (step-by-step) how you have solve it and run it with OpenOffice 3? I really have try it now many hours and it will not work.
+Re: OpenOffice 3 goa_kiwi7-Jan-09 9:40 Hi. Refer to reply below by clicking here [^]
+Re: OpenOffice 3 Predrag Tomasevic29-Jan-09 19:13 http://www.codeproject.com/KB/files/generatepdf.aspx?fid=1517061&select=2903150&fr=1#xx2903150xx[^]
+Can the code be used with the dot net 2.0 sharma.monal29-Dec-08 2:22 As I dont have visual studio 2008 I want to ask if the code and the dll can be used with the framework 2.0 or framework 1.1.
+Thanks
+Re: Can the code be used with the dot net 2.0 Predrag Tomasevic29-Dec-08 6:49 Code doesn't contain any .NET 3.5 specifics... (there are only couple of using System.Linq statements that you need to delete).
+You can download source and use some kind of downgrading utility (like this one http://mises.com/blogs/misestech/VisualStudioProjectDowngrade.zip[^]) to convert project to VS 2005.
+P.
+Open Office 3 goa_kiwi20-Nov-08 11:33 Hi, I have a .Net windows service that uses OO. It took me a while to get this going under Server 2003, but after coming across your awesome article I finally got it going by setting the PATH environment variable amd setting the OO license agreement to accepted (Setup.xcu).
+However, we have recently upgraded to OO3 and now its not working!
+One thing I have noticed is that the OO dlls have now moved and are now under C:\Program Files (x86)\OpenOffice.org 3\URE\bin and C:\Program Files (x86)\OpenOffice.org 3\Basis\program. I have added both these to the path environment variable but still no luck. I have noted the license agreement files (Setup.xcu) has also changed location, but I have updated this to auto-accept license, but no luck there either. Any ideas?
+Re: Open Office 3 goa_kiwi26-Nov-08 9:32 I finally got this going . In order to use Open Office 3 from a windows service you need to add some additional environment settings as detailed here: http://blog.nkadesign.com/2008/net-working-with-openoffice-3/
+Basically the below (using standard installation paths): - Append to PATH variable C:\Program Files\OpenOffice.org 3\URE\bin. - Create a UNO_PATH variable with C:\Program Files\OpenOffice.org 3\program.
+Also to now accept the license agreements for all users, etc, what I do is first open up Open Office with an existing user, accept the license agreement, and I then copy that users Open Office profile (from documents and settings) to the Defualt user profile.
+Re: Open Office 3 agentone7-Jan-09 3:55 Can you maybe explain detailed (step-by-step) how you have solve it and run it with OpenOffice 3? I really have try it now many hours and it will not work.
+Re: Open Office 3 goa_kiwi7-Jan-09 9:33 Remember my suggested fix was for a Windows Server 2003 (x64) machine, and was also for my own code... I have not tested it with the code supplied in this article (although it shouldn't make a difference).
+I have just noticed my original answer had slightly incorrect paths (missing "x86" extension). Also on my last install I still hit an issue and had to perform what I detail in step 6 below. But I have now got this going on 3 seperate Server 2003 machines, and so it should work for you.
+Here are the instructions step by step. Note I am assuming standard installation paths:
+1) Change/Add the following environmental varibles (Available in the Advanced tab, under My Computer properties). - Append to PATH variable "C:\Program Files (x86)\OpenOffice.org 3\URE\bin" (and also remove any Open Office paths you might have added previously)
+- Create a UNO_PATH variable with "C:\Program Files (x86)\OpenOffice.org 3\program"
+2) Accept Open Office license agreements for all users. I do this by first opening up Open Office manually with an existing user and accepting license aggreements, etc. I then copy that users Open Office profile (C:\Documents and Settings\[Username]\Application Data\OpenOffice.org) to the Default user profile (C:\Documents and Settings\Default User\Application Data\).
+3) Restart machine for settings to take affect
+4) Install Service. Ensure it is set to run under the 'Local System Account' with the 'Allow service to interact with desktop' right set
+5) Start Service
+6) If you are still having issues converting docs, try the following:
+- stop the service
+- set the service to run under the administrator account
+- start it
+- try to convert a document (it should work)
+- stop the service again
+- set service to run under the 'Local System Account' again with the 'Allow service to interact with desktop' right set
+- start the service
+Re: Open Office 3 agentone7-Jan-09 22:33 Thank you for you fast reply. I still have same problems with this script.. I get each time the error (ASP.NET site) method not found: unoidl.com.sun.star.uno.XComponentContext uno.util.Bootstrap.bootstrap(). Maybe you can give me your eMail adress?
+Re: Open Office 3 goa_kiwi8-Jan-09 9:37 Hmmm... like I said above I am using my own pdf conversion code (using Open Office). Given you are having an issue with the code in this article, maybe the articles author (Predrag Tomasevic) would be better based to give you further suggestions.
+Re: Open Office 3 agentone8-Jan-09 23:51 Maybe there is a way that you give me your solution?
+Re: Open Office 3 Predrag Tomasevic7-Jan-09 4:32 Thanks a lot for your detailed reply on making OpenOffice 3 work with code.
+I'll reference your post in article to so other people can benefit too Best!
+P.
+Re: Open Office 3 agentone8-Jan-09 23:54 When have you add this in the article? It may help a lot.
+Re: Open Office 3 Predrag Tomasevic19-Jan-09 7:29 I will try to produce OO3 version of code as soon as I can. In the meantime - can you try to use this OO 2.4.2 version -> http://download.openoffice.org/2.4.2/index.html[^]?
+P.
+Re: Open Office 3 agentone29-Jan-09 4:09 Any idea when ready?
+Re: Open Office 3 Predrag Tomasevic29-Jan-09 4:15 I promise I'll take a look today and send you response in 24h.
+Re: Open Office 3 Predrag Tomasevic29-Jan-09 19:11 OK, here it is. Basically, solution is compilation of what goa_kiwi wrote[^] and instructions on this page[^].
+You actually don't need to change any code. So just be sure to download fresh source from article to start with.
+Part I - follow all advices from goa_kiwi. Here is copy paste:
+0) Download OpenOffice3[^] and install it on your machine.
+1) Change/Add the following environmental varibles (Available in the Advanced tab, under My Computer properties).
+- Append to PATH variable "C:\Program Files (x86)\OpenOffice.org 3\URE\bin" (and also remove any Open Office paths you might have added previously)
+- Create a UNO_PATH variable with "C:\Program Files (x86)\OpenOffice.org 3\program". Go without ' (x86)' if you are on 32-bit machine.
+2) Accept Open Office license agreements for all users. I do this by first opening up Open Office manually with an existing user and accepting license aggreements, etc. I then copy that users Open Office profile (C:\Documents and Settings\[Username]\Application Data\OpenOffice.org) to the Default user profile (C:\Documents and Settings\Default User\Application Data\).
+3) Restart machine for settings to take affect
+Part II - Changing the article source
+Now after computer starts up, unpack source from article and double click on PDFGeneration.sln. During installation process you were prompted to create OpenOffice.org 3.0 (en-US) Installation Files folder (by default it is on your desktop). Follow this advice from page I referenced earlier:
+1. Open the installation folder where the installation files are extracted (usually left on your desktop under a folder like OpenOffice.org 3.0 (en-US) Installation Files during the OO installation process.
+2. Open the openofficeorg1.cab file (using a utility like 7zip if necessary) and extract the files matching cli_*.dl.
+3. Add all cli_* you extract to the OpenOfficeWrapper project references and make sure the properties of these references have their Copy Local and Specific Version properties set to false.
+4. If you have a setup project that added these references to the list of files, right-click each of them and select Exclude to make sure they won’t be packaged.
+Now just go to OpenOfficeService/app.config and change PathToOpenOffice to C:\Program Files\OpenOffice.org 3\program\soffice.exe (or C:\Program Files\OpenOffice.org 3 (x86)\program\soffice.exe if you are on 64-bit machine).
+Press F5 and everything should work.
+If you wish you can download changed Solution from over here[^]... that way you won't need to follow instruction from Part II (I thought it would be nice to include them because of ppl who want to know what is actually done behind scenes).
+Hope this helps. I'll update article as soon as I find time.
+P.
+Re: Open Office 3 alexey.nayda3-Dec-09 1:22 Hi I just want to add small update to your Part II section to the 3. step.
+According to http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/CLI/CLI_Language_Binding[^]
+you don't need to refer cli_types.dll anymore. It was replaced by cli_oootypes.dll and cli_uretypes.dll, which both are actually installed into GAC. Actually if cli_types.dll is in references, you'll get ambiguous reference for OO classes..
+Hope this will be useful for someone..
+Regards,
+Alexey
+Good Article chrisp41731-Jul-08 7:38 Good article!
+I few years back I developed a C# application that converted MS Office documents to PDF but I went the Office automation route instead of using OpenOffice. I did not know anything about programming OpenOffice. This article is very interesting.
+Basically I used Office automation and the Acrobat Distiller printer driver to convert documents to Postscript and then I used Ghostscript to convert the Postscript files to PDF. The solution was not 100% perfect but it was probably 99% successful.
+Thanks for sharing the article.
+Last Visit: 31-Dec-99 18:00 Last Update: 13-Jul-14 16:44Refresh12 Next »
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 23 Jul 2008
+Views 290,850
+Downloads 7,583
+Bookmarked 251 times
+C#1.0 C#2.0 C#3.0 .NET3.5 VS2008 C# XML Windows .NET Dev , + Related Articles
+Pdfizer, a dumb HTML to PDF converter, in C#
+Text2PDF
+PDF reporting using ASP.NET MVC3
+PdfView - Peeking into the Internals of PDFs
+Fill in PDF Form Fields using the Open Source iTextSharp Dynamic Link Library
+Programmatically Complete PDF Form Fields using Visual Basic and the iTextSharp DLL
+Manipulate (Add/Edit) PDF using .NET
+Filling PDF Form using iText PDF Library
+A SOA approach to dynamic DOCX-PDF report generation - Part 2
+PDF Viewer Control Without Acrobat Reader Installed
+Gios PDF .NET library
+Creating PDF documents with iTextSharp
+Generating Dynamic PDF Documents using the Open Source Scryber Library
+A PDF Forms Parser
+Generating Server Side PDFs using PDFKit and Node.js
+Add Images and Textboxes to PDF
+Simplest PDF Generating API for JPEG Image Content
+How to Read, Write and Edit PDF Files and Metadata using LEADTOOLS
+Exporting a DataTable to PDF
+Generate Thumbnail Images from PDF Documents
+Scan and Read the Barcode from PDF File
+Related Research
+Enterprise Integration Patterns Flash Cards
+Toad Oracle: Tips to Simplify Database Administration and Development
+Gartner: Magic Quadrant for On-Premises Application Platforms Expanding active decision-making: The power of integrating business rules and events
+Permalink | Advertise |
+Privacy |
+Mobile
+Web04 |
+2.8.140709.1 |
+Last Updated 2 Feb 2009	Article Copyright 2008 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

@@ -1,0 +1,393 @@
+http://radare.org/y/?p=examples
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 03:48:48 GMT
+Server: Apache/2.2.24 (Unix) mod_ssl/2.2.24 OpenSSL/1.0.1g
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4454
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="description" content="radare, the reverse engineering framework">
+    <meta name="keywords" content="arm64, 64 bit hexadecimal editor, disassembler, debugger, linux debugger, reverse engineering, code analysis, bindiffing, binary diffing, windows debugger, iphone debugger, mips, x86, arm, powerpc, graph analysis, hacking, malware analysis, virus analysis">
+    <meta http-equiv="X-UA-Compatible" content="FF=1; chrome=1; IE=edge"/>
+    <title>radare</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel=Stylesheet href="style.css" type="text/css" />
+	<meta name="viewport" content="width=320px, initial-scale=1, user-scalable=true" />
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17833959-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+function showMenuBar() {
+	var mb = document.getElementById("menubutton");
+	mb.innerHTML="&lt;";
+	var mb = document.getElementById("menubar");
+	mb.style.display="inline";
+	var tb = document.getElementById("textbox");
+	tb.style.width="100%";
+}
+
+function hideMenuBar() {
+	var mb = document.getElementById("menubutton");
+	mb.innerHTML="&gt;";
+	var mb = document.getElementById("menubar");
+	mb.style.display="none";
+	var tb = document.getElementById("textbox");
+	tb.style.width="100%";
+}
+
+function menuIsShown() {
+	return (document.getElementById("menubar").style.display !== "none");
+}
+
+function toggleMenuBar() {
+	if (menuIsShown()) {
+		hideMenuBar();
+	} else {
+		showMenuBar();
+	}
+}
+
+window.onresize = window.onload = function() {
+	if (window.innerWidth < 800) {
+		document.getElementById("menubutton").style.visibility="visible";
+        document.getElementById("box").style.width="100%";
+    } else {
+        showMenuBar();
+		document.getElementById("menubutton").style.visibility="hidden";
+        document.getElementById("box").style.width="850px";
+    }
+}
+</script>
+</head>
+<body>
+<!--
+<a href="https://github.com/radare/radare2"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+-->
+<center>
+
+<table id="box" class="box" style="width:850px">
+    <tr><td colspan=2>&nbsp;</td></tr>
+    <tr>
+        <td rowspan="2" class="logo" >
+            <div id="menubar" style="width:125px">
+                &nbsp;&nbsp;<a href="?"><img style="border:0;height:36px" alt="r2 logo" src="../img/rlogo.png"></a>
+                <br /><br /> <br />
+
+                &nbsp;<a class=menutitle href='?'>Project</a><br />
+                <hr />
+                <div class=menubar>
+                    <a href="http://radare.today">today</a><br />
+                    <a href="/rsoc">rsoc 2014</a><br />
+<a href="?p=crowdfunding">crowdfunding</a><br />
+<a href="?p=documentation">documentation</a><br />
+<a href="?p=development">development</a><br />
+<a href="?p=comparison">comparison</a><br />
+<a href="?p=bugtracker">bugtracker</a><br />
+<a style="color:black">examples</a><br />
+<a href="?p=features">features</a><br />
+<a href="?p=talks">talks</a><br />
+<a href="?p=gui">gui</a><br />
+                </div>
+                <br /> <br />
+                &nbsp;<a class=menutitle href='?p=download'>Download</a>
+                <hr />
+                <div class=menubar>
+                    <table class=logo style="width:120px;border-collapse:collapse">
+                        <tr>
+                            <td><a href="../get/valabind-0.8.0.tar.gz">valabind</a></td> <td>0.8.0</td>
+                        </tr>
+                        <tr style=background-color:yellow>
+                            <td><a href="../get/radare2-0.9.7.tar.xz">radare2</a></td> <td>0.9.7</td>
+                        </tr>
+                        <tr>
+                            <td><a href="../get/radare2-bindings-0.9.7.tar.xz">r2-bind</a></td> <td>0.9.7</td>
+                        </tr>
+                        <tr>
+                            <td><a href="../get/radare-1.5.2.tar.gz">radare</a></td> <td>1.5.2</td>
+                        </tr>
+                            <tr><td><a href="../get/sdb-0.9.0.tar.gz">sdb</a> </td> <td>0.9.0</td>
+                        </tr>
+                            <tr><td><a href="../get/ired-0.5.tar.gz">ired</a> </td> <td>0.5</td>
+                        </tr>
+                        <tr>
+                            <td colspan=2><a href="?p=download#binaries">binaries</a> </td>
+                        </tr>
+                        <tr>
+                        <td colspan=2><a href="?p=download#sources">sources</a> </td>
+                        </tr>
+                    </table>
+                </div>
+                <br/> <br />
+                &nbsp;<a class="menutitle" href="?p=contact">Contact</a>
+                <hr  />
+                <div class=menubar>
+                    <a href="nospam.php?for=list" target=_blank>mailing list</a> <br />
+                    <a href="http://lists.nopcode.org/pipermail/radare-nopcode.org/" target=_blank>archives</a> <br />
+                    <a href="?p=development">donate</a> <br />
+                    <a target=_blank href="http://twitter.com/radareorg">twitter</a> <br />
+                    <a href="nospam.php?for=mail" target=_blank>email</a> <br />
+                    <a href="http://radare.today" target=_blank>blog</a> <br />
+                    <a href="irc://irc.freenode.net/radare">irc</a> <br />
+                </div>
+            </div>
+        </td>
+        <td rowspan=2>&nbsp;</td>
+        <td class="title" valign="top" style="height:54px; text-align:center">
+            <a href="javascript:toggleMenuBar()">
+                <div class="menubutton" id="menubutton" style="visibility:hidden">&lt;</div>
+            </a>
+            radare, <span style='color:#787a87'>the reverse engineering framework</span>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td id="textbox" class="textbox" valign=top style="width=100%">
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Adventures with Radare2 #1: A Simple Shellcode Analysis
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=adv>
+	<img border=0 src="f/adv/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		Posted on July 17, 2011 by Edd
+<br />
+<a target=_blank href="http://canthack.org/2011/07/adventures-with-radare-1-a-simple-shellcode-analysis/">http://canthack.org/2011/07/adventures-with-radare-1-a-simple-shellcode-analysis/</a>
+<br />
+<br />
+
+Radare2 is an open-source reverse engineering toolkit, consisting of a disassembler, debugger and hex editor. In this article I will show you the basics by reversing some shellcode I found on Project Shellcode.
+
+<br /> <br />
+To put this into context let's briefly discuss what we mean by the term "shellcode", not to be confused with "shellscript", which is something else entirely. "Shellcode" is a term colloquially used to refer to the payload of an exploit. Typically this would be code injected to start a shell.
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>r2 API usage. ITrace, a practical case
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=itrace>
+	<img border=0 src="f/itrace/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		In this new article I will explain some of the r_anal features through the
+creation of a small tool that we will call "itrace", which is mainly
+focused on tracing/hooking of imports execution based on LD_PRELOAD + global
+hooking. I presented this method and POC on rooted'10, so you can give a
+look to the slides [1] if you want a quick summary and source [2] for testing
+it.
+
+<br/><br/>
+
+Imagine the following scenario, we have a binary and we want to trigger an event
+each time that an import is called. Obviously, we could hook all the imports and
+exec whatever we want preloading a library coded by us with LD_PRELOAD, but this
+aproximation has a very big problem: the imports used by each target binary will
+change, so we would need to code a library adapted to each binary every time.
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Extending r2 with new plugins
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=plugins>
+	<img border=0 src="f/plugins/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		One of the key features behind r2 is how easily it can be extended with new
+libraries or plugins. In this paper, we will see the steps needed for adding
+a new plugin in radare.
+
+<br/><br/>
+
+Let's say we want to add a new plugin for r_asm because we are working with
+binaries of an architecture not supported by r2. Of course, adding a new plugin
+for another lib would be mostly the same.
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Scripting r2 using Vala
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=vala>
+	<img border=0 src="f/vala/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		Under some situations you need to automatize or extend the features of radare.
+There are so many scripting languages out there: python, ruby, perl, lua between others.
+<br /><br />
+All of them are supported by the radare package and you can use them from inside r2 using
+r_lang plugins and the '#!' command or externally with the r2-swig.
+<br /><br />
+The main issue on scripting languages is performance. The code is interpreted and all the
+api bindings are wrapped, so linked list accesses and function calls are highly penalized.
+<br /><br />
+Here's where <a href="http://live.gnome.org/Vala">Vala</a> joins the party.
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Graphs: code analysis of functions
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=graph>
+	<img border=0 src="f/graph/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		When analyzing big binaries text-only view is probably not enought to understand the whole program.
+
+<br /> <br />
+radare and radare2 can generate graphs in graphviz format.
+
+<br /><br />
+When compiling radare1 with gtk, you will be able to use the 'ag' command. This command opens a gtk window with the graph analysis starting at the current seek
+
+<br /><br />
+There are three ways to work with graphs using radare:
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Rasm: multiarch assembler/disassembler
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=rasm>
+	<img border=0 src="f/rasm/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		One of the main programs distributed with radare and radare2 is 'rasm' (and 'rasm2).
+This tool permits to assemble and disassemble stream of bytes or opcodes from pipes or files.
+<br /><br />
+The way to disassemble some bytes is easy:
+<pre>$ rasm2 'nop'
+90
+$ rasm2 -d '90'
+nop
+</pre>
+Appending more than one opcode is done by the ';' character:
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Rax: base conversion tool
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+	<td valign=top style="text-align:center;height:100px;width:130px;background-color:white">
+	<a href=?p=examples&f=rax>
+	<img border=0 src="f/rax/small.png" />
+	<br />
+	read more</a>
+	</td>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		Many times you fall in the situation that you need a simple calculator and conversor tool to convert numbers from different bases, change the endianness, etc..
+<br /><br />
+The 'rax' utility comes with the radare framework and aims to be a minimalistic expression evaluator for the shell useful for making base conversions easily between floating point values, hexadecimal representations, hexpair strings to ascii, octal to integer.
+<br /><br />
+It supports endianness and can be used as a shell if no arguments given.
+In short you have:
+<pre>
+$ rax -h
+Usage: rax [-] | [-s] [-e] [int|0x|Fx|.f|.o] [...]
+</pre>
+<br />...	</td>
+	</tr>
+	</table>
+<br /><br />
+            <br />
+        </td>
+    </tr>
+</table>
+<br />
+<!--
+<div style="background-color:white;width:500px;
+       -webkit-border-radius:10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;">
+<br />
+<iframe data-aa='472' src='//ad.a-ads.com/472' scrolling='no' style='width:120px; height:60px; border:0px; padding:0;overflow:hidden' allowtransparency='true'></iframe>
+<iframe src='http://anonymousads.com/a/15gRDoa9wHYTN4k8U1EPPxTQ7bXcXWMVWP' scrolling='no' style='width:468px; height:60px; border:0px; padding:5pt'></iframe>
+<a style="font-size:12px" href='http://anonymousads.com?partner=15gRDoa9wHYTN4k8U1EPPxTQ7bXcXWMVWP'>Advertise with Anonymous Ads</a>
+<br />
+<br />
+</div>
+-->
+</center>
+
+</body>
+</html>
+

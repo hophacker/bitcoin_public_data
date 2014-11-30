@@ -1,0 +1,686 @@
+http://virtuallyhyper.com/2013/02/monitor-different-systems-with-collectd/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 21:43:03 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Set-Cookie: __cfduid=db13091a1db02f684e09bb36235f18bbd1406151783911; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.virtuallyhyper.com; HttpOnly
+Last-Modified: Wed, 16 Jul 2014 15:19:03 GMT
+Expires: Wed, 23 Jul 2014 21:53:03 GMT
+Cache-Control: max-age=600
+Vary: Accept-Encoding
+CF-RAY: 14eb0d297c3b0f21-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Monitor Different Systems with Collectd</title>
+<meta name="author" content="VirtuallyHyper">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+ 
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+<script type="text/javascript">
+//<![CDATA[
+try{if (!window.CloudFlare) {var CloudFlare=[{verbose:0,p:0,byc:0,owlid:"cf",bag2:1,mirage2:0,oracle:0,paths:{cloudflare:"/cdn-cgi/nexp/dokv=88e434a982/"},atok:"37a21ffa0f987fcbf581f642caae9d4d",petok:"fabc75ac9504b82b212c1e3f007d1efe9f8496d9-1406151783-1800",zone:"virtuallyhyper.com",rocket:"0",apps:{"ga_key":{"ua":"UA-7265705-7","ga_bs":"2"}}}];!function(a,b){a=document.createElement("script"),b=document.getElementsByTagName("script")[0],a.async=!0,a.src="//ajax.cloudflare.com/cdn-cgi/nexp/dokv=97fb4d042e/cloudflare.min.js",b.parentNode.insertBefore(a,b)}()}}catch(e){};
+//]]>
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+ 
+<script type="text/javascript">
+//<![CDATA[
+  (function() {
+    var shr = document.createElement('script');
+    shr.setAttribute('data-cfasync', 'false');
+    shr.src = '//dsms0mj1bbhn4.cloudfront.net/assets/pub/shareaholic.js';
+    shr.type = 'text/javascript'; shr.async = 'true';
+    shr.onload = shr.onreadystatechange = function() {
+      var rs = this.readyState;
+      if (rs && rs != 'complete' && rs != 'loaded') return;
+      var site_id = 'a59cdffe14bc028831ad82e874afb210';
+      try { Shareaholic.init(site_id); } catch (e) {}
+    };
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(shr, s);
+  })();
+//]]>
+</script>
+ 
+<link href="/assets/themes/twitter-2.0/css/bootstrap.min.css" rel="stylesheet">
+<style type="text/css" media="screen">body{padding-top:60px; }</style>
+<link href="/assets/themes/twitter-2.0/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="/assets/themes/twitter-2.0/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+<link href="/assets/themes/twitter-2.0/css/syntax.css" rel="stylesheet" type="text/css">
+ 
+<link rel="shortcut icon" href="/assets/themes/twitter-2.0/favicon.ico">
+ 
+<script type="text/javascript">
+/* <![CDATA[ */
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-7265705-7']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+(function(b){(function(a){"__CF"in b&&"DJS"in b.__CF?b.__CF.DJS.push(a):"addEventListener"in b?b.addEventListener("load",a,!1):b.attachEvent("onload",a)})(function(){"FB"in b&&"Event"in FB&&"subscribe"in FB.Event&&(FB.Event.subscribe("edge.create",function(a){_gaq.push(["_trackSocial","facebook","like",a])}),FB.Event.subscribe("edge.remove",function(a){_gaq.push(["_trackSocial","facebook","unlike",a])}),FB.Event.subscribe("message.send",function(a){_gaq.push(["_trackSocial","facebook","send",a])}));"twttr"in b&&"events"in twttr&&"bind"in twttr.events&&twttr.events.bind("tweet",function(a){if(a){var b;if(a.target&&a.target.nodeName=="IFRAME")a:{if(a=a.target.src){a=a.split("#")[0].match(/[^?=&]+=([^&]*)?/g);b=0;for(var c;c=a[b];++b)if(c.indexOf("url")===0){b=unescape(c.split("=")[1]);break a}}b=void 0}_gaq.push(["_trackSocial","twitter","tweet",b])}})})})(window);
+/* ]]> */
+</script>
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner">
+<div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</a>
+<a class="brand" href="/">VirtuallyHyper</a>
+<div class="nav-collapse">
+<ul class="nav navbar-nav">
+<li><a href="/about.html">About</a></li>
+<li><a href="/archive.html">Archive</a></li>
+<li><a href="/categories.html">Categories</a></li>
+<li><a href="/search.html">Search</a></li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">Certifications <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<li><a href="/2012/08/vcap5-dcd/">VCAP_DCD</a></li>
+<li><a href="/2012/09/vcap5-dca/">VCAP_DCA</a></li>
+<li class="divider"></li>
+<li><a href="/2012/12/rhcsa-and-rhce-study-guide/">RHCSA_RCHE</a></li>
+</ul>
+</li>
+</ul>
+</div> 
+</div>
+</div>
+</div>
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span8">
+<div class="content">
+<div class="page-header">
+<h1>Monitor Different Systems with Collectd</h1>
+</div>
+<i class="fa fa-calendar"></i> 20 February 2013 <i class="fa fa-user"></i> <a href="http://virtuallyhyper.com">Karim Elatov</a> <div style="float: right;"><i class="fa fa-comments"></i> <a href="/2013/02/monitor-different-systems-with-collectd/#disqus_thread"></a></div>
+<div class="tag_box">
+<i class="fa fa-tags"></i>
+<a href="/tags.html#Collectd-ref">Collectd <span>1</span></a>
+<a href="/tags.html#Monitoring-ref">Monitoring <span>5</span></a>
+</div>
+<hr>
+<p>In my home environment I only have 3 machines. I wanted to monitor them just for my own sake. At my previous job we used <strong>Nagios</strong> for such a task, but we also had thousands of machines and services to monitor. At home that is not the case. I just wanted a simple setup to show me CPU, memory, and network usage and that is about it.</p>
+<h3 id="nix-systems">*nix Systems</h3>
+<p>My FreeBSD machine:</p>
+<pre><code>freebsd:~&gt;uname -smr
+FreeBSD 9.1-RELEASE i386
+</code></pre>
+<p>My Fedora Machine:</p>
+<pre><code>moxz:~&gt;uname -sr
+Linux 3.7.8-202.fc18.i686
+moxz:~&gt;lsb_release -rdc
+Description: Fedora release 18 (Spherical Cow)
+Release: 18
+Codename: SphericalCow
+</code></pre>
+<p>My Ubuntu Machine:</p>
+<pre><code>kerch:~&gt;uname -sr
+Linux 3.2.0-23-powerpc-smp
+kerch:~&gt;lsb_release -drc
+Description: Ubuntu 12.10
+Release: 12.10
+Codename: quantal
+</code></pre>
+<h3 id="monitoring-systems">Monitoring Systems</h3>
+<p>As I kept researching, I discovered that there are many different monitoring applications out there. Most are included in the wikipedia page “<a href="http://en.wikipedia.org/wiki/Comparison_of_network_monitoring_systems">Comparison of network monitoring systems</a>”. Checking out other sites, I saw many different comparisons:</p>
+<ul>
+<li><a href="http://gajendrak.wordpress.com/2012/04/08/best-monitoring-tools-in-linux/">Best Monitoring tools in Linux</a></li>
+<li><a href="http://www.linuxscrew.com/2012/03/22/linux-monitoring-tools/">Top 5 Linux Monitoring Tools. Web Based.</a></li>
+<li><a href="http://sixrevisions.com/tools/10-free-server-network-monitoring-tools-that-kick-ass/">10 Free Server &amp; Network Monitoring Tools that Kick Ass</a></li>
+<li><a href="http://www.linuxlinks.com/article/20101118163040955/Monitoring-Extra.html">6 More of the Best Free Linux Monitoring Tools</a></li>
+</ul>
+<p>As I mentioned, I have used Nagios before so I wanted to try something new. We also used <strong>Cacti</strong>, alongside with Nagios so I didn’t want to use that either. I cared about two aspects: simplicity and performance. Having said that, I decided to try out <strong>Collectd</strong>, from <a href="http://sixrevisions.com/tools/10-free-server-network-monitoring-tools-that-kick-ass/">this</a> site:</p>
+<blockquote>
+<p>Collectd is similar to Munin and Cacti in that it focuses on graphing system metrics. Where it excels in is that it is designed specifically for performance and portability; this ultimately means it’s great on rugged systems, low-end systems, and embedded systems. Being designed for performance and low-system resource use means that Collectd can gather data every 10 seconds without interfering with your server processes, providing extremely high-resolution statistics.</p>
+</blockquote>
+<p>Then I wanted to try out <strong>Monitorix</strong>, from their own <a href="http://www.monitorix.org/">site</a>:</p>
+<blockquote>
+<p>Monitorix is a free, open source, lightweight system monitoring tool designed to monitor as many services and system resources as possible. It has been created to be used under production Linux/UNIX servers, but due to its simplicity and small size can be used on embedded devices as well.</p>
+</blockquote>
+<p>But then checking out their <a href="http://linux.die.net/man/5/monitorix.conf">configuration</a> page, I saw this for their network setup:</p>
+<pre><code>REMOTEHOST_LIST This is a list of the remote servers where Monitorix it's already installed and working and you plan to monitor them from this one. It consists of a pair of values being in the left side the description of each server and in the right side the URL or IP address. An example of this list would be:
+
+our @REMOTEHOST_LIST = ( "WWW Linux", "http://www.example.com", "Backup Linux", "http://192.168.1.4", "SMTP Linux", "http://71.16.11.2:8080", );
+
+As you can see all three entries use URLs to designate the location of each remote server. This means that on each server most also have been installed a CGI capable web server like Apache.
+</code></pre>
+<p>I didn’t want to run a webserver on each of my clients just so I could monitor them. So I decided to skip Monitorix.</p>
+<p>I also wanted to try out <strong>Munin</strong>, from <a href="http://sixrevisions.com/tools/10-free-server-network-monitoring-tools-that-kick-ass/">this</a> site:</p>
+<blockquote>
+<p>One of Munin’s greatest strengths is how simple it is to extend. With just a few lines of code, you can write a plugin to monitor almost anything. Being so easy to extend means that Munin is also a good choice for graphing things unrelated to server performance, such as the number of user signups or website popularity.</p>
+</blockquote>
+<p>Also from <a href="http://www.thegeekstuff.com/2009/09/top-5-best-network-monitoring-tools/">here</a>:</p>
+<blockquote>
+<p>The primary emphasis of Munin is on the plug and play architecture for it’s plugin. There are lot of plugins available for Munin, which will just work out-of-the box without lot of tweaking.</p>
+</blockquote>
+<p>Lastly I wanted to compare it to a large application just to see it’s Pro’s and Con’s. Since Nagios and Cacti were out of the picture, I decided to try <strong>Zenoss</strong>. There are a couple of sites that talk about the differences between Nagios and Zenoss, here are a few:</p>
+<ul>
+<li><a href="http://community.zenoss.org/docs/DOC-5858">Zennos VS. Nagios</a></li>
+<li><a href="http://www.longitudetech.com/linux-unix/zenoss-we-can-ditch-nagios-now/">Zenoss: We Can Ditch Nagios Now</a></li>
+</ul>
+<p>Zenoss seemed comparable :)</p>
+<p>Since I picked 3 different applications, I will break this post into 3 different parts; one per application.</p>
+<h2 id="collectd">Collectd</h2>
+<p>To send information across the network we need to configure a collector (server) and nodes (clients). Instructions on how to configure Collectd for such a setup are here: “<a href="https://collectd.org/wiki/index.php/Networking_introduction">Networking introduction</a>”</p>
+<h3 id="install-collectd-on-ubuntu-and-configure-it-as-a-collectorserver">1. Install Collectd On Ubuntu and Configure it as a Collector/Server</h3>
+<p>First let’s install the software:</p>
+<pre><code>kerch:~&gt;sudo apt-get install collectd
+</code></pre>
+<p>After the install finishes, configure it. To do so, edit the <strong>/etc/collectd/collectd.conf</strong> file and enable any plugins you desire. Here is how my setup looked like:</p>
+<pre><code>kerch:~&gt;grep -v -E '^$|^#' /etc/collectd/collectd.conf
+FQDNLookup true
+LoadPlugin syslog
+&lt;plugin syslog&gt;
+  LogLevel info
+&lt;/plugin&gt;
+LoadPlugin cpu
+LoadPlugin disk
+LoadPlugin interface
+LoadPlugin load
+LoadPlugin memory
+LoadPlugin network
+LoadPlugin nfs
+LoadPlugin rrdtool
+LoadPlugin swap
+&lt;plugin network&gt;
+  Listen "192.168.1.100"
+  &lt;listen "192.168.1.100" &gt;
+    SecurityLevel Sign
+    AuthFile "/etc/collectd/passwd"
+    Interface "eth0"
+  &lt;/listen&gt;
+  MaxPacketSize 1452
+  CacheFlush 1800
+&lt;/plugin&gt;
+&lt;plugin rrdtool&gt;
+  DataDir "/var/lib/collectd/rrd"
+&lt;/plugin&gt;
+Include "/etc/collectd/filters.conf"
+Include "/etc/collectd/thresholds.conf"
+</code></pre>
+<p>The <strong>SecurityLevel</strong> setup is probably unnecessary, but I wanted to try it out just in case. Here is how my password file looked like:</p>
+<pre><code>kerch:~&gt;cat /etc/collectd/passwd
+elatov:test
+</code></pre>
+<p>I was actually running <strong>iptables</strong> on my Ubuntu machine, so I had to allow nodes/clients to connect to my Collectd collector. To do that, I edited the <strong>/etc/iptables/rules.v4</strong> file and added the following to it:</p>
+<pre><code>-A INPUT -s 192.168.1.0/24 -p udp -m state --state NEW -m udp --dport 25826 -j ACCEPT
+</code></pre>
+<p>I then restarted my <strong>iptables</strong> instance to apply the changes:</p>
+<pre><code>kerch:~&gt;sudo service iptables-persistent restart
+* Loading iptables rules...
+* IPv4...
+* IPv6... [ OK ]
+</code></pre>
+<p>Then I started the <strong>collectd</strong> Service:</p>
+<pre><code>kerch:~&gt;sudo service collectd start
+Starting statistics collection and monitoring daemon: collectd.
+</code></pre>
+<h3 id="install-collectd-on-freebsd-and-set-it-up-as-client">2. Install Collectd on FreeBSD and set it up as Client</h3>
+<p>Let’s find the software:</p>
+<pre><code>freebsd:~&gt;whereis collectd
+collectd: /usr/ports/net-mgmt/collectd
+</code></pre>
+<p>Now let’s go ahead and install it:</p>
+<pre><code>freebsd:~&gt;cd /usr/ports/net-mgmt/collectd
+freebsd:/usr/ports/net-mgmt/collectd&gt;sudo make install clean
+</code></pre>
+<p>At that point the compile process will fire up and install the software. Just for reference here are the configurations for the <strong>collectd</strong> package and it’s prerequisites:</p>
+<pre><code>freebsd:/usr/ports/net-mgmt/collectd&gt;make showconfig
+===&gt; The following configuration options are available for collectd-4.10.8_3:
+     BIND=off: Enable BIND 9.5+ statistics
+     CGI=on: Install collection.cgi (requires RRDTOOL)
+     DEBUG=off: Enable debugging
+     GCRYPT=on: Build with libgcrypt
+     VIRT=off: Build with libvirt
+====&gt; Options available for the group INPUT
+     APACHE=off: Apache mod_status (libcurl)
+     APCUPS=off: APC UPS (apcupsd)
+     CURL=off: CURL generic web statistics
+     CURL_JSON=off: CURL JSON generic web statistics
+     CURL_XML=off: CURL XML generic web statistics
+     DBI=off: database abstraction library
+     DISK=on: Disk performance statistics
+     NUTUPS=off: NUT UPS daemon
+     INTERFACE=on: Network interfaces (libstatgrab)
+     MBMON=off: MBMon
+     MEMCACHED=off: Memcached
+     MYSQL=off: MySQL
+     NGINX=off: Nginx
+     OPENVPN=off: OpenVPN statistics
+     PDNS=off: PowerDNS
+     PGSQL=off: PostgreSQL
+     PING=on: Network latency (liboping)
+     PYTHON=off: Python plugin
+     ROUTEROS=off: RouterOS plugin
+     SNMP=on: SNMP
+     TOKYOTYRANT=off: Tokyotyrant database
+     XMMS=off: XMMS
+====&gt; Options available for the group OUTPUT
+     RRDTOOL=on: RRDTool
+     RRDCACHED=on: RRDTool Cached (require RRDTOOL)
+     WRITE_HTTP=off: write_http
+===&gt; Use 'make config' to modify these settings
+</code></pre>
+<p>Here is the config for <strong>rrdtool</strong>:</p>
+<pre><code>freebsd:/usr/ports/databases/rrdtool&gt;make showconfig
+===&gt; The following configuration options are available for rrdtool-1.4.7_2:
+     DEJAVU=off: Use DejaVu fonts (requires X11)
+     JSON=off: Support of json export
+     MMAP=on: Use mmap in rrd_update
+     PERL_MODULE=on: Build PERL module
+     PYTHON_MODULE=off: Build PYTHON bindings
+     RUBY_MODULE=off: Build RUBY bindings
+===&gt; Use 'make config' to modify these settings
+</code></pre>
+<p>Lastly here is the configuration for <strong>net-snmp</strong>:</p>
+<pre><code>freebsd:/usr/ports/net-mgmt/net-snmp&gt;make showconfig
+===&gt; The following configuration options are available for net-snmp-5.7.2_2:
+     AX_SOCKONLY=off: Disable UDP/TCP transports for agentx
+     DMALLOC=off: Enable dmalloc debug memory allocator
+     DUMMY=on: Enable dummy values as placeholders
+     IPV6=off: IPv6 protocol
+     MFD_REWRITES=off: Build with 64-bit Interface Counters
+     MYSQL=off: MySQL database
+     PERL=on: Perl scripting language
+     PERL_EMBEDDED=on: Build embedded perl
+     PYTHON=off: Python bindings
+     TKMIB=off: Install graphical MIB browser
+     UNPRIVILEGED=off: Allow unprivileged users to execute net-snmp
+===&gt; Use 'make config' to modify these settings
+</code></pre>
+<p>After the software is installed, we need to configure it. Edit the <strong>/usr/local/etc/collectd.conf</strong> file and make the necessary changes. Here is how my file looked like:</p>
+<pre><code>freebsd:~&gt;grep -v -E '^$|^#' /usr/local/etc/collectd.conf
+Hostname "freebsd.dnsd.me"
+FQDNLookup true
+LoadPlugin syslog
+&lt;plugin syslog&gt;
+  LogLevel info
+&lt;/plugin&gt;
+LoadPlugin cpu
+LoadPlugin disk
+LoadPlugin interface
+LoadPlugin load
+LoadPlugin memory
+LoadPlugin network
+LoadPlugin rrdtool
+LoadPlugin swap
+&lt;plugin network&gt;
+  # client setup:
+  Server "192.168.1.100"
+  &lt;server "192.168.1.100"&gt;
+    SecurityLevel Encrypt
+    Username "elatov"
+    Password "test"
+  &lt;/server&gt;
+  CacheFlush 1800
+&lt;/plugin&gt;
+&lt;plugin rrdtool&gt;
+  DataDir "/var/lib/collectd/rrd"
+  CacheTimeout 120
+  CacheFlush 900
+&lt;/plugin&gt;
+</code></pre>
+<p>Now let’s enable the daemon, this is done by editing <strong>/etc/rc.conf</strong> and adding the following:</p>
+<pre><code>collectd_enable="YES"
+</code></pre>
+<p>Now let’s start the <strong>collectd</strong> daemon:</p>
+<pre><code>freebsd:~&gt;sudo /usr/local/etc/rc.d/collectd start
+</code></pre>
+<p>At this point we can check to make sure the files are now getting uploaded to the collector machine (our Ubuntu Machine):</p>
+<pre><code>kerch:~&gt;ls -1 /var/lib/collectd/rrd/
+freebsd.dnsd.me
+kerch.dnsd.me
+</code></pre>
+<p>That looks good, now let’s install a web GUI for Collectd.</p>
+<h3 id="install-collectd-web-front-end-on-the-collector">3. Install Collectd-Web Front End on the Collector</h3>
+<p>There are multiple options, <a href="https://collectd.org/wiki/index.php/List_of_front-ends">this</a> page has a list of available front ends for Collectd.</p>
+<p>I decided to go with <strong>Collectd-Web</strong> cause it seemed simple. Instructions on how to install the software can be found <a href="http://collectdweb.appspot.com/documentation/">here</a>. First download the necessary files:</p>
+<pre><code>kerch:~&gt;git clone git://github.com/httpdss/collectd-web.git
+</code></pre>
+<p>then make sure all the dependencies look good:</p>
+<pre><code>kerch:~&gt;cd collectd-web
+kerch:~/collectd-web&gt;./check_deps.sh
+Carp looks ok
+CGI looks ok
+CGI::Carp looks ok
+HTML::Entities looks ok
+URI::Escape looks ok
+RRDs looks ok
+Data::Dumper looks ok
+JSON looks ok
+</code></pre>
+<p>Now let’s just copy the whole directory to a folder where your web Server (I was using <em>Apache</em> for other uses) can host the files:</p>
+<pre><code>kerch:~&gt;sudo rsync -avzP collectd-web/. /var/www/cw/.
+</code></pre>
+<p>Lastly make sure <em>collectd</em> looks under the correct location (where the <em>RRD</em> files are stored):</p>
+<pre><code>kerch:~&gt;cat /etc/collectd/collection.conf
+datadir: "/var/lib/collectd/rrd/"
+libdir: "/usr/lib/collectd/"
+</code></pre>
+<p>This should be the default, but just in case. Now visiting the Collectd-Web portal (<strong>http://localhost/cw</strong>), I saw the following:</p>
+<p><img src="http://assets.virtuallyhyper.com/2013-02-collectd-web-first-page.png" alt="collectd web first page Monitor Different Systems with Collectd"/></p>
+<p>Selecting the remote host (freebsd) and then the CPU option, allowed me to see the CPU stats of my FreeBSD machine:</p>
+<p><img src="http://assets.virtuallyhyper.com/2013-02-collectd-web-freebsd-cpu.png" alt="collectd web freebsd cpu Monitor Different Systems with Collectd"/></p>
+<p>Now let’s configure the Fedora machine to send information to the collector.</p>
+<h3 id="install-collectd-on-fedora-and-configure-it-as-a-client">4. Install Collectd on Fedora and Configure it as a Client</h3>
+<p>First install the <strong>collectd</strong> package:</p>
+<pre><code>moxz:~&gt;sudo yum install collectd collectd-rrdtool
+</code></pre>
+<p>Then I edited the <strong>/etc/collectd.conf</strong> and configured the same things as before:</p>
+<pre><code>moxz:~&gt;grep -v -E '^#|^$' /etc/collectd.conf
+Hostname "moxz.dnsd.me"
+FQDNLookup true
+LoadPlugin syslog
+&lt;plugin syslog&gt;
+LogLevel info
+&lt;/plugin&gt;
+LoadPlugin cpu
+LoadPlugin disk
+LoadPlugin interface
+LoadPlugin load
+LoadPlugin memory
+LoadPlugin network
+LoadPlugin nfs
+LoadPlugin rrdtool
+&lt;plugin network&gt;
+  Server 192.168.1.100
+  &lt;server "192.168.1.100"&gt;
+    SecurityLevel Encrypt
+    Username "elatov"
+    Password "test"
+    Interface "eth0"
+  &lt;/server&gt;
+  CacheFlush 1800
+&lt;/plugin&gt;
+Include "/etc/collectd.d"
+&lt;plugin rrdtool&gt;
+  DataDir "/var/lib/collectd/rrd"
+  CacheTimeout 120
+  CacheFlush 900
+&lt;/plugin&gt;
+</code></pre>
+<p>I then enabled the service:</p>
+<pre><code>moxz:~&gt;sudo systemctl enable collectd
+ln -s '/usr/lib/systemd/system/collectd.service' '/etc/systemd/system/multi-user.target.wants/collectd.service'
+</code></pre>
+<p>Starting the service looked like this:</p>
+<pre><code>moxz:~&gt;sudo systemctl start collectd
+moxz:~&gt;sudo systemctl status collectd
+collectd.service - Collectd
+          Loaded: loaded (/usr/lib/systemd/system/collectd.service; enabled)
+          Active: active (running) since Wed 2013-02-27 13:08:06 PST; 2 days ago
+        Main PID: 711 (collectd)
+          CGroup: name=systemd:/system/collectd.service
+                  └─711 /usr/sbin/collectd -C /etc/collectd.conf -f
+</code></pre>
+<p>I then visited the same Collectd-Web portal and saw the new host’s stats.</p>
+<p>All of the above was for Collectd version 4. A newer version is out, version 5, and migration steps are available <a href="https://collectd.org/wiki/index.php/V4_to_v5_migration_guide">here</a>. Make sure at least the collector is at version 5, but it would be best to have both collector and nodes be at the same version.</p>
+<p>The last thing I wanted to do was check on the status of my raid on the FreeBSD machine.</p>
+<h3 id="configure-a-custom-script-on-the-freebsd-collectd-client">5. Configure a Custom Script On the FreeBSD Collectd Client</h3>
+<p>There is a command line program called <strong>arcconf</strong> which allows you to see the status. Here is how it looks:</p>
+<pre><code>freebsd:~&gt;sudo arcconf getconfig 1
+Controllers found: 1
+----------------------------------------------------------------------
+Controller information
+----------------------------------------------------------------------
+   Controller Status                        : Optimal
+   Channel description                      : SATA
+   Controller Model                         : CERC SATA1.5/6ch
+   Controller Serial Number                 : BBE5AA
+   Installed memory                         : 64 MB
+   Copyback                                 : Disabled
+   Background consistency check             : Enabled
+   Automatic Failover                       : Enabled
+   Stayawake period                         : Disabled
+   Spinup limit internal drives             : 0
+   Spinup limit external drives             : 0
+   Defunct disk drive count                 : 0
+   Logical devices/Failed/Degraded          : 1/0/0
+   --------------------------------------------------------
+   Controller Version Information
+   --------------------------------------------------------
+   BIOS                                     : 4.1-0 (7417)
+   Firmware                                 : 4.1-0 (7417)
+   Driver                                   : 2.1-9 (1)
+   Boot Flash                               : 0.0-0 (0)
+   --------------------------------------------------------
+   Controller Battery Information
+   --------------------------------------------------------
+   Status                                   : Not Installed
+
+----------------------------------------------------------------------
+Logical device information
+----------------------------------------------------------------------
+Logical device number 0
+   Logical device name                      : DATA 1
+   RAID level                               : 1
+   Status of logical device                 : Optimal
+   Size                                     : 152554 MB
+   Read-cache mode                          : Enabled
+   Write-cache mode                         : Disabled (write-through)
+   Write-cache setting                      : Disabled (write-through)
+   Partitioned                              : Yes
+   Protected by Hot-Spare                   : No
+   Bootable                                 : Yes
+   Failed stripes                           : No
+   Power settings                           : Disabled
+   --------------------------------------------------------
+   Logical device segment information
+   --------------------------------------------------------
+   Segment 0                                : Present (Controller:1,Channel:0,Device:1) Y450QB3E
+   Segment 1                                : Present (Controller:1,Channel:0,Device:0) Y450QA0E
+
+
+----------------------------------------------------------------------
+Physical Device information
+----------------------------------------------------------------------
+   Channel #0:
+      Transfer Speed                        : SATA 1.5 Gb/s
+      Device #0
+         Device is a Hard drive
+         State                              : Online
+         Supported                          : Yes
+         Transfer Speed                     : SATA 1.5 Gb/s
+         Reported Channel,Device(T:L)       : 0,0(0:0)
+         Vendor                             : Maxtor
+         Model                              : 6Y160M0
+         Firmware                           : YAR5
+         Serial number                      : Y450QA0E
+         Size                               : 152587 MB
+         Write Cache                        : Unknown
+         FRU                                : None
+         S.M.A.R.T.                         : No
+         S.M.A.R.T. warnings                : 0
+         NCQ status                         : Disabled
+      Device #1
+         Device is a Hard drive
+         State                              : Online
+         Supported                          : Yes
+         Transfer Speed                     : SATA 1.5 Gb/s
+         Reported Channel,Device(T:L)       : 0,1(1:0)
+         Vendor                             : Maxtor
+         Model                              : 6Y160M0
+         Firmware                           : YAR5
+         Serial number                      : Y450QB3E
+         Size                               : 152587 MB
+         Write Cache                        : Unknown
+         FRU                                : None
+         S.M.A.R.T.                         : No
+         S.M.A.R.T. warnings                : 0
+         NCQ status                         : Disabled
+Command completed successfully.
+</code></pre>
+<p>There are no SMART capabilities, so the only thing I can check is whether the disks are online. Here is a concise view:</p>
+<pre><code>freebsd:~&gt;arcconf getconfig 1 PD| grep State
+State : Online
+State : Online
+</code></pre>
+<p>we have two disks that are online. Collectd has a plugin called <strong>exec</strong>, it allows you to run a command and plot values from the results of that command. More information can be seen <a href="http://collectd.org/documentation/manpages/collectd-exec.5.shtml">this</a> post. But I will settle with just plotting how many disks are currently online. So I wrote this script:</p>
+<pre><code>#!/usr/local/bin/bash
+HOST=$(hostname -f)
+INTERVAL=300
+while sleep "$INTERVAL"; do
+        val=$(/usr/local/sbin/arcconf getconfig 1 PD | grep State | grep Online| /usr/bin/wc -l)
+        echo "PUTVAL \"$HOST/exec-raid/gauge\" interval=$INTERVAL N:$(eval echo \$val)"
+done
+</code></pre>
+<p>Nothing fancy, it just counts how many disks are online and sets the interval to be 300 (5 minutes). As a quick test change the interval value to 10 and run the script, it should produce something similar to this:</p>
+<pre><code>freebsd:~&gt;./arc.sh
+PUTVAL "freebsd.dnsd.me/exec-raid/gauge" interval=10 N:2
+PUTVAL "freebsd.dnsd.me/exec-raid/gauge" interval=10 N:2
+</code></pre>
+<p>Now let’s enable this to be executed from Collectd. Edit <strong>/usr/local/etc/collectd.conf</strong> and add/modify the following</p>
+<pre><code>&lt;plugin exec&gt;
+        Exec "elatov:elatov" "/home/elatov/arc.sh"
+&lt;/plugin&gt;
+</code></pre>
+<p>After some time the graph started to populate with data. Here is a very small sample of how it looked like:</p>
+<p><img src="http://assets.virtuallyhyper.com/2013-02-collectd-web-freebsd-raid-gauge.png" alt="collectd web freebsd raid gauge Monitor Different Systems with Collectd"/></p>
+<h3 id="related-posts">Related Posts</h3>
+<ul>
+<li><a href="/2013/06/monitor-disk-io-stats-with-zabbix/">Monitor Disk IO Stats with Zabbix</a></li>
+<li><a href="/2013/03/monitor-different-systems-with-zabbix/">Monitor Different Systems with Zabbix</a></li>
+<li><a href="/2013/03/monitor-different-systems-with-zenoss/">Monitor Different Systems with Zenoss</a></li>
+<li><a href="/2013/03/monitor-different-systems-with-munin/">Monitor Different Systems with Munin</a></li>
+</ul>
+<div class='shareaholic-canvas' data-app='share_buttons' data-app-id='6778737' style="float: left"></div>
+<div class="pagination" style="float: right">
+<ul>
+<li class="prev"><a href="/2013/02/vcenter-5-1-service-fails-to-start/" title="vCenter 5.1 Service Fails to Start">&larr; Previous</a></li>
+<li><a href="/archive.html">Archive</a></li>
+<li class="next"><a href="/2013/02/setting-up-a-tiered-aws-web-application-architecture-in-using-autoscaling-and-elb-within-vpc/" title="Setting Up a Tiered AWS Web Application Architecture in using AutoScaling and ELB within VPC">Next &rarr;</a></li>
+</ul>
+</div>
+<hr>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+ 
+<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-7439655074445804" data-ad-slot="4448070391"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    
+    var disqus_shortname = 'virtuallyhyper'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+</div>
+<div class="span4">
+<div class="sidebar">
+<div class="social sidebar-item">
+<a href="https://twitter.com/virtuallyhyper" class="twitter-follow-button" data-show-count="false">Follow @virtuallyhyper</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</div>
+<div class="sidebar-item">
+<h2>Want to support us?</h2>
+<a href="http://bit.ly/donate-to-virtuallyhyper" target="_blank">
+<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"/>
+</a>
+<a href="http://flattr.com/thing/1101166/VirtuallyHyper" target="_blank">
+<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"/></a>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://blockchain.info//Resources/wallet/pay-now-button.js"></script>
+<div style="font-size:8px;margin:0 auto;width:100%" class="blockchain-btn" data-address="1LbaicuGY3RsusHonGmwhXWaUw2yYnj2k3" data-shared="false">
+<div class="blockchain stage-begin">
+<img src="http://i.imgur.com/zTI9f5u.png"/>
+</div>
+<div class="blockchain stage-loading" style="text-align:center">
+<img src="https://blockchain.info//Resources/loading-large.gif"/>
+</div>
+<div class="blockchain stage-ready">
+<p align="center">Our Bitcoin Address: <b><br><small>[[address]]</small></b></p>
+<p align="center" class="qr-code"></p>
+</div>
+<div class="blockchain stage-paid">
+Donation of <b>[[value]] BTC</b> Received. Thank You.
+</div>
+<div class="blockchain stage-error">
+<font color="red">[[error]]</font>
+</div>
+</div>
+<script type='text/javascript'>
+              var amzn_wdgt={widget:'MyFavorites'};
+              amzn_wdgt.tag='virtuallyhyper-20';
+              amzn_wdgt.columns='1';
+              amzn_wdgt.rows='3';
+              amzn_wdgt.title='Henri-Cartier-Bresson: Photographer Extraordinaire';
+              amzn_wdgt.width='250';
+              amzn_wdgt.ASIN='0893817449,0500410607,050054199X,0500286426,0893818755,050054333X,0500543178,0945506562';
+              amzn_wdgt.showImage='True';
+              amzn_wdgt.showPrice='True';
+              amzn_wdgt.showRating='True';
+              amzn_wdgt.design='2';
+              amzn_wdgt.colorTheme='Orange';
+              amzn_wdgt.headerTextColor='#FFFFFF';
+              amzn_wdgt.marketPlace='US';
+            </script>
+<script type='text/javascript' src='http://wms-na.amazon-adsystem.com/20070822/US//js/AmazonWidgets.js'>
+            </script>
+</div> 
+</div>
+</div> 
+</div> 
+<footer>
+<p>&copy;VirtuallyHyper 2014. Thoughts are our own and may not neccessarily represent the companies we work for.
+</p>
+</footer>
+</div> 
+ 
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'virtuallyhyper'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+var s = document.createElement('script'); s.async = true;
+s.type = 'text/javascript';
+s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+ 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/themes/twitter-2.0/js/jquery.min.js"><\/script>')</script>
+ 
+<script src="/assets/themes/twitter-2.0/js/bootstrap.min.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-7265705-7', 'virtuallyhyper.com');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
+

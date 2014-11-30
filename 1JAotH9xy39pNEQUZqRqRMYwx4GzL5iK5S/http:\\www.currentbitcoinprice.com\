@@ -1,0 +1,200 @@
+http://www.currentbitcoinprice.com/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Sat, 26 Jul 2014 19:12:46 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 7155
+Connection: close
+X-Powered-By: Express
+Accept-Ranges: bytes
+ETag: "7155-1376978194000"
+Cache-Control: public, max-age=0
+Last-Modified: Tue, 20 Aug 2013 05:56:34 GMT
+
+<!DOCTYPE html>
+<!-- Beyondem Inc. http://Beyondem.com -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Is It Compromised? - Instantly Check If A Password Is Compromised</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+   <style type="text/css">html,body{height:100%; }#wrap{min-height:100%;height:auto!important;height:100%;margin:0 auto -60px;}#push,#footer{height:65px;}#footer{background-color:#f5f5f5;}@media (max-width: 767px) {#footer{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;}}.container .credit{margin:20px 0;}code{font-size:80%;}#subline{padding-top:30px;}</style>
+   <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+
+  <body>
+<div id="wrap">
+
+
+<div id="box" style="width:100%; position:absolute; top:35%">
+  <center>
+  <script type="text/javascript"><!--
+google_ad_client = "ca-pub-5038888073735758";
+/* IsItCompromosedtop */
+google_ad_slot = "5913723631";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+    <center>
+      <h1><v>Is it compromised?</b></h1>
+       <input id = "search" type="text" class="input-lg" placeholder="Password" onKeyUp="check();">
+     
+<div id="result"></div>
+</center>
+</div>
+
+<div id="footer">
+<div class="container">
+<div id="bottombar" class="muted credit" style='width:100%; display:inline; align:right'>
+
+<table border="0" style="width:100%">
+<tr>
+  <td><a data-toggle="modal" href="#about" class="btn btn-primary"><i class="icon-white icon"></i> About </a> <a data-toggle="modal" href="#news" class="btn btn-success"><i class="icon-white icon"></i> News</a></td>
+  <td><center>Search Stats:<p id="stats">Compromised: 0 Not Compromised: 0</p></center></td>
+  <td><p id="online" class="navbar-text pull-right"></p></td>
+</tr>
+</table>
+
+<!--<p id="online" class="navbar-text pull-right"></p>-->
+<!--  <br>
+<a data-toggle="modal" href="#about" class="btn btn-primary"><i class="icon-white icon"></i> About</a>-->
+
+
+</div>
+</div>
+</div>
+
+
+
+  <div class="modal" id="about">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">About</h4>
+        </div>
+        <div class="modal-body">
+         Is It Compromised keeps a database of all leaked passwords / password lists. When you enter a password, it is hashed <b>before</b> it is sent to the server. The server checks if this hash is in its database and lets you know. This site is built with NodeJS using Websockets and a MongoDB. 
+         <br>The Stats keep track of the number of searches that returned a compromised result, and the number that returned a non compromised result. This is simply an incremental counter, it does not store any searches whatsoever. The source code is available <a href="http://Beyondem.com">Here</a>.
+         <br>Like it and want it to keep running? Here is my Bitcoin Address: <a href="bitcoin:1JAotH9xy39pNEQUZqRqRMYwx4GzL5iK5S">1JAotH9xy39pNEQUZqRqRMYwx4GzL5iK5S</a>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-danger" data-dismiss="modal"><i class="icon-white icon-remove"></i> Close</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <div class="modal" id="news">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">News</h4>
+        </div>
+        <div class="modal-body">
+          <b>August 20th:</b> <br>-Better server added. Old server was 32bit and had a limited database size. This limitation is no longer here.
+          <br>-Search stats: The site now counts the stats of number of searched compromised / uncompromised passwords. This is just an incremental counter, the server does not keep track of searches.
+         <br><br><b>August 19th:</b> Hit 4,500 online users
+         <br><br><b>August 18th:</b> First public release.
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-danger" data-dismiss="modal"><i class="icon-white icon-remove"></i> Close</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+   <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+ <script src="js/socket.io.min.js"></script>
+ <script src="js/md5-min.js"></script>
+    <script>
+    var socket;
+var statcomp = 0;
+var statuncomp = 0;
+  function connect() {
+      socket = io.connect(':8080');
+      socket.on('connect', function() {
+          console.log("Connected");
+          socket.on('result', function(data) {
+              resultdata = data['result'];
+              if (resultdata == "1") {
+                  $("#result").html("<b><font size=15 color='white'>YES</font></b><br><font color='white' size=2>Found in a password list database. Maybe not the best idea to use it.</font>");
+                  document.body.style.background = "red";
+                  statcomp = statcomp + 1;
+              } else {
+                  $("#result").html("<b><font size=15 color='white'>NO</font></b><br><font color='white' size=2> This dosn't necessarily mean this is a good password. It just means it's not in our database.</font>");
+                  document.body.style.background = "#2EFE2E";
+                  statuncomp = statuncomp + 1;
+              }
+          updateStats();
+          });
+
+                   socket.on('stat', function(data) {
+              resultstat = data['stat'];
+             if (resultstat.hasOwnProperty('online')){
+             $("#online").html("Online: " + resultstat.online);
+           }
+           if (resultstat.hasOwnProperty('yes')){
+            if (resultstat.yes > statcomp){
+            statcomp = resultstat.yes;
+          }
+          if (resultstat.no > statuncomp){
+            statuncomp = resultstat.no;
+          }
+  updateStats();
+       }    
+          });
+
+
+      });
+
+
+
+
+
+      socket.on('disconnected', function(player) {
+          console.log("Disconnected");
+      });
+  }
+
+
+
+  jQuery(document).ready(function($) {
+      connect();
+      $('#static').modal('show')
+  });
+
+
+function updateStats(){
+ $("#stats").html("<table><tr><td>Compromised:</td><td> <span class=\"label label-default\">" + statcomp + "</span></td></tr><tr><td> Not Compromised: </td><td><span class=\"label label-default\">" + statuncomp + "</span></td></tr></table>");
+}
+
+
+  function check() {
+      var password = $("#search").val();
+      if (password != "") {
+          password = hex_md5(password); //HASH PASSWORD BEFORE SENDING TO SERVER.
+          $("#result").html("<font color='white'>Searching...</font>");
+          socket.emit('data', password);
+      } else {
+          $("#result").html("");
+      }
+  }
+
+    </script>
+  </body>
+</html>
+

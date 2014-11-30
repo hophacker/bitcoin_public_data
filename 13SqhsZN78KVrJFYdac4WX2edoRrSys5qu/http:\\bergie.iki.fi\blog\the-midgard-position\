@@ -1,0 +1,199 @@
+http://bergie.iki.fi/blog/the-midgard-position/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Date: Tue, 22 Jul 2014 21:42:20 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Last-Modified: Wed, 07 May 2014 14:12:21 GMT
+Expires: Tue, 22 Jul 2014 21:52:20 GMT
+Cache-Control: max-age=600
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Vary: Accept-Encoding
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>The Midgard Position - Henri Bergius</title>
+    <link rel="stylesheet" href="/style/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/style/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="/style/css/bergie-2012.css" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/style/img/favicon/favicon_144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/style/img/favicon/favicon_114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/style/img/favicon/favicon_72.png" />
+    <link rel="apple-touch-icon-precomposed" href="/style/img/favicon/favicon_57.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Fbergie.iki.fi%2Fblog%2Fthe-midgard-position%2F&amp;user_id=bergie" type="text/html" />
+    <link rel="bitcoin" href="bitcoin:13SqhsZN78KVrJFYdac4WX2edoRrSys5qu" />
+    <meta name="google-site-verification" content="ge5GAC0xnAgFKsZdHP3DD9KbNYPM0d4F5SpK0ivCJtg" />
+    <meta property="fb:admins" content="722463139" />
+    
+    <link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Henri Bergius feed" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-75936-2']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body class="post ">
+    <div class="container">
+            <article vocab="http://schema.org/" about="/blog/the-midgard-position/" typeof="BlogPosting" class="span8 offset1">
+        <header class="span9">
+          <div>
+            <h1 property="headline">The Midgard Position</h1>
+          </div>
+        </header>
+        <div class="span8">
+          <div property="articleBody">
+            <p>I've committed the first working version of <a href="http://midcom.tigris.org/source/browse/midcom/fs-midcom/lib/org/routamc/positioning/">Midgard's geopositioning system</a> into CVS today. The library makes it really easy to add location information to users and objects, and to find things that are close to each other.</p>
+
+<p>Some things I find useful:</p>
+
+<ul>
+<li>Objects are positioned based on the location of the user who created them (the person who took a photo, for example)</li>
+<li>User's position information is aggregated from multiple sources: manually entered data, <a href="http://beta.plazes.com/home/">Plazes</a>, and eventually GPS track logs</li>
+<li>Any <a href="http://www.midgard-project.org/documentation/mgdschema/">Midgard Object</a> can be located and queried using the positioning library</li>
+</ul>
+
+
+<p>The library is relatively easy to use. For example, to get and display coordinates for an article, just run the following:</p>
+
+<pre><code> $object_position = new org_routamc_positioning_object($article);
+ $coordinates = $object_position-&gt;get_coordinates();
+ if (!is_null($coordinates))
+ {
+     echo "&lt;meta name=\"icbm\" value=\"{$coordinates['latitude']},{$coordinates['longitude']}\" /&gt;\n";
+ }
+</code></pre>
+
+<p>And to find 3 closest articles to this one, run:</p>
+
+<pre><code>$closest = org_routamc_positioning_utils::get_closest('midcom_db_article', $coordinates, 3);
+
+echo "&lt;p&gt;Closest articles to this article are:&lt;br /&gt;";
+echo "&lt;ol&gt;\n";
+foreach ($closest as $article)
+{
+    $article_coordinates = Array(
+        'latitude'  =&gt; $article-&gt;latitude,
+        'longitude' =&gt; $article-&gt;longitude,
+    );
+    echo "&lt;li&gt;{$article-&gt;title} is " . round(org_routamc_positioning_utils::get_distance($coordinates, $article_coordinates)) . " kilometers " . org_routamc_positioning_utils::get_bearing($coordinates, $article_coordinates) . " from you&lt;/li&gt;";
+}
+echo "&lt;/ol&gt;\n";
+</code></pre>
+
+<p>The positioning library isn't yet hooked into any of <a href="http://pear.midcom-project.org/index.php?category=1&amp;page=1">the components</a> yet, but I will do this soon, starting from the blog component. However, the library can already be experimented with using the test tools it contains. For example, I can see the following information based on my Plazes position:</p>
+
+<p><img src="/files/midgard-positioning-distances-test.jpg" alt="Map spots closest to my home" /></p>
+
+<p>The city database used for the example above is MaxMind's Open Sourced <a href="http://pear.midcom-project.org/index.php?category=1&amp;page=1">World Cities Database</a> that the positioning library is able to import. Next I will start playing with the <a href="http://www.geonames.org/export/">Geo-Names Data</a>.</p>
+
+<p>As soon as the library is hooked to the blog component it will replace the <a href="http://bergie.iki.fi/blog/adding_location_awareness_to_blogs/">old location system</a> I've been using on my site, and will start populating the <a href="http://www.deathmonkey.org/route/">Death Monkey 2006 route map</a> with real-time data from that trip.</p>
+
+          </div>
+          <div class="metadata">
+            
+            <a rel="author" href="http://bergie.iki.fi/#me"></a>
+            
+            <span property="datePublished" content="2006-06-20T00:00:00-07:00">20 June 2006</span>
+            
+            <span property="wordCount" content="312"></span>
+          </div>
+          
+        
+        
+          
+          
+            <hr />
+            <aside class="category midgard">
+  <h2>About Midgard</h2>
+  <p><a href="http://midgard-project.org/midgard2/">Midgard2</a> is a content repository library that can be used in both web and desktop applications. It is built as by <a href="http://midgard-project.org/">Midgard Project</a>, an international free software community. I've been an active part of the group since its beginnings in late 90s.</p>
+
+  <p>Thanks to <a href="https://live.gnome.org/GObjectIntrospection/Users">GObject Introspection</a>, the Midgard2 content repository can be used from almost any programming language, including PHP, Python, and JavaScript.</p>
+</aside>
+
+            <p><a href="/blog/category/midgard/">Read more Midgard posts</a>.<p>
+          
+          
+        
+        
+        
+                <div class="instapaper_ignore">
+          <hr />
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname = 'bergie';
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
+        </div>
+
+        </div>
+      </article>
+
+    </div>
+    <footer>
+            <div class="container">
+        <div vocab="http://schema.org/" id="me" about="http://bergie.iki.fi/#me" typeof="Person" class="card span8 offset1">
+          <div class="avatar instapaper_ignore">
+            <div class="switcher">
+              <div class="image photo"></div>
+              <div class="image drawing" id="bergie_drawn"></div>
+            </div>
+          </div>
+          <div class="details">
+            <p>
+            <strong><span property="givenName">Henri</span> <span property="familyName">Bergius</span></strong> is an occasional adventurer living in <span rel="homeLocation" typeof="City"><span property="name">Berlin</span></span> and working on decoupled software systems, content repositories and free software.
+            </p>
+            <p>
+            You can reach him by <a rel="email" href="mailto:henri.bergius@iki.fi">email</a> or <a href="xmpp:henri.bergius@gmail.com">instant messaging</a>. Besides writing on this blog, he is also available on <a href="http://twitter.com/bergie">Twitter</a>, <a href="https://plus.google.com/100751105859582805241/?rel=author">Google+</a>, and <a href="http://www.linkedin.com/in/bergie">LinkedIn</a>. Most of Henri's recent code can be found from <a href="https://github.com/bergie">GitHub</a>. <a href="/about/">&raquo;</a>
+            </p>
+          </div>
+        </div>
+        <div class="span8 offset1 hidden-phone">
+          <ul class="nav nav-pills nav-wide">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About Henri</a></li>
+            <li><a href="/blog/category/bestof/">Best Of</a></li>
+            <li><a href="http://www.flickr.com/photos/bergie/">Photos</a></li>
+            <li><a href="/talks/">Talks</a></li>
+            <li><a href="/colophon/">Colophon</a></li>
+          </ul>
+        </div>
+        <div class="span8 pull-left visible-phone">
+          <ul class="nav nav-pills nav-narrow">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About Henri</a></li>
+            <li><a href="/blog/category/bestof/">Best Of</a></li>
+          </ul>
+        </div>
+      </div>
+      <script type="application/javascript">
+        var avatar = document.getElementById('bergie_drawn');
+        avatar.addEventListener('click', function () {
+          if (avatar.className.indexOf('transparent') === -1) {
+            avatar.className = avatar.className + ' transparent';
+            return;
+          }
+          avatar.className = avatar.className.replace(/\b transparent\b/,'');
+        });
+      </script>
+
+    </footer>
+    
+  </body>
+</html>
+

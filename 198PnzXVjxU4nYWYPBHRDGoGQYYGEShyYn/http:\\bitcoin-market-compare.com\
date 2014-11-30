@@ -1,0 +1,664 @@
+http://bitcoin-market-compare.com/
+HTTP/1.1 200 OK
+Cache-Control: private
+Content-Type: text/html; charset=utf-8
+Server: Microsoft-IIS/7.5
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Tue, 22 Jul 2014 15:06:41 GMT
+Connection: close
+Content-Length: 27503
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Header"><meta name="keywords" content="Bitcoin, BTC, Market, Charts, Exchange" /><title>
+	BitCoin Exchange Rate Comparison Chart
+</title><link href="Theme/Default/Theme.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"> </script>
+    <script src="Scripts/HighStock/highstock.js" type="text/javascript"> </script>
+    <script src="Scripts/jquery.cookie.js" type="text/javascript"> </script>	
+    <link href="http://fonts.googleapis.com/css?family=Questrial" rel="stylesheet" type="text/css" /><link rel="icon" type="image/png" href="http://www.skami.net/favi.png" />
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-39379084-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var url = window.location.pathname;
+            if (url.indexOf("Task") !== -1) {
+                $("#_NavDefault").addClass("current");
+            } else if (url.indexOf("Map") !== -1) {
+                $("#_NavMap").addClass("current");
+            } else if (url.indexOf("Stats") !== -1) {
+                $("#_NavStatistics").addClass("current");
+            } else {
+                $("#_NavDefault").addClass("current");
+            }
+
+            var preferences = $.cookie("Preferences");
+            if (preferences) {
+                var values = preferences.split("&");
+                var Currencies = values[0].split("=")[1];
+                var Interval = values[1].split("=")[1];
+                var USD = values[2].split("=")[1];
+                var EUR = values[3].split("=")[1];
+                var GBP = values[4].split("=")[1];
+                var Hide = values[5].split("=")[1];
+
+                if (USD == "false") {
+                    $(".ChartUSD").hide();
+                    $("#_NavUSD").hide();
+                    $("#TextContent3_ChckBxUSD").prop('checked', false);
+                }
+                if (EUR == "false") {
+                    $(".ChartEUR").hide();
+                    $("#_NavEUR").hide();
+                    $("#TextContent3_ChckBxEUR").prop('checked', false);
+                }
+                if (GBP == "false") {
+                    $(".ChartGBP").hide();
+                    $("#_NavGBP").hide();
+                    $("#TextContent3_ChckBxGBP").prop('checked', false);
+                }
+
+                $("#TextContent3_DDLCurrency").val(Currencies);
+                $("#TextContent3_DDLInterval").val(Interval);
+
+                if (Currencies == "EUR") {
+                    var USDSection = $(".ChartUSD").contents();
+                    var EURSection = $(".ChartEUR").contents();
+                    $(".ChartUSD").html("");
+                    $(".ChartUSD").append(EURSection);
+                    $(".ChartUSD").show();
+                    $(".ChartEUR").html("");
+                    $(".ChartEUR").append(USDSection);
+                    if (EUR == "false") {
+                        $(".ChartEUR").hide();
+                    }
+                }
+
+                if (Currencies == "GBP") {
+                    var USDSection = $(".ChartUSD").contents();
+                    var GBPSection = $(".ChartGBP").contents();
+                    $(".ChartUSD").html("");
+                    $(".ChartUSD").append(GBPSection);
+                    $(".ChartUSD").show();
+                    $(".ChartGBP").html("");
+                    $(".ChartGBP").append(USDSection);
+                    if (GBP == "false") {
+                        $(".ChartGBP").hide();
+                    }
+                }
+
+                if (Hide == "true") {
+                    $("#TextContent3_ChckBxHide").prop('checked', true);
+                    $(".P1").css("margin-left", "-335px");
+                    $(".P2").css("padding", "30px");
+                    $("#Detail").css("margin-left", "0px");
+                    $(".ChartUSD").css("margin-left", "0px");
+                    $(".ChartEUR").css("margin-left", "0px");
+                    $(".ChartGBP").css("margin-left", "0px");
+                    $(".About").css("margin-left", "0px");
+                    $(".Preferences").css("margin-left", "0px");
+
+                    $(".USDHeader").css("margin-left", "-30px");
+                    $(".USDText").css("margin-left", "-30px");
+
+                    $(".EURHeader").css("margin-left", "-30px");
+                    $(".EURText").css("margin-left", "-30px");
+
+                    $(".GBPHeader").css("margin-left", "-30px");
+                    $(".GBPText").css("margin-left", "-30px");
+
+                    $(".AboutHeader").css("margin-left", "-30px");
+                    $(".AboutText").css("margin-left", "-30px");
+
+                    $(".PreferencesHeader").css("margin-left", "-30px");
+                    $(".PreferencesText").css("margin-left", "-30px");
+                } else {
+                    $(".P1").css("margin-left", "0px");
+                    $(".P2").css("padding", "30px 30px 30px 350px");
+                    $("#Detail").css("margin-left", "-50px");
+                    $(".ChartUSD").css("margin-left", "-50px");
+                    $(".ChartEUR").css("margin-left", "-50px");
+                    $(".ChartGBP").css("margin-left", "-50px");
+                    $(".About").css("margin-left", "-50px");
+                    $(".Preferences").css("margin-left", "-50px");
+
+                    $(".USDHeader").css("margin-left", "0px");
+                    $(".USDText").css("margin-left", "0px");
+
+                    $(".EURHeader").css("margin-left", "0px");
+                    $(".EURText").css("margin-left", "0px");
+
+                    $(".GBPHeader").css("margin-left", "0px");
+                    $(".GBPText").css("margin-left", "0px");
+
+                    $(".AboutHeader").css("margin-left", "0px");
+                    $(".AboutText").css("margin-left", "0px");
+
+                    $(".PreferencesHeader").css("margin-left", "0px");
+                    $(".PreferencesText").css("margin-left", "0px");
+                }
+
+            }
+
+            var display = true;
+
+            $("#redraw").click(function () {
+
+            });
+
+        });
+
+
+        function getval(callback) {
+            var preferences = $.cookie("Preferences");
+            if (preferences) {
+                var values = preferences.split("&");
+                var Currencies = values[0].split("=")[1];
+            }
+            if (typeof Currencies == 'undefined') {
+                Currencies = "USD";
+            }
+
+            jQuery.getJSON('Ticker/Current/' + Currencies + '.aspx', function (data) {
+                console.clear();
+                callback(data);
+                console.clear();
+            });
+        }
+
+        function getUSD(callback) {
+            jQuery.getJSON('Ticker/Current/USD.aspx', function (data) {
+                console.clear();
+                callback(data);
+                console.clear();
+            });
+        }
+
+
+        function getEUR(callback) {
+            jQuery.getJSON('Ticker/Current/EUR.aspx', function (data) {
+                console.clear();
+                callback(data);
+                console.clear();
+            });
+        }
+
+
+        function getGBP(callback) {
+            jQuery.getJSON('Ticker/Current/GBP.aspx', function (data) {
+                console.clear();
+                callback(data);
+                console.clear();
+            });
+        }
+
+        $(document).ready(function () {
+            var preferences = $.cookie("Preferences");
+            if (preferences) {
+                var values = preferences.split("&");
+                var Interval = values[1].split("=")[1];
+                var Currencies = values[0].split("=")[1];
+            }
+            if (typeof Interval == 'undefined') {
+                Interval = "5";
+            }
+            if (typeof Currencies == 'undefined') {
+                Currencies = "USD";
+            }
+            setInterval(function () {
+                getval(function (value) {
+                    document.title = value + " " + Currencies + " · Skami.net";
+                });
+                console.clear();
+            },
+                Interval * 1000);
+
+            getUSD(function (value) {
+                $("#USD").html(value);
+            }),
+                getEUR(function (value) {
+                    $("#EUR").html(value);
+                }),
+                getGBP(function (value) {
+                    $("#GBP").html(value);
+                });
+
+            setInterval(function () {
+                getUSD(function (value) {
+                    $("#USD").html(value);
+                }),
+                getEUR(function (value) {
+                    $("#EUR").html(value);
+                }),
+                getGBP(function (value) {
+                    $("#GBP").html(value);
+                });
+                console.clear();
+            },
+                Interval * 1000);
+
+            setInterval(function () { console.clear(); }, 100);
+
+        });
+
+    </script>
+    
+    <script type="text/javascript">
+
+        $.fn.isOnScreen = function() {
+
+            var win = $(window);
+
+            var viewport = {
+                top: win.scrollTop(),
+                left: win.scrollLeft()
+            };
+            viewport.right = viewport.left + win.width();
+            viewport.bottom = viewport.top + win.height();
+
+            var bounds = this.offset();
+            bounds.right = bounds.left + this.outerWidth();
+            bounds.bottom = bounds.top + this.outerHeight();
+
+            return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+        };
+
+        $(window).ready(function() {
+            $("#_NavUSD").addClass("current");
+        });
+
+        $(window).scroll(function() {
+            if ($("#USDNAV").isOnScreen() && $("#USDNAV").is(":visible")) {
+                $("#_NavEUR").removeClass("current");
+                $("#_NavGBP").removeClass("current");
+                $("#_NavABOUT").removeClass("current");
+                $("#_NavPREFERENCES").removeClass("current");
+                $("#_NavUSD").addClass("current");
+            } else if ($("#EURNAV").isOnScreen() && $("#EURNAV").is(":visible")) {
+                $("#_NavUSD").removeClass("current");
+                $("#_NavGBP").removeClass("current");
+                $("#_NavABOUT").removeClass("current");
+                $("#_NavPREFERENCES").removeClass("current");
+                $("#_NavEUR").addClass("current");
+            } else if ($("#GBPNAV").isOnScreen() && $("#GBPNAV").is(":visible")) {
+                $("#_NavEUR").removeClass("current");
+                $("#_NavUSD").removeClass("current");
+                $("#_NavABOUT").removeClass("current");
+                $("#_NavPREFERENCES").removeClass("current");
+                $("#_NavGBP").addClass("current");
+            } else if ($("#ABOUTNAV").isOnScreen()) {
+                $("#_NavEUR").removeClass("current");
+                $("#_NavUSD").removeClass("current");
+                $("#_NavGBP").removeClass("current");
+                $("#_NavPREFERENCES").removeClass("current");
+                $("#_NavABOUT").addClass("current");
+            } else if ($("#_NavPREFERENCES").isOnScreen()) {
+                $("#_NavEUR").removeClass("current");
+                $("#_NavUSD").removeClass("current");
+                $("#_NavGBP").removeClass("current");
+                $("#_NavABOUT").removeClass("current");
+                $("#_NavPREFERENCES").addClass("current");
+            }
+        });
+
+    </script>
+</head>
+<body>
+    <form method="post" action="" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTM2MTEyOTc2M2QYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgQFHGN0bDAwJFRleHRDb250ZW50MyRDaGNrQnhVU0QFHGN0bDAwJFRleHRDb250ZW50MyRDaGNrQnhFVVIFHGN0bDAwJFRleHRDb250ZW50MyRDaGNrQnhHQlAFHWN0bDAwJFRleHRDb250ZW50MyRDaGNrQnhIaWRlDFfZgM2vFrDHQQHleR9+9XYAMiNt3gUewXwhboYiJfE=" />
+
+
+<script src="Scripts/USDChart.js" type="text/javascript"></script>
+<script src="Scripts/EURChart.js" type="text/javascript"></script>
+<script src="Scripts/GBPChart.js" type="text/javascript"></script>
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAA5mQ625C6EBPmt5KkwfGj8Ud6jcdaWk4sqhTv7FGEWQ3044AYfilo4p+q2mwIQwfsLx08EkBjjVfW2kNuy5hR0C+FkN+J4eWDAkk9zeN9HGlp/O3ERqRyn2AW4wCnvQ/4rc88f9jTxFCgzK+IoVP7DRZRamXzlyliwN6GIn1TRG5l3XnGUaonaovQq6UKDoCXo4SDwZi9xgtkhmYc0Cp1yPZPkGiPXDvPd3DCMBPxBN6fu5spjJhheWzgQNndjx7ZNpGsbz5xuOSybTrNI8UOowoRJ5Wg0PSOVHeNcMIOOBzDobON3KaYXDXIifA1QG4PpqnLl/WtFwnK6LZLdPjMg1" />
+        <div id="Content">
+            <div id="Panel1" class="P1">
+	
+                <h1>
+                    <span id="PanelHeader"><a href="Default.aspx" class="Home">BTC Comparison Charts</a></span></h1>
+                <ul>
+                    <li id="_NavUSD"><a class="current" href="#USD_JUMP">USD</a></li>
+                    <li id="_NavEUR"><a href="#EUR_JUMP">EUR</a></li>
+                    <li id="_NavGBP"><a href="#GBP_JUMP">GBP</a></li>
+                    <li id="_NavABOUT"><a href="#ABOUT_JUMP">BITCOIN</a></li>
+                    <li id="_NavPREFERENCES"><a href="#PREFERENCES_JUMP">PREFERENCES</a></li>
+                </ul>
+                <div id="BotStats">
+                    <h4>Stats</h4>
+                    <hr />
+                    USD :
+                        <span id="USD"></span>
+                    <hr />
+                    EUR :
+                        <span id="EUR"></span>
+                    <hr />
+                    GBP :
+                        <span id="GBP"></span>
+                    <br />
+                </div>
+            
+</div>
+            <div id="Panel3" class="P2">
+	
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<!-- First -->
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:970px;height:90px"
+				 data-ad-client="ca-pub-1562350888025204"
+				 data-ad-slot="5250515285"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+                <div id="Body" class="ChartUSD">
+                    <div id="Header" class="USDHeader">
+                        
+    <a name="USD_JUMP" id="USDNAV" />
+    <h2>
+        USD
+        <section id="USDHead" style="float: right">
+        </section>
+    </h2>
+</a>
+
+                    </div>
+                    <div id="Text" class="USDText">
+                        
+    <div id="USDContainer">
+        BTC TO USD LOADING...
+    </div>
+
+                    </div>
+                </div>
+                <br class="ChartUSD" />
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- Second -->
+				<ins class="adsbygoogle"
+					 style="display:inline-block;width:970px;height:90px"
+					 data-ad-client="ca-pub-1562350888025204"
+					 data-ad-slot="6727248485"></ins>
+				<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+                
+                <div id="Detail" class="ChartEUR">
+                    <div id="DetailHeader" class="EURHeader">
+                        
+    <a name="EUR_JUMP" id="EURNAV" />
+    <h2>
+        EUR
+        <section id="EURHead" style="float: right">
+        </section>
+    </h2>
+</a>
+
+                    </div>
+                    <div id="Text" class="EURText">
+                        
+    <div id="EURContainer">
+        BTC TO EUR LOADING...
+    </div>
+
+                    </div>
+                </div>
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- Third -->
+				<ins class="adsbygoogle"
+					 style="display:inline-block;width:970px;height:90px"
+					 data-ad-client="ca-pub-1562350888025204"
+					 data-ad-slot="8203981682"></ins>
+				<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+                <br class="ChartEUR" /><div id="Body" class="ChartGBP">
+                    <div id="Header" class="GBPHeader">
+                        
+    <a name="GBP_JUMP" id="GBPNAV" />
+    <h2>
+        GBP
+        <section id="GBPHead" style="float: right">
+        </section>
+    </h2>
+</a>
+
+                    </div>
+                    <div id="Text" class="GBPText">
+                        
+    <div id="GBPContainer">
+        BTC TO GBP LOADING...
+    </div>
+
+                    </div>
+                </div>
+                <br class="ChartGBP" />
+                <div id="Detail" class="About">
+                    <div id="DetailHeader" class="AboutHeader">
+                        
+    <a name="ABOUT_JUMP" id="ABOUTNAV" />
+    <h2>
+        BITCOIN
+    </h2>
+</a>
+
+                    </div>
+                    <div id="Text" class="AboutText">
+                        
+    <div id="Div1">
+        <h3>
+            Bitcoin</h3>
+        <p>
+            Bitcoin uses peer-to-peer technology to operate with no central authority or banks; managing transactions and the issuing of bitcoins is carried out collectively by the network. <br />
+            Bitcoin is open-source; its design is public, nobody owns or controls Bitcoin and everyone can take part. Through many of its unique properties, Bitcoin allows exciting uses that could not be covered by any previous payment system. <br />
+            Learn more <a href="http://www.youtube.com/watch?v=Um63OQz3bjo" target="_blank">here</a>.
+            <br />
+        </p>
+        <h3>
+            Markets</h3>
+        <p>
+            This site allows you to:
+            <br />
+            - See the exchange rate of various markets and different currencies. This in turn
+            allows you to maximize your profit by choosing a market that will be most favorable
+            for you.
+            <br />
+            - Keep on the current Bitcoin price in your favorite currencies, which will also
+            be displayed in the browser tab so you can keep track of the Bitcoin price while
+            visiting your favorite websites.
+            <br />
+            - Select your favorite currencies, by doing this the site will display the current
+            exchange for a Bitcoin in that currency in the browser tab. This will also change
+            the order in which the charts are displayed putting that currency first.
+            <br />
+            - Hide any currencies you have no need for, this will not just hide those currencies
+            but also reduce bandwidth by skipping them when generating charts.
+        </p>
+        <h3>
+            Data</h3>
+        <p>
+            The data used in the charts is fetched every 30 minutes from the following exchanges:
+            <br />
+            <a href="http://data.mtgox.com/api/1/BTCUSD/ticker">MtGox USD Ticker</a>
+            <br />
+            <a href="http://data.mtgox.com/api/1/BTCEUR/ticker" class="alt">MtGox EUR Ticker</a>
+            <br />
+            <a href="http://data.mtgox.com/api/1/BTCGBP/ticker">MtGox GBP Ticker</a>
+            <br />
+            <a href="https://www.bitstamp.net/api/ticker" class="alt">BitStamp Ticker</a>
+            <br />
+            <a href="https://btc-e.com/api/2/btc_usd/ticker">BTC-E Ticker</a>
+            <br />
+            <a href="https://campbx.com/api/xticker.php" class="alt">CampBX Ticker</a>
+            <br />
+            <a href="https://intersango.com//api/ticker.php?currency_pair_id=1">Intersango Ticker</a>
+            <br />
+            <br />
+            For the exchange rate in the title the price is fetched from MtGox as this is the
+            only market that supports all 3 currencies.
+        </p>
+        <h3>
+            Development</h3>
+        <p>
+            The website is currently hosted on a very cheap server which sadly is visible in
+            the charts where some ticks might be missing, I am however planning on getting a
+            dedicated server but this will take some time so please bare with me.
+            <br />
+            If you encounter any graphical errors on this website I suggest you try using <a
+                                                                                              href="http://www.mozilla.org/en-US/firefox/new/" class="alt" target="_blank">FireFox</a>
+            if the errors persist then please contact me using the details listed below.
+            <br />
+        </p>
+        <h3>
+            API</h3>
+        <p>
+            All fetched data can be found here:
+            <br />
+            <br />
+            USD:<br />
+            <a href="Ticker/USD/MtGoxJson.aspx">MtGox</a> - <a href="High/USD/HighMtGoxJson.aspx">
+                                                                High</a><br />
+            <a href="Ticker/USD/CBXJson.aspx" class="alt">CBX</a> - <a href="High/USD/HighCBXJson.aspx"
+                                                                       class="alt">High</a><br />
+            <a href="Ticker/USD/BTCEJson.aspx">BTC-E</a> - <a href="High/USD/HighBTCEJson.aspx">
+                                                               High</a><br />
+            <a href="Ticker/USD/BitStampJson.aspx" class="alt">BitStamp</a> - <a href="High/USD/HighBitStampJson.aspx"
+                                                                                 class="alt">High</a><br />
+            <br />
+            EUR:<br />
+            <a href="Ticker/EUR/MtGoxEURJson.aspx">MtGox</a> - <a href="High/EUR/HighMtGoxEURJson.aspx">
+                                                                   High</a><br />
+            <br />
+            GBP:<br />
+            <a href="Ticker/GBP/MtGoxJson.aspx" class="alt">MtGox</a> - <a href="High/GBP/HighMtGoxGBPJson.aspx"
+                                                                           class="alt">High</a><br />
+            <a href="Ticker/GBP/IntersangoJson.aspx">Intersango</a> - <a href="High/GBP/HighIntersangoJson.aspx">
+                                                                          High</a><br />
+            <br />
+            If you plan on using them please don't request them too often.
+        </p>
+        <h3>
+            Contact</h3>
+        <p>
+            Feel free to contact me on <a href="https://bitcointalk.org/index.php?action=profile;u=86808">
+                                           Bitcoin Talk</a> or you could send me a E-mail at <a href="mailto:admin@skami.net"
+                                                                                                class="alt">admin@skami.net</a>.
+            <br />
+            If you encounter any bugs you can post them here on the dedicated topic on <a href="https://bitcointalk.org/index.php?topic=155077">
+                                                                                           Bitcoin Talk</a>
+        </p>
+        <h3>
+            Disclaimer</h3>
+        <p>
+            Please read this fast without rereading it.
+            <br />
+            <sub>The exchange rates displayed on this site are for information purposes only. They
+                are not guaranteed to be accurate, and are subject to change without notice.<br />
+                I am not responsible for any missed opportunities due to false information or down time. Trading fees are not taken into account when generating these charts.
+                <br />
+                API's are subject to change without notice and may disappear at any time.
+            </sub>
+        </p>
+    </div>
+
+                    </div>
+                </div>
+                <br />
+                <div id="Body" class="Preferences">
+                    <div id="Header" class="PreferencesHeader">
+                        
+    <a name="PREFERENCES_JUMP" id="ABOUTPREFERENCES" />
+    <h2>
+        PREFERENCES
+    </h2>
+</a>
+
+                    </div>
+                    <div id="Text" class="PreferencesText">
+                        
+    <div id="Div2">
+        <h3>
+            Main currency</h3>
+        <p>
+            Set your primary currency, this will put the chart for that currency first and display
+            the rate for that currency in the title.
+        </p>
+        <select name="ctl00$TextContent3$DDLCurrency" id="TextContent3_DDLCurrency">
+		<option value="USD">USD</option>
+		<option value="EUR">EUR</option>
+		<option value="GBP">GBP</option>
+
+	</select>
+        <h3>
+            Currencies</h3>
+        <p>
+            Select the charts that you want to be loaded by default.
+        </p>
+        <p>
+            USD:
+            <input id="TextContent3_ChckBxUSD" type="checkbox" name="ctl00$TextContent3$ChckBxUSD" checked="checked" />
+            <br />
+            EUR:
+            <input id="TextContent3_ChckBxEUR" type="checkbox" name="ctl00$TextContent3$ChckBxEUR" checked="checked" />
+            <br />
+            GBP:
+            <input id="TextContent3_ChckBxGBP" type="checkbox" name="ctl00$TextContent3$ChckBxGBP" checked="checked" />
+        </p>
+        <h3>
+            Interval</h3>
+        <p>
+            Set the interval at which the title refreshes.
+        </p>
+        <br />
+        <p>
+            <select name="ctl00$TextContent3$DDLInterval" id="TextContent3_DDLInterval">
+		<option value="1">1</option>
+		<option selected="selected" value="5">5</option>
+		<option value="10">10</option>
+		<option value="30">30</option>
+		<option value="60">60</option>
+
+	</select>
+            Seconds
+        </p>
+        <h3>
+            Menu</h3>
+        <p>
+            Hide Side Menu:
+            <input id="TextContent3_ChckBxHide" type="checkbox" name="ctl00$TextContent3$ChckBxHide" /></p>
+        <br />
+        <input type="submit" name="ctl00$TextContent3$btnLogin" value="Save" id="TextContent3_btnLogin" />
+    </div>
+
+                    </div>
+                </div>
+            
+</div>
+            <div class="appendto-logo">
+                Donations are always welcome at: 198PnzXVjxU4nYWYPBHRDGoGQYYGEShyYn
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+
+	
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://rawgithub.com/highslide-software/export-csv/master/export-csv.js"></script>
+	

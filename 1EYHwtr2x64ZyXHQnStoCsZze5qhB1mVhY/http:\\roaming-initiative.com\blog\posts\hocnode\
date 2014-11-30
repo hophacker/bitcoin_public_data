@@ -1,0 +1,195 @@
+http://roaming-initiative.com/blog/posts/hocnode/
+HTTP/1.1 200 OK
+Server: nginx/1.2.1
+Date: Thu, 24 Jul 2014 06:13:17 GMT
+Content-Type: text/html
+Content-Length: 14933
+Last-Modified: Sun, 20 Jul 2014 17:58:40 GMT
+Connection: close
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/blog/css/main.css">
+        <link rel="alternate" type="application/atom+xml"
+            href="/blog/posts/index.xml" title="Atom Feed">
+        <title>Rough Ideas for Paid CJDNS Access</title>
+    </head>
+    <body>
+        <div id="wrap">
+            <header>
+                <h1><a href="/blog/">ri/blog</a></h1>
+                <ul class="nav">
+                    <li class="home"> <a href="/blog/">home</a></li>
+                    <li class="about"><a href="/blog/about/">about</a></li>
+                    <li class="posts"><a href="/blog/posts/">posts</a></li>
+                    <li class="tags"> <a href="/blog/tags/">tags</a></li>
+                </ul>
+            </header>
+            <ul class="sidebar">
+    
+    <li>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY"><img src="/blog/images/bitcoinLogo.png" alt="Bitcoin Logo"/></a>
+        <a href="bitcoin:1EYHwtr2x64ZyXHQnStoCsZze5qhB1mVhY">Bitcoin!</a>
+    </li>
+    <li><script data-gittip-username="campadrenalin"
+        src="//gttp.co/v1.js"></script>
+    </li>
+    <li><a href="http://validator.w3.org/feed/check.cgi?url=http%3A//roaming-initiative.com/blog/posts/index.xml"><img src="/blog/images/valid-atom.png" alt="[Valid Atom 1.0]" title="Validate my Atom 1.0 feed" /></a></li>
+    <li><a href="/blog/posts/index.xml">Atom feed</a></li>
+</ul>
+
+            <div id="main">
+
+<article>
+    <div class="metadata">
+        <h1>Rough Ideas for Paid CJDNS Access</h1>
+        <div class="facts">
+    <span class="date">5/28/2013</span>
+    -
+    
+        
+            
+            <a href="/blog/tags/cjdns/">cjdns</a>
+        
+             - 
+            <a href="/blog/tags/money/">money</a>
+        
+    
+</div>
+
+    </div>
+    <div class="content">
+        
+
+<p>This is a work-in-progress idea for making paid CJDNS access practical. My goal is still to promote free, ubiquitous Hyperboria access with paid gateways to the clearnet, and I don&rsquo;t invest any kind of faith or dependency in making automatic for-pay peering work within the next five years. However, what I&rsquo;m proposing actually works at my level of the software stack as well, and will hopefully be useful long before anyone integrates it into CJDNS.</p>
+
+<p>It fundamentally comes down to speed tests and price signalling. Since the former is more universally applicable, including my business model, I&rsquo;ll tackle that part first before moving on to the more thoughtful, free-market-y part.</p>
+
+<h1 id="toc_0">Speed Tests</h1>
+
+<h2 id="toc_1">Who is the producer, and who is the consumer?</h2>
+
+<p>The way that current ISPs price their plans, leads us to think that what you&rsquo;re paying for is megabytes, or at least megabytes per second. This is a bit challenged by a simple example in mesh networking.</p>
+
+<p><em>Two nodes discover each other through autopeering. One wants to mostly transmit information and recieve a little. The other wants to mostly receive information, and transmit a little. Which is the customer?</em></p>
+
+<p>Rather than let you puzzle on this, I&rsquo;m going to just go ahead and spoil the answer for you. It&rsquo;s a trick question. But without it as a parable, it&rsquo;s not <em>obviously</em> a trick question. The real answer is that we don&rsquo;t have the relevant data to make that determination - which begs the further question, what data do we <em>need</em> to answer this? Or less contextually&hellip;</p>
+
+<h2 id="toc_2">What are you really paying for, when you pay for internet?</h2>
+
+<p>I&rsquo;ll spoil this one too. You&rsquo;re not paying for megabytes. You&rsquo;re paying for access and speed - you&rsquo;re paying for <em>routes.</em></p>
+
+<p>This is not only retrospectively obvious, it also helps us visualize a proper cost model. When you&rsquo;re choosing among one or more paid peers (where &ldquo;none of these are worth the money&rdquo; is always an implicit option), you need to be able to figure out how good a deal something is, and now we have something to weigh against the cost. Except, you still need some way to determine route quality&hellip;</p>
+
+<h2 id="toc_3">Determining route quality - without free trials</h2>
+
+<p>First, a note on the idea of free trials. It works for some industries, it&rsquo;s bullshit for others. If you can meet your needs with free samples, and there&rsquo;s nothing stopping you from going from one cart to another snarfing stuff down until the security guards show up, why would you ever pay? So if we can solve the problem without free samples opening us up to mooching, so much the better, and luckily we can.</p>
+
+<p>At a high level, route quality is a pretty simple matter. You have speed test services that follow a known standard, like ping for bandwidth testing, that includes a mutual signing of the results at the end of the test (including the timestamps on each end). You can then hand that over to potential peers to show off your connection speed. Because of the cryptographic properties of CJDNS being tied to IP address, you have an assurance that the node you are talking to is the one that achieved the speeds listed in the signed report.</p>
+
+<p>On the client end, you can take in the reports for each of your potential peers, ask for additional reports to be made if you don&rsquo;t trust any of the speedtest servers that those peers are using (or if you consider the existing reports to be too out of date), and make an algorithmic judgement call based on the price and route quality of each option.</p>
+
+<h1 id="toc_4">Choosing the best route</h1>
+
+<p>There are two ways I can think of that seem like nicely configurable ways to choose the ideal route. So I&rsquo;ll bring up three. You&rsquo;ll understand it when you get there.</p>
+
+<h2 id="toc_5">SQLite</h2>
+
+<p>A fairly comprehensible way to handle this is to store routes in an SQLite database as they&rsquo;re discovered, and use an SQL query as your configuration for determining which route to choose.</p>
+
+<pre><code>FROM routes SELECT id WHERE 2.50 &gt; chunksize_USD LIMIT 1 ORDER BY latency ASC
+</code></pre>
+
+<h2 id="toc_6">Python or Lua script</h2>
+
+<p>Pick some de-facto language to embed and use in your route acquisition daemon.</p>
+
+<pre><code>def choose_route(available):
+    ...
+</code></pre>
+
+<h2 id="toc_7">Defer to an external executable</h2>
+
+<p>This smoothly encompasses both the above approaches, and more, with a loosely-coupled interface for choosing a route. Any binary or script that fits that TBD interface can fulfill that purpose, by any means the authors feel like.</p>
+
+<h1 id="toc_8">Making payments</h1>
+
+<p>My intention is to make it easy for each selling node to host a Niknak API server. The speed reports can be a standardized part of the description of the item, which also has a standardized name or SKU. A connecting node can quickly and anonymously scan for route sellers among its direct peers, and buy time or bandwidth via Bitcoin.</p>
+
+<p>This is already the sales model we&rsquo;re using for CVIs, albeit in a less-automated sort of way. It can be tested and hardened for months or years before being hooked into CJDNS&rsquo;s RPC mechanisms.</p>
+
+<h2 id="toc_9">Isn&rsquo;t this complicated? (Actual complaint by cjd in IRC, and a fair one)</h2>
+
+<p>Yes. This kind of thing is inherently complicated. It&rsquo;s naively optimistic to think that you can have some sort of automated mesh ISP payment system, and not have to worry about complication. There&rsquo;s a limit to how simple you can make something like this.</p>
+
+<p>What&rsquo;s important regarding complication, here, is not the total complication, but <em>where</em> the complication lies. Instead of putting that complication in CJDNS, for example, we move it all externally to systems <em>designed</em> for internet transactions, which then hook into CJDNS with a stable API, and can be used for other hooks as well. In the case of CVI gateways, we&rsquo;d be using those hooks to control gateway access. In CJDNS, you&rsquo;d be using it to control a DPRW - Direct Peer Routing Whitelist.</p>
+
+<h2 id="toc_10">Offline Bitcoin Transactions</h2>
+
+<p>While more exotic solutions such as gift card codes may be accepted in the future, the natural choice for such a payment system is Bitcoin. At first it seems like a dealbreaker, trying to use Bitcoin before you have internet access - a chicken and egg problem, if you will - but as long as you already have the software installed, and money in a local wallet, Bitcoin is perfectly capable of working for this sort of thing.</p>
+
+<ol>
+<li>Create and load a wallet beforehand (<a href="https://bitcoinarmory.com/using-offline-wallets-in-armory/">this guide is <em>somewhat</em> applicable</a>)</li>
+<li>When you need to make a paid peer later, the daemon will find the best available deal per your config criteria</li>
+<li>A popup will display on your computer, with the details of the transaction.</li>
+<li>You create a signed transaction in your Bitcoin software of choice, according to those details.</li>
+<li>The last bit of info in the popup includes instructions for sending the transaction. Follow those instructions.</li>
+<li>Your deal is confirmed by the NikNak server, and the bitcoin transaction is broadcast. The provider has no motivation NOT to send the transaction, that&rsquo;s analogous to not depositing a check.</li>
+<li>You&rsquo;re added to that node&rsquo;s DPRW, which allows you to access the greater Hyperboria network.</li>
+</ol>
+
+<p>At some point, the transactional steps could be automated, especially for small chunk sizes (see below).</p>
+
+<p><em>Security tip:</em> If a paid peer claims that it needs another transaction and doesn&rsquo;t give you internet service, it&rsquo;s probably a scam. But the good news is that the transaction data includes the timecode, so you can send them as many copies of the transaction as you want, and they can only enact it once.</p>
+
+<h2 id="toc_11">Chunk size</h2>
+
+<p>Service is sold in increments arbitrarily called &ldquo;chunks.&rdquo; How much a chunk is worth varies by plan and provider. Chunk size is the payment granularity. So if a service product on a NikNak server is priced at 0.001 BTC for 20 minutes of service, that is a chunk size of 0.001 BTC. For simplicity, we make no effort to refund unused service - if you only use the internet for 10 minutes, that&rsquo;s still 0.001 BTC. However, on non-skeevy servers, your credit will still be preserved for unused time or data. Useless if you&rsquo;re just passing through and the node isn&rsquo;t part of a larger provider network, but not a bad deal for stable arrangements.</p>
+
+<p>This is why chunk size is an important factor in deciding which route to use. You should never go for a plan with a large chunk size until you trust that provider to not run away cackling with your money. You can probably afford to lose 30 cents. You probably can&rsquo;t afford to lose 30 dollars.</p>
+
+<h2 id="toc_12">Service loops</h2>
+
+<p>This brings us back to the problem of &ldquo;who is the customer, who is the provider.&rdquo; Let&rsquo;s say Alice&rsquo;s node is solely connected to Bob&rsquo;s node, and Bob is connected to Charlie, who is part of the larger network, with multiple connections. Essentially, a penninsula where Alice is buying internet from Bob and Bob is buying internet from Charlie.</p>
+
+<p>Alice decides to screw around with the local network, just for kicks. She runs a few speed tests with popular speed test servers, building up a decent portfolio with her route through Bob. Then she sets up her NikNak server and so on, advertising a connection that is crummier quality than Bob&rsquo;s connection through Charlie, but much, much cheaper. Bob&rsquo;s daemon sees this, falls for the honeypot of sweet deals, and stops getting internet through Charlie, trying to get it through Alice instead. The two of them are no longer a penninsula, they become an isolated island with no connection to the outside world.</p>
+
+<h3 id="toc_13">This would automatically fix itself pretty quickly</h3>
+
+<p>First of all, this wouldn&rsquo;t last forever. While Charlie can keep refreshing his speed test reports, Alice can&rsquo;t, and eventually they will be older than Bob considers valid. He will switch back to Charlie. His software may also give Alice&rsquo;s IP a bad mark in some local or distributed database, preventing the same problem from happening again.</p>
+
+<h3 id="toc_14">With sufficiently smart software, it&rsquo;s preventable in the first place</h3>
+
+<p>You can prevent this kind of abuse, to some degree, by doing an analysis of the routing table to see if it&rsquo;s plausible to get internet through a given source. While this still certainly isn&rsquo;t foolproof - the most unflinching example is the node that&rsquo;s perfectly capable of routing to the rest of the world, but decides not to even after taking people&rsquo;s money - it would cut out some abuse, including our penninsula example.</p>
+
+<p>The rest is dependent on developing a shaming system to report bad actors in the paid internet biz - something that businesses generally need to be accountable in general anyways.</p>
+
+<h2 id="toc_15">Macroeconomics</h2>
+
+<p>In general, loops will be prevented as long as each node sells at profit or break-even prices. Price will ripple outwards and upwards from cheap, competing high-bandwidth mainlines. Things can still be temporarily screwed up by someone intentionally operating at a loss, like Alice in the above example, but such an interruption would only be temporary, and the software stack would be continuously improved to predict and avoid such problems.</p>
+
+<p>Price will also slowly trend down with competition towards some low equillibrium, in many cases simply becoming free. Competition becomes more limited by geography than price, so it only takes one enterprising neighbor to pressure everybody&rsquo;s prices down. This is what slowly cuts into margins and normalizes prices toward zero, although by that time, the provider&rsquo;s hardware costs will likely have been fully subsidized.</p>
+
+<h1 id="toc_16">Summary</h1>
+
+<p>We can pioneer the technology with the software stack I&rsquo;m already in the process of building, harden it in RI and similar gateway businesses, and then eventually use it at the CJDNS level with minimal added complexity to CJDNS.</p>
+
+    </div>
+</article>
+            </div>
+        </div>
+        <footer>
+            <ul>
+                <li class="item">&copy; Philip Horger 2012-2014</li>
+                <li class="item"><a href="mailto:philip@roaming-initiative.com">philip@roaming-initiative.com</a></li>
+                <li class="item"><a href="http://reddit.com/u/rainfly_x">rainfly_x</a></li>
+                <li class="filler"></li>
+            </ul>
+        </footer>
+    </body>
+</html>
+
+

@@ -1,0 +1,393 @@
+http://tryfriendica.de/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 18:03:40 GMT
+Server: Apache/2.2.3 (CentOS)
+X-Powered-By: PHP/5.3.11
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+X-Account-Management-Status: none
+Set-Cookie: PHPSESSID=fei2iigtl1vc147jmf1d1ukck5; path=/; HttpOnly
+Connection: close
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html >
+<html itemscope itemtype="http://schema.org/Blog" />
+<head>
+  <title>TryFriendica.de - Friendica Demo/Test-Server</title>
+  <script>var baseurl="http://tryfriendica.de";</script>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<base href="http://tryfriendica.de/" />
+<meta name="generator" content="Friendica 3.2.1751" />
+<link rel="stylesheet" href="http://tryfriendica.de/view/global.css" type="text/css" media="all" />
+
+<link rel="stylesheet" href="http://tryfriendica.de/library/colorbox/colorbox.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="http://tryfriendica.de/library/jgrowl/jquery.jgrowl.css" type="text/css" media="screen" />
+
+<link rel="stylesheet" type="text/css" href="http://tryfriendica.de/view/theme/vier/style.css" media="all" />
+
+<!--
+<link rel="shortcut icon" href="http://tryfriendica.de/images/friendica-32.png" />
+<link rel="apple-touch-icon" href="http://tryfriendica.de/images/friendica-128.png"/>
+-->
+<link rel="shortcut icon" href="http://tryfriendica.de/images/friendica-32.png" />
+<link rel="apple-touch-icon" href="http://tryfriendica.de/images/friendica-128.png"/>
+
+<meta name="apple-mobile-web-app-capable" content="yes" /> 
+
+
+<link rel="search"
+         href="http://tryfriendica.de/opensearch" 
+         type="application/opensearchdescription+xml" 
+         title="Search in Friendica" />
+
+<!--[if IE]>
+<script type="text/javascript" src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="http://tryfriendica.de/js/jquery.js" ></script>
+<script type="text/javascript" src="http://tryfriendica.de/js/jquery.textinputs.js" ></script>
+<script type="text/javascript" src="http://tryfriendica.de/js/fk.autocomplete.js" ></script>
+
+<script type="text/javascript" src="http://tryfriendica.de/library/colorbox/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="http://tryfriendica.de/library/jgrowl/jquery.jgrowl_minimized.js"></script>
+<script type="text/javascript" src="http://tryfriendica.de/library/tinymce/jscripts/tiny_mce/tiny_mce_src.js" ></script>
+<script type="text/javascript" src="http://tryfriendica.de/js/acl.js" ></script>
+<script type="text/javascript" src="http://tryfriendica.de/js/webtoolkit.base64.js" ></script>
+<script type="text/javascript" src="http://tryfriendica.de/js/main.js" ></script>
+<script>
+
+	var updateInterval = 40000;
+	var localUser = false;
+
+	function confirmDelete() { return confirm("Delete this item?"); }
+	function commentExpand(id) {
+		$("#comment-edit-text-" + id).value = '';
+		$("#comment-edit-text-" + id).addClass("comment-edit-text-full");
+		$("#comment-edit-text-" + id).removeClass("comment-edit-text-empty");
+		$("#comment-edit-text-" + id).focus();
+		$("#mod-cmnt-wrap-" + id).show();
+		openMenu("comment-edit-submit-wrapper-" + id);
+		return true;
+	}
+	function commentOpen(obj,id) {
+		if(obj.value == 'Comment') {
+			obj.value = '';
+			$("#comment-edit-text-" + id).addClass("comment-edit-text-full");
+			$("#comment-edit-text-" + id).removeClass("comment-edit-text-empty");
+			$("#mod-cmnt-wrap-" + id).show();
+			openMenu("comment-edit-submit-wrapper-" + id);
+			return true;
+		}
+		return false;
+	}
+	function commentClose(obj,id) {
+		if(obj.value == '') {
+			obj.value = 'Comment';
+			$("#comment-edit-text-" + id).removeClass("comment-edit-text-full");
+			$("#comment-edit-text-" + id).addClass("comment-edit-text-empty");
+			$("#mod-cmnt-wrap-" + id).hide();
+			closeMenu("comment-edit-submit-wrapper-" + id);
+			return true;
+		}
+		return false;
+	}
+
+
+	function commentInsert(obj,id) {
+		var tmpStr = $("#comment-edit-text-" + id).val();
+		if(tmpStr == 'Comment') {
+			tmpStr = '';
+			$("#comment-edit-text-" + id).addClass("comment-edit-text-full");
+			$("#comment-edit-text-" + id).removeClass("comment-edit-text-empty");
+			openMenu("comment-edit-submit-wrapper-" + id);
+		}
+		var ins = $(obj).html();
+		ins = ins.replace('&lt;','<');
+		ins = ins.replace('&gt;','>');
+		ins = ins.replace('&amp;','&');
+		ins = ins.replace('&quot;','"');
+		$("#comment-edit-text-" + id).val(tmpStr + ins);
+	}
+
+	function qCommentInsert(obj,id) {
+		var tmpStr = $("#comment-edit-text-" + id).val();
+		if(tmpStr == 'Comment') {
+			tmpStr = '';
+			$("#comment-edit-text-" + id).addClass("comment-edit-text-full");
+			$("#comment-edit-text-" + id).removeClass("comment-edit-text-empty");
+			openMenu("comment-edit-submit-wrapper-" + id);
+		}
+		var ins = $(obj).val();
+		ins = ins.replace('&lt;','<');
+		ins = ins.replace('&gt;','>');
+		ins = ins.replace('&amp;','&');
+		ins = ins.replace('&quot;','"');
+		$("#comment-edit-text-" + id).val(tmpStr + ins);
+		$(obj).val('');
+	}
+
+	window.showMore = "show more";
+	window.showFewer = "show fewer";
+
+	function showHideCommentBox(id) {
+		if( $('#comment-edit-form-' + id).is(':visible')) {
+			$('#comment-edit-form-' + id).hide();
+		}
+		else {
+			$('#comment-edit-form-' + id).show();
+		}
+	}
+
+
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="http://tryfriendica.de/addon/pageheader/pageheader.css" media="all" />
+<link rel="stylesheet" href="view/theme/vier/flat.css" type="text/css" media="screen"/>
+<script type="text/javascript" src="http://tryfriendica.de/view/theme/vier/js/jquery.divgrow-1.3.1.f1.min.js"></script>
+<script>
+
+function collapseHeight(elems) {
+	var elemName = '.wall-item-body:not(.divmore)';
+	if(typeof elems != 'undefined') {
+		elemName = elems + ' ' + elemName;
+	}
+	$(elemName).each(function() {
+		if($(this).height() > 450) {
+			$('html').height($('html').height());
+			$(this).divgrow({ initialHeight: 400, showBrackets: false, speed: 0 });
+			$(this).addClass('divmore');
+			$('html').height('auto');
+		}
+	});
+}
+
+function insertFormatting(comment,BBcode,id) {
+
+		var tmpStr = $("#comment-edit-text-" + id).val();
+		if(tmpStr == comment) {
+			tmpStr = "";
+			$("#comment-edit-text-" + id).addClass("comment-edit-text-full");
+			$("#comment-edit-text-" + id).removeClass("comment-edit-text-empty");
+			openMenu("comment-edit-submit-wrapper-" + id);
+			$("#comment-edit-text-" + id).val(tmpStr);
+		}
+
+	textarea = document.getElementById("comment-edit-text-" +id);
+	if (document.selection) {
+		textarea.focus();
+		selected = document.selection.createRange();
+		if (BBcode == "url"){
+			selected.text = "["+BBcode+"]" + "http://" +  selected.text + "[/"+BBcode+"]";
+			} else
+		selected.text = "["+BBcode+"]" + selected.text + "[/"+BBcode+"]";
+	} else if (textarea.selectionStart || textarea.selectionStart == "0") {
+		var start = textarea.selectionStart;
+		var end = textarea.selectionEnd;
+		if (BBcode == "url"){
+			textarea.value = textarea.value.substring(0, start) + "["+BBcode+"]" + "http://" + textarea.value.substring(start, end) + "[/"+BBcode+"]" + textarea.value.substring(end, textarea.value.length);
+			} else
+		textarea.value = textarea.value.substring(0, start) + "["+BBcode+"]" + textarea.value.substring(start, end) + "[/"+BBcode+"]" + textarea.value.substring(end, textarea.value.length);
+	}
+	return true;
+}
+
+
+function showThread(id) {
+	$("#collapsed-comments-" + id).show()
+	$("#collapsed-comments-" + id + " .collapsed-comments").show()
+}
+function hideThread(id) {
+	$("#collapsed-comments-" + id).hide()
+	$("#collapsed-comments-" + id + " .collapsed-comments").hide()
+}
+
+
+function cmtBbOpen(id) {
+	$("#comment-edit-bb-" + id).show();
+}
+function cmtBbClose(id) {
+	$("#comment-edit-bb-" + id).hide();
+}
+</script><link rel="stylesheet" type="text/css" href="http://tryfriendica.de/addon/impressum/impressum.css" media="all" />	<script>
+		$(function(){
+			$('a[href*="/viewsrc/"]').each(function() {
+				$(this).colorbox($(this).attr('href'));
+			});
+		});
+	</script><script type="text/javascript" src="http://tryfriendica.de/addon/openstreetmap/openstreetmap.js"></script>
+</head>
+<body>
+	<div id="panel" style="display: none;"></div><header>
+	
+
+	<div id="site-location">tryfriendica.de</div>
+	<div id="banner"><a href="http://friendica.com"><img id="logo-img" src="images/friendica-32.png" alt="logo" /></a><span id="logo-text"><a href="https://tryfriendica.de">TryFriendica.de</a></div>
+</header>
+<nav>
+	<ul>
+					<li id="nav-community-link" class="nav-menu ">
+				<a class="" href="community" title="Conversations on this site" >Community</a>
+			</li>
+				
+							<li id="nav-home-link" class="nav-menu ">
+				<a class="" href="" title="Home Page" >Home</a>
+				<span id="home-update" class="nav-notify"></span>
+			</li>
+				
+		<li id="nav-site-linkmenu" class="nav-menu-icon"><a href="#" rel="#nav-site-menu"><span class="icon s22 gear"></span></a>
+			<ul id="nav-site-menu" class="menu-popup">
+																
+				<li><a class="" href="directory" title="People directory" >Directory</a></li>
+				 <li><a class="" target="friendica-help" href="http://tryfriendica.de/help" title="Help and documentation" >Help</a></li>				<!--  -->
+				<li><a class="" href="friendica" title="Information about this friendica instance" >Information</a></li>
+
+								<li><a class="selected" href="login" title="Sign in" >Login</a><li>			</ul>		
+		</li>
+				
+		
+<!--		
+		 
+		<li id="nav-help-link" class="nav-menu ">
+			<a class="" target="friendica-help" href="http://tryfriendica.de/help" title="Help and documentation" >Help</a>
+		</li>
+		-->
+
+				
+		                <li id="search-box">
+                        <form method="get" action="search">
+                        	<input id="search-text" class="nav-menu-search" type="text" value="" name="search">
+                        </form>
+                </li>
+				
+			</ul>
+
+</nav>
+<ul id="nav-notifications-template" style="display:none;" rel="template">
+	<li><a href="{0}"><img data-src="{1}">{2} <span class="notif-when">{3}</span></a></li>
+</ul>
+<!--
+<div class="icon-flag" style="position: fixed; bottom: 10px; left: 20px; z-index:9;"><div id="lang-select-icon" class="icon s22 language" title="Select an alternate language" onclick="openClose('language-selector');" >lang</div>
+<div id="language-selector" style="display: none;" >
+	<form action="#" method="post" >
+		<select name="system_language" onchange="this.form.submit();" >
+							<option value="" selected="selected">default</option>
+							<option value="bg" >bg</option>
+							<option value="ca" >ca</option>
+							<option value="cs" >cs</option>
+							<option value="de" >de</option>
+							<option value="en" >en</option>
+							<option value="eo" >eo</option>
+							<option value="es" >es</option>
+							<option value="fr" >fr</option>
+							<option value="is" >is</option>
+							<option value="it" >it</option>
+							<option value="nb-no" >nb-no</option>
+							<option value="nl" >nl</option>
+							<option value="pl" >pl</option>
+							<option value="pt-br" >pt-br</option>
+							<option value="ro" >ro</option>
+							<option value="ru" >ru</option>
+							<option value="sv" >sv</option>
+							<option value="zh-cn" >zh-cn</option>
+					</select>
+	</form>
+</div>
+</div>
+-->
+
+	<aside></aside>
+	<section><div class="pageheader">Willkommen! Schau dir als erstes dieses hier an -> https://tryfriendica.de/newmember ## Fragen? -> Mit http://chp.me/helpers verbinden! ## Admin: transmitter@tryfriendica.de</div><h2>DIES IST EIN <a href="http://friendica.com/node/31"> DEMO-SERVER</a>! </h2>
+Einige hilfreiche Informationen zu <a href="/friendica"> <b>TryFriendica.de</b></a>:<br>
+* <b><a href="/register"> Hier registrieren</a> und Friendica 7 Tage lang testen.</b> Nach 7 Tagen wird dein Account automatisch geschlossen und innerhalb der darauf folgenden 5 Tage gelöscht.<br>
+Zur Registrierung wird <b>eine gültige Emailadresse</b> benötigt, an diese wird dein temporäres Passwort gesendet!<br>
+Nutze ggf. einfach einen anonymen und zeitlich begrenzten Emailaccount, bedenke in diesem Fall aber dass möglicherweise keine Friendica-Servermeldungen (zb Freundschaftsanfragen) zugestellt werden können.<br>
+* <a href="/community"><b>Öffentliche Beiträge</b></a> auf TryFriendica.de<br>
+* <a href="/newmember"> Neu hier und Fragen? Klick für <b>Antworten!</b> :-)</a><br>
+<h3>Das solltest du noch durchlesen:</h3>
+* <b>Du möchtest Friendica gerne testen? Dann bist du hier richtig, dies ist ein Demo/Testserver.</b> → Denk daran dass dein Account zeitlich begrenzt ist, ein Demoserver ist wirklich nur zum Testen gedacht!<br>
+* <b>Du möchtest deinen eigenen <a href="http://friendica.com/download">Friendica Server installieren</a>?</b> Wunderbar, das ist der Grundgedanke wie Friendica funktionieren sollte. Im <a href="http://wiki.toktan.org"> <b>Wiki</b> findest du viele Anleitungen, aber auch im <a href="https://helpers.pyxis.uberspace.de/profile/helpers">Support Forum</a> werden dir gerne offene Fragen beantwortet. → Denk darüber nach, ob du vielleicht auch andere Nutzer auf deinen Knoten zulässt.<br>
+* <b>Du möchtest einfach nur ein Friendica User auf irgendeinem Server sein?</b> → Denk gut darüber nach wem du deine Daten anvertraust! Es gibt in der Tat eine<a href="http://dir.friendica.com/siteinfo"> Liste mit öffentlichen Servern</a>, dort kannst du einen aussuchen und dich als Nutzer registrieren. Prüfe vorher(!) ob dort alle Anforderungen erfüllt werden (ob zb das Facebook Plugin vorhanden ist usw). Und vergiss nicht: einen eigenen Server aufzusetzen ist nicht besonders schwer und es gibt viele <a href="https://helpers.pyxis.uberspace.de/profile/helpers">Helfer</a>.<p>
+Warum macht es Sinn <b>einen eigenen Server</b> zu betreiben?<br>
+* <a href="http://wiki.toktan.org/doku.php?id=friendica:vergleich"> Vergleich zwischen eigenem und öffentlichen Server</a><br>
+* <a href="http://friendica.com/node/33"> Why host your own?</a>
+<br>
+* <a href="http://friendica.com/"> Friendica.com</a><br>
+* <a href="http://friendica-themes.com/"> Friendica Themes</a><br>
+* <a href="http://friendica-addons.com/"> Friendica Addons</a><br>
+* <a href="http://wiki.toktan.org"> <b>Friendica Wiki.TokTan</b> (auf deutsch)</a><br>
+* <a href="http://friendica.com/node/31"> DEMO-SERVER Liste</a>
+<p>
+<b>Friendica ist ein dezentrales soziales Netzwerk bei dem Privatsphäre groß geschrieben wird.</b><br>
+Jeder kann seinen eigenen Server betreiben und mit Nutzern auf allen anderen Servern interagieren.<br>
+Friendica ist kostenlos, frei und unabhängig!<br>
+Dies hier ist nur ein kleiner Friendica-Knoten. Einer von hunderten oder tausenden. Er wird aus der puren Überzeugung betrieben, Friendica bekannter zu machen und um jedem Interessierten die Möglichkeit zum Testen zu geben.<p>
+Wer etwas zur Finanzierung der laufenden Serverkosten beitragen möchte:<br>
+<b>Die Bitcoin Kaffeekasse</b> lautet 15bQNbvNxu2kzMFwv2hZ8giV8RVZ69VWmE<br>
+Danke!<p>
+<img src="http://wiki.toktan.org/lib/exe/fetch.php?media=friendica:people.jpg">
+<p></p>
+
+
+
+<form action="http://tryfriendica.de/" method="post" >
+	<input type="hidden" name="auth-params" value="login" />
+
+	<div id="login_standard">
+		
+	<div class='field input' id='wrapper_username'>
+		<label for='id_username'>Nickname or Email address: </label>
+		<input name='username' id='id_username' value="">
+		<span class='field_help'></span>
+	</div>
+
+		
+	<div class='field password' id='wrapper_password'>
+		<label for='id_password'>Password: </label>
+		<input type='password' name='password' id='id_password' value="">
+		<span class='field_help'></span>
+	</div>
+
+	</div>
+	
+				<div id="login_openid">
+				
+	<div class='field input openid' id='wrapper_openid_url'>
+		<label for='id_openid_url'>Or login using OpenID: </label>
+		<input name='openid_url' id='id_openid_url' value="">
+		<span class='field_help'></span>
+	</div>
+
+			</div>
+	
+		
+	<div class='field checkbox' id='div_id_remember'>
+		<label for='id_remember'>Remember me</label>
+		<input type="checkbox" name='remember' id='id_remember' value="1" >
+		<span class='field_help'></span>
+	</div>
+
+
+	<div id="login-extra-links">
+		<a href="register" title="Create a New Account" id="register-link">Register</a>        <a href="lostpass" title="Forgot your password?" id="lost-password-link" >Password Reset</a>
+	</div>
+	
+	<div id="login-submit-wrapper" >
+		<input type="submit" name="submit" id="login-submit-button" value="Login" />
+	</div>
+	
+			<input type="hidden" name="0" value="" />
+		
+	
+</form>
+
+
+<script type="text/javascript"> $(document).ready(function() { $("#id_username").focus();} );</script>
+<div class="clear"></div><div id="impressum_footer">++ <a href="https://tryfriendica.de/newmember" target="_blank"><strong>Neu hier?</strong></a> ++ <a href="https://tryfriendica.de/help" target="_blank">Hilfe</a> ++ <a href="http://wiki.toktan.org/" target="_blank">Wiki</a> ++  <a href="https://helpers.pyxis.uberspace.de/profile/helpers" target="_blank">Support Gruppe</a> ++ <a href="http://dir.friendica.com/directory/forum" target="_blank">Foren Übersicht</a> ++ <a href="https://snarl.de/profile/deutsch" target="_blank">Deutschsprachige Nutzer</a> ++</div><div id="pause"></div>		<div id="page-footer"></div>
+	</section>
+	<right_aside></right_aside>
+	<footer></footer>
+</body>
+</html>
+
+

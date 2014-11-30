@@ -1,0 +1,260 @@
+http://www.bortzmeyer.org/binaire-vers-structures.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 22:22:56 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Sat, 17 May 2014 14:22:53 GMT
+ETag: "247e5-3e22-4f99943ffe940"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 5961
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-05-17T16:22 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Génération de décodeurs de formats binaires
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Génération de décodeurs de formats binaires</h2><p>Première rédaction de cet article le 7 janvier 2007<br/>Dernière mise à jour le 12 juillet 2011<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Le problème original a été défini par Bertrand Petit mais est
+apparemment « dans l'air » depuis un certain temps. Il s'agit de créer
+une bibliothèque de génération de décodeurs de formats
+binaires. L'idée serait de décrire le format dans un <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Langage%20d%C3%A9di%C3%A9" title="Consultez l'article &quot;Langage dédié&quot; de l'encyclopédie libre Wikipedia">DSL</a></b>, et un programme
+générerait un décodeur qui lirait le fichier binaire, contrôlerait les
+valeurs et remplirait des structures de données.</p></div>
+<div class="para"><p>Le langage <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/ASN.1" title="Consultez l'article &quot;ASN.1&quot; de l'encyclopédie libre Wikipedia">ASN.1</a></b> et ses outils
+associés ne conviennent pas, à cause du A dans ASN.1. Il veut dire
+<i class="foreign" xml:lang="en">Abstract</i>. Même si cet adjectif n'est pas tout à
+fait exact (par exemple, la définition d'un terme énuméré en ASN.1
+nécessite d'indiquer concrètement les index), on ne peut pas utiliser
+ASN.1 pour décrire un format existant, un format que je n'ai pas
+choisi (prenons <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Portable%20Network%20Graphics" title="Consultez l'article &quot;Portable Network Graphics&quot; de l'encyclopédie libre Wikipedia">PNG</a></b> ou <a href="http://www.tcpdump.org/">libpcap</a> comme exemple).</p></div>
+<div class="para"><p>ASN.1 décrit le schéma de données. Il ne permet pas d'indiquer le
+placement des champs, le nombre de bits, etc. (Il existe toutefois une
+norme qui pourrait aider, il faudrait tester sa <a href="https://github.com/ttsiodras/asn1scc">mise en œuvre en logiciel libre</a>, ECN - <i class="foreign" xml:lang="en"><b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/Encoding%20Control%20Notation" title="Consultez l'article &quot;Encoding Control Notation&quot; de l'encyclopédie libre Wikipedia (en anglais)">Encoding Control Notation</a></b></i> - ou <a href="http://www.itu.int/rec/dologin_pub.asp?lang=e&amp;id=T-REC-X.692-200811-I!!PDF-E&amp;type=items">ITU X.692</a>, suggérée par Jean-Marie Kubek.)</p></div>
+<div class="para"><p>Voici, par exemple, dans un pseudo-<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Lisp" title="Consultez l'article &quot;Lisp&quot; de l'encyclopédie libre Wikipedia">Lisp</a></b>, ce que pourrait être la description d'un format binaire :
+</p><pre>
+
+(type GENDER (enumeration ('male.1 'female.2))) ; ISO 5218
+
+(define 'file (sequence-of 'record))
+
+(define 'record ('header 'body))
+
+(define 'header ('version 'name (padding (+ (length name) self = 64)
+        (if (&gt;= version 4) 'gif-image) 'gender 'eoh))
+; gif-image is defined in another module
+
+(define 'version UNSIGNED_INT_32_BE)
+
+(define 'eoh (value:0x0 size:32))
+
+(define 'name (if (&gt;= version 3)
+                  (sequence-of UTF8_CHARACTERS)
+                  (sequence-of ASCII_CHARACTERS)))
+
+(name-of 'name completeName) ; Will be used in the produced decoder
+
+(define 'gender GENDER)
+
+(define 'body (sequence-of IEEE_754_FLOAT))
+
+</pre></div>
+<div class="para"><p>Je l'ai dit, l'idée est dans l'air : il existe plusieurs projets
+qui s'attaquent à ce problème. Le plus achevé est <a href="http://padsproj.org/">PADS</a> (merci à Bill Fenner pour
+l'idée), dont le logiciel est désormais sous une <a href="http://padsproj.org/License.html">licence libre</a>. Parmi les articles présentant PADS, notons :
+</p><ul>
+<li><i class="foreign" xml:lang="en"><a href="http://www.padsproj.org/papers/pldi.pdf" hreflang="en">PADS: A Domain-Specific Language for Processing Ad Hoc Data</a></i>, une bonne synthèse de PADS,</li>
+<li><i class="foreign" xml:lang="en"><a href="http://www.padsproj.org/papers/popl06.pdf" hreflang="en">The Next 700 Data Description Languages</a></i>, qui généralise le problème et parle des alternatives à PADS.</li>
+</ul></div>
+<div class="para"><p>Voici un exemple de code PADS :
+</p><pre>
+
+Precord Pstruct summary_header_t {
+   "0|";
+   Puint32        tstamp;
+};
+Pstruct no_ramp_t {
+   "no_ii";
+   Puint64 id;
+};
+Punion dib_ramp_t {
+   Pint64      ramp;
+   no_ramp_t genRamp;
+};
+Pstruct order_header_t {
+         Puint32              order_num;
+ '|'; Puint32                 att_order_num;
+ '|'; Puint32                 ord_version;
+ '|'; Popt pn_t               service_tn;
+ '|'; Popt pn_t               billing_tn;
+ '|'; Popt pn_t               nlp_service_tn;
+ '|'; Popt pn_t               nlp_billing_tn;
+ '|'; Popt Pzip               zip_code;
+ '|'; dib_ramp_t              ramp;
+ '|'; Pstring(:'|':)          order_type;
+ '|'; Puint32                 order_details;
+ '|'; Pstring(:'|':)          unused;
+ '|'; Pstring(:'|':)          stream;
+ '|';
+};
+Pstruct event_t {
+   Pstring(:'|':) state;     '|';
+   Puint32         tstamp;
+};
+Parray eventSeq {
+   event_t[] : Psep('|') &amp;&amp; Pterm(Peor);
+} Pwhere {
+   Pforall (i Pin [0..length-2] :
+             (elts[i].tstamp &lt;= elts[i+1].tstamp));
+};
+Precord Pstruct entry_t {
+   order_header_t header;
+   eventSeq          events;
+};
+Parray entries_t {
+   entry_t[];
+};
+Psource Pstruct out_sum{
+   summary_header_t h;
+   entries_t           es;
+};
+
+</pre></div>
+<div class="para"><p>D'autres outils proches de PADS existent :
+</p><ul>
+<li>La <i class="foreign" xml:lang="en"><a href="http://www.erlang.se/euc/99/binaries.ps" hreflang="en">bit syntax</a></i> du langage <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Erlang%20(langage)" title="Consultez l'article &quot;Erlang (langage)&quot; de l'encyclopédie libre Wikipedia">Erlang</a></b>,</li>
+<li><a href="http://construct.wikispaces.com/">Construct</a>,
+un constructeur d'analyseurs en <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Python%20(langage)" title="Consultez l'article &quot;Python (langage)&quot; de l'encyclopédie libre Wikipedia">Python</a></b>, qui fonctionne aussi bien pour analyser
+du texte que du binaire,</li>
+<li><a href="http://www.imconf.net/imc-2006/papers/p29-pang.pdf">binpac</a>,
+<i class="foreign" xml:lang="en">A yacc for Writing Application Protocol Parsers</i>, un
+excellent outil orienté vers les protocoles réseaux, qui est <a href="http://bro-ids.org/wiki/index.php?title=BinPAC">livré en logiciel libre</a>,</li>
+<li>Le langage ROHC-FN décrit dans le <a href="4997.html" class="rfc" title="Consultez l'analyse du RFC 4997">RFC 4997</a>,</li>
+<li>Le <a href="http://www.sigcomm.org/sigcomm2000/conf/paper/sigcomm2000-9-2.ps.gz">langage PacketTypes</a>, dont je ne trouve pas d'implémentation publiée,</li>
+<li>Le <a href="http://datascript.sourceforge.net/">langage DataScript</a>, qui semble
+<a href="http://datascript.berlios.de/">avoir été implémenté depuis</a>.</li>
+</ul></div>
+<div class="para"><p>Il existe d'autres outils, soit très sommaires soit assez éloignés du cahier des charges :
+</p><ul>
+<li>La <a href="http://hachoir.org/">bibliothèque Hachoir</a>, pour les programmeurs <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Python%20(langage)" title="Consultez l'article &quot;Python (langage)&quot; de l'encyclopédie libre Wikipedia">Python</a></b>, mais qui n'a pas de langage de description des fichiers binaires,</li>
+<li><a href="http://www.gigamonkeys.com/book/practical-parsing-binary-files.html">Un
+exemple très intéressant</a>, où le <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Langage%20d%C3%A9di%C3%A9" title="Consultez l'article &quot;Langage dédié&quot; de l'encyclopédie libre Wikipedia">DSL</a></b> est embarqué, ici dans
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Common%20Lisp" title="Consultez l'article &quot;Common Lisp&quot; de l'encyclopédie libre Wikipedia">Common Lisp</a></b> (il y a un <a href="http://www.gigamonkeys.com/book/practical-an-id3-parser.html">joli exemple d'analyseur</a>),</li>
+<li><a href="http://metadata-standards.org/20944/">Un gros projet ISO</a>, qui semble une usine à gaz traditionnelle de cette organisation,</li>
+<li>Lumas, conçu pour décrire les en-têtes pour les protocoles réseaux, spécifié dans un <i class="foreign" xml:lang="en"><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Request%20for%20comments" title="Consultez l'article &quot;Request for comments&quot; de l'encyclopédie libre Wikipedia">Internet-Draft</a></b></i>, <code>draft-cordell-lumas</code>, mais qui n'a apparemment pas de mise en œuvre,</li>
+<li><a href="http://www.protomatics.com/tsn1.html">TSN.1</a>, un langage, et <a href="http://www.protomatics.com/products.html">des logiciels</a> (tous non libres),</li>
+<li><a href="http://file-spector.sourceforge.net/">File-Spector</a> (très
+alpha, et uniquement pour la visualisation),</li>
+<li><a href="http://www.bitpim.org/pyxr/c/projects/bitpim/src/protogen.py.html"><code>http://www.bitpim.org/pyxr/c/projects/bitpim/src/protogen.py.html</code></a>, très peu documenté,</li>
+<li>Un <a href="http://www.ncsa.uiuc.edu/UserInfo/Resources/Hardware/IBMp690/IBM/usr/idebug/help/en_US/debug390/tasks/tbcmapst.htm">langage en XML</a>, bien sûr,</li>
+<li>Le <a href="http://www.dafocus.com/encodix_csn1.html">langage
+CSN.1</a> dont une <a href="http://perso.orange.fr/cell.sys/csn1.htm">spécification
+non-officielle</a> semble en ligne.</li>
+</ul></div>
+<div class="para"><p>On le voit, il n'existe pas encore de solution idéale. Si un programmeur ambitieux lit ceci, je lui offre le cahier des charges :
+</p><ul>
+<li>Concevoir le langage de description. Il doit avoir une bibliothèque
+de types de base (comme UNSIGNED_INT_32_BE) et la possibilité d'en
+créer. Il doit permettre de décrire des enregistrements composés de
+plusieurs champs (avec des cas où l'existence ou la taille du champ
+dépend de la valeur d'un autre champ). Les champs doivent pouvoir être
+nommés (cf. dernier point) Il doit permettre de spécifier le positionnement exact
+des champs.</li>
+<li>Le langage doit pouvoir prévoir le compactage
+(<i class="foreign" xml:lang="en">padding</i>), que le membre de la structure aie un nom
+différent du champ, doit permettre de définir les noms des valeurs
+d'un champ correspondant a une enumération, doit permettre de définir
+des blocs qui pouront etre réutilisés dans les descriptions d'autres
+structures connexes, etc. Le langage doit évidemment avoir tout ce
+qu'on attend d'un langage moderne, comme la modularité (possibilité de
+définir un format à partir d'autres, par exemple
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Moving%20Picture%20Experts%20Group" title="Consultez l'article &quot;Moving Picture Experts Group&quot; de l'encyclopédie libre Wikipedia">MPEG</a></b> audio d'un côté et MPEG vidéo de l'autre,
+puis utilisation simultanée dans une définition de MPEG tout court). Peut-être faut-il prévoir également un
+échappement vers du code arbitraire, pour traiter des cas compliqués
+comme les séquences de bits interdites dans les flux
+MPEG (je ne suis pas 100 % sûr car un tel
+échappement annule le côté « sûr » du langage de description).</li>
+<li>Écrire le programme qui va lire une description écrite dans le
+langage ci-dessus et la transformer en un ".h" (ou équivalent pour
+votre langage favori) déclarant les structures et un ".c" contenant
+les routines d'encodage et de décodage/vérification.</li>
+</ul></div>
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="binaire-vers-structures.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="binaire-vers-structures.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Fbinaire-vers-structures.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

@@ -1,0 +1,210 @@
+http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 07:19:45 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d20b3535bbcd38e91d1f82a71e6ab34d31406013585459; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.oli.me.uk; HttpOnly
+Last-Modified: Sat, 26 Apr 2014 13:24:40 GMT
+Cache-Control: max-age=86400
+Expires: Wed, 23 Jul 2014 07:19:53 GMT
+Vary: Accept-Encoding
+CF-RAY: 14dddf2d14550f03-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Thoughts on JavaScript libraries and frameworks - Oliver.prototype.blog</title>
+<meta name="author" content="Oliver Caldwell">
+<meta name="description" content="There seems to be a lot of uncertainty about how we should use JavaScript libraries recently. The main debate is whether we should still use huge &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Oliver.prototype.blog" type="application/atom+xml">
+ 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29131116-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<h1><a href="/">Oliver.prototype.blog</a></h1>
+<h2>A place to share my knowledge and escapades in the world of web development.</h2>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:oli.me.uk"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archives/">Archives</a></li>
+<li><a href="/about-me/">About me</a></li>
+<li><a href="https://github.com/Wolfy87/oli.me.uk">Source</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Thoughts on JavaScript libraries and frameworks</h1>
+<p class="meta">
+<time datetime="2012-03-09T22:23:00+00:00" pubdate data-updated="true">Mar 9<span>th</span>, 2012</time>
+| <a href="#disqus_thread">Comments</a>
+</p>
+</header>
+<div class="entry-content"><p>There seems to be a lot of uncertainty about <a href="http://addyosmani.com/blog/prosconsmicroframeworks/">how we should use JavaScript libraries</a> recently. The main debate is whether we should still use huge 100kb frameworks, such as <a href="http://mootools.net/">MooTools</a> and <a href="http://jquery.com/">jQuery</a>, or swap to tiny <a href="http://microjs.com/">micro libraries</a> that each perform a specific task, thus resulting in a smaller page size and load time.</p>
+<p>I personally do not get on too well with micro libraries, sure I have written a few, and <a href="https://github.com/Wolfy87/EventEmitter">one of them</a> has become pretty popular, but if I had the choice I would still use a huge full on framework, namely MooTools. My reasoning behind this is the uniformed API and predictability of the code. You know that each component of the library will work with each other.</p>
+ 
+<h2>Is there a solution?</h2>
+<p>So what is the ideal situation? I believe it lies in between a huge framework with a uniformed API and a collection of micro libraries each weighing in at under 3kb or so. Sadly, nothing like this exists at the moment. Although MooTools is almost there, you can use <a href="https://github.com/kamicane/packager">its packager</a> to build your own custom version only using the files you need. Although it does feel a little awkward to use, you have to write YML headers in each file and run everything though the PHP based packager which has to be meticulously configured.</p>
+<p>My proposition is to use a client side module manager such as <a href="http://requirejs.org/">RequireJS</a> to require the parts of a framework that you need. So if you are not using JavaScript based animation, you do not load the huge animation class. If you only use CSS class management functions then that is all you load. The framework should also steer clear of polluting the global variables. I quite like how MooTools does it, but it does reduce the compatibility slightly (<code>$</code> is in almost every library for example as well as the <code>each</code> method).</p>
+<h2>My ideal framework</h2>
+<p>A huge modular framework in which you only load what you need via calls in your JavaScript with minimal, if any, global variable pollution, so no editing <code>Array.prototype</code> for example. This will mean it can run alongside <em>anything</em> with minimal load time footprint and a familiar consistent API.</p>
+<p>I have already begun turning my idea into a reality. I am writing something that matches exactly what I have described above. I do not know if other people feel the same way as me and think there is a need for it, but I think it is a good and useful idea which takes a different approach to aiding frontend development.</p>
+<p>I will link to it from here when I put it up on GitHub. I hope at least some people like this idea as much as I do. Please feel free to let me know how you feel about the points discussed in the comments below.</p>
+</div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">Posted by <span class="fn">Oliver Caldwell</span></span>
+<time datetime="2012-03-09T22:23:00+00:00" pubdate data-updated="true">Mar 9<span>th</span>, 2012</time>
+<span class="categories">
+<a class='category' href='/categories/javascript/'>javascript</a>
+</span>
+</p>
+<div class="sharing">
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/" data-via="OliverCaldwell" data-counturl="http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/">Tweet</a>
+</div>
+<p class="meta">
+<a class="basic-alignment left" href="/2012/03/03/pure-css-toggle-accordion/" title="Previous Post: Pure CSS toggle accordion">&laquo; Pure CSS toggle accordion</a>
+<a class="basic-alignment right" href="/2012/03/14/writing-great-javascript/" title="Next Post: Writing great JavaScript">Writing great JavaScript &raquo;</a>
+</p>
+</footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Bitcoin</h1>
+<p>Like what I do here? Want even more? Spur me on with a small donation, it will probably go towards a coffee that will fuel my next post or project.</p>
+<script type='text/javascript' src='http://coinwidget.com/widget/coin.js'></script>
+<script type='text/javascript'>
+		CoinWidgetCom.go({
+			wallet_address: '1BE2s3dsELzBHGk3su2U6GfAqSXcA65P34',
+			currency: 'bitcoin',
+			counter: 'hide',
+			alignment: 'bl',
+			qrcode: true,
+			auto_show: false,
+			lbl_button: 'Donate',
+			lbl_address: 'My Bitcoin Address:',
+			lbl_count: 'donations',
+			lbl_amount: 'BTC'
+		});
+	</script>
+</section>
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/2014/04/26/installing-vimdeck-on-arch/">Installing Vimdeck on Arch</a>
+</li>
+<li class="post">
+<a href="/2014/03/18/always-remain-a-beginner/">Always remain a beginner</a>
+</li>
+<li class="post">
+<a href="/2013/12/13/test-private-methods/">Test private methods</a>
+</li>
+<li class="post">
+<a href="/2013/12/05/graph-from-scratch/">Graph from scratch</a>
+</li>
+<li class="post">
+<a href="/2013/09/25/grabbing-elements-from-the-dom/">Grabbing elements from the DOM</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>GitHub Repos</h1>
+<ul id="gh_repos">
+<li class="loading">Status updating...</li>
+</ul>
+<a href="https://github.com/Wolfy87">@Wolfy87</a> on GitHub
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/libs/jXHR.js"></script>
+<script type="text/javascript" src="/javascripts/github.js"></script>
+<script type="text/javascript">
+	github.showRepos({
+		user: 'Wolfy87',
+		count: 5,
+		skip_forks: true,
+		target: '#gh_repos'
+	});
+</script>
+<p>
+Copyright &copy; 2014 - Oliver Caldwell -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'olimeuk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/';
+        var disqus_url = 'http://oli.me.uk/2012/03/09/thoughts-on-javascript-libraries-and-frameworks/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

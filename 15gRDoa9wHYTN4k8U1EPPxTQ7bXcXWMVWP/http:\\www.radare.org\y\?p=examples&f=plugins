@@ -1,0 +1,370 @@
+http://www.radare.org/y/?p=examples&f=plugins
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 14:45:16 GMT
+Server: Apache/2.2.24 (Unix) mod_ssl/2.2.24 OpenSSL/1.0.1g
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4001
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="description" content="radare, the reverse engineering framework">
+    <meta name="keywords" content="arm64, 64 bit hexadecimal editor, disassembler, debugger, linux debugger, reverse engineering, code analysis, bindiffing, binary diffing, windows debugger, iphone debugger, mips, x86, arm, powerpc, graph analysis, hacking, malware analysis, virus analysis">
+    <meta http-equiv="X-UA-Compatible" content="FF=1; chrome=1; IE=edge"/>
+    <title>radare</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel=Stylesheet href="style.css" type="text/css" />
+	<meta name="viewport" content="width=320px, initial-scale=1, user-scalable=true" />
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17833959-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+function showMenuBar() {
+	var mb = document.getElementById("menubutton");
+	mb.innerHTML="&lt;";
+	var mb = document.getElementById("menubar");
+	mb.style.display="inline";
+	var tb = document.getElementById("textbox");
+	tb.style.width="100%";
+}
+
+function hideMenuBar() {
+	var mb = document.getElementById("menubutton");
+	mb.innerHTML="&gt;";
+	var mb = document.getElementById("menubar");
+	mb.style.display="none";
+	var tb = document.getElementById("textbox");
+	tb.style.width="100%";
+}
+
+function menuIsShown() {
+	return (document.getElementById("menubar").style.display !== "none");
+}
+
+function toggleMenuBar() {
+	if (menuIsShown()) {
+		hideMenuBar();
+	} else {
+		showMenuBar();
+	}
+}
+
+window.onresize = window.onload = function() {
+	if (window.innerWidth < 800) {
+		document.getElementById("menubutton").style.visibility="visible";
+        document.getElementById("box").style.width="100%";
+    } else {
+        showMenuBar();
+		document.getElementById("menubutton").style.visibility="hidden";
+        document.getElementById("box").style.width="850px";
+    }
+}
+</script>
+</head>
+<body>
+<!--
+<a href="https://github.com/radare/radare2"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+-->
+<center>
+
+<table id="box" class="box" style="width:850px">
+    <tr><td colspan=2>&nbsp;</td></tr>
+    <tr>
+        <td rowspan="2" class="logo" >
+            <div id="menubar" style="width:125px">
+                &nbsp;&nbsp;<a href="?"><img style="border:0;height:36px" alt="r2 logo" src="../img/rlogo.png"></a>
+                <br /><br /> <br />
+
+                &nbsp;<a class=menutitle href='?'>Project</a><br />
+                <hr />
+                <div class=menubar>
+                    <a href="http://radare.today">today</a><br />
+                    <a href="/rsoc">rsoc 2014</a><br />
+<a href="?p=crowdfunding">crowdfunding</a><br />
+<a href="?p=documentation">documentation</a><br />
+<a href="?p=development">development</a><br />
+<a href="?p=comparison">comparison</a><br />
+<a href="?p=bugtracker">bugtracker</a><br />
+<a style="color:black">examples</a><br />
+<a href="?p=features">features</a><br />
+<a href="?p=talks">talks</a><br />
+<a href="?p=gui">gui</a><br />
+                </div>
+                <br /> <br />
+                &nbsp;<a class=menutitle href='?p=download'>Download</a>
+                <hr />
+                <div class=menubar>
+                    <table class=logo style="width:120px;border-collapse:collapse">
+                        <tr>
+                            <td><a href="../get/valabind-0.8.0.tar.gz">valabind</a></td> <td>0.8.0</td>
+                        </tr>
+                        <tr style=background-color:yellow>
+                            <td><a href="../get/radare2-0.9.7.tar.xz">radare2</a></td> <td>0.9.7</td>
+                        </tr>
+                        <tr>
+                            <td><a href="../get/radare2-bindings-0.9.7.tar.xz">r2-bind</a></td> <td>0.9.7</td>
+                        </tr>
+                        <tr>
+                            <td><a href="../get/radare-1.5.2.tar.gz">radare</a></td> <td>1.5.2</td>
+                        </tr>
+                            <tr><td><a href="../get/sdb-0.9.0.tar.gz">sdb</a> </td> <td>0.9.0</td>
+                        </tr>
+                            <tr><td><a href="../get/ired-0.5.tar.gz">ired</a> </td> <td>0.5</td>
+                        </tr>
+                        <tr>
+                            <td colspan=2><a href="?p=download#binaries">binaries</a> </td>
+                        </tr>
+                        <tr>
+                        <td colspan=2><a href="?p=download#sources">sources</a> </td>
+                        </tr>
+                    </table>
+                </div>
+                <br/> <br />
+                &nbsp;<a class="menutitle" href="?p=contact">Contact</a>
+                <hr  />
+                <div class=menubar>
+                    <a href="nospam.php?for=list" target=_blank>mailing list</a> <br />
+                    <a href="http://lists.nopcode.org/pipermail/radare-nopcode.org/" target=_blank>archives</a> <br />
+                    <a href="?p=development">donate</a> <br />
+                    <a target=_blank href="http://twitter.com/radareorg">twitter</a> <br />
+                    <a href="nospam.php?for=mail" target=_blank>email</a> <br />
+                    <a href="http://radare.today" target=_blank>blog</a> <br />
+                    <a href="irc://irc.freenode.net/radare">irc</a> <br />
+                </div>
+            </div>
+        </td>
+        <td rowspan=2>&nbsp;</td>
+        <td class="title" valign="top" style="height:54px; text-align:center">
+            <a href="javascript:toggleMenuBar()">
+                <div class="menubutton" id="menubutton" style="visibility:hidden">&lt;</div>
+            </a>
+            radare, <span style='color:#787a87'>the reverse engineering framework</span>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td id="textbox" class="textbox" valign=top style="width=100%">
+	<table class=menubar style=text-align:left>
+	<tr>
+	<td colspan=3> <font class=text_title>Extending r2 with new plugins
+</font>
+	<hr size=1 />
+	</td>
+	</tr>
+	<tr>
+<!--
+	<a href=?p=examples>
+	<img border=0 src="f/plugins/small.png" />
+	<br />
+	go back</a>
+-->
+	<a href=?p=examples>
+	&lt;</a>
+<td>&nbsp;</td>
+	<td valign=top style="text-align:justify;font-size:15px;">
+		One of the key features behind r2 is how easily it can be extended with new
+libraries or plugins. In this paper, we will see the steps needed for adding
+a new plugin in radare 2.
+
+<br/><br/>
+
+Let's say we want to add a new plugin for r_asm because we are working with
+binaries of an architecture not supported by r2. Of course, adding a new plugin
+for another lib would be mostly the same.
+
+<br/><br/>
+
+From now to the end of the document, we will name this new plugin as "myarch".
+
+<br/><br/>
+
+The first thing we have to do is give a look to the r_asm header, located at
+"libr/include/r_asm.h", and find out which callbacks we need to implement. They
+will be always defined under a structure named r_libname_plugin_t or
+RLibnamePlugin. In the case of r_asm, look closely at RAsmPlugin:
+
+<br/><br/>
+
+<pre>
+typedef struct r_asm_plugin_t {
+	[...]
+	int (*init)(void *user);
+	int (*fini)(void *user);
+	int (*disassemble)(RAsm *a, RAsmOp *op, ut8 *buf, ut64 len);
+	int (*assemble)(RAsm *a, RAsmOp *op, const char *buf);
+	RAsmModifyCallback modify;
+	int (*set_subarch)(RAsm *a, const char *buf);
+} RAsmPlugin;
+</pre>
+
+<br/>
+
+We can implement all the callbacks or only those needed for our purposes. In
+this case we only want to code the disassemble function.
+
+<br/><br/>
+
+Then, we will create a new file named asm_myarch.c under "libr/asm/p/". The
+typical skeleton woud be:
+
+<br/><br/>
+
+<pre>
+static int disassemble(RAsm *a, RAsmOp *op, ut8 *buf, ut64 len) {
+	/* TODO: Implement disassemble code here, give a look to the
+         *       other plugins */
+}
+
+RAsmPlugin r_asm_plugin_myarch = {
+	.name = "MyArch",
+	.desc = "disassembly plugin for MyArch",
+	.arch = "myarch",
+	.bits = (int[]){ 32, 64, 0 }, /* supported wordsizes */
+	.init = NULL,
+	.fini = NULL,
+	.disassemble = &disassemble,
+	.modify = NULL,
+	.assemble = NULL,
+};
+
+#ifndef CORELIB
+struct r_lib_struct_t radare_plugin = {
+	.type = R_LIB_TYPE_ASM,
+	.data = &r_asm_plugin_myarch
+};
+#endif
+</pre>
+
+<br/>
+
+Be careful with the name convention to avoid collisions with other existing
+plugins. Don't forget that you have lots of examples inside "libr/*/p/" on how
+plugins are implemented.
+
+<br/><br/>
+
+If we need more files for the plugin to work, e.g. a backend, we will create
+a folder under "libr/asm/arch/" called like the plugin arch (myarch) and copy
+all the files to "libr/asm/arch/myarch/".
+
+<br/><br/>
+
+The next step is to add a new "extern" in the header file, so we can compile it
+as static plugin if we want to. In "libr/include/r_asm.h":
+
+<br/><br/>
+
+<pre>
+[...]
+extern RAsmPlugin r_asm_plugin_x86;
+extern RAsmPlugin r_asm_plugin_x86_olly;
+extern RAsmPlugin r_asm_plugin_x86_nasm;
+[...]
+extern RAsmPlugin r_asm_plugin_myarch;
+</pre>
+
+<br/>
+
+Obviously, we need to tell the build system how to compile our code, this is 
+done adding a new file called "libr/asm/p/myarch.mk", which would seem like
+this:
+
+<br/><br/>
+
+<pre>
+OBJ_MYARCH=asm_myarch.o
+# myarch backend
+OBJ_MYARCH+=../arch/myarch/udis86/file1.o
+OBJ_MYARCH+=../arch/myarch/udis86/file2.o
+[...]
+
+STATIC_OBJ+=${OBJ_MYARCH}
+TARGET_MYARCH=asm_myarch.${EXT_SO}
+
+ALL_TARGETS+=${TARGET_MYARCH}
+
+${TARGET_MYARCH}: ${OBJ_MYARCH}
+	${CC} ${LDFLAGS} ${CFLAGS} -o ${TARGET_MYARCH} ${OBJ_MYARCH}
+</pre>
+
+<br/>
+
+And appending it to the list of compiled plugins in "libr/asm/p/Makefile":
+
+<br/><br/>
+
+<pre>
+[...]
+ARCHS+=myarch.mk
+[...]
+</pre>
+
+<br/>
+
+Finally, we only need to define if it must be compiled as static or shared,
+which is done editing "plugins.def.cfg", in the source root. In this case, we
+will compile it as static, so we add a new line following the other asm
+plugins:
+
+<br/><br/>
+
+<pre>
+STATIC="asm.java
+asm.arm
+[...]
+asm.x86
+asm.myarch
+[...]
+</pre>
+
+<br/>
+
+Ok, We have just created our first r2 plugin. Now, exec:
+
+<br/><br/>
+
+<pre>
+$ make mrproper && ./configure && make && make install
+</pre>
+
+<br/>
+
+and enjoy! :)
+	</td>
+	</tr>
+	</table>
+<br /><br />
+<p align=right><a href=?p=examples>back</a></p>            <br />
+        </td>
+    </tr>
+</table>
+<br />
+<!--
+<div style="background-color:white;width:500px;
+       -webkit-border-radius:10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;">
+<br />
+<iframe data-aa='472' src='//ad.a-ads.com/472' scrolling='no' style='width:120px; height:60px; border:0px; padding:0;overflow:hidden' allowtransparency='true'></iframe>
+<iframe src='http://anonymousads.com/a/15gRDoa9wHYTN4k8U1EPPxTQ7bXcXWMVWP' scrolling='no' style='width:468px; height:60px; border:0px; padding:5pt'></iframe>
+<a style="font-size:12px" href='http://anonymousads.com?partner=15gRDoa9wHYTN4k8U1EPPxTQ7bXcXWMVWP'>Advertise with Anonymous Ads</a>
+<br />
+<br />
+</div>
+-->
+</center>
+
+</body>
+</html>
+

@@ -1,0 +1,509 @@
+http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html
+HTTP/1.1 200 OK
+Server: nginx/1.4.1
+Date: Thu, 24 Jul 2014 04:21:19 GMT
+Content-Type: text/html
+Last-Modified: Fri, 16 May 2014 09:36:30 GMT
+Connection: close
+Vary: Accept-Encoding
+Expires: Thu, 24 Jul 2014 05:21:19 GMT
+Cache-Control: max-age=3600
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Can Qt's moc be replaced by C++ reflection?</title>
+<meta property="og:title" content="Can Qt's moc be replaced by C++ reflection?" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+<link rel="alternate" type="application/rss+xml" title="feed" href="http://feeds.woboq.com/woboq" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<meta name="ttw" content="fx0x1hr" />
+<meta name="readability-verification" content="8cVtwR4m8tLdt48rULfdRczTnXVgTEzcyL9sufwX"/>
+<meta name="google-site-verification" content="wW70cT0EDInE-bqP2hzyzJuMafIheUVmy2jpreJmim8" />
+<style type="text/css">
+/* <![CDATA[ */
+body { background-color: #d8d8d8; color: #282828; font-family: Helvetica,sans-serif; padding: 0 1ex; font-size: 115%;}
+a { color: #037; border: none; text-decoration: none }
+a:hover{  text-decoration: underline }
+h1, h3, h2 { color: #050505; }
+h2 { margin-top: 2.5ex; }
+img { border:none; }
+ul { padding-left: 1ex; list-style-position: inside }
+code, tt { background-color: #fbfbfb; border: 1px dashed #f1f1f1;  }
+.syntaxhighlighter code { background-color:transparent; border:none }
+span.sm { border:1px solid #ccc; padding: 15px; margin: 15px; min-width: 180px; min-height: 60px; display:block; text-align: center }
+#woboqlogo { text-align:center; display:block; margin:0px auto; }
+div#main { margin:1em auto; max-width:100ex;  padding: 1px 2.5em;
+        border-left: 1px solid #aaa; border-right: 1px solid #aaa; background-color: white;
+        box-shadow: 0px 0px 5px #037; border-radius: 14px;
+}
+div#main p { text-align:justify; }
+#woboq_header { text-align:center; font-size:x-large; margin-bottom: 4ex; margin-top:2ex;}
+#woboq_header a { margin:8px;  padding:5px 8px;   }
+#imprint-footer { margin-top:2em; line-height: 2 }
+#imprint-footer a { padding:.2ex .5ex; margin: 0 0.5ex }
+#imprint-text { font-size:x-small; }
+#imprint-links { text-align: center; padding-top:1em;padding-bottom:1em;}
+
+#woboq_header a, #imprint-links a { background-color:#D8D8D8; color: #151515; border-radius: 6px; box-shadow: 1px 2px 1px #678; }
+#woboq_header a:hover, #imprint-links a:hover { text-decoration:none; box-shadow: 1px 1px 1px #678; 
+                                                 position: relative; top: 1px; color: #333; background-color: #cfcfcf }
+
+
+.blog-index-entry h2 { font-size: larger; font-weight: normal; margin-bottom:0px; padding-bottom:0px; }
+.blog-index-entry h3, .blog-entry > h3 { font-size: smaller; margin: 0 0 .5ex 0; font-weight:normal; color:#444 }
+.blog-index-entry p:last-child { text-align: right; }
+#blog-subscribe-call { margin:20px 0;}
+#blog-navigation {font-size: smaller; text-align: center; margin: 6ex;}
+#blog-subscribe-call img { vertical-align: middle; margin: 0 0.5ex; }
+#adv { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px }
+#adv2 { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px;
+    float: right;  position: relative; left: 200px; margin: 1ex 1ex 1ex -200px;}
+
+.side_box { background-color:#D8D8D8; float:right; padding:1ex; border-radius:6px; margin:2ex; margin-left: 2em; text-align: center; box-shadow: 1px 2px 2px #678;}
+
+pre.code { font-size:95%; }
+
+
+#logo_container
+{
+    height:194px;
+    width:508px;
+    position:relative;
+    text-align:center; display:block; margin:0px auto;
+}
+#logo_container a {
+  color: inherit;
+}
+#woboqlogo_subtitle
+{
+    z-index:100;
+    position:absolute;
+    font-size:24px;
+    /*font-weight:bold;*/
+    left:20px;
+    top:140px;
+    font-style:italic;
+    color: #111;
+}
+
+.product-small-screenshot {
+    float:right; margin:1em;
+    box-shadow: 1px 2px 2px #678;
+}
+.screenshot { margin:0.5ex; box-shadow: 1px 1px 2px 2px #ccc; }
+
+/* ]]> */
+</style>
+<link rel="stylesheet" title="CodeBrowser" href="/codebrowser.css" /><link rel="canonical" href="http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html"/>
+</head>
+
+<body>
+<div id="main">
+
+<div id="logo_container">
+<a href="/"><img id="woboqlogo" src="/woboq.png" alt="Woboq Logo" width="508" height="194" />
+<p id="woboqlogo_subtitle">We create software.</p>
+</a>
+</div>
+
+<div id="woboq_header">
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Hire Us</a>
+<a href="/products.html">Products</a>
+
+<a href="/blog/">Blog</a>
+<!--<a href="/imprint.html">Imprint</a> -->
+</div>
+
+
+<div id="adv2">
+    <script type="text/javascript">//<!--
+		google_ad_client = "ca-pub-5892035981328708";
+		/* Woboq blog vertical */
+		google_ad_slot = "2526105442";
+		google_ad_width = 120;
+		google_ad_height = 600;
+		//-->
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">/* */</script>
+</div>
+<div class="blog-entry">
+    <h1>
+        Can Qt's moc be replaced by C++ reflection?
+    </h1>
+    <h3>Posted by Olivier Goffart
+ on 11 March 2014
+    </h3>
+    <div class="blog-body">
+        
+
+
+<div class="intro">
+
+<p>The Qt toolkit has often been criticized for extending C++ and requiring a non-standard code generator (<code>moc</code>) to provide introspection.<br />
+   
+   Now, the C++ standardization committee is <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3814.html">looking at how to extend C++ with introspection and reflection</a>.
+   As the current maintainer of Qt's moc I thought I could write a bit about the need of Qt, 
+   and even experiment a bit.</p>
+
+<p>In this blog post, I will comment on the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3951.pdf">current proposal draft</a>, and try to analyze what one would need to be able to get rid of moc.</p>
+
+</div>
+
+
+<div class="woboq_hidden">
+If you read this article from the RSS or a planet, you may want to open it in its
+<a href="reflection-in-cpp-and-qt-moc.html?pl">original URL</a>
+to see property formatted code.</div>
+
+
+<h2>Current draft proposal</h2>
+
+<p>Here is the draft proposal:  <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3951.pdf">
+  N3951: C++ type reflection via variadic template expansion</a>. 
+  
+  It is a clever way to add compile time introspection to C++.  
+  It gives new meaning to <code>typedef</code> and <code>typename</code> such that it would work like this:</p>
+
+  <pre class="code"><i>/* Given a simple class */</i>
+<b>class</b> <dfn class="type def" id="SomeClass" title='SomeClass' data-ref="SomeClass" >SomeClass</dfn> { 
+<b>public</b>:
+  <em>int</em> <dfn class="tu decl" id="_ZN9SomeClass3fooEv" title='SomeClass::foo' data-type='int SomeClass::foo()' data-ref="_ZN9SomeClass3fooEv" >foo</dfn>();
+  <em>void</em> <dfn class="tu decl" id="_ZN9SomeClass3barEi" title='SomeClass::bar' data-type='void SomeClass::bar(int x)' data-ref="_ZN9SomeClass3barEi" >bar</dfn>(<em>int</em> <dfn class="local col6 ref" id="6x" title='x' data-type='int' data-ref="6x" >x</dfn>);
+};
+
+<u>#<span data-ppcond="73">if</span> 0</u>
+<i>/* The new typename&lt;&gt;... and typedef&lt;&gt;... 'operators' : */</i>
+  vector&lt;string&gt; names = { <b>typename</b>&lt;SomeClass&gt;... } ;
+  <em>auto</em> members = std::make_tuple(<b>typedef</b>&lt;SomeClass&gt;...) ;
+<u>#<span data-ppcond="73">else</span></u>
+<i>/* Would be expanded to something equivalent to: */</i>
+  <a class="type" href="http://code.woboq.org/qt5/include/c++/4.8.2/bits/stl_vector.h.html#std::vector" title='std::vector' data-ref="std::vector" data-proj="include" >vector</a>&lt;<a class="typedef" href="http://code.woboq.org/qt5/include/c++/4.8.2/bits/stringfwd.h.html#std::string" title='std::string' data-type='basic_string&lt;char&gt;' data-ref="std::string" data-proj="include" >string</a>&gt; <dfn class="ref def" id="names" title='names' data-ref="names" >names</dfn> =  { <q>"SomeClass"</q>,  <q>"foo"</q>, <q>"bar"</q> };
+  <em>auto</em> <dfn class="ref def" id="members" title='members' data-ref="members" >members</dfn> = <span class="namespace">std::</span><a class="ref" href="http://code.woboq.org/qt5/include/c++/4.8.2/tuple.html#_ZSt10make_tupleDpOT_" title='std::make_tuple' data-ref="_ZSt10make_tupleDpOT_" data-proj="include" >make_tuple</a>(<b>static_cast</b>&lt;<span class="type" title='SomeClass' data-ref="SomeClass" >SomeClass</span>*&gt;(<b>nullptr</b>), 
+                               &amp;<span class="type" title='SomeClass' data-ref="SomeClass" >SomeClass</span>::<span class="tu ref" title='SomeClass::foo' data-ref="_ZN9SomeClass3fooEv" >foo</span>, &amp;<span class="type" title='SomeClass' data-ref="SomeClass" >SomeClass</span>::<span class="tu ref" title='SomeClass::bar' data-ref="_ZN9SomeClass3barEi" >bar</span>);
+<u>#<span data-ppcond="73">endif</span></u>
+</pre>
+
+ 
+
+<p>We can use that to go over the member of a class at compile time and do stuff like generating a QMetaObject with a normal compiler.</p>
+
+<p>With the help of some more <a href="http://en.wikipedia.org/wiki/Trait_(computer_programming)">traits</a> that is a very good start to be able to implement moc features in pure C++.</p> 
+
+<h3>The experiment</h3>
+
+<p>I have been managing to re-implement most of the moc features such as signals and slots and properties using the proposals, without the need of moc.  Of course since the compiler obviously doesn't have support for that proposal yet,  I have been manually expanding the <code>typedef...</code> and <code>typename...</code> in the prototype.</p>
+
+<p>The code does a lot of template tricks to handle strings and array at compile time and generates a <code>QMetaObject</code> that is even binary compatible to the one generated by <code>moc</code></p>
+
+<p><a href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html">The code is available here.</a></p>
+
+
+<h2> About Qt and <code>moc</code></h2>
+<p> Qt is a cross platform C++ toolkit specialized for developing applications with user interfaces.
+Qt code is purely standard C++ code, however it needs a code generator to provide introspection data: the Meta Object Compiler (moc).  
+That little utility parses the C++ headers and generates additional C++ code that is compiled alongside the program. The generated code contains the implementations of the Qt signals, and builds the <code>QMetaObject</code> (which embeds string tables with the names of all methods and properties).</p>
+
+<p>Historically, the first mission of the moc was to enable <a href="http://qt-project.org/doc/qt-5/signalsandslots.html">signals and slots</a> using a nice syntax. It is also used for <a href="http://qt-project.org/doc/qt-5/properties.html">the property system</a>. The first use of the properties was for the property editor in Qt designer, then it became used for integration with a scripting language (QtScript), and is now widely used to access C++ objects from QML.</p>
+
+
+
+<p>(For an explanation of the inner working of the signals and slots, read one of my previous articles:
+<a href="http://woboq.com/blog/how-qt-signals-slots-work.html">How Qt signals and slots work</a>.)</p>
+
+<h2>Generating the QMetaObject at compile time</h2>
+
+<p>We could ask the programmer to add a macro in the .cpp such as <code>Q_OBJECT_IMPL(MyObject)</code> which would be expanded to that code:</p>
+
+<pre class="code"><em>const</em> <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject" title='QMetaObject' data-ref="QMetaObject" data-proj="qtbase" >QMetaObject</a> <a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<dfn class="tu ref def" id="_ZN8MyObject16staticMetaObjectE" title='MyObject::staticMetaObject' data-type='const QMetaObject' data-ref="_ZN8MyObject16staticMetaObjectE" >staticMetaObject</dfn> = <a class="ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z16createMetaObjectv" title='createMetaObject' data-ref="_Z16createMetaObjectv" >createMetaObject</a>&lt;<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>&gt;();
+<em>const</em> <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject" title='QMetaObject' data-ref="QMetaObject" data-proj="qtbase" >QMetaObject</a> *<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<dfn class="virtual decl def" id="_ZNK8MyObject10metaObjectEv" title='MyObject::metaObject' data-ref="_ZNK8MyObject10metaObjectEv" >metaObject</dfn>() <em>const</em> { <b>return</b> &amp;<a class="tu member" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#636" title='MyObject::staticMetaObject' data-ref="_ZN8MyObject16staticMetaObjectE" >staticMetaObject</a>; }
+
+<em>int</em> <a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<dfn class="virtual decl def" id="_ZN8MyObject11qt_metacallEN11QMetaObject4CallEiPPv" title='MyObject::qt_metacall' data-ref="_ZN8MyObject11qt_metacallEN11QMetaObject4CallEiPPv" >qt_metacall</dfn>(<a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject" title='QMetaObject' data-ref="QMetaObject" data-proj="qtbase" >QMetaObject</a>::<a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject::Call" title='QMetaObject::Call' data-ref="QMetaObject::Call" data-proj="qtbase" >Call</a> <dfn class="local col8 ref" id="128_c" title='_c' data-type='QMetaObject::Call' data-ref="128_c" >_c</dfn>, <em>int</em> <dfn class="local col9 ref" id="129_id" title='_id' data-type='int' data-ref="129_id" >_id</dfn>, <em>void</em>** <dfn class="local col0 ref" id="130_a" title='_a' data-type='void **' data-ref="130_a" >_a</dfn>) {
+    <b>return</b> <a class="ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z16qt_metacall_implPT_N11QMetaObject4CallEiPPv" title='qt_metacall_impl' data-ref="_Z16qt_metacall_implPT_N11QMetaObject4CallEiPPv" >qt_metacall_impl</a>&lt;<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>&gt;(<b>this</b>, <a class="local col8 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#128_c" title='_c' data-ref="128_c" >_c</a>, <a class="local col9 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#129_id" title='_id' data-ref="129_id" >_id</a>, <a class="local col0 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#130_a" title='_a' data-ref="130_a" >_a</a>);
+}
+<em>void</em> <a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<dfn class="tu decl def" id="_ZN8MyObject18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv" title='MyObject::qt_static_metacall' data-type='static void MyObject::qt_static_metacall(QObject * _o, QMetaObject::Call _c, int _id, void ** _a)' data-ref="_ZN8MyObject18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv" >qt_static_metacall</dfn>(<a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobject.h.html#QObject" title='QObject' data-ref="QObject" data-proj="qtbase" >QObject</a> *<dfn class="local col1 ref" id="131_o" title='_o' data-type='QObject *' data-ref="131_o" >_o</dfn>, <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject" title='QMetaObject' data-ref="QMetaObject" data-proj="qtbase" >QMetaObject</a>::<a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#QMetaObject::Call" title='QMetaObject::Call' data-ref="QMetaObject::Call" data-proj="qtbase" >Call</a> <dfn class="local col2 ref" id="132_c" title='_c' data-type='QMetaObject::Call' data-ref="132_c" >_c</dfn>, <em>int</em> <dfn class="local col3 ref" id="133_id" title='_id' data-type='int' data-ref="133_id" >_id</dfn>, <em>void</em>** <dfn class="local col4 ref" id="134_a" title='_a' data-type='void **' data-ref="134_a" >_a</dfn>) {
+    <a class="ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z23qt_static_metacall_implP7QObjectN11QMetaObject4CallEiPPv" title='qt_static_metacall_impl' data-ref="_Z23qt_static_metacall_implP7QObjectN11QMetaObject4CallEiPPv" >qt_static_metacall_impl</a>&lt;<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>&gt;(<a class="local col1 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#131_o" title='_o' data-ref="131_o" >_o</a>, <a class="local col2 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#132_c" title='_c' data-ref="132_c" >_c</a>, <a class="local col3 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#133_id" title='_id' data-ref="133_id" >_id</a>, <a class="local col4 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#134_a" title='_a' data-ref="134_a" >_a</a>);
+}
+</pre>
+
+<p>The implementation of <a href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z16createMetaObjectv">createMetaObject</a> uses the reflection capabilities to find out all the slots, signals and properties in order to build the metaobject at compile time. The function
+<a href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z16qt_metacall_implPT_N11QMetaObject4CallEiPPv">qt_metacall_impl</a>
+and <a href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z23qt_static_metacall_implP7QObjectN11QMetaObject4CallEiPPv">qt_static_metacall_impl</a> are generic implementations that use the same data to call the right function.  Click on the function name if you are interested in the implementation.</p>
+
+<h2>Annotating signals and slots</h2>
+
+<p>We could perhaps use C++11 attributes for that. In that case, it would be convenient if  attributes could be placed next to the access specifiers.
+(There is already a proposal to add <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3955.pdf">group access specifiers</a>, but it does not cover the attributes.)
+</p>
+
+<pre class="code"><b>class</b> MyObject : <b>public</b> QObject {
+    Q_OBJECT
+<b>public</b> [[qt::slot]]:
+    <em>void</em> fooBar();
+    <em>void</em> otherSlot(<em>int</em>);
+<b>public</b> [[qt::signal]]:
+    <em>void</em> mySignal(<em>int</em> param);
+<b>public</b>:
+   <b>enum</b> [[qt::<b>enum</b>]] Foobar { Value1, Value2  };
+};
+</pre>
+
+<p>Then we would need compile time traits such as <code>has_attribute&lt;&amp;MyObject::myFunction&gt;("qt::signal")</code> </p>
+
+
+<h2>Function traits</h2>
+
+<p>I just mentioned <code>has_attribute</code>. Another trait will be needed to determine if the function is public, protected or private.<br/>
+
+The proposal also mentioned we could use <code>typename&lt;&amp;MyObject::myFunction&gt;...</code> to get the parameter names. We indeed need them as they are used when you connect to a signal in QML to access the parameters. <br/>
+
+And currently we are able to call a function without specifying all the parameters if there are default parameters.  So we need to know the default parameters at compile time to create them at run time.</p>
+
+
+<p>However, there is a problem with functions traits in that form: non-type template parameters of function type need to be function literals. (<a href="http://stackoverflow.com/questions/15885399/pointer-as-non-type-template-argument">See this stackoverflow question</a>.)  Best explained with this code:</p>
+
+<pre class="code"><b>struct</b> <dfn class="type def" id="Obj" title='Obj' data-ref="Obj" >Obj</dfn> { <em>void</em> <dfn class="tu decl" id="_ZN3Obj4funcEv" title='Obj::func' data-type='void Obj::func()' data-ref="_ZN3Obj4funcEv" >func</dfn>(); };
+<b>template</b>&lt;<em>void</em> (Obj::*)()&gt; <b>struct</b> <dfn class="type def" id="Trait" title='Trait' data-ref="Trait" >Trait</dfn> {};
+<em>int</em> <dfn class="decl def" id="main" title='main' data-ref="main" >main</dfn>() {
+    <span class="type" title='Trait' data-ref="Trait" >Trait</span>&lt;&amp;<span class="type" title='Obj' data-ref="Obj" >Obj</span>::<span class="tu ref" title='Obj::func' data-ref="_ZN3Obj4funcEv" >func</span>&gt; <dfn class="local col3 ref" id="3t1" title='t1' data-type='Trait&lt;&amp;Obj::func&gt;' data-ref="3t1" >t1</dfn>;  <i>//Ok.  The function is directly written</i>
+
+    <b>constexpr</b> <em>auto</em> <dfn class="local col4 ref" id="4var" title='var' data-type='void (Obj::*const)()' data-ref="4var" >var</dfn> = &amp;<span class="type" title='Obj' data-ref="Obj" >Obj</span>::<span class="tu ref" title='Obj::func' data-ref="_ZN3Obj4funcEv" >func</span>;
+    Trait&lt;var<span class='error' title="non-type template argument is not a pointer to member constant"/>&gt; <dfn class="local col5 ref" id="5t2" title='t2' data-type='int' data-ref="5t2" >t2</dfn>;  <i>//Error:  var is not a function directly written.</i>
+}
+</pre>
+
+<p>But as we are introspecting, we get, at best, the functions in <code>constexpr</code> form.  So this restriction would need to be removed.</p>
+
+
+<h2>The properties</h2>
+
+<p>We have not yet solved the <code>Q_PROPERTY</code> feature.</p>
+
+<p>I'm afraid we will have to introduce a new macro because it is most likely not possible to keep the source compatibility with <code>Q_PROPERTY</code>.
+  A way to do it would be to add static constexpr members of a recognizable type. For example, this is my prototype implementation:</p>
+
+<pre class="code"><b>template</b> &lt;<b>typename</b> Type, <b>typename</b>... T&gt; <b>struct</b> <dfn class="type def" id="QProperty" title='QProperty' data-ref="QProperty" >QProperty</dfn> : <span class="namespace">std::</span><a class="type" href="http://code.woboq.org/qt5/include/c++/4.8.2/bits/stl_pair.h.html#std::tuple" title='std::tuple' data-ref="std::tuple" data-proj="include" >tuple</a>&lt;T...&gt; {
+    <b>using</b> <span class="namespace">std::</span><a class="type" href="http://code.woboq.org/qt5/include/c++/4.8.2/bits/stl_pair.h.html#std::tuple" title='std::tuple' data-ref="std::tuple" data-proj="include" >tuple</a>&lt;T...&gt;::tuple;
+    <b>using</b> <dfn class="typedef" id="QProperty::PropertyType" title='QProperty::PropertyType' data-type='Type' data-ref="QProperty::PropertyType" >PropertyType</dfn> = Type;
+};
+<b>template</b> &lt;<b>typename</b> Type, <b>typename</b>... T&gt; <b>constexpr</b> <em>auto</em> <dfn class="decl def" id="_Z15qt_makePropertyDpOT0_" title='qt_makeProperty' data-ref="_Z15qt_makePropertyDpOT0_" >qt_makeProperty</dfn>(T&amp;&amp; ...<dfn class="local col2 ref" id="2t" title='t' data-type='T &amp;&amp;...' data-ref="2t" >t</dfn>)
+{ <b>return</b> <a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#QProperty" title='QProperty' data-ref="QProperty" >QProperty</a>&lt;Type, <b>typename</b> <span class="namespace">std::</span><a class="type" href="http://code.woboq.org/qt5/include/c++/4.8.2/type_traits.html#std::decay" title='std::decay' data-ref="std::decay" data-proj="include" >decay</a>&lt;T&gt;::type...&gt;{ <span class="namespace">std::</span>forward&lt;T&gt;(<a class="local col2 ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#2t" title='t' data-ref="2t" >t</a>)... }; }
+
+<u>#define Q_PROPERTY2(TYPE, NAME, ...) static constexpr auto qt_property_##NAME = \</u>
+<u>                                            <a class="ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_Z15qt_makePropertyDpOT0_" title='qt_makeProperty' data-ref="_Z15qt_makePropertyDpOT0_" >qt_makeProperty</a>&lt;TYPE&gt;(__VA_ARGS__);</u>
+</pre>
+<p>To be used like this</p>
+<pre class="code">    <a class="macro" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#54" title="static constexpr auto qt_property_foo = qt_makeProperty&lt;int&gt;(&amp;MyObject::getFoo, &amp;MyObject::setFoo);">Q_PROPERTY2</a>(<em>int</em>, foo, &amp;<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<a class="tu ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_ZN8MyObject6getFooEv" title='MyObject::getFoo' data-ref="_ZN8MyObject6getFooEv" >getFoo</a>, &amp;<a class="type" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#MyObject" title='MyObject' data-ref="MyObject" >MyObject</a>::<a class="tu ref" href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#_ZN8MyObject6setFooEi" title='MyObject::setFoo' data-ref="_ZN8MyObject6setFooEi" >setFoo</a>)
+</pre>
+
+<p>We can find the properties by looking for the <code>QProperty&lt;...&gt;</code> members and removing the <code>"qt_property_"</code> part of the name. Then all the information about the getter, setter and others are available.</p>
+
+<h4>And if we want to keep the old <code>Q_PROPERTY</code>?</h4>
+
+<p>I was wondering if it is possible to even keep the source compatibility using the same macro: I almost managed:</p>
+<pre class="code"><b>template</b>&lt;<b>typename</b>... Fs&gt; <b>struct</b> <dfn class="type def" id="QPropertyHolder" title='QPropertyHolder' data-ref="QPropertyHolder" >QPropertyHolder</dfn> { <b>template</b>&lt;Fs... Types&gt; <b>struct</b> <dfn class="tu type def" id="QPropertyHolder::Property" title='QPropertyHolder::Property' data-ref="QPropertyHolder::Property" >Property</dfn> {}; };
+<b>template</b>&lt;<b>typename</b>... Fs&gt; <span class="type" title='QPropertyHolder' data-ref="QPropertyHolder" >QPropertyHolder</span>&lt;Fs...&gt; <dfn class="decl" id="_Z18qPropertyGeneratorDpT_" title='qPropertyGenerator' data-ref="_Z18qPropertyGeneratorDpT_" >qPropertyGenerator</dfn>(Fs...);
+
+<u>#define WRITE , &amp;<span class="typedef" title='MyPropObject::ThisType' data-type='MyPropObject' data-ref="MyPropObject::ThisType" >ThisType</span>::</u>
+<u>#define READ , &amp;<span class="typedef" title='MyPropObject::ThisType' data-type='MyPropObject' data-ref="MyPropObject::ThisType" >ThisType</span>::</u>
+<u>#define NOTIFY , &amp;<span class="typedef" title='MyPropObject::ThisType' data-type='MyPropObject' data-ref="MyPropObject::ThisType" >ThisType</span>::</u>
+<u>#define MEMBER , &amp;ThisType::</u>
+
+<u>#define Q_PROPERTY(A) Q_PROPERTY_IMPL(A) /* expands the WRITE and READ macro */</u>
+
+<u>#define Q_PROPERTY_IMPL(Prop, ...) static void qt_property_ ## __COUNTER__(\</u>
+<u>    Prop, decltype(<span class="ref" title='qPropertyGenerator' data-ref="_Z18qPropertyGeneratorDpT_" >qPropertyGenerator</span>(__VA_ARGS__))::<span class="local col2 type" title='Property' data-ref="2Property" >Property</span>&lt;__VA_ARGS__&gt;) = delete;</u>
+
+<b>class</b> <dfn class="type def" id="MyPropObject" title='MyPropObject' data-ref="MyPropObject" >MyPropObject</dfn> : <b>public</b> <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobject.h.html#QObject" title='QObject' data-ref="QObject" data-proj="qtbase" >QObject</a> {
+    <a class="macro" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#150" title="public: template &lt;typename ThisObject&gt; inline void qt_check_for_QOBJECT_macro(const ThisObject &amp;_q_argument) const { int i = qYouForgotTheQ_OBJECT_Macro(this, &amp;_q_argument); i = i + 1; } static const QMetaObject staticMetaObject; virtual const QMetaObject *metaObject() const; virtual void *qt_metacast(const char *); static inline QString tr(const char *s, const char *c = 0, int n = -1) { return staticMetaObject.tr(s, c, n); } static inline QString trUtf8(const char *s, const char *c = 0, int n = -1) { return staticMetaObject.tr(s, c, n); } virtual int qt_metacall(QMetaObject::Call, int, void **); private: __attribute__((visibility(&quot;hidden&quot;))) static void qt_static_metacall(QObject *, QMetaObject::Call, int, void **); struct QPrivateSignal {};">Q_OBJECT</a>
+    <b>typedef</b> <span class="type" title='MyPropObject' data-ref="MyPropObject" >MyPropObject</span> <dfn class="typedef" id="MyPropObject::ThisType" title='MyPropObject::ThisType' data-type='MyPropObject' data-ref="MyPropObject::ThisType" >ThisType</dfn>; <i>// FIXME: how do do that automatically</i>
+                                   <i>//        from within the Q_OBJECT macro?</i>
+
+<a class="macro" href="http://code.woboq.org/qt5/qtbase/src/corelib/kernel/qobjectdefs.h.html#76" title="public">signals</a>: <i>// would expand to public [[qt::signal]]:</i>
+    <em>void</em> <dfn class="tu decl" id="_ZN12MyPropObject10fooChangedEv" title='MyPropObject::fooChanged' data-type='void MyPropObject::fooChanged()' data-ref="_ZN12MyPropObject10fooChangedEv" >fooChanged</dfn>();
+<b>public</b>:
+    <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/tools/qstring.h.html#QString" title='QString' data-ref="QString" data-proj="qtbase" >QString</a> <dfn class="tu decl" id="_ZNK12MyPropObject3fooEv" title='MyPropObject::foo' data-type='QString MyPropObject::foo() const' data-ref="_ZNK12MyPropObject3fooEv" >foo</dfn>() <em>const</em>;
+    <em>void</em> <dfn class="tu decl" id="_ZN12MyPropObject6setFooERK7QString" title='MyPropObject::setFoo' data-type='void MyPropObject::setFoo(const QString &amp; )' data-ref="_ZN12MyPropObject6setFooERK7QString" >setFoo</dfn>(<em>const</em> <a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/tools/qstring.h.html#QString" title='QString' data-ref="QString" data-proj="qtbase" >QString</a>&amp;);
+
+    <span class="macro" title="static void qt_property___COUNTER__( QString foo, decltype(qPropertyGenerator(&amp;ThisType:: foo , &amp;ThisType:: setFoo , &amp;ThisType:: fooChanged))::Property&lt;&amp;ThisType:: foo , &amp;ThisType:: setFoo , &amp;ThisType:: fooChanged&gt;) = delete;">Q_PROPERTY</span>(<a class="type" href="http://code.woboq.org/qt5/qtbase/src/corelib/tools/qstring.h.html#QString" title='QString' data-ref="QString" data-proj="qtbase" >QString</a> <dfn class="local col1 ref" id="1foo" title='foo' data-type='QString' data-ref="1foo" >foo</dfn> <span class="macro" title=", &amp;ThisType::">READ</span> <span class="tu member" title='MyPropObject::foo' data-ref="_ZNK12MyPropObject3fooEv" >foo</span> <span class="macro" title=", &amp;ThisType::">WRITE</span> <span class="tu member" title='MyPropObject::setFoo' data-ref="_ZN12MyPropObject6setFooERK7QString" >setFoo</span> <span class="macro" title=", &amp;ThisType::">NOTIFY</span> <span class="tu member" title='MyPropObject::fooChanged' data-ref="_ZN12MyPropObject10fooChangedEv" >fooChanged</span>)
+
+};
+</pre>
+
+
+<p>This basically creates a function with two arguments. The name of the first argument is the name of the property, which we can get via reflection. Its type is the type of the property. The second argument is of the type <code>QPropertyHolder&lt;...&gt;::Property&lt;...&gt;</code>, which contains pointers to the member functions for the different attributes of the property.  Introspection would allow us to dig into this type.<br/>
+
+But the problem here is that it needs to do a <code>typedef ThisType</code>.  It would be nice if there was something like <code>deltype(*this)</code> that would be working in the class scope without any members,  then we would put this typedef within the <code>Q_OBJECT</code> macro.
+</p>
+
+<h2>Re-implementing the signals</h2>
+
+<p>This is going to be the big problem as I have no idea how to possibly do that.  We need, for each signal, to generate
+its code.  Something that could look like this made-up syntax:</p>
+
+<pre class="code"><em>int</em> signalId=<var>0</var>;
+<i>/* Somehow loop over all the signals to implement them  (made up syntax) */</i>
+<b>for</b>(<em>auto</em> signal : {<b>typedef</b>&lt;MyObject requires has_attribute(<q>"qt::signal"</q>)&gt;... }) {
+    signalId++;
+    signal(<em>auto</em>... arguments) = { 
+        SignalImplementation&lt;<b>decltype</b>(signal), signalId&gt;::impl(<b>this</b>, arguments...); 
+    }
+}
+</pre>
+
+<p>The implementation of <a href="reflection-in-cpp-and-qt-moc/code/metaobjectbuilder.cc.html#SignalImplementation">SignalImplementation::impl</a> is then easy.</p>
+
+
+
+
+<h2>Summary: What would we need</h2>
+
+<p>In summary, this is what would be needed in the standard to implement Qt like  features without the need of moc:</p>
+
+
+<ul>
+<li>The  <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3951.pdf">
+  N3951 proposal: C++ type reflection via variadic template expansion</a> would be a really good start. </li>
+<li>Allow attributes within the access specifier   (<code>public [[qt::slot]]:</code>)</li>
+<li>Traits to get the attributes (<code>constexpr std::has_attribute&lt;&amp;MyClass::mySignal&gt;("qt::signal");</code></li>
+<li>Traits to get the access of a function (public, private, protected) (for <code>QMetaMethod::access</code>)</li>
+<li>A way to declare functions.</li>
+<li>Getting default value of arguments.</li>
+<li>Accessing function traits via <code>constexpr</code> expression.</li>
+<li>Listing the constructors. (for <code>Q_INVOKABLE</code> constructors.)</li>
+</ul>
+
+
+<h3>What would then still be missing</h3>
+<ul><li><code>Q_PLUGIN_METADATA</code> which allows to load a JSON file, and put the information in the binary:<br/>
+   I'm afraid we will still need a tool for that. (Because I hardly see the c++ compiler opening a file and parsing JSON.) This does not really belong in <code>moc</code> anyway and is only there because moc was already existing.</li>
+
+   <li>Whatever else I missed or forgot. :-)</li>
+   </ul>
+
+<h2>Conclusion: will finally moc disappear?</h2>
+
+<p>Until Qt6, we have to maintain source and binary compatibility. Therefore <code>moc</code> is not going to disappear, 
+but may very well be optional for new classes.   We could have a <code>Q_OBJECT2</code> which does not need moc, but would use 
+only standard C++.</p>
+
+<p>In general, while it would be nice to avoid the moc, there is also no hurry to get rid of it. It is generally working fine and serving its purpose quite well. A pure template C++ implementation is not necessarily easier to maintain. Template meta-programming should not be abused too much.</p>
+
+<p>For a related experiment, have a look at my attempt to <a href="moc-with-clang.html">reimplement moc using libclang</a></p>
+
+
+
+    </div>
+    <div id="blog-subscribe-call">
+        <p>
+            <a title="Submit on reddit" rel="nofollow" href="http://www.reddit.com/submit?url=http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html">
+                <img width="19" height="15" alt="Submit on reddit" src="/button_reddit.gif"/>
+            </a>
+            <a title="Submit on hackernews" rel="nofollow" href="https://news.ycombinator.com/submitlink?u=http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html">
+                <img width="20" height="20" alt="Submit on reddit" src="/button_hn.gif"/>
+            </a>
+            <a title="Tweet about it" rel="nofollow" href="http://twitter.com/home?status=http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html">
+                <img width="20" height="20" alt="Tweet about it" src="/button_twitter.png"/>
+            </a>
+            <a title="Share on Facebook" href="http://www.facebook.com/share.php?u=http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html">
+                <img width="20" height="20" alt="Share on Facebook" src="/button_facebook.png"/>
+            </a>
+            <a title="Post on Google+" rel="nofollow" href="https://plus.google.com/share?url=http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html">
+                <img width="16" height="16" alt="Post on Google+" src="/button_gp.png"/>
+            </a>
+        </p>
+        <p>If you like this blog and want to read similar articles, consider <b>subscribing</b>
+            <a href="http://feeds.woboq.com/woboq">via our RSS feed</a>,
+<a href="http://feedburner.google.com/fb/a/mailverify?uri=woboq">by e-mail</a>
+or <a href="http://twitter.com/woboq">follow us on twitter</a>
+or <a href="https://plus.google.com/102813873464455130791">add us on G+</a>..
+</p>
+        <p>
+You can also <a href="http://flattr.com/thing/452314/Woboq-Blog" target="_blank">
+                <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"/>
+            </a>
+blog posting or 
+<a href="http://tiptheweb.org/tip/">
+                <img src="data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%3D%00%00%00%18%08%02%00%00%00%C6ab%3B%00%00%04%ECIDATX%85%D5%97Kl%13W%14%86%CF%F5%83%F8%11'%8E%3D8c3~%90%97%D4%E2%08H%00))q%14Z7-U%9D%80%8A%40%20%D1M%BBa%DF%8A%15%CB%EE%8A%84%D8%B4%CB%2C*Pi%17%05J%1B%A4%24M(%10%A0%8Ab%0A8%A4%40mjl%E3%0C%89%ED%C4%B1g%3A%F7%DE.%26Ll%C7qy%A94%BF%EE%E2%BE%CE9%DF%3DsF3%17%09%82%00kP%AA%D7%0D%F0%82%D2(%BDyaa%E4%AF%E1%B1%F8%A5%D7HSA%3E%7BW%8Fs%97%A9%AAZ%1E%22%A5N%CE%DE%3B%5B%AD%D7%F7x%7C%AF%8F%AD%92F%C2c%0B%B9%5C%A0)%20%0F%97%EBd%2C~%C9%E7%DE%89)%F9%7F6%9F%7Bga-h%0A%CFD(%5Ey%D0%A9%3B%D3%B7o%86%FE%B8%7B%FF%C9%CC%13e%D2%E9%E668%1D%DBvlu7%B8%5Eqb%9FM%C5%DC%84%14%0E%EF%DE%99%FE%E1%FB%1F%81%A0%DE%DE%DE%EE%B7z%3C%1E%8F%B2%14%0E%87%83%C1%E0%A9%81%EF%0C%D5%BA%7D%87%F6%D6%B3%B6%FF%06WQ%117.%C8wp%E2%D6%B93%17%02%81%40ww7%C68%1E%8FOMM%C9K%94RQ%14%FD~%7F__%DF%E0%E0%E0%F1%2FN%EE%FF%F8%A3%CDm%DE%E7%0A%9C%13s%D1%B9G%F6Z%7B%B5%CE%F8%B2%DC%84.%E5%7B%3At%EF%DC%99%0BG%8F%1E%B5X%2C%18%E3d2%B9%B0%B0%20%13%03%00B%E8%FA%F5%EB%2C%CB%CE%CD%CDutt%B4%B5%B5%1D%3Bv%CC%C62%F5%F62Y%3F%7D%F5%CC%95%7BWJ%26%BD%1BZ%DF%D9%D4s%E2%E2%C9O%BB%3FiumzYn%FC%94%7B%E8%A7_%0E%1E%3CXWW%97%CDf%8DF%23%C6K%CF%01!%24%D3%3B%1C%8EX%2Cf%B1X%92%C9%A4%D5j%ED%EF%EF%1F%B98%B6%EF%F0%DE%95%01%F6%B4%F7%F7m%ED%03%80%AF%87%BFJ%E7%E7%3F%DF%FD%99%ECG%A3U%7Fy%E08RQ%25%E8Kp%93%25%BEG%0Fc%ED%ED%ED%B3%B3%B3%1A%8DF%10%84%BA%BA%BA%C2%7C%8B%A2%18%8DF%1B%1A%1A%E4%CD%3C%CFwvv%0E%5E%FCY1%2F%94J%8DTj%15%00%A8%D5j%15Rk%B4j%00%00%A0%0F%F9%C87WN%ED%DD%B6%A7%D9%DEt%FA%EA%B7y1%B7q%FD%C6%B1%BB%97%9A%D9f%BF%F7m%AB%C9Z%99%BB%E8%7B%89%81%C8M%1Ef2%99X%2C%861F%08%99%CDfe%5B8%1C%F6%FB%FD555%94RI%920%C6%26%93)%B7%98W%CC%0B%9B%04X%02I%02I%C6%95%FB%12%60%09%E3%99%F9%19%11%8B%18H6%97%9D%8AO%E7%25%E1%C3-%81%C9%877%87n%8F%94u%B5j%BEIq%C2%0C%06%83%C9dR%AB%D5%91H%04!%A4%14wKKK%3A%9DN%A5RN%A7%93RZUUU%D6%BCD%94%16%ED%91%DF%25J%97fl5%F5%BB7%BFO(%FD%ED%C1%8DP%3C%84%89%84%00U%F0V%BE%BE%E5d%5B%2C%16%9E%E7%09!z%BD%3E%9DN%CB%7C2%BDN%A7K%A5R%18c%8E%E3X%96%E5y%BE%C4%7C5re%0F%05%99%9BbJ(P%40%90%95%B2%00%00%08t%1A%3D%A1%14%80V%F0UT'%84%60%B9%E9%0C%BA%89%89%09%95J%C50%0C%C6X%AB%D52%0CC%08%11%04A%AF%D7%8B%A2%98H%248%8E%F3x%3C.%97K%A7%D3%5D%BE%7C%99u%D6%2B%E6e%5BI%08L%97%E8%E5%A5%F9%DC%7C%7C6%F68%FD%F8%3E%FF%C0%CB%B5V%F0P.%DFOkh%9B%AFmhh%88a%18%97%CB%C5%B2%AC%20%08%F9%7C%5E%AB%D5...J%92d%B3%D9%1C%0E%87%D1h4%18%0C%99Lf%7C%7C%7Cxx%F8%83C%EF%95%94%60i%B6%8BCPJ%00%80P%8A%81PJU%08%8D%86~%0D%C5B%D6jfGc%7BeW%A5%DC%CA%99%DA%7D%5B%D2%B3%A9%81%81%81%DE%DE%5E%8F%C7c6%9B%CDfsmm%AD%B2S%92%A4T*%95H%24%82%C1%E0%E8%E8%E8%F6%5Dm%AEf%AEr%7D%1F%F1%1FA%A0%9A%13xy%E8d%B8%13%87Nd%C4%8CH%F2%00%60%AC2%1E%EE%3AL0Y%A7%D1%A6%C5TeW%A5%DC%B8%E0%3B%DF%1D%F0Y%ED%B7%CF_8%CFX%98%C6%C6F%8E%E3%18%86%91%DFN%84P4%1A%9D%99%99%99%9C%9CD%1Axw%FF.w%8B%1B%93%7F%C9%D0%93%1C_%1C%2B%9F%97%12r%9F%02%A5%00%A9%FC%2C%02%A0%7FWvS%8E%9B%14%3F%9D7%B7%BF%D1%D4%DA%14%99%8E%FC%19%8A%5C%BBqM%C8-%DF%8Cl%1B%D63%0EkW%7F%A7%BB%C5%B5%D2%F0yu%A0%E3%00%20%24B%FE%D9MJ%F2-%95%2C%AB%D7%A1%06%AF%A7%C1%EBY%CD~%A5%C9%0BH%40%04(*%FB7%BA%9A%96%B9%7D%F6%AE%E0%E3%DF%BD%B6%E7%FB%3Dz%25%C2%CF%40%7C%2By%CBg%EFR%86%CB%F7%9D%B5zO%5B%5BZ%AB%F7%F9%7F%00%D7%BFl9%8C%F4i%22%00%00%00%00IEND%AEB%60%82"/>
+            </a>
+it
+or <a href="bitcoin:1En85shTXaVMt7FAVawq6qSXijjEUT89EU">
+                <img src="/banner_bitcoin_donate.png"/>
+            </a>!</p>
+    </div>
+    <div id="blog-navigation">
+        &laquo; Previous: <a href="saving-disk-space-on-your-webserver-with-squashfs.html">Saving Disk Space on your Linux Server with Squashfs</a>
+    </div>
+    <div id="adv">
+        <script type="text/javascript">
+            <!--
+google_ad_client = "ca-pub-5892035981328708";
+/* woboq blog above comments */
+google_ad_slot = "0806550814";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+        </script>
+        <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+//
+</script>
+    </div>
+    <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'woboq'; 
+    var disqus_url = 'http://woboq.com/blog/reflection-in-cpp-and-qt-moc.html';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the comments</noscript>
+
+</div>
+
+
+<div id="imprint-footer" >
+<div id="imprint-links"> 
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Services</a>
+<a href="/products.html">Products</a>
+
+<a href="/quassel.html">Quassel&nbsp;Hosting</a>
+<a href="/codebrowser.html">Code&nbsp;Browser</a>
+<a href="/blog/">Blog</a>
+<a href="/imprint.html">Imprint</a>
+</div>
+
+</div>
+
+</div>
+
+<script>var file = "blog/counter.cpp"; var root_path="reflection-in-cpp-and-qt-moc";
+        var projects = {"qtbase" : "http://code.woboq.org/qt5", "include":"http://code.woboq.org/qt5" };
+</script><script type="text/javascript" src="http://code.woboq.org/data/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/codebrowser.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-221649-10']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>
+

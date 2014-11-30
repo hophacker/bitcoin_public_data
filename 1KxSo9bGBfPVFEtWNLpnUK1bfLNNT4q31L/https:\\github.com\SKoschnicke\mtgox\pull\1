@@ -1,0 +1,864 @@
+https://github.com/SKoschnicke/mtgox/pull/1
+Apiv1 by SKoschnicke · Pull Request #1 · SKoschnicke/mtgox · GitHub
+Skip to content
+Sign up
+Sign in
+Explore
+Features
+Enterprise
+Blog
+This repository
+This repository
+All repositories
+Star
+0
+Fork
+73
+public
+SKoschnicke/mtgox
+forked from sferik/mtgox
+Code
+Pull Requests
+0
+Pulse
+Graphs
+Network
+HTTPS clone URL
+Subversion checkout URL
+You can clone with
+HTTPS
+or Subversion.
+Download ZIP
+Apiv1
+#1
+Merged
+SKoschnicke
+merged 4 commits into
+SKoschnicke:master
+from
+demonbane:apiv1
+over 1 year
+ago
++68
+−50
+
+Conversation
+0
+Commits
+4
+Files changed
+10
+Milestone
+No milestone
+Assignee
+No one assigned
+Notifications
+2 participants
+Owner
+SKoschnicke
+commented
+April 05, 2013
+No description provided.
+demonbane
+added
+some commits
+March 23, 2013
+demonbane
+Use v1 API for balances
+9b25b75
+demonbane
+Use v1 API for withdrawals
+5a27d25
+demonbane
+Use v1 API for order listing
+fcafcf4
+demonbane
+Use v1 API for buying/selling
+069defb
+SKoschnicke
+merged commit bf8f122 into SKoschnicke:master
+from demonbane:apiv1
+April 05, 2013
+SKoschnicke
+closed this April 05, 2013
+Sign up for free
+to join this conversation on GitHub.
+Already have an account?
+Sign in to comment
+Showing 4 unique commits by 1 author.
+Mar 24, 2013
+demonbane
+Use v1 API for balances
+9b25b75
+demonbane
+Use v1 API for withdrawals
+5a27d25
+demonbane
+Use v1 API for order listing
+fcafcf4
+demonbane
+Use v1 API for buying/selling
+069defb
+This page is out of date. Refresh to see the latest.
+Showing 10 changed files
+with 68 additions
+and 50 deletions.
+Show diff stats
+Hide diff stats
+0
+
+bin/btc
++39
+−12
+ lib/mtgox/client.rb
++2
+−2
+ lib/mtgox/order.rb
++0
+−1
+ spec/fixtures/balance.json
++1
+−1
+ spec/fixtures/buy.json
++1
+−0
+ spec/fixtures/info.json
++1
+−1
+ spec/fixtures/orders.json
++1
+−1
+ spec/fixtures/sell.json
++1
+−1
+ spec/fixtures/withdraw.json
++22
+−31
+ spec/mtgox/client_spec.rb
+0
+
+bin/btc
+100644 → 100755
+show inline notes
+View
+File mode changed
+51 
+lib/mtgox/client.rb
+show inline notes
+View
+@@ -16,7 +16,8 @@ class Client
+16
+16
+include MtGox::Connection
+17
+17
+include MtGox::Request
+18
+18
+19
+- ORDER_TYPES = {sell: 1, buy: 2}
+19
++ ORDER_TYPES = {sell: "ask", buy: "bid"}
+20
++ INT_MULTIPLIERS = {btc: 100000000, usd: 100000, jpy: 1000}
+20
+21
+21
+22
+# Fetch a deposit address
+22
+23
+# @authenticated true
+@@ -132,7 +133,7 @@ def trades
+132
+133
+# @example
+133
+134
+# MtGox.balance
+134
+135
+def balance
+135
+- parse_balance(post('/api/0/getFunds.php', {}))
+136
++ parse_balance(post('/api/1/generic/private/info', {})['return'])
+136
+137
+end
+137
+138
+138
+139
+# Fetch your open orders, both buys and sells, for network efficiency
+@@ -142,7 +143,7 @@ def balance
+142
+143
+# @example
+143
+144
+# MtGox.orders
+144
+145
+def orders
+145
+- parse_orders(post('/api/0/getOrders.php', {})['orders'])
+146
++ parse_orders(post('/api/1/generic/private/orders', {})['return'])
+146
+147
+end
+147
+148
+148
+149
+# Fetch your open buys
+@@ -170,12 +171,12 @@ def sells
+170
+171
+# @authenticated true
+171
+172
+# @param amount [Numeric] the number of bitcoins to purchase
+172
+173
+# @param price [Numeric] the bid price in US dollars
+173
+- # @return [Hash] with keys :buys and :sells, which contain arrays as described in {MtGox::Client#buys} and {MtGox::Clients#sells}
+174
++ # @return [String] order ID for the buy, can be inspected using order_result
+174
+175
+# @example
+175
+176
+# # Buy one bitcoin for $0.011
+176
+177
+# MtGox.buy! 1.0, 0.011
+177
+178
+def buy!(amount, price)
+178
+- parse_orders(post('/api/0/buyBTC.php', {amount: amount, price: price})['orders'])
+179
++ addorder!(:buy, amount, price)
+179
+180
+end
+180
+181
+181
+182
+# Place a limit order to sell BTC
+@@ -183,12 +184,26 @@ def buy!(amount, price)
+183
+184
+# @authenticated true
+184
+185
+# @param amount [Numeric] the number of bitcoins to sell
+185
+186
+# @param price [Numeric] the ask price in US dollars
+186
+- # @return [Hash] with keys :buys and :sells, which contain arrays as described in {MtGox::Client#buys} and {MtGox::Clients#sells}
+187
++ # @return [String] order ID for the sell, can be inspected using order_result
+187
+188
+# @example
+188
+189
+# # Sell one bitcoin for $100
+189
+190
+# MtGox.sell! 1.0, 100.0
+190
+191
+def sell!(amount, price)
+191
+- parse_orders(post('/api/0/sellBTC.php', {amount: amount, price: price})['orders'])
+192
++ addorder!(:sell, amount, price)
+193
++ end
+194
++
+195
++ # Create a new order
+196
++ #
+197
++ # @authenticated true
+198
++ # @param type [String] the type of order to create, either "buy" or "sell"
+199
++ # @param amount [Numberic] the number of bitcoins to buy/sell
+200
++ # @param price [Numeric] the bid/ask price in USD
+201
++ # @return [String] order ID for the order, can be inspected using order_result
+202
++ # @example
+203
++ # # Sell one bitcoin for $123
+204
++ # MtGox.addorder! :sell, 1.0, 123.0
+205
++ def addorder!(type, amount, price)
+206
++ post('/api/1/BTCUSD/private/order/add', {type: order_type(type), amount_int: intify(amount,:btc), price_int: intify(price, :usd)})['return']
+192
+207
+end
+193
+208
+194
+209
+# Cancel an open order
+@@ -229,20 +244,20 @@ def cancel(args)
+229
+244
+# @authenticated true
+230
+245
+# @param amount [Numeric] the number of bitcoins to withdraw
+231
+246
+# @param btca [String] the bitcoin address to send to
+232
+- # @return [Array<MtGox::Balance>]
+247
++ # @return [String] completed transaction ID
+233
+248
+# @example
+234
+249
+# # Withdraw 1 BTC from your account
+235
+250
+# MtGox.withdraw! 1.0, '1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L'
+236
+- def withdraw!(amount, btca)
+237
+- parse_balance(post('/api/0/withdraw.php', {group1: 'BTC', amount: amount, btca: btca}))
+251
++ def withdraw!(amount, address)
+252
++ post('/api/1/generic/bitcoin/send_simple', {amount_int: intify(amount, :btc), address: address})['return']['trx']
+238
+253
+end
+239
+254
+240
+255
+private
+241
+256
+242
+257
+def parse_balance(balance)
+243
+258
+balances = []
+244
+- balances << Balance.new('BTC', balance['btcs'])
+245
+- balances << Balance.new('USD', balance['usds'])
+259
++ balances << Balance.new('BTC', balance['Wallets']['BTC']['Balance']['value'])
+260
++ balances << Balance.new('USD', balance['Wallets']['USD']['Balance']['value'])
+246
+261
+balances
+247
+262
+end
+248
+263
+@@ -259,5 +274,17 @@ def parse_orders(orders)
+259
+274
+end
+260
+275
+{buys: buys, sells: sells}
+261
+276
+end
+277
++
+278
++ def intify(float, currency)
+279
++ (float * INT_MULTIPLIERS[currency]).to_i
+280
++ end
+281
++
+282
++ def order_type(type)
+283
++ unless ["bid", "ask"].include?(type.to_s)
+284
++ ORDER_TYPES[type.downcase.to_sym]
+285
++ else
+286
++ type
+287
++ end
+288
++ end
+262
+289
+end
+263
+290
+end
+4 
+lib/mtgox/order.rb
+show inline notes
+View
+@@ -7,8 +7,8 @@ class Order < Offer
+7
+7
+def initialize(order={})
+8
+8
+self.id = order['oid']
+9
+9
+self.date = Time.at(order['date'].to_i)
+10
+- self.amount = order['amount'].to_f
+11
+- self.price = order['price'].to_f
+10
++ self.amount = order['amount']['value'].to_f
+11
++ self.price = order['price']['value'].to_f
+12
+12
+end
+13
+13
+end
+14
+14
+end
+1 
+spec/fixtures/balance.json
+show inline notes
+View
+...
+...
+@@ -1 +0,0 @@
+1
+-{"usds":3.7,"btcs":22}
+2 
+spec/fixtures/buy.json
+show inline notes
+View
+...
+...
+@@ -1 +1 @@
+1
+-{"status":"Your order has been queued for execution","orders":[{"oid":"9f9983fd-5358-4e68-909e-42e69c7ded3f","currency":"USD","item":"BTC","type":2,"amount":1,"price":2,"status":2,"dark":0,"date":1309199181,"priority":"1309199181788900"},{"oid":"3b0f10d7-251d-4a1b-ad6d-4f03877b85d1","currency":"USD","item":"BTC","type":2,"amount":0.1,"price":6,"status":1,"dark":0,"date":1309198830,"priority":"1309198830086400"},{"oid":"490a214f-9a30-449f-acb8-780f9046502f","currency":"USD","item":"BTC","type":2,"amount":0.2,"price":7,"status":1,"dark":0,"date":1309198838,"priority":"1309198838630500"},{"oid":"a20329fe-c0d5-4378-b204-79a7800d41e7","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":99,"status":1,"dark":0,"date":1309198820,"priority":"1309198820706100"},{"oid":"7eac0bb4-b07c-42c2-936a-bb0a33ab2f64","currency":"USD","item":"BTC","type":1,"amount":0.659,"price":100,"status":1,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"c35abb5b-42fc-43be-ad4e-60bfed184440","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":100,"status":0,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"e24b7470-ea06-4c78-b5d0-0ab12826b626","currency":"USD","item":"BTC","type":1,"amount":0.1,"price":101,"status":0,"dark":0,"date":1309198807,"priority":"1309198807803300"}]}
+1
++{"result":"success","return":"490a214f-9a30-449f-acb8-780f9046502f"}
+1 
+spec/fixtures/info.json
+show inline notes
+View
+...
+...
+@@ -0,0 +1 @@
+1
++{"result":"success","return":{"Login":"deadbeef","Index":"1","Id":"deadbeef-111c-2221-3334-deadbeef1122","Rights":["get_info"],"Language":"en_US","Created":"2012-01-02 01:02:03","Last_Login":"2013-03-24 01:00:00","Wallets":{"BTC":{"Balance":{"value":"22.00000000","value_int":"2200000000","display":"22.00000000 BTC","display_short":"22.00 BTC","currency":"BTC"},"Operations":101,"Daily_Withdraw_Limit":{"value":"100.00000000","value_int":"10000000000","display":"100.00000000 BTC","display_short":"100.00 BTC","currency":"BTC"},"Monthly_Withdraw_Limit":null,"Max_Withdraw":{"value":"100.00000000","value_int":"10000000000","display":"100.00000000 BTC","display_short":"100.00 BTC","currency":"BTC"},"Open_Orders":{"value":"0.00000000","value_int":"0","display":"0.00000000 BTC","display_short":"0.00 BTC","currency":"BTC"}},"USD":{"Balance":{"value":"3.70000","value_int":"370000000","display":"$3.70000","display_short":"$3.70","currency":"USD"},"Operations":101,"Daily_Withdraw_Limit":{"value":"10000.00000","value_int":"1000000000","display":"$10,000.00000","display_short":"$10,000.00","currency":"USD"},"Monthly_Withdraw_Limit":{"value":"50000.00000","value_int":"5000000000","display":"$50,000.00000","display_short":"$50,000.00","currency":"USD"},"Max_Withdraw":{"value":"10000.00000","value_int":"1000000000","display":"$10,000.00000","display_short":"$10,000.00","currency":"USD"},"Open_Orders":{"value":"0.00000","value_int":"0","display":"$0.00000","display_short":"$0.00","currency":"USD"}}},"Monthly_Volume":{"value":"700.00000000","value_int":"70000000000","display":"700.00000000 BTC","display_short":"700.00 BTC","currency":"BTC"},"Trade_Fee":0.5}}
+2 
+spec/fixtures/orders.json
+show inline notes
+View
+...
+...
+@@ -1 +1 @@
+1
+-{"usds":199.9959,"btcs":0.859,"orders":[{"oid":"bddd042c-e837-4a88-a92e-3b7c05e483df","currency":"USD","item":"BTC","type":2,"amount":3,"price":5,"status":1,"dark":0,"date":1309198768,"priority":"1309198768104500"},{"oid":"3b0f10d7-251d-4a1b-ad6d-4f03877b85d1","currency":"USD","item":"BTC","type":2,"amount":0.1,"price":6,"status":1,"dark":0,"date":1309198830,"priority":"1309198830086400"},{"oid":"490a214f-9a30-449f-acb8-780f9046502f","currency":"USD","item":"BTC","type":2,"amount":0.2,"price":7,"status":1,"dark":0,"date":1309198838,"priority":"1309198838630500"},{"oid":"a20329fe-c0d5-4378-b204-79a7800d41e7","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":99,"status":1,"dark":0,"date":1309198820,"priority":"1309198820706100"},{"oid":"7eac0bb4-b07c-42c2-936a-bb0a33ab2f64","currency":"USD","item":"BTC","type":1,"amount":0.659,"price":100,"status":1,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"c35abb5b-42fc-43be-ad4e-60bfed184440","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":100,"status":0,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"e24b7470-ea06-4c78-b5d0-0ab12826b626","currency":"USD","item":"BTC","type":1,"amount":0.1,"price":101,"status":0,"dark":0,"date":1309198807,"priority":"1309198807803300"}]}
+1
++{"result":"success","return":[{"oid":"490a214f-9a30-449f-acb8-780f9046502f","currency":"USD","item":"BTC","type":"bid","amount":{"value":"0.20000000","value_int":"20000000","display":"0.20000000\u00a0BTC","display_short":"0.20\u00a0BTC","currency":"BTC"},"effective_amount":{"value":"0.20000000","value_int":"20000000","display":"0.20000000\u00a0BTC","display_short":"0.20\u00a0BTC","currency":"BTC"},"price":{"value":"7.00000","value_int":"700000","display":"$7.00000","display_short":"$7.00","currency":"USD"},"status":"open","date":1309198838,"priority":"1364116780853497","actions":[]},{"oid":"a20329fe-c0d5-4378-b204-79a7800d41e7","currency":"USD","item":"BTC","type":"ask","amount":{"value":"0.20000000","value_int":"20000000","display":"0.20000000\u00a0BTC","display_short":"0.20\u00a0BTC","currency":"BTC"},"effective_amount":{"value":"0.20000000","value_int":"20000000","display":"0.20000000\u00a0BTC","display_short":"0.20\u00a0BTC","currency":"BTC"},"price":{"value":"99.00000","value_int":"9900000","display":"$99.00000","display_short":"$99.00","currency":"USD"},"status":"open","date":1309198820,"priority":"1364118432445268","actions":[]}]}
+2 
+spec/fixtures/sell.json
+show inline notes
+View
+...
+...
+@@ -1 +1 @@
+1
+-{"status":"Your order has been queued for execution","orders":[{"oid":"9f9983fd-5358-4e68-909e-42e69c7ded3f","currency":"USD","item":"BTC","type":2,"amount":1,"price":2,"status":1,"dark":0,"date":1309199181,"priority":"1309199181788900"},{"oid":"3b0f10d7-251d-4a1b-ad6d-4f03877b85d1","currency":"USD","item":"BTC","type":2,"amount":0.1,"price":6,"status":1,"dark":0,"date":1309198830,"priority":"1309198830086400"},{"oid":"490a214f-9a30-449f-acb8-780f9046502f","currency":"USD","item":"BTC","type":2,"amount":0.2,"price":7,"status":1,"dark":0,"date":1309198838,"priority":"1309198838630500"},{"oid":"a20329fe-c0d5-4378-b204-79a7800d41e7","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":99,"status":1,"dark":0,"date":1309198820,"priority":"1309198820706100"},{"oid":"7eac0bb4-b07c-42c2-936a-bb0a33ab2f64","currency":"USD","item":"BTC","type":1,"amount":0.659,"price":100,"status":1,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"c35abb5b-42fc-43be-ad4e-60bfed184440","currency":"USD","item":"BTC","type":1,"amount":0.2,"price":100,"status":0,"dark":0,"date":1309198722,"priority":"1309198722477200"},{"oid":"e24b7470-ea06-4c78-b5d0-0ab12826b626","currency":"USD","item":"BTC","type":1,"amount":0.1,"price":101,"status":0,"dark":0,"date":1309198807,"priority":"1309198807803300"},{"oid":"fdf0b134-7336-49c1-9d94-6ec641cffc74","currency":"USD","item":"BTC","type":1,"amount":1.7,"price":200,"status":2,"dark":0,"date":1309199274,"priority":"1309199274263700"}]}
+1
++{"result":"success","return":"a20329fe-c0d5-4378-b204-79a7800d41e7"}
+2 
+spec/fixtures/withdraw.json
+show inline notes
+View
+...
+...
+@@ -1 +1 @@
+1
+-{"usds":64.59,"btcs":9,"status":"Your funds are on their way..."}
+1
++{"result":"success","return":{"trx":"311295deadbeef390a13c038e2b8ba77feebdaed2c1a59e6e0bdf001656e1314"}}
+53 
+spec/mtgox/client_spec.rb
+show inline notes
+View
+@@ -139,14 +139,14 @@
+139
+139
+140
+140
+describe '#balance' do
+141
+141
+before do
+142
+- stub_post('/api/0/getFunds.php').
+142
++ stub_post('/api/1/generic/private/info').
+143
+143
+with(body: test_body, headers: test_headers).
+144
+- to_return(status: 200, body: fixture('balance.json'))
+144
++ to_return(status: 200, body: fixture('info.json'))
+145
+145
+end
+146
+146
+147
+147
+it "should fetch balance" do
+148
+148
+balance = @client.balance
+149
+- a_post("/api/0/getFunds.php").
+149
++ a_post("/api/1/generic/private/info").
+150
+150
+with(body: test_body, headers: test_headers).
+151
+151
+should have_been_made
+152
+152
+balance.first.currency.should == "BTC"
+@@ -158,7 +158,7 @@
+158
+158
+159
+159
+describe "order methods" do
+160
+160
+before :each do
+161
+- stub_post('/api/0/getOrders.php').
+161
++ stub_post('/api/1/generic/private/orders').
+162
+162
+with(body: test_body, headers: test_headers).
+163
+163
+to_return(status: 200, body: fixture('orders.json'))
+164
+164
+end
+@@ -166,7 +166,7 @@
+166
+166
+describe "#buys" do
+167
+167
+it "should fetch orders" do
+168
+168
+buys = @client.buys
+169
+- a_post("/api/0/getOrders.php").
+169
++ a_post("/api/1/generic/private/orders").
+170
+170
+with(body: test_body, headers: test_headers).
+171
+171
+should have_been_made
+172
+172
+buys.last.price.should == 7
+@@ -177,7 +177,7 @@
+177
+177
+describe "#sells" do
+178
+178
+it "should fetch sells" do
+179
+179
+sells = @client.sells
+180
+- a_post("/api/0/getOrders.php").
+180
++ a_post("/api/1/generic/private/orders").
+181
+181
+with(body: test_body, headers: test_headers).
+182
+182
+should have_been_made
+183
+183
+sells.last.price.should == 99.0
+@@ -188,7 +188,7 @@
+188
+188
+describe "#orders" do
+189
+189
+it "should fetch both buys and sells, with only one call" do
+190
+190
+orders = @client.orders
+191
+- a_post("/api/0/getOrders.php").
+191
++ a_post("/api/1/generic/private/orders").
+192
+192
+with(body: test_body, headers: test_headers).
+193
+193
+should have_been_made
+194
+194
+orders[:buys].last.price.should == 7.0
+@@ -201,43 +201,37 @@
+201
+201
+202
+202
+describe "#buy!" do
+203
+203
+before do
+204
+- body = test_body({"amount" => "0.88", "price" => "0.89"})
+205
+- stub_post('/api/0/buyBTC.php').
+204
++ body = test_body({"type" => "bid", "amount_int" => "88000000", "price_int" => "89000"})
+205
++ stub_post('/api/1/BTCUSD/private/order/add').
+206
+206
+with(body: body, headers: test_headers(body)).
+207
+207
+to_return(status: 200, body: fixture('buy.json'))
+208
+208
+end
+209
+209
+210
+210
+it "should place a bid" do
+211
+211
+buy = @client.buy!(0.88, 0.89)
+212
+- body = test_body({"amount" => "0.88", "price" => "0.89"})
+213
+- a_post("/api/0/buyBTC.php").
+212
++ body = test_body({"type" => "bid", "amount_int" => "88000000", "price_int" => "89000"})
+213
++ a_post("/api/1/BTCUSD/private/order/add").
+214
+214
+with(body: body, headers: test_headers(body)).
+215
+215
+should have_been_made
+216
+- buy[:buys].last.price.should == 2.0
+217
+- buy[:buys].last.date.should == Time.utc(2011, 6, 27, 18, 26, 21)
+218
+- buy[:sells].last.price.should == 99.0
+219
+- buy[:sells].last.date.should == Time.utc(2011, 6, 27, 18, 20, 20)
+216
++ buy.should == "490a214f-9a30-449f-acb8-780f9046502f"
+220
+217
+end
+221
+218
+end
+222
+219
+223
+220
+describe "#sell!" do
+224
+221
+before do
+225
+- body = test_body({"amount" => "0.88", "price" => "89.0"})
+226
+- stub_post('/api/0/sellBTC.php').
+222
++ body = test_body({"type" => "ask", "amount_int" => "88000000", "price_int" => "8900000"})
+223
++ stub_post('/api/1/BTCUSD/private/order/add').
+227
+224
+with(body: body, headers: test_headers(body)).
+228
+225
+to_return(status: 200, body: fixture('sell.json'))
+229
+226
+end
+230
+227
+231
+228
+it "should place an ask" do
+232
+- body = test_body({"amount" => "0.88", "price" => "89.0"})
+229
++ body = test_body({"type" => "ask", "amount_int" => "88000000", "price_int" => "8900000"})
+233
+230
+sell = @client.sell!(0.88, 89.0)
+234
+- a_post("/api/0/sellBTC.php").
+231
++ a_post("/api/1/BTCUSD/private/order/add").
+235
+232
+with(body: body, headers: test_headers(body)).
+236
+233
+should have_been_made
+237
+- sell[:buys].last.price.should == 2.0
+238
+- sell[:buys].last.date.should == Time.utc(2011, 6, 27, 18, 26, 21)
+239
+- sell[:sells].last.price.should == 200
+240
+- sell[:sells].last.date.should == Time.utc(2011, 6, 27, 18, 27, 54)
+234
++ sell.should == "a20329fe-c0d5-4378-b204-79a7800d41e7"
+241
+235
+end
+242
+236
+end
+243
+237
+@@ -294,22 +288,19 @@
+294
+288
+295
+289
+describe "#withdraw!" do
+296
+290
+before do
+297
+- body = test_body({"group1" => "BTC", "amount" => "1.0", "btca" => "1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L"})
+298
+- stub_post('/api/0/withdraw.php').
+291
++ body = test_body({"amount_int" => "100000000", "address" => "1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L"})
+292
++ stub_post('/api/1/generic/bitcoin/send_simple').
+299
+293
+with(body: body, headers: test_headers(body)).
+300
+294
+to_return(status: 200, body: fixture('withdraw.json'))
+301
+295
+end
+302
+296
+303
+297
+it "should withdraw funds" do
+304
+298
+withdraw = @client.withdraw!(1.0, "1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L")
+305
+- body = test_body({"group1" => "BTC", "amount" => "1.0", "btca" => "1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L"})
+306
+- a_post("/api/0/withdraw.php").
+299
++ body = test_body({"amount_int" => "100000000", "address" => "1KxSo9bGBfPVFEtWNLpnUK1bfLNNT4q31L"})
+300
++ a_post("/api/1/generic/bitcoin/send_simple").
+307
+301
+with(body: body, headers: test_headers(body)).
+308
+302
+should have_been_made
+309
+- withdraw.first.currency.should == "BTC"
+310
+- withdraw.first.amount.should == 9.0
+311
+- withdraw.last.currency.should == "USD"
+312
+- withdraw.last.amount.should == 64.59
+303
++ withdraw.should == "311295deadbeef390a13c038e2b8ba77feebdaed2c1a59e6e0bdf001656e1314"
+313
+304
+end
+314
+305
+end
+315
+306
+end
+Tip: You can add notes to lines in a file. Hover to the left of a line to make a note
+Status
+API
+Training
+Shop
+Blog
+About
+© 2014 GitHub, Inc.
+Terms
+Privacy
+Security
+Contact
+Something went wrong with that request. Please try again.
+

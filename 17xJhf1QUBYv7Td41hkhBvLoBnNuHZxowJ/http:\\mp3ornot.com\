@@ -1,0 +1,343 @@
+http://mp3ornot.com/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 11:20:00 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.3.10-1ubuntu3.8
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3685
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>mp3ornot.com</title>
+
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,600,300,700,800' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="./style/main2.css?v=1406028000">
+<meta property="fb:app_id" content="195782277198282"/>
+
+<!--script language="javascript" type="text/javascript" src="./flot/jquery.js"></script-->
+<script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="./flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="./jplayer/jquery.jplayer.min.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+
+  // Variables
+
+  var maxclips = 3;
+
+  // Functions
+
+  function reloadX(c,clip) {
+    var fn = "./songs/clipX.php?c="+c+"&clip="+clip;
+    $("#clipXplayer").jPlayer( "destroy" );
+    $("#clipXplayer").jPlayer({
+      ready: function () { $(this).jPlayer("setMedia", { mp3: fn }); },
+      swfPath: "/jPlayer",
+      supplied: "mp3"
+    });
+  }
+
+  function reloadAB(clip) {
+
+    baseurl = "./songs/";
+    extens  = ".mp3";
+
+    cla = baseurl+clip+"A"+extens;
+    clb = baseurl+clip+"B"+extens;
+
+    $("#clipAplayer").jPlayer( "destroy" );
+    $("#clipBplayer").jPlayer( "destroy" );
+    $("#clipXplayer").jPlayer( "destroy" );
+
+    $("#clipAplayer").jPlayer({
+      ready: function () { $(this).jPlayer("setMedia", { mp3: cla }); },
+      swfPath: "/jPlayer",
+      supplied: "mp3"
+    });
+
+    $("#clipBplayer").jPlayer({
+      ready: function () { $(this).jPlayer("setMedia", { mp3: clb }); },
+      swfPath: "/jPlayer",
+      supplied: "mp3"
+    });
+
+  }
+
+
+function buttonClicked(d,status) {
+  xplayed = true;
+  if (xplayed == true) {
+    $(".clip").children().jPlayer("stop");
+    $(".clip").removeClass('clicked');
+    var n   = d.split(" ");
+      corr   += parseInt(n[0]);
+      trials += 1;
+      c       = parseInt(n[1]);
+  
+      mult    = parseInt(n[2]);
+      summ    = parseInt(n[3]);
+      cd      = parseInt(n[4]);
+  
+      $("#resultsTMP").fadeOut(100);
+      $("#results").fadeIn(100);
+  
+      var pcdpush = [trials, corr/trials*100];
+      pcd.push(pcdpush);
+      
+      var dataset = [{data: pcd, color:"#e4e6ea"}];
+      
+      $.plot($("#placeholder"), dataset, options);
+  
+      var pcorr = Math.round(corr/trials*100);
+  
+      $(".pcorr").text( pcorr + "%");
+      $(".tcorr").text(corr);
+      $(".tdone").text(trials);
+      $(".code").text(c + " - " + mult + " " + summ  + " " + cd  + " " + (cd-summ)/mult);
+
+      //if (trials == 2) {$("#resultsfb").fadeIn('slow'); }
+      if (trials == 2) {$("#fbcomments").slideDown('slow'); }
+
+      if (clip == maxclips) {
+        clip = 1;
+      } else {
+        clip += 1;
+      }
+
+      switch (clip) {
+        case 1:
+          $("#credits").text('Sophie Milman with Beautiful Love');
+          break;
+        case 2:
+          $("#credits").text('Gino d\'Auri with Barrio San Miguel');
+          break;
+        case 3:
+          $("#credits").text('Juliette Lewis with Hard Lovin\' Woman');
+          break;
+      }
+  
+      reloadX(c,clip);
+      reloadAB(clip);
+    }
+    else {
+      $("#clipX").css({
+        "padding" : "7px",
+        "border" : "3px solid #0b285d"
+      });
+    }
+  }
+
+  /////// Scripts
+
+	$(".social").hover(function () {
+  		$(".social").not(this).css( "background-position", "0px -100px" );
+  		$(".social").css( 'cursor', 'pointer' );
+	}, function () {
+  		$(".social:not(this)").css( "background-position", "0px 0px" );
+	});
+
+  // Initialise First Clips
+  
+  
+  var clip = 1;
+  var c    = 337306643;
+
+  reloadAB(clip);
+  reloadX(c,clip);
+
+  // Play buttons
+
+  var xplayed = false;
+
+  $(".clip").not("#XA,#XB").click(function () {
+  	if ($(this).hasClass("clicked")) {
+		  $(this).children().jPlayer("stop");
+      reloadAB(clip);
+      reloadX(c,clip);
+   	} else {
+   		$(this).children().jPlayer("play");
+   		$(".clip").not(this).children().jPlayer("stop");
+   		$(".clip").not(this).removeClass('clicked');
+   	}
+    	$(this).toggleClass('clicked');
+    });
+
+    // Post buttons
+
+    trials = parseInt(0);
+    corr = parseInt(0);
+
+    var pcd = [[],[]];
+    var pcdpush = [0, 0];
+    pcd.push(pcdpush);
+    var dataset = [{data: pcd, color:"#e4e6ea"}];
+
+    var options = {
+                    yaxis: {min:0,max:100,color: "#4b83ea",label:"test" },
+                    shadowSize: 0,
+                    colors: "#ffffff",
+                    xaxis: { color: "#4b83ea", min:0,tickDecimals: 0, tickLength:0 },
+                    grid: {borderWidth: 1, borderColor: "#e4e6ea"}
+                  };
+
+    $.plot($("#placeholder"), dataset, options);
+
+    $("#XA").click(function(){ $.post("submit.php", { code : c, sel : "1" },
+    	function(d,status){
+    		buttonClicked(d,status,clip);
+    	});
+  	});
+
+    $("#XB").click(function(){ $.post("submit.php", { code : c, sel : "2" },
+    	function(d,status){
+    		buttonClicked(d,status,clip);
+    	});
+  	});
+
+    /*
+    var width  = 575;
+    var height = 400;
+    var left   = ($(window).width()  - width)  / 2;
+    var top    = ($(window).height() - height) / 2;
+
+     $('#twit').click(function(){
+      window.open('http://twitter.com/share?text=Can%20you%20hear%20the%20difference?&hashtags=mp3ornot', '_blank', 'width=575,height=400,top='+top+',left='+left);
+      return false;
+    });
+    */
+});
+</script>
+</head>
+
+<body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=195782277198282";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<!-- HEADER -->
+
+<div id="headerbar">
+<header>
+	<h2>mp3ornot.com</h2>
+	<h1>Do you hear the difference?</h1>
+</header>
+</div>
+
+<!-- QUIZ -->
+
+<div id="quizbar">
+
+<div id="quizwrapper">
+
+<div id ="quiz">
+	<p class="question"><bold>Step 1</bold> Listen to clips A and B</p>
+
+	<table><tr>
+		<td><a href="javascript:;" class="clip" id="clipA">clip A (320 kbps)<div id="clipAplayer"></div></a></td>
+		<td><a href="javascript:;" class="clip" id="clipB">clip B (128 kbps)<div id="clipBplayer"></div></a></td>
+	</tr></table>
+
+	<p class="question"><bold>Step 2</bold> Listen to clip X</p>
+
+	<table><tr>
+		<td><a href="javascript:;" class="clip" id="clipX">clip X (128 or 320 kbps?)<div id="clipXplayer"></div></a></td>
+	</tr></table>
+
+	<p class="question"><bold>Step 3</bold> Which clip is X?</p>
+
+	<table><tr>
+		<td><a href="javascript:;" id="XA" class="clip">X = A (320 kbps)</a></td>
+		<td><a href="javascript:;" id="XB" class="clip">X = B (128 kbps)</a></td>
+	</tr></table>
+
+</div>
+
+<div id="resultsTMP">
+<p class="question"><bold>Instructions</bold></p>
+  <p>Identify clip X and test if you hear the difference between low and high quality mp3 music.</p>
+</div>
+
+<div id="results">
+  <p class="question"><bold>Your Results</bold></p>
+  <table>
+  <tr><td>Tests done:</td><td><span class="tdone">0</span></td></tr>
+  <tr><td>Correct answers:</td><td><span class="tcorr">0</span></td></tr>
+  <tr><td>Percentage correct:</td><td><span class="pcorr">0</span></td></tr>
+  </table>
+  <!--p>Code: <span class="code">0</span></p-->
+  <div id="placeholder"></div>
+</div>
+
+<!--div id="socialbar">
+	<div class="social" style="background:url('./figs/social/fb.gif') no-repeat;"></div>
+	<div id="twit" class="social" style="background:url('./figs/social/twit.gif') no-repeat;"></div>
+  <div class="social" style="background:url('./figs/social/tumbl.gif') no-repeat;"></div>
+	<div class="social" style="background:url('./figs/social/gplus.gif') no-repeat;"></div>
+  <div class="social"></div>
+</div-->
+
+</div>
+
+</div>
+
+<!-- TEXT -->
+
+<div id="textbar">
+<div id="textbartable">
+<p><a class="bc" href="bitcoin:17xJhf1QUBYv7Td41hkhBvLoBnNuHZxowJ?amount=1&label=Please%20donate%20to%20mp3ornot">Bitcoin donation (17xJhf1QUBYv7Td41hkhBvLoBnNuHZxowJ)</a></p>
+<div id="fbcomments">
+<h3><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://mp3ornot.com" data-text="Do you hear the difference?" data-size="large">Tweet</a><div class="fb-like" data-href="http://mp3ornot.com" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></h3>
+</div>
+<div class="fb-comments" data-href="http://mp3ornot.com" data-width="830" num_posts="4"></div>
+<table border="0"><tr>
+<td style="width:480px">
+	<h3>About</h3>
+	<p>Are you an audiophile? With this simple test you'll be able to find out whether you can hear the difference between a low quality song and a two-and-a-half times larger high fidelity mp3 file. Is the difference as big as you expected?</p>
+</td>
+<td>
+	<h3>Suggestions &amp; Contact information</h3>
+	<p>We would love to get your feedback. Do you want to recommend different songs for the test or have comments on the current selection?</p>
+	<a href="https://twitter.com/intent/tweet?screen_name=mp3ornot" class="twitter-mention-button" data-size="large">Tweet to @mp3ornot</a>
+<!--script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script-->
+</td>
+</tr></table></div>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+	<p>mp3ornot.com - credits for the audio to <span id="credits">Sophie Milman with Beautiful Love</span></p>
+      <a class="bc" href="bitcoin:17xJhf1QUBYv7Td41hkhBvLoBnNuHZxowJ?amount=1&label=Please%20donate%20to%20mp3ornot">
+        <img src="https://blockchain.info//Resources/buttons/donate_64.png"/>
+        </a></footer><br/><br/>
+</footer>
+
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=3545734; 
+var sc_invisible=1; 
+var sc_security="f310829b"; 
+</script>
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><div class="statcounter"><a title="click tracking"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/3545734/0/f310829b/1/"
+alt="click tracking"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+
+</body>
+</html>

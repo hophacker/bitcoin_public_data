@@ -1,0 +1,171 @@
+http://23.fi/jj/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 11:53:28 GMT
+Server: Apache/2.2
+Last-Modified: Thu, 29 Nov 2012 19:24:20 GMT
+ETag: "d536b85-12a5-4cfa73ad6c6de"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 2027
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<style type="text/css">
+img 
+{
+float:right;
+}
+</style>
+<title>jj - FIFO and filesystem based Jabber/XMPP client</title>
+</head>
+
+<body>
+<img src="http://23.fi/kuvat/jj-logo.png" alt="logo" /> 
+<h1>jj</h1>
+
+<p>jj is a simple FIFO and filesystem based Jabber/XMPP client. jj is
+inspired by <a href="http://tools.suckless.org/ii">ii</a> IRC
+client.</p>
+
+
+<p>jj is more tool than traditional instant messanger client. It can
+be easily extended with normal unix tools. It is perfect for bots and
+notifications. Interaction with jj is done by writing and reading
+files from the server directory which jj creates.</p>
+
+<h3>Quick getting started guide</h3>
+
+<p>Latest official jj version is 2. It can be downloaded <a
+href="jj-2.tar.gz">here</a>.</p>
+
+<p>The development version can be cloned with <a
+href="http://git-scm.com">git</a> from <a
+href="http://github.com/Petteri/jj">jj's github page</a>.</p>
+
+<p>To compile jj you need loudmouth and glib development libraries. On
+Debian install these packages:
+
+<pre>
+libloudmouth1-dev
+libglib2.0-dev
+</pre>
+</p>
+
+<p>Then you can compile jj with make:
+<pre>
+make
+</pre>
+</p>
+
+<p>Now you should have jj executable. Start it with the line (replace
+server and user stuff with your own):
+
+<pre>
+./jj -s server.tld -j user@server.tld -u user -p password -m User
+</pre>
+</p>
+
+<p>
+It will create server.tld directory that will contain in file used to
+communicate to jj and out file for the output. Commands recognize at
+this point are:
+<pre>
+/join channel@chat.server.tld
+/msg username@server.tld
+</pre>
+
+for every joined muc there will be a new directory in server.tld/mucs
+with its own in and out files. Normal users will get a directory in
+server.tld directory that works in the same way. After you have some
+mucs or users in server.tld you can just write to in files and read
+the outfiles. Unix tool echo is nice way to to write, example:
+
+<pre>
+echo "/join chat@conference.jabber.org" > server.tld/in</pre></p>
+
+<p>Here is an example of the directory tree structure from connection
+to server.tld.</p>
+
+<pre>
+server.tld
+|-- in
+|-- mucs
+|   |-- lobby@conference.server.tld
+|   |   |-- in
+|   |   `-- out
+|   |-- bar@conference.server.tld
+|   |   |-- in
+|   |   `-- out
+|   |-- basement@conference.server.tld
+|   |   |-- in
+|   |   `-- out
+|   `-- backstage@conference.server.tld
+|       |-- in
+|       `-- out
+|-- out
+`-- user@server.tld
+    |-- in
+    `-- out
+</pre>
+
+<h3>Usage example</h3>
+
+<h4>Multi-User Chat</h4>
+<p>Here is a small usage example that shows basic usage. First start
+up jj. Then join some mucs and finally follow mucs output with tail.
+</p>
+<pre>
+./jj -s server.tld -j user@server.tld -u user -p password -m User
+echo "/join lobby@conference.server.tld" > server.tld/in
+echo "/join bar@conference.server.tld" > server.tld/in
+echo "/join basement@conference.server.tld" > server.tld/in
+echo "/join backstage@conference.server.tld" > server.tld/in
+cd server.tld/mucs
+tail -f lobby@conference.server.tld/out bar@conference.server.tld/out basement@conference.server.tld/out backstage@conference.server.tld
+</pre>
+
+<h4>1-to-1 Chat</h4>
+
+<p>When chatting to only one person you should first initiate the chat
+by sending first message to server in -file. After that you should use
+the directory created for the user</p>
+
+<pre>
+./jj -s server.tld -j user@server.tld -u user -p password -m User
+echo "/msg petteri@jabber.ru hello" > server.tld/in
+tail -f server.tld/petteri@jabber.ru/out
+echo "Petteri are you getting the messages?" > server.tld/petteri@jabber.ru/in
+</pre>
+
+<h4>Bot</h4> <p>Jj might be best used as a bot. <a
+href="http://23.fi/blogi/Event_based_jabber_bot%3A2012-07-13%3AJabber%2CEnglish%2CJj%2CAvoin">I
+wrote a short introduction on how I am using it, that will hopefully
+give some hints on how to build your own bot.</a></p>
+
+<h3>Changelog</h3>
+
+<a href="http://23.fi/blogi/12PTjf">Version 2 release notes</a>
+
+<h3>Source Code Repository and Issue tracker</h3> <p>jj's <a
+href="https://github.com/Petteri/jj">source code is hosted at
+Github</a>. There is also an <a
+href="https://github.com/Petteri/jj/issues">issue tracker</a> which
+can be used to report bugs.</p>
+
+<p>You can also build debug version of jj with <i>make debug</i>, just
+remember to do <i>make clean</i> first!</p>
+
+<h3>Contact the author & support</h3> <p>You can contact the author by
+sending email to petteri gmail com or sending XMPP messages to
+petteri jabber ru. You can also support jj with <a
+href="http://en.wikipedia.org/wiki/Bitcoin">Bitcoin</a> (Bitcoin
+address: 1CCC3pdE3iHQdBiiqgsbZNsghPzxYoEfxE ) if you wish. </p>
+
+<hr>
+<address>xmpp: petteri jabber ru</address>
+<!-- hhmts start --> Last modified: Thu Nov 29 21:24:20 EET 2012 <!-- hhmts end -->
+</body> </html>
+

@@ -1,0 +1,281 @@
+http://www.codeproject.com/Articles/21438/JSLint-VS-JavaScript-Verifier-for-Visual-Studio?msg=2880016
+JSLint.VS - JavaScript Verifier for Visual Studio - CodeProject ×
+Sign up for our free weekly Web Developer Newsletter.
+10,727,200 members (70,804 online) CodeProject::Workspaces
+Code. Collaborate. Organize.
+Workspaces Home
+Discuss Workspaces
+No Limits. Try it Today.
+Sign in
+Email
+Password
+Forgot your password?
+Sign in using home
+articles
+Chapters and Sections>
+Search
+Latest Articles
+Latest Tips/Tricks
+Top Articles
+Beginner Articles
+Technical Blogs
+Posting/Update Guidelines
+Article Help Forum
+Article Competition
+Submit an article or tip
+Post your Blog
+quick answers
+Ask a Question about this article
+Ask a Question
+View Unanswered Questions
+View All Questions...
+C# questions
+ASP.NET questions
+VB.NET questions
+Javascript questions
+C#4.0 questions
+discussions
+All Message Boards...
+Application Lifecycle>
+Running a Business
+Sales / Marketing
+Collaboration / Beta Testing
+Work & Training Issues
+Design and Architecture
+ASP.NET
+JavaScript
+C / C++ / MFC>
+ATL / WTL / STL
+Managed C++/CLI
+Adobe Technologies
+C#
+Free Tools
+Objective-C
+Ruby On Rails
+Database
+Hardware & Devices>
+System Admin
+Hosting and Servers
+Java
+.NET Framework
+Android
+Mobile
+Sharepoint
+Silverlight / WPF
+Visual Basic
+Web Development
+Site Bugs / Suggestions
+features
+Competitions
+News
+The Insider Newsletter
+The Daily Build Newsletter
+Newsletter archive
+Surveys
+Product Showcase
+Research Library
+CodeProject Stuff
+community
+The Insider News
+The Lounge The Weird & The Wonderful
+The Soapbox
+Press Releases
+Who's Who
+Most Valuable Professionals
+Company Listings
+Non-English Language
+>
+General Indian Topics
+General Chinese Topics
+help
+What is 'CodeProject'?
+General FAQ
+Ask a Question
+Bugs and Suggestions
+Article Help Forum
+Site Map
+Advertise with us
+Employment Opportunities
+About Us
+Search within:
+Articles
+Quick Answers
+Messages
+Articles » General Programming » Macros and Add-ins » VS.NET Add-ins
+ArticleAlternatives
+Comments (36)
+View this article's Workspace
+Fork this Workspace
+JSLint.VS - JavaScript Verifier for Visual Studio Predrag Tomasevic, 9 Nov 2009
+4.89 (29 votes)
+1
+2
+3
+4
+5
+4.89/5 - 29 votes3 removedμ 4.46, σa 2.21 [?]
+Rate this:
+Please Sign up or sign in to vote.
+email
+facebook
+linkedin
+twitter
+google+
+A Visual Studio add-in that uses JSLint to verify JavaScript files that are part of a solution.	Download compiled DLLs - 52.76 KB
+Download source files - 59.75 KB
+JSLint.VS CodePlex page
+Introduction
+With this article, I wanted to do something completely different from my previous two. If you've read them, you saw that they are detailed descriptions of respective topics – somewhat like guides that arm you with complete knowledge on a subject.
+The problem with that is – you leave the reader without something solid. You just can't write "Guide to .NET Reporting" that'll design reports that the reader needs. So, this time, I wanted to provide you with something you can use on a daily basis, without needing to chew on knowledge presented here or tailor it to fit your needs. I wanted to do something short, sweet, and immediately useful.
+In choosing the topic, I was somewhat selfish. During the years of my coding, there was nothing that caused me more joy and pain at the same time than JavaScript development. I mean, every time I needed to code some JavaScript, it was like getting a crush on a bad kinky girl – you are taken in by the charm while thinking that a few tricks will do the job... but as soon as you commit yourself, the situation gets messy and you start to feel lost and depressed.
+With girls, I have developed an arsenal of excuses (she is into money, she likes guys who treat her like garbage, and so on), but with JavaScript, just one – being no one's child, JavaScript is left without tools that support proper development.
+Happily for me, during one late night browsing session, I stumbled upon JavaScript video tutorials from Douglas Crockford. Old man simply 0wnZ; if you haven't seen them, and you are into JavaScript, then stop wasting time – open up a few packages of popcorn and watch the videos (The JavaScript Programming Language, Theory of the DOM, Advanced JavaScript). You'll save tons of time that would otherwise be spent on reading lousy written JavaScript books/tutorials or Googling for explanations of copy-pasted code statements that you just can't get into.
+Besides being great for explaining JavaScript, they've lead me to JSLint, a useful tool that provides verification of JavaScript code, thus shortening periods you spend in browser testing your scripts, enabling you to be more productive. After seeing it in action, I immediately started thinking on how to integrate it with Visual Studio.
+Show Me What You've Got
+I wanted to provide users with the ability to JSLint a file, code section, or integrate JavaScript verification with a build.
+Here is the JSLint.VS in action on a file:
+And, here it is validating a code statement:
+Finally, here is JSLint.VS in action when the programmer decides to Build Solution:
+How it Works?
+JSLint.VS is a pretty standard Visual Studio add-in. I won't go into the basics, so if you lack knowledge about add-ins, you'll probably want to read an article like this to catch on the concepts.
+As in any Visual Studio add-in, Connect is the main class that handles the events of Visual Studio and executes the commands. In this project, it is used to register JSLint entries into VS context menus, catch changes to JavaScript files, notify other classes when Building of a Solution is started, and so on...
+OptionsForm is the interface with the user, enabling the configuration of JSLint.VS. You can see it in action in the image below:
+Finally, JSLintProcessor is the class that does the main work – on the Build event / user request (Connect.cs) to lint file, it builds the error list using the selected options (OptionForm.cs). The biggest problem was to figure out what to use for running the JavaScript code. After ditching the idea of having a hidden browser window reference in this class (it just sounds horrible, doesn't it?), I turned to the Windows Script Host. As WHS process takes some time to start, it is practically impossible to start an individual WSH process for every JavaScript lint file in big projects. So, during checking, I join all the scripts into one big temporary lint file, and then split results to provide links to the original scripts in the Task list.
+To sum up everything said, here is the class diagram showing the main parts of the previously mentioned classes. You can also notice the additional, less important, helper classes – for holding data (FileDataHolder, JSLintOptionsItem) and serializing JSLint options to hard disk (DictionarySerializer).
+I left lots of comments in the code, so I'm sure that you'll manage on your own if you are into further extending this add-in. Requesting features through comments that I'll implement for you is always an option.
+Conclusion
+As said in the introduction, I hope that reading this article enriched your development arsenal with one useful tool. Before leaving you to play with the source code, one final word of warning – as Douglas said in one of his speeches – JSLint will probably insult you. If you are an average JavaScript coder, in the first few runs, you'll be buried with errors, so be ready on JSLint notifications that tell you - your code is crap.
+On the other hand, every error is followed by a concise description of the problem (while this website contains detailed explanations on why something is preferred) – meaning that by fixing errors, you'll develop nice JavaScript coding habits. The more of us have those, the more understandable and maintainable JavaScript code we'll see in the future... enabling us easier sharing and learning, while trying to live up to the big hype that surrounds Web 2.0.
+References
+JSLint by Douglas Crockford
+Scott Mitchell's solution of "No Errors" bug
+History
+January 28, 2009 - Bugfixes related to build integration, CodePlex page (thanks to Alexander Turlov & Frederick Staats)
+December 11, 2007 - Updated add-in to support Visual Studio 2008, a few small bug fixes.
+November 25, 2007 - Initial version of the article.
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+About the Author
+Predrag Tomasevic
+Chief Technology Officer
+Atama Group United States http://www.linkedin.com/in/ptomasevic
+Bitcoin wallet: 1ARXmh58S6aRiZPCbneDCzrB1HUU6PLmDQ
+Article Top
+Comments and Discussions
+First PrevNext
+how to procedding these things in vs2012 Member 100425048-Jul-13 0:36 i want to implement this feature in vs2012 .i was added addins mydocuments/vs2012/addins but when i right click on script file i am not getting jslint in intellisencer after properties .please help me
+If you see 'no found errors' on any js code - read this :) Sigura1-Feb-10 5:23 1. Install lattest Windows Script Host
+2. By default windows script host dont known 'js' exttension (Addin use it). Article with fix:
+http://www.winhelponline.com/articles/230/1/Error-There-is-no-script-engine-for-file-extension-when-running-js-files.html
+That is all Re: If you see 'no found errors' on any js code - read this :) zachgotnosauce7-Jun-10 9:10 I wish this fixed it for me, but it didn't.
+My scenario is:
+Windows 7 x64 prof
+VS 2005 Prof running as admin.
+assoc .js response:
+.js=JScript
+also tried the vista registry, didn't help.
+any thoughts anyone?
+Options? Kenny G12-Nov-09 4:57 OK, maybe I'm an idiot, but how do you access the settings screen???
+I'm running the pre-compiled binaries under VS 2008, tried both with and without SP1, is this something that changed with plugins in 2008?
+Re: Options? Kenny G12-Nov-09 5:24 Never mind, if decided to show up under the tools menu!
+anyone willing to take on the mantle? andychurchill30-Oct-09 7:34 This has the potential to be a fantastic tool, if it worked a bit better. I know the guy who wrote it originally appears to have moved onto bigger and better things, so I wonder if anyone else has the ability and time to take on this project and push it forward?
+3 things I noticed so far, are:
+1) Scott Mitchell's discovery of the .JS associations being hijacked, preventing JSLint.VS from working (http://scottonwriting.net/sowblog/posts/13995.aspx)
+2) The logic surrounding lower level folders and solution folders, e.g. if you have a solution containing Tests, Web, Libraries, Solution Files, Services, with your actual projects inside these solution folders, then JSLint.VS options only lists the top level solution folders, and not the projects below them.
+Similarly, if you structure your js files in the following way root/js/jquery/plugins, JSLint.VS options only allows you to check the /js level, and nothing below it.
+3) I'm now seeing an issue where the first pass of the JSLint.VS process returns over 700 errors, but if I then try to re-run the process, it initially shows 700 errors before quickly reducing in errors back to 0, before hanging.
+4) As it's using the old JSLint.js edition, and a newer edition is out, it would be nice to use the new version and include the new options.
+JSLint updates khennadiy8-Oct-09 23:29 I saw that updated JSLint script has new options. Also 'Good Parts' is changed.
+I unzipped, changed the post entries, and built, get error on start of VS2008 intrader10-Mar-09 12:04 ---------------------------
+Microsoft Visual Studio
+---------------------------
+The Add-in 'JSLint.VS - The JavaScript Verifier for Visual Studio' failed to load or caused an exception.
+Would you like to remove this Add-in?
+If you choose yes, the file it was loaded from, 'C:\Documents and Settings\FSCHENK\My Documents\Visual Studio 2008\Addins\JSLintJsLint.AddIn', will be renamed.
+Error Message: Unspecified error
+Error number: 80004005
+---------------------------
+Yes No ---------------------------
+I answer Yes, VS2008 starts then, but there is nothing in Tools-->Add-in Manager, and no ontext menu for .js files
+Sorry, please help
+Re: I unzipped, changed the post entries, and built, get error on start of VS2008 saremba_siemens1-Jul-09 4:26 Sorry, but I have to confirm this. I did exactly the same as intrader.
+The only difference is that I get error number 80131604.
+I have a standard VS 2008 installation (in German - may that cause problems?)
+My vote of 1 Member 28214859-Mar-09 2:18 salim se nije los Issues under VS2K8 RichardGrimmer30-Jan-09 1:00 I've followed the instructions, I'm getting the add-in showing up and enabled in VS, and I'm able to JSLint a code fragment through the context menu, however, no menu item to check a file? And when I do a build, just says no errors found - even though one of the files is the one I'd just done a fragment lint on...
+Is there something I'm missing?
+EDIT: Seems that's it's cooooooompletely nerfed - it's just told me that var pos = tmp.indexOf ('UTC', 0); is "missing whitespace after 'i'", and selecting a fragment for linting has just done the whole file?!?!?! C# has already designed away most of the tedium of C++.
+What about JS libraries support? Alexander Turlov21-Jan-09 10:21 In the options there are such as "Assume a Yahoo Widget" and "Assume a Rhino". I suppose those are favorites of the JSLint author and it's understood. But since the plug-in is for VS and .NET web development doesn't it make sense to add something like "Assume Microsoft Ajax" and "Assume Ajax Control Toolkit"? Some people may ask about jQuery too Alexander Turlov
+MCSD.NET
+Re: What about JS libraries support? Predrag Tomasevic21-Jan-09 10:30 Those are exposed because Douglas has those options for JSLint.
+I guess if we wanted to add Assume Microsoft Ajax and Assume Ajax Control Toolkit I need to speak with him about adding them to JSLint (or some of us should dig into jslint.js, implement stuff and then merge with him).
+Nice work! Alexander Turlov21-Jan-09 8:26 With JavaScript development getting into the list of regular web development tasks there are still not so many tools out there to help developers with catching bugs and typos. Even with the VS 2008 JS intellisense support it's just a little easier. And it's really annoying when you have to run your web site under the debugger to find out just a few annoying typos that break the whole page. So your work is really on time!
+A suggestion: haven't you thought to move your project over some web site that hosts open source projects or code, like Codeplex, Microsoft Code, sourceforge, etc.? It may be much easier to keep your project up to date, communicate to the community and achieve much greater visibility too.
+Once again, thanks for a nice job. Alexander Turlov
+MCSD.NET
+Re: Nice work! Predrag Tomasevic21-Jan-09 10:27 I was really excited when I wrote this tool because back then I've done lots of JavaScript development, and as you say - it's nice when you are able to catch bugs and typos without firing up browser.
+However, during the time I've switched onto other technologies and lost time to support JSLint. I could upload it to CodePlex but I doubt there is broad interest in keeping library going forward. I might, however upload new version of source to the article because I've implemented couple of bugfixes (thanks to Joseph Schrag who provided testing).
+In any case, thanks for your comments and praises.
+JSLint bug fixes and Edition 2009-01-22 (was Re: Nice work!) Frederick Staats28-Jan-09 14:56 I agree that this has been very helpful for me too. I do frequent JSLint checking on JavaScript integrated into my VS2008 development environment.
+I just spent the day upgrading the latest posted JSLint.VS to use the current Edition 2009-01-22 of the tool from Dougless (and all the new options) from http://jslint.com. I've also updated the solution and project to be VS2008 based.
+I've noticed a some bugs related to the build integration (sometimes it seems to work and sometimes it doesn't.) I'm wondering if the bugs you are talking about are related to the build integration?
+I'm interested in any bug fixes you may have and can share the updates I've made if you are interested.
+Re: JSLint bug fixes and Edition 2009-01-22 (was Re: Nice work!) Predrag Tomasevic28-Jan-09 16:33 Yes, bugfixes are exactly targeted at build integration (I've missed event subscription in OnConnect method).
+As Alex suggested I've opened CodePlex site and posted code with fixes there -> http://www.codeplex.com/jslint[^].
+I will provide anyone interested with access and help on how to set VS to access/check-out/check-in files... So if you wish to merge your changes just send me your Codeplex username and I'll give you full access to repository.
+P.
+what about vs2005? irwinhurst14-Jan-09 6:33 This is a great article but it looks like the project has been converted to 2008. Do you still have the 2005 version around for those of us that have not been able to upgrade?
+thanks
+Re: what about vs2005? irwinhurst14-Jan-09 7:31 Sorry, this is working fine for me in VS 2005. The problem seems to be that I am running Windows in a strange mode and Visual Studio was not loading Addins correctly. After I setup Windows the right way then everything started working great.
+Thanks again for such as useful tool.
+It doesn't seem to work ESTAN26-Nov-08 1:07 Hi,
+I am using VS2005, and I installed it as stated in the install.txt file.
+When I start VS2005 I have the addin, I can select javascript and I can right click - JSLint Selected Fragment.
+But what I put, it always is saying that it didn't find any error. And I know for sure that the javascript code is wrong.
+How can I fix this?
+Brilliant justintimberlake3-Dec-07 17:41 Some people are just to brilliant Re: Brilliant Predrag Tomasevic10-Dec-07 12:44 And some people are just too kind... Very Useful!!! docwhosv1-Dec-07 22:33 Thanks for work. Are months I am looking for an utility like JSLint.vs. Thanks from Italy!! Re: Very Useful!!! Predrag Tomasevic2-Dec-07 1:37 It's always great to hear that you've helped someone . Thanks for posting. Installer rodrigo diniz29-Nov-07 6:37 Nice ..but you should provide an installer for the add-in or at least say where to copy the files. Last Visit: 31-Dec-99 18:00 Last Update: 12-Jul-14 9:45Refresh12 Next »
+General News Suggestion Question Bug Answer Joke Rant Admin Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+Shift+Left/Right to switch pages.
+About Article
+Type Article
+Licence CPOL
+First Posted 25 Nov 2007
+Views 94,797
+Downloads 744
+Bookmarked 82 times
+VS2005 C#2.0 VS2008 Javascript Windows .NET Dev Intermediate Related Articles
+SAPrefs - Netscape-like Preferences Dialog
+XNA Snooker Club
+Baboon Framework : A Revolutionary WPF Framework that will Save You Time and Effort
+WPF: A* search
+DNS.NET Resolver (C#)
+Windows 7 / VS2010 demo app
+Plotting Circular Relationship Graphs with Silverlight
+Window Tabs (WndTabs) Add-In for DevStudio
+WPF: If Carlsberg did MVVM Frameworks: Part 3 of n
+WPF Localization Using RESX Files
+Multi-line InputBox control - MC++
+Namespace extensions - the undocumented Windows Shell
+WTL for MFC Programmers, Part IX - GDI Classes, Common Dialogs, and Utility Classes
+Open a command prompt anywhere.
+OLE DB - First steps
+Creating alternate GUI using Vector Art
+DSLs: A Deep(ish) look
+Remoting Management Console
+Nullsoft Winamp Plug-in With Bitmapped UI, Docking and Restrictive Resizing
+Introduction to D3DImage
+The Complete Idiot's Guide to Writing Shell Extensions - Part VI
+Related Research
+How to Apply Changes to Your DB2 Database with Minimal Risk
+Toad Oracle: Discover the Top 10 Most Useful Toad Features
+Data Modeling for Effective Data Warehousing and Business Intelligence
+Toad Oracle: Tips to Simplify Database Administration and Development
+Permalink | Advertise |
+Privacy |
+Mobile
+Web02 |
+2.8.140709.1 |
+Last Updated 10 Nov 2009	Article Copyright 2007 by Predrag TomasevicEverything else
+Copyright © CodeProject, 1999-2014 Terms of Service
+Layout: fixed
+|
+fluid
+

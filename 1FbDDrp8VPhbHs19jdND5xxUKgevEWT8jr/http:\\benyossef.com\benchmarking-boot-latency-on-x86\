@@ -1,0 +1,243 @@
+http://benyossef.com/benchmarking-boot-latency-on-x86/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 13:22:01 GMT
+Server: Apache
+X-Pingback: http://benyossef.com/xmlrpc.php
+Link: <http://benyossef.com/?p=14>; rel=shortlink
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 7666
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Gilad Ben-Yossef   &raquo; Benchmarking boot latency on x86 </title>
+
+<link rel="stylesheet" href="http://benyossef.com/wp-content/themes/esther/style.css" type="text/css" media="screen" />
+<!--[if IE]>
+<style type='text/css'>
+<!--
+#headerimg{position: absolute;}
+--></style>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef RSS Feed" href="http://benyossef.com/feed/" />
+<link rel="alternate" type="application/atom+xml" title="Gilad Ben-Yossef Atom Feed" href="http://benyossef.com/feed/atom/" />
+<link rel="pingback" href="http://benyossef.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Gilad Ben-Yossef &raquo; Benchmarking boot latency on x86 Comments Feed" href="http://benyossef.com/benchmarking-boot-latency-on-x86/feed/" />
+<link rel='stylesheet' id='social-widget-css'  href='http://benyossef.com/wp-content/plugins/social-media-widget/social_widget.css?ver=3.9' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://benyossef.com/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://benyossef.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://benyossef.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Using a shared library constructor' href='http://benyossef.com/using-a-shared-library-constructor/' />
+<meta name="generator" content="WordPress 3.9" />
+<link rel='canonical' href='http://benyossef.com/benchmarking-boot-latency-on-x86/' />
+<link rel='shortlink' href='http://benyossef.com/?p=14' />
+<style type="text/css">
+#header { background: url(http://benyossef.com/wp-content/uploads/2011/03/cropped-1299389848395.jpg) no-repeat right; background-position: 460px 2px;}
+#header { margin: 0 !important; margin:0 0 0 0;padding: 0 0 0 0; height: 299px; width: 899px; }
+</style>
+</head>
+<body>
+<div id="page">
+
+
+<div id="header">
+	<div id="frames"><img alt="photo frame" src="http://benyossef.com/wp-content/themes/esther/images/frame.gif" width="518px" height="299px" border="0" /></div>
+	<div id="headerimg">
+		<h1><a href="http://benyossef.com/">Gilad Ben-Yossef</a></h1>
+		<div class="description">Since 1998</div>
+	</div>
+</div>
+<div id="frame"></div>
+<hr />
+
+	<div id="content" class="narrowcolumn">
+
+				<div class="post" id="post-14">
+		<h2>Benchmarking boot latency on x86</h2>
+			<div class="entry">
+				<p><em>This post was originally posted on <a href="http://www.linuxfordevices.com/c/a/Linux-For-Devices-Articles/Benchmarking-boot-latency-on-x86/"> LinuxDevices.com</a></em></p>
+<p>When it come to our gadgets, we are all hungry for immediate satisfaction, and it is the challenge of embedded developers to meet those needs. There are many tricks one can employ to to achieve boot-time nirvana, but as Knuth taught us, premature optimization is the root of all evil. Therefore, the first step is to measure the boot latency and find out what parts of the boot sequence contribute to it. Otherwise, one can end up wasting time optimizing the wrong code.</p>
+<p>Generally speaking, on a 32- or 64-bit x86 platform, the boot process of a Linux system is comprised of the following phases and milestones:<br />
+Power up &#8212; when the power is set to on</p>
+<p><strong>BIOS</strong> &#8212; including POST (Power On Self Test), device initialization, running of option ROMs, and loading the bootloader from the MBR (Master Boot Record)</p>
+<p><strong>Bootloader</strong> &#8212; loading an operating system (OS) kernel and ancillary data (such as Linux initrd or initramfs) into RAM</p>
+<p><strong>Kernel initialization</strong> &#8212; including CPU, peripherals, and kernel data structures, as well as bring-up of the non-boot cores in the case of multi-core machines</p>
+<p>First user application, first line of code &#8212; when the first line of user application source code is executed<br />
+Unfortunately, measuring the contribution of each of these phases to the overall boot latency is not an easy task. At each phase, different kind of code is executing, including 16 bit-BIOS code, which is part of the machine firmware; 16- or 32-bit bootloader code; 32-bit kernel code; and, user applications. Each is executing in a completely different software environment, and it is hard to find a common ground to compare the time each phase takes.</p>
+<p>Luckily, the x86 architecture provides a useful tool: the TSC (Time Stamp Clock) register. Introduced in the original Intel Pentium, the TSC register counts the number of clock ticks from the last processor reset. Reading the current value of the TSC register is done using the RDTSC instruction.</p>
+<p>The TSC register provides an accurate hi-res timer, assuming that there are no processor frequency changes (for example via SpeedStep technology), and that one always samples the register of the same core in a multi-core environment. Fortunately, both of these steps are easy to guarantee during the boot phase.</p>
+<p><strong>The easy part</strong></p>
+<p>As of Linux kernel version 2.6.11, the kernel supports a build-time configuration option called CONFIG_PRINTK_TIMES. This adds a time stamp based on the TSC value to each kernel log message, including during the boot process. Turning on this option is the first step towards a boot latency benchmark, as it provides a breakdown of the latency of the various points within the kernel initialization phase. In addition, turning off CPU frequency scaling OS support is required during configuration of the kernel. Otherwise, the TSC register can be rendered useless.</p>
+<p>The PRINTK_TIMES feature can be used to get an understanding of how various kernel subsystems contribute to overall kernel initialization latency, but it only goes so far. Because the printk timestamp counts from the kernel boot and includes only kernel log messages, it does not take into account the latency induced by the BIOS, bootloader code, or the time to the first application source code line being executed. In order to measure these elements, one must add code that queries and prints the TSC value during bootloader execution, as well as during execution of the first user space program. </p>
+<p><strong>Instrumenting a user application</strong></p>
+<p>Code to query and print the TSC is rather simple. Here is an example taken from Wikipedia&#8217;s article on RDTSC:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;">&nbsp;
+<span style="color: #339933;">#include &lt;stdint.h&gt;</span>
+&nbsp;
+   <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">uint64_t</span> rdtsc<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+       <span style="color: #993333;">uint32_t</span> lo<span style="color: #339933;">,</span> hi<span style="color: #339933;">;</span>
+       <span style="color: #808080; font-style: italic;">/*
+    * cpuid will serialize the following rdtsc with respect to all other
+    * instructions the processor may be handling.
+        */</span>
+       __asm__ __volatile__ <span style="color: #009900;">&#40;</span>
+         <span style="color: #ff0000;">&quot;xorl %%eax, %%eax<span style="color: #000099; font-weight: bold;">\n</span>&quot;</span>
+         <span style="color: #ff0000;">&quot;cpuid<span style="color: #000099; font-weight: bold;">\n</span>&quot;</span>
+         <span style="color: #ff0000;">&quot;rdtsc<span style="color: #000099; font-weight: bold;">\n</span>&quot;</span>
+         <span style="color: #339933;">:</span> <span style="color: #ff0000;">&quot;=a&quot;</span> <span style="color: #009900;">&#40;</span>lo<span style="color: #009900;">&#41;</span><span style="color: #339933;">,</span> <span style="color: #ff0000;">&quot;=d&quot;</span> <span style="color: #009900;">&#40;</span>hi<span style="color: #009900;">&#41;</span>
+         <span style="color: #339933;">:</span>
+         <span style="color: #339933;">:</span> <span style="color: #ff0000;">&quot;%ebx&quot;</span><span style="color: #339933;">,</span> <span style="color: #ff0000;">&quot;%ecx&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+     <span style="color: #b1b100;">return</span> <span style="color: #009900;">&#40;</span><span style="color: #993333;">uint64_t</span><span style="color: #009900;">&#41;</span>hi <span style="color: #339933;">&lt;&lt;</span> <span style="color: #0000dd;">32</span> <span style="color: #339933;">|</span> lo<span style="color: #339933;">;</span>
+   <span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>A call to the rdtsc() function above can be used to measure the boot-time latency contribution of the various phases other than kernel initialization. The function can be called by the bootloader, or by a user program that will run at boot. Here is the user program, which is the easier of the two:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;">&nbsp;
+<span style="color: #339933;">#include &lt;stdint.h&gt;</span>
+<span style="color: #339933;">#include &lt;stdio.h&gt;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">uint64_t</span> rdtsc<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+   ...
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+<span style="color: #993333;">int</span> main<span style="color: #009900;">&#40;</span><span style="color: #993333;">void</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+&nbsp;
+        <span style="color: #000066;">printf</span><span style="color: #009900;">&#40;</span><span style="color: #ff0000;">&quot;TSC: %lld<span style="color: #000099; font-weight: bold;">\n</span>&quot;</span><span style="color: #339933;">,</span>  rdtsc<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+t1<span style="color: #339933;">:</span>
+        <span style="color: #b1b100;">goto</span> t1<span style="color: #339933;">;</span>
+&nbsp;
+        <span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>The rdtsc function is the same function provided earlier in this article. Note that an infinite loop has been added at the end of the program. This hack is meant to keep the program from exiting when it has finished, thus making it easier to run it as an &#8220;init&#8221; program without having the kernel panic when the program exits.</p>
+<p>Yet another issue to bear in mind is that on a multi-core board, it is prudent to pin the program to run on the boot CPU using the sched_setaffinity() system call (see this article for the details), as the value of the TSC register of different cores is not consistent, a fact not handled in the code example above.&#8221;</p>
+<p>To build the program, the following one-liner can be used:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="shell" style="font-family:monospace;">gcc timestamp.c -static -o timestamp</pre></td></tr></table></div>
+
+<p>After building the program, it is necessary to copy the timestamp program binary onto the root file system of the target board, and instruct the kernel to run the program during boot using the kernel command line parameter &#8220;init=/sbin/timestamp&#8221;. If using syslinux, this can be done by specifying append=&#8221;init=/sbin/timestamp&#8221; in your boot loader configuration file. Doing so instructs the kernel to run the specified program, rather then the default of &#8220;/sbin/init&#8221;, at boot. </p>
+<p>Alternatively, one can use the initramfs mechanism of the Linux kernel to include the small user-space program as part of the kernel binary image itself. Either way, it is fairly easy to write a user space program to print the value of the TSC register, and have it run as the first program during boot. </p>
+<p><strong>Instrumenting the bootloader</strong></p>
+<p>A similar effect can be produced with the boot loader, but it is not nearly as easy. There are quite a few bootloaders that can be used to load Linux on the x86 architecture (e.g. GRUB, LILO, syslinux), and x86 bootloader code can be notoriously complex. It is usually written in 16-bit assembly, and part of it runs under less than ideal conditions.</p>
+<p>Luckily, the syslinux bootloader offers an easy way to integrate 32-bit C code that can be run as part of the boot process. It does this via its support for the Comboot API, which enables one to write a small 32-bit C program and integrate it as part of the bootloader phase.</p>
+<p>Below is the timestamp program again, this time presented as a Comboot 32 module. It is derived from the hello.c example program supplied as part of the syslinux source code:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="c" style="font-family:monospace;">&nbsp;
+<span style="color: #339933;">#include &lt;string.h&gt;</span>
+<span style="color: #339933;">#include &lt;stdio.h&gt;</span>
+<span style="color: #339933;">#include &lt;console.h&gt;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">uint64_t</span> rdtsc<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+...
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+<span style="color: #993333;">int</span> main<span style="color: #009900;">&#40;</span><span style="color: #993333;">int</span> argc<span style="color: #339933;">,</span> <span style="color: #993333;">char</span> <span style="color: #339933;">*</span>argv<span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span><span style="color: #009900;">&#41;</span>
+<span style="color: #009900;">&#123;</span>
+   <span style="color: #993333;">uint32_t</span> lo<span style="color: #339933;">,</span> hi<span style="color: #339933;">;</span>
+&nbsp;
+  openconsole<span style="color: #009900;">&#40;</span><span style="color: #339933;">&amp;</span>dev_stdcon_r<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>dev_stdcon_w<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+  <span style="color: #000066;">printf</span><span style="color: #009900;">&#40;</span><span style="color: #ff0000;">&quot;TSC: %lld<span style="color: #000099; font-weight: bold;">\n</span>&quot;</span><span style="color: #339933;">,</span> rdtsc<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+  syslinux_run_command<span style="color: #009900;">&#40;</span><span style="color: #ff0000;">&quot;linux&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+  <span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>The rdstc function is the same one presented earlier in this article. Also, the little comboot32 program is concluded by invoking the syslinux_run_command() comboot 32 API call, which causes the Linux kernel image with the name of &#8220;linux&#8221; to be executed when the timestamp program ends.</p>
+<p>To build the comboot32 program, it is a good idea to look inside the com32/samples/ directory that is part of the syslinux source code and follow the Makefile example provided there.</p>
+<p>Having completed the Comboot32 program, named timestamp.c32, the next step is to instruct the syslinux bootloader to run the program at boot-time. The program will then print the value of the TSC register and proceed to load the Linux kernel.</p>
+<p>The syslinux bootloader reads a configuration file, called syslinux.cfg, located in same partition into which it is installed, and then executes the command in the file. In this case, the file content will be:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="d" style="font-family:monospace;">&nbsp;
+<span style="color: #000000; font-weight: bold;">default</span> timestamp.<span style="color: #006600;">c32</span>
+&nbsp;
+prompt <span style="color: #0000dd;">0</span></pre></td></tr></table></div>
+
+<p><strong>Putting it all together<br />
+</strong></p>
+<p>This is a good time to recap the different stages of the boot process and determine a benchmark plan for each:<br />
+When the power is turned on, the board firmware runs the BIOS, which initializes the hardware and loads and runs the syslinux bootloader.</p>
+<p>Syslinux reads the syslinux.cfg file, and according to the commands in it, executes the timestamp.c32 Comboot32 program. Comboot32 prints the current value of the TSC register to the VGA screen and proceeds to instruct syslinux to load the Linux kernel.</p>
+<p>As the kernel boots, every printk log message sent by it to the kernel log buffer is timestamped, relative to the kernel start time, which is based on the TSC register.</p>
+<p>Finally, after the kernel initialization has completed, the kernel runs the first user space program. In this case, this is the user program version of the timestamp program, which once again prints the current value of the TSC register and halts.<br />
+At the end of this process, the following values should be present:<br />
+The value of the TSC register when the bootloader runs &#8212; By dividing this value by the number of cycles per second (Hertz) of the machine, one can convert this cycle count to the the number of seconds since the CPU reset up to this point.</p>
+<p>The time it takes the kernel to finish initialization &#8212; Reflecting the PRINTK_TIMES timestamps in the log messages, this value is already represented in seconds, so no conversion is needed.</p>
+<p>The final TSC register value when the first user code program runs &#8212; Here, too, one should divide the raw cycle count as reported by the TSC register by the number of cycles per second the machine is running at to obtain the number of seconds.<br />
+From these measurements one can easily construct a somewhat crude, but useful, table of the contribution each of the stages has to the overall machine boot latency. These stages are as follows:<br />
+The latency of the BIOS phase is measured by reading the TSC register at the start of the bootloader code, as recorded by the timestamp.c32 program.</p>
+<p>The latency of the bootloader actions, including reading the kernel image to RAM and uncompressing the image, can be computed. This is done by subtracting the number of seconds it took the kernel to initialize, as reported by the PRINTK_TIMES feature, from the number of seconds reported by the user-space version of the timestamp program, and the number of seconds recorded at the bootloader launch. In addition, the various timestamps in the log messages throughout the kernel initialization process provide further insight as to the contribution of the various kernel subsystems and device drivers to the overall latency.</p>
+<p>Finally, the full boot latency &#8212; which is the overall time needed to get the first user program&#8217;s first line of code running &#8212; is the number of seconds computed from the value of the TSC reported by the user-program version of the timestamp program.<br />
+As an example, here are the values from one type of Intel Core-Duo-based board, running at 1.5Ghz:<br />
+The value reported from the timestamp.c32 program was 90933051222 cycles. Dividing the number of cycles by the number of cycles per second (1,500,000,000 on this board) gives a BIOS latency of 60.6 seconds. (The BIOS on this particular run wasted a long time scanning the IDE bus.)</p>
+<p>The timestamp provided by the PRINTK_TIMES feature in the kernel log messages indicated it took the kernel 0.44 seconds to initialize.</p>
+<p>The user program timestamp reported the first line of code ran at 93907247022 cycles, or 62.6 seconds after CPU reset, which is 2.0 seconds since the bootloader started.<br />
+If one subtracts the 0.44 seconds it took the kernel to initialize from the over two seconds of latency between bootloader and first user-program line of code, one can conclude that it took the bootloader roughly 1.66 seconds to read the kernel binary into memory from CompactFlash, including decompression time. So, it is clear that a faster storage medium can shave up to 1.66 seconds from the boot process, simply because it will take less time for the bootloader to load the kernel image into memory.</p>
+<p>Note that these numbers are not 100 percent accurate. They neglect to attribute some kernel initialization time before the first printk to the kernel initialization phase. In addition, the numbers do not reflect the latency caused by the bootloader code initialization, instead wrongly attributing them to the BIOS phase. However, the numbers are accurate enough to be used as the basis of evaluating the effect of various changes on overall boot-time, as well as to provide a clue as to where optimization efforts need to be focused.</p>
+<p>For further information about reducing and measuring boot latency, the embedded Linux wiki entry on BootTime is highly recommended.</p>
+
+				
+			</div>
+		</div>
+				</div>
+
+	<div id="sidebar">
+		<ul>
+			<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Menu</h2>		<ul>
+			<li class="page_item page-item-14 current_page_item"><a href="http://benyossef.com/benchmarking-boot-latency-on-x86/">Benchmarking boot latency on x86</a></li>
+<li class="page_item page-item-10"><a href="http://benyossef.com/building-an-embedded-linux-system-emulator/">Building an embedded Linux system emulator</a></li>
+<li class="page_item page-item-6"><a href="http://benyossef.com/helping-the-compiler-help-you/">Helping The Compiler Help You</a></li>
+<li class="page_item page-item-8"><a href="http://benyossef.com/sys_clone-beyond-processes-and-threads/">sys_clone: Beyond Processes and Threads</a></li>
+<li class="page_item page-item-11"><a href="http://benyossef.com/using-a-shared-library-constructor/">Using a shared library constructor</a></li>
+<li class="page_item page-item-2"><a href="http://benyossef.com/">Who is this?</a></li>
+		</ul>
+		</li><li id="social-widget-4" class="widget Social_Widget"><h2 class="widgettitle">Social me</h2><div class="socialmedia-buttons smw_left"><a href="http://www.facebook.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/facebook.png" 
+				alt="Links to various social sites Facebook" 
+				title="Links to various social sites Facebook" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://plus.google.com/116984042169887848341" rel="publisher" target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/googleplus.png" 
+				alt="Links to various social sites Google+" 
+				title="Links to various social sites Google+" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.twitter.com/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/twitter.png" 
+				alt="Links to various social sites Twitter" 
+				title="Links to various social sites Twitter" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://www.linkedin.com/in/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/linkedin.png" 
+				alt="Links to various social sites LinkedIn" 
+				title="Links to various social sites LinkedIn" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="skype:gilad.benyossef?add"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/skype.png" 
+				alt="Links to various social sites Skype" 
+				title="Links to various social sites Skype" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="https://github.com/gby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/github.png" 
+				alt="Links to various social sites Github" 
+				title="Links to various social sites Github" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="http://foursquare.com/user/giladby"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/foursquare.png" 
+				alt="Links to various social sites Foursquare" 
+				title="Links to various social sites Foursquare" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a><a href="mailto:gilad@benyossef.com"  target="_blank"><img width="32" height="32" src="http://benyossef.com/wp-content/plugins/social-media-widget/images/default/32/email.png" 
+				alt="Links to various social sites E-mail" 
+				title="Links to various social sites E-mail" style="opacity: 0.8; -moz-opacity: 0.8;" class="fade" /></a></div></li><li id="text-3" class="widget widget_text"><h2 class="widgettitle">My bitcoin address</h2>			<div class="textwidget">1FbDDrp8VPhbHs19jdND5xxUKgevEWT8jr</div>
+		</li>		</ul>
+	</div>
+
+
+
+<hr />
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		2014 &copy; Gilad Ben-Yossef is proudly powered by
+		<a href="http://wordpress.org/">WordPress</a>
+		<br /><a class="rsslink" href="http://benyossef.com/feed/">Entries (RSS)</a>
+		 <a class="rsslink" href="http://benyossef.com/comments/feed/">Comments (RSS)</a> | Esther Theme By <a title="Patrick" href="http://patrick.bloggles.info/">Patrick</a>
+		<!-- 12 queries. 2.098 seconds. -->
+	</p>
+</div>
+</div>
+
+<!-- This is designed for Esther Goh, wish her happy birthday and have a happiness life! -->
+
+	</body>
+</html>
+

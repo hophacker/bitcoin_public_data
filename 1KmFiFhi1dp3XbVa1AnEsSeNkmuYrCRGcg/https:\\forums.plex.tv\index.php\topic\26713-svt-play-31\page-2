@@ -1,0 +1,263 @@
+https://forums.plex.tv/index.php/topic/26713-svt-play-31/page-2
+SVT Play 3.1 - Page 2 - Svenska - Plex Forums
+Jump to content
+Sign In Create Account
+Search
+Advanced
+Search section:
+This topic
+Forums
+Members
+Help Files
+View New Content
+Plex Homepage
+Members
+Forums
+More Plex Forums
+→
+The World Is Flat
+→
+Svenska
+Javascript Disabled Detected
+You currently have javascript disabled. Several functions may not work. Please re-enable javascript to access full functionality.
+SVT Play 3.1
+Started by Coil
+, May 15 2011 03:32 PM
+Prev
+Page 2 of 2 1
+2
+Please log in to reply
+37 replies to this topic
+#21
+anasazi
+anasazi
+Member
+Members
+82 posts
+Posted 02 July 2011 - 06:33 AM
+Vilken version av SVT Play använder du? Har du testat ladda hem den senaste versionen från Github?Coil: Tror vi skulle vinna lite tid och huvudvärk om vi skrev ner pluginversionen i loggen.Uppdatering:Den SVT-Play version jag använder är hämtad från GitHub som du nämner och enligt versionsfilen i paketet är det version 958c2ee (Tue May 24 16:44:44 UTC 2011).Kan även nämna versionen på Adobe Flash som är 10.3.181.22.
+Back to top
+#22
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 02 July 2011 - 08:35 AM
+Vilken version av SVT Play använder du? Har du testat ladda hem den senaste versionen från Github?Coil: Tror vi skulle vinna lite tid och huvudvärk om vi skrev ner pluginversionen i loggen.En god ide. Skall fixa in det.Vad det gäller buffringen så måste jag säga att jag tycker mig ha upplevt samma sak faktiskt. Det känns som om det buffrar oftare än när jag kollar i browsern via en laptop jämfört med min stationära som är kopplad till tvn. Jag är dock lite osäker på vad det skulle kunna vara men jag skall ta mig en funderare och bolla nån ide med lite mer insatta personer.Tack för feedbacken!
+I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#23
+Atrus
+Atrus
+Plex Star
+Plex Ninja
+8047 posts
+Location: Sweden
+Posted 04 July 2011 - 08:23 AM
+Jag körde några timamr SVT Play igår och jag måste tyvärr hålla med. Det buffrar oftare via Plex än via svtplay.se, Doh!
+ Mac mini 2,3 GHz Quad-Core Intel Core i7 (With Fusion drive)  Panasonic VT50 (55 inch)  Pioneer VSX-2021 Receiver  Norco 24-bay NAS New to Plex/Nine? Watch my screencast video (slightly out-dated nowadays, but still informative for new users)Want to know how to handle subtitles? Watch my subtitle screencast video (out-dated, but still informative), and this One Minute Subtitle Addendum screencastAlways attach log files if you are reporting an issue: Log file info & locationGet Plex guides here: Howto name your files NAS guide Troubleshooting Plex Support Page
+Personal websites that I work with daytime: Vinnarum Casino
+Back to top
+#24
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 06 July 2011 - 07:41 PM
+Jag vill ge en liten uppdatering på buffringsproblemet. Det har visat sig att SVTs spelare har en buffer på 20 sekunder. Plexs spelare kör på 3 sekunder.
+Jag tror att det är denna skillnad i bufferstorlek som vi märker av.
+Tyvärr finns det inget förberett för att ändra buffertstorleken på Plex spelare. Dock så har jag pratat de ansvariga och de håller på att fixa in det så att det skall kunnas användas senare. Exakt när detta sker vågar jag inte lova idag.
+Så det finns ljus i tunneln I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#25
+morberg
+morberg
+Member
+Members
+71 posts
+Posted 28 September 2011 - 04:48 PM
+Går det att stänga av cachning av bilder i SVT Play? Jag kör Woody som skin och det roterar snygg fanart i bakgrunden, men rätt vad det är dyker det upp en skärmdump från Västnytt eller något annat från SVT play som stökar till det lite.
+Back to top
+#26
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 28 September 2011 - 07:45 PM
+Går det att stänga av cachning av bilder i SVT Play? Jag kör Woody som skin och det roterar snygg fanart i bakgrunden, men rätt vad det är dyker det upp en skärmdump från Västnytt eller något annat från SVT play som stökar till det lite.Det finns inget enkelt sätt. Men om du är beredd att hacka lite i ett par filer så tror jag det kan gå att ordna.Börja med att navigera dig till denna katalogen:~/Library/Application Support/Plex Media Server/Plug-ins/SVT-Play.bundle/ContentsDär finns en fil som heter Info.plistLägg till dessa raderna i slutet av de andra nycklarna:<key>PlexPluginDevMode</key><string>1</string>Om du inte lägger till denna så kommer Plex att radera dina kommande ändringar.Nästa steg är att editera filen:Code/show.py rad 212Byt ut CACHE_TIME_SHORT till siffran 0.Göra samma sak på rad 203.Öppna sen rad episode.py på rad 131.Byt ut CACHE_TIME_EPISODE till siffran 0Jag _tror_ detta skall lösa det. Du kan behöva tömma cachen på något sätt också. Lite oklar på exakt hur man gör det tyvärr. Men förr eller senare så borde bilderna försvinna ur cachen ändå :Lycka till!
+I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#27
+morberg
+morberg
+Member
+Members
+71 posts
+Posted 28 September 2011 - 08:12 PM
+Det finns inget enkelt sätt. Men om du är beredd att hacka lite i ett par filer så tror jag det kan gå att ordna.Tack för instruktionerna, ska testa direkt.Du kan behöva tömma cachen på något sätt också. Lite oklar på exakt hur man gör det tyvärr. Men förr eller senare så borde bilderna försvinna ur cachen ändåSåg en beskrivning i den här tråden om att de ska finnas i Users > Your User Name > Library > Application Support > Plex > userdata > Thumbnails > Plex Media Server > FanartUppdatering: tyvärr hjälpte det inte. Efter att ha gjort ovanstående ändringar, rensat katalogen på filer och startat om både PMS och Plex dyker det fortfarande upp en massa Fanart från SVT Play i biblioteket ovan.Här är ett exempel på hur det ser ut.
+Edited by morberg, 28 September 2011 - 08:51 PM.
+Back to top
+#28
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 29 September 2011 - 08:10 PM
+Tack för instruktionerna, ska testa direkt.Såg en beskrivning i den här tråden om att de ska finnas i Users > Your User Name > Library > Application Support > Plex > userdata > Thumbnails > Plex Media Server > FanartUppdatering: tyvärr hjälpte det inte. Efter att ha gjort ovanstående ändringar, rensat katalogen på filer och startat om både PMS och Plex dyker det fortfarande upp en massa Fanart från SVT Play i biblioteket ovan.Här är ett exempel på hur det ser ut.Hm.Den här katalogen kan eventuellt innehålla metadatan:/Library/Application Support/Plex Media Server/Plug-in Support/Caches/com.plexapp.plugins.svtplay Ta bort den och testa. Efter att du gjort kodändringarna i min förra post.Funkar inte det så kan du testa att avinstallera, återinstallera och sen lägga på kodändringarna jag nämnde i min förra post. Men gör ändringarna INNAN du startar svtplay efter ominstallationen.Kan tyvärr inte hjälpa bättre då jag har dålig koll på var cachen egentligen hamnar I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#29
+morberg
+morberg
+Member
+Members
+71 posts
+Posted 30 September 2011 - 07:01 AM
+Hm.Den här katalogen kan eventuellt innehålla metadatan:/Library/Application Support/Plex Media Server/Plug-in Support/Caches/com.plexapp.plugins.svtplay Ta bort den och testa. Efter att du gjort kodändringarna i min förra post.Funkar inte det så kan du testa att avinstallera, återinstallera och sen lägga på kodändringarna jag nämnde i min förra post. Men gör ändringarna INNAN du startar svtplay efter ominstallationen.Kan tyvärr inte hjälpa bättre då jag har dålig koll på var cachen egentligen hamnar Metadatan hamnar definitivt i ~/Library/Application Support/Plex/userdata/Thumbnails/Plex Media Server/Fanart. Om jag rensar den katalogen syns inga bakgrundsbilder förrän jag antingen går in i någon av mina "vanliga" källor (som då börjar populera denna katalog med snygg fanart) eller om jag startar SVT Play (som skickar in en massa skärmdumpar i samma katalog).Jag har gjort en temporär fix genom att rensa katalogen helt, gå in i mina vanliga källor för att få snygga bakgrunder och sedan skrivskydda katalogen så att det inte kommer några nya bilder från SVT Play. Tyvärr betyder detta också att nya filmer/TV-program inte kommer att få några bakgrunder, så det bästa hade varit att få stopp på SVT Play-pluginen.F.ö. provade jag också att byta ut alla CACHE_TIME_EPISODE till 0 i filen episode.py, men det hjälpte inte heller. Ev. kan Plex ha varit igång medan jag gjorde ändringarna, ska dubbelkolla vid tillfälle att de har "tagit". Dock startade jag om både PMS och Plex efter genomförda ändringar.
+Back to top
+#30
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 30 September 2011 - 01:30 PM
+Metadatan hamnar definitivt i ~/Library/Application Support/Plex/userdata/Thumbnails/Plex Media Server/Fanart. Om jag rensar den katalogen syns inga bakgrundsbilder förrän jag antingen går in i någon av mina "vanliga" källor (som då börjar populera denna katalog med snygg fanart) eller om jag startar SVT Play (som skickar in en massa skärmdumpar i samma katalog).Jag har gjort en temporär fix genom att rensa katalogen helt, gå in i mina vanliga källor för att få snygga bakgrunder och sedan skrivskydda katalogen så att det inte kommer några nya bilder från SVT Play. Tyvärr betyder detta också att nya filmer/TV-program inte kommer att få några bakgrunder, så det bästa hade varit att få stopp på SVT Play-pluginen.F.ö. provade jag också att byta ut alla CACHE_TIME_EPISODE till 0 i filen episode.py, men det hjälpte inte heller. Ev. kan Plex ha varit igång medan jag gjorde ändringarna, ska dubbelkolla vid tillfälle att de har "tagit". Dock startade jag om både PMS och Plex efter genomförda ändringar.Aj då.Jag tror iofs jag fått lite bättre grepp om vad som händer. Om du tittar i filen episode.pyLägg in en rad mellan rad 19 och 20 som är:self.thumbNailUrl = NoneAlternativt, om du är lite mer vågad, så kan du gå in och ändra argumentet "art" manuellt till None på de tre följande deklarationerna av variablen item. På det sättet så behåller du thumbNailsen men tappar bara fan arten.dvs, det ser ut nåt som så här: thumb=self.thumbNailUrl, art=NoneGlöm det jag skrivit tidigare om cache time I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#31
+morberg
+morberg
+Member
+Members
+71 posts
+Posted 30 September 2011 - 04:44 PM
+Alternativt, om du är lite mer vågad, så kan du gå in och ändra argumentet "art" manuellt till None på de tre följande deklarationerna av variablen item. På det sättet så behåller du thumbNailsen men tappar bara fan arten.dvs, det ser ut nåt som så här: thumb=self.thumbNailUrl, art=NoneStort tack, det verkade göra susen!Jag installerade om SVT Play för att bli av med gamla ändringar, fixade till Info.plist enligt tidigare instruktioner och ändrade till "art=0" på tre ställen. (Såg nu att du hade skrivit "art=None"; jag är inte van vid Python så det blev "art=0" av bara farten men det verkar funka.)Gillar f.ö. Pluginen skarpt, snyggt jobbat!
+Back to top
+#32
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 30 September 2011 - 09:33 PM
+Stort tack, det verkade göra susen!Jag installerade om SVT Play för att bli av med gamla ändringar, fixade till Info.plist enligt tidigare instruktioner och ändrade till "art=0" på tre ställen. (Såg nu att du hade skrivit "art=None"; jag är inte van vid Python så det blev "art=0" av bara farten men det verkar funka.)Gillar f.ö. Pluginen skarpt, snyggt jobbat!Ah skönt att det löste sig.Tack, och kul att du gillar pluginet! I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#33
+Per J
+Per J
+Member
+Members
+52 posts
+Posted 05 October 2011 - 09:31 AM
+Hej!
+Jag har bekymmer med SVT Play!
+Ibland kan man titta 30-35 minuter utan problem, men rätt som det är så stannar uppspelningen, buffrar och fortsätter ett tag, men har det väl börjat så håller det ofta på att hacka ett tag för att sedan fortsätta 30-35 minuter utan problem igen.
+Har installerat Lion, senaste Flash och senaste Plex. Jag har satt kvlitet till hög och har testat med både högre och lägre men tycker inte att det spelar någon roll.
+Hur ska jag göra för att felsöka?
+Kollar man på SVT Play på en PC så är det i stort sett aldrig några problem.
+/Per
+Back to top
+#34
+Coil
+Coil
+Dedicated Member
+Members
+219 posts
+Posted 05 October 2011 - 05:09 PM
+Hej!Jag har bekymmer med SVT Play!Ibland kan man titta 30-35 minuter utan problem, men rätt som det är så stannar uppspelningen, buffrar och fortsätter ett tag, men har det väl börjat så håller det ofta på att hacka ett tag för att sedan fortsätta 30-35 minuter utan problem igen.Har installerat Lion, senaste Flash och senaste Plex. Jag har satt kvlitet till hög och har testat med både högre och lägre men tycker inte att det spelar någon roll.Hur ska jag göra för att felsöka?Kollar man på SVT Play på en PC så är det i stort sett aldrig några problem./PerHej.Jag jag tror det finns ett bufferproblem med Plex och SVT tyvärr. Det är konstigt dock att du säger att kvaliteten inte spelar någon roll.Plex buffrar 3 sekunder alltid i flash videos. SVTPlays spelare buffrar minst 20 sekunder.Jag har lyft detta för Plexutvecklarna, men de verkar ha extremt mycket att göra för tillfället så jag får inte så mycket gehör för att ens kunna testa med högre buffertstorlek.Jag skall dock ta och testa så som du säger med lägre kvalitet igen och se om det ofta stannar upp även då. I så fall kan jag vara fel ute med min tes och det kanske är nåt annat.
+I maintain the SVTPlay and Podnapisi plugins for Plex. If you wish to show your appreciation for my work I humbly accept BitCoin donations.SVTPlay: 1KmFiFhi1dp3XbVa1AnEsSeNkmuYrCRGcgPodnapisi: 1JkoF6N1qy3Rn14PajFUS77xCeHdBgZBvMFor more information about BitCoin: bitcoin.org | bitcoin wiki
+Github:
+https://github.com/Coi-l/SVT-Play.bundle
+https://github.com/Coi-l/PodnapisiSubtitles.bundle
+Back to top
+#35
+ottovonkopp
+ottovonkopp
+Member
+Members
+19 posts
+Posted 14 December 2011 - 08:36 AM
+Hej!
+Jag kör Plex Media Server på Fedora 16. Enligt Wikin så funkar inte Flashplugins om man kör servern på Linux.
+Jag har installerat Plex Media Center på en Windows 7 burk och kopplat den mot min Linuxserver. När jag ska spela upp något från SVT Play via pluginen så får jag Can't open file (har jag för mig att det står).
+Har också installerat Plexappen på min iPod Touch och där funkar Pluginen.
+Stämmer inte Wikin och det är något strul med PMC på Windows eller gör Plexappen för iPhone något som inte PMC för Windows gör?
+Mvh
+/Bernt
+Back to top
+#36
+StefanG
+StefanG
+Member
+Members
+15 posts
+Posted 03 February 2012 - 09:58 PM
+Någon mer än jag som inte får ut något ljud från SVT Play pluggen när man streamar till en iOS enhet? Samma fenomen på båden ipaden och iphonen. Kör senaste version av PMS på OS X Lion 10.7.3 och har senaste flash + silverlight installerat på datorn. Har testat att ta bort / lägga till SVT Play pluginen men det hjälper inte.
+Streaming till ATV2 funkar inte alls. Varken bild eller ljud.
+Back to top
+#37
+StefanG
+StefanG
+Member
+Members
+15 posts
+Posted 05 February 2012 - 01:30 PM
+Okej,
+Nu kör jag Beta3 av Plex för ATV2 samt har installerat senaste soundflower som släpptes häromdagen. Verkar funka nu. Får bild på ATV´n när jag kör SVT play och ljudet verkar även det funka. Känns dock inte som om frameraten är optimal. Uppskattar det till typ 15 fps. Pluggen funkar ok lokalt på minin där PMS ligger. Streamar till iphone och ipaden utan att få låg framerate. Undrar om PMS fläskar på för hög bitrate för ATVn?
+/S
+Back to top
+#38
+eg0n
+eg0n
+Member
+Members
+26 posts
+Posted 05 February 2012 - 05:24 PM
+hur installerade du play kanalen för din PMS? med min atv2 så va de bara att gå in i plex online men nu har jag en mini istället och hittar inte en menyn :s
+Back to top
+Prev
+Page 2 of 2 1
+2
+Back to Svenska
+Reply to quoted posts Clear Plex Forums
+→ The World Is Flat
+→ Svenska
+Privacy Policy
+Change Theme
+IP.Board
+IP.Board Mobile
+Plex
+Help
+Community Forum Software by IP.Board
+Sign In
+Need an account? Register now!
+Username or email:
+Forum Password
+I've forgotten my password
+Remember me
+This is not recommended for shared computers
+Sign in anonymously
+Don't add me to the active users list
+Privacy Policy
+

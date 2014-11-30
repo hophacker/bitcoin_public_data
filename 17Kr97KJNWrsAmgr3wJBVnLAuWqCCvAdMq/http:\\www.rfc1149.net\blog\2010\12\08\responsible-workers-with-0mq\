@@ -1,0 +1,204 @@
+http://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/
+HTTP/1.1 200 OK
+Server: nginx/1.4.7
+Date: Wed, 23 Jul 2014 01:55:52 GMT
+Content-Type: text/html
+Content-Length: 16604
+Last-Modified: Wed, 18 Jun 2014 08:12:11 GMT
+Connection: close
+ETag: "53a149db-40dc"
+X-XRDS-Location: http://www.myopenid.com/xrds?username=tardieu.myopenid.com
+Strict-Transport-Security: max-age=60000
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html lang="en" prefix="foaf: http://xmlns.com/foaf/0.1/ schema: http://schema.org/ dc: http://purl.org/dc/terms/">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="../../../../../css/stylesheet-2.css" type="text/css" />
+<link rel="shortcut icon" href="../../../../../wwwicons/pigeon-16.png" />
+<title>Responsible workers with ØMQ</title>
+<link rel="canonical" href="https://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/" />
+<!--[if lt IE 9]>
+<script type="text/javascript">
+// html5shiv MIT @rem remysharp.com/html5-enabling-script
+// iepp v1.6.2 MIT @jon_neal iecss.com/print-protector
+/*@cc_on(function(m,c){var z="abbr|article|aside|audio|canvas|details|figcaption|figure|footer|header|hgroup|mark|meter|nav|output|progress|section|summary|time|video";function n(d){for(var a=-1;++a<o;)d.createElement(i[a])}function p(d,a){for(var e=-1,b=d.length,j,q=[];++e<b;){j=d[e];if((a=j.media||a)!="screen")q.push(p(j.imports,a),j.cssText)}return q.join("")}var g=c.createElement("div");g.innerHTML="<z>i</z>";if(g.childNodes.length!==1){var i=z.split("|"),o=i.length,s=RegExp("(^|\\s)("+z+")",
+"gi"),t=RegExp("<(/*)("+z+")","gi"),u=RegExp("(^|[^\\n]*?\\s)("+z+")([^\\n]*)({[\\n\\w\\W]*?})","gi"),r=c.createDocumentFragment(),k=c.documentElement;g=k.firstChild;var h=c.createElement("body"),l=c.createElement("style"),f;n(c);n(r);g.insertBefore(l,
+g.firstChild);l.media="print";m.attachEvent("onbeforeprint",function(){var d=-1,a=p(c.styleSheets,"all"),e=[],b;for(f=f||c.body;(b=u.exec(a))!=null;)e.push((b[1]+b[2]+b[3]).replace(s,"$1.iepp_$2")+b[4]);for(l.styleSheet.cssText=e.join("\n");++d<o;){a=c.getElementsByTagName(i[d]);e=a.length;for(b=-1;++b<e;)if(a[b].className.indexOf("iepp_")<0)a[b].className+=" iepp_"+i[d]}r.appendChild(f);k.appendChild(h);h.className=f.className;h.innerHTML=f.innerHTML.replace(t,"<$1font")});m.attachEvent("onafterprint",
+function(){h.innerHTML="";k.removeChild(h);k.appendChild(f);l.styleSheet.cssText=""})}})(this,document);@*/
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = '//api.flattr.com/js/0.6/load.js?mode=auto&uid=oneeyed&button=compact&category=text&language=en_GB';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */</script>
+<link rel="openid.server" href="https://www.myopenid.com/server" />
+<link rel="openid.delegate" href="https://tardieu.myopenid.com" />
+<link rel="openid2.local_id" href="https://tardieu.myopenid.com" />
+<link rel="openid2.provider" href="https://www.myopenid.com/server" />
+<link rel="alternate" type="application/atom+xml" title="An avian carrier's blog" href="https://www.rfc1149.net/blog/feed/" />
+<link rel="author" title="Samuel Tardieu" href="../../../../../sam.html" />
+
+<meta name="description" content="A reverse-connecting 0MQ broker">
+<link rel="contents" title="Archives" href="../../../../../blog/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/" />
+<meta name="twitter:title" content="Responsible workers with ØMQ" />
+<meta name="twitter:description" content="I stumbled upon several questions on StackOverflow where people asked about safely interrupting distributed workers communicating through the ØMQ middleware. Most of the ØMQ examples" />
+<meta name="twitter:site:id" content="1185642952" />
+<meta name="twitter:creator:id" content="1185642952" />
+
+
+
+</head>
+<body>
+<div id="wholebody">
+<div id="content">
+<nav id="page-navigation">
+  <div class="floatleft">
+  <a href="../../../../../blog/2010/12/07/braindead-google-feed-fetcher/" lang="en" rel="prev" title="Previous blog post: Braindead Google feed fetcher">Braindead Google feed fetcher</a>
+</div>
+
+  <div class="floatright">
+  <a href="../../../../../blog/2010/12/09/something-nice-about-every-language-i-use/" lang="en" rel="next" title="Next blog post: Something nice about every language I use" class="langleft">Something nice about every language I use</a>
+</div>
+
+</nav>
+<article typeof="schema:BlogPosting">
+  <header>
+    
+    <div id="title"><h1 property="schema:name">Responsible workers with ØMQ</h1></div>
+    <div id="authorship">
+      <p>
+	<a href="../../../../../sam.html" rel="author">Samuel Tardieu</a>,
+	<time property="schema:datePublished">2010-12-08</time>
+      </p>
+    </div>
+  </header>
+  <div property="schema:articleBody">
+    <p>I stumbled upon <a href="http://stackoverflow.com/questions/3692854/how-should-a-zeromq-worker-safely-hang-up/">several</a> <a href="http://stackoverflow.com/questions/4328792/zeromq-xrep-endpoint-disappearing/">questions</a> on <a href="http://stackoverflow.com">StackOverflow</a> where people asked about safely interrupting distributed workers communicating through the <a href="http://zeromq.org/">ØMQ middleware</a>.</p>
+<p>Most of the ØMQ examples describing workers pools assume that jobs are pushed to the workers in a round-robin way. The first worker receives a job, the second one receives a job, and so on, then the first worker receives yet another job, the second one… Well, you get the idea. Unfortunately, not all jobs are necessarily created equal, and the workers may be running on computers with different processing capabilities and workloads.</p>
+<p>As an example of a different way to do it, I wrote a simple Python broker named that distributes tasks on demand. When a worker is ready to work, it asks for some job to perform, receives one if one is available, does the computation, and sends the answer back. This way, no task should ever be sent to a worker which is busy doing other things, possibly for a long time.</p>
+<p>The broker also checks that the answer to a job comes back within a given time-frame. If it does not, it assumes that the worker has crashed or is overwhelmed by other tasks, and sends the job again to another worker. Another parameter may be specified: the number of times to attempt to run each job. If a job description causes workers to raise an exception repeatedly, it may be a good idea to abort it and not try to run it indefinitely. If a job is aborted by the broker, an empty answer will be sent to the client so that it knows that its request could not be completed.</p>
+<p>Of course, this sample broker is far from perfect, and many things could be changed for the better:</p>
+<ul>
+<li><p>If the broker is restarted, workers will not receive tasks anymore. This can be easily fixed by having the broker reissue their task requests from time to time, which would require using a <code>XREQ</code> ØMQ socket instead of a <code>REQ</code> one to allow out of sequence exchanges.</p></li>
+<li><p>If the broker is restarted, queued requests will be lost. Each request could be accompanied by an unique id generated by the client, and asked about if the answer does not arrive in a given time. This would also give a way to cancel pending requests if the client realizes that it does not need them to be executed anymore.</p></li>
+<li><p>Timeouts and number of retries could be configurable for each request rather than globally.</p></li>
+</ul>
+<p>Nonetheless, it should be enough to answer some questions and show how to do things differently.</p>
+<p>A sample <code>worker</code> module is also available in the repository. It provides a <code>Worker</code> class that can be derived from; one must also override one of the <code>process</code> or <code>process_multipart</code> method with a function doing the real work in the child class. The inherited methods will take care of communicating with the broker.</p>
+<p>{% include github.html</p>
+  </div>
+  <span class="tip">
+    If you like this post, you can send some bitcoin dust to
+      <a href="bitcoin:17Kr97KJNWrsAmgr3wJBVnLAuWqCCvAdMq?label=rfc1149-blog&amp;message=Tip%20for%20blog%20post&amp;amount=0.001">17Kr97KJNWrsAmgr3wJBVnLAuWqCCvAdMq.
+  </span>
+  <span class="plusone"><g:plusone size="small"></g:plusone></span>
+  <a class="FlattrButton" style="display:none;" href="https://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/" title="Responsible workers with ØMQ" data-flattr-description="A reverse-connecting 0MQ broker"></a>
+  <footer>
+    <address><span><a href="../../../../../sam.html" rel="author">Samuel Tardieu</a></span></address> |
+    <abbr title="2010-12-08" property="schema:datePublished">2010-12-08</abbr> |
+    <a href="../../../../../blog/tag/free-software/">Free Software</a>, <a href="../../../../../blog/tag/net/">Net</a>, <a href="../../../../../blog/tag/programming/">Programming</a>, <a href="../../../../../blog/tag/python/">Python</a>, <a href="../../../../../blog/tag/zeromq/">ZeroMQ</a> |
+    <a href="../../../../../blog/2010/12/08/responsible-workers-with-0mq/index.html#disqus_thread">Comments</a> |
+    <span class="copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="noicon" property="https://creativecommons.org/ns#license">CC BY-NC-SA</a></span>
+  </footer>
+  <div id="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    var disqus_shortname = 'rfc1149';
+    var disqus_url = 'https://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/'.replace(/^https:/, 'http:');
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript><p>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></p></noscript>
+    <a href="https://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+</article>
+
+</div>
+<aside id="sidebar" class="bar">
+<div id="pageicon"><a href="../../../../../" class="noicon"><img src="../../../../../wwwicons/pigeon-64.png" alt="[page icon]" title="Go to home page" /></a></div>
+<br />
+<nav>
+<h2>Samuel Tardieu</h2>
+<g:plusone annotation="inline"></g:plusone>
+<a class="FlattrButton" style="display:none;" href="https://www.rfc1149.net/blog/2010/12/08/responsible-workers-with-0mq/" title="Responsible workers with ØMQ" data-flattr-description="A reverse-connecting 0MQ broker"></a>
+</nav>
+
+<nav>
+<ul>
+  <li><a href="../../../../../">Site home</a></li>
+  <li><a href="../../../../../sam.html">Me and myself</a></li>
+  <li><a href="../../../../../blog/">An avian carrier's blog</a> <a href="../../../../../blog/feed/"><img src="../../../../../wwwicons/atom-feed-16.png" alt="Atom feed" title="Feed for all blog posts" /></a>
+    <ul>
+      <li><a href="../../../../../blog/en/" lang="en">English posts only</a></li>
+      <li><a href="../../../../../blog/fr/" lang="fr">Billets en français</a></li>
+    </ul>
+  </li>
+  <li><a href="../../../../../devel/">Software projects</a></li>
+  <li><a href="../../../../../biblio.html">Publications</a></li>
+  <li>Follow me on <a href="https://twitter.com/rfc1149" class="noicon">Twitter</a></li>
+</ul>
+</nav>
+
+<hr />
+
+<nav>
+<h2>Latest posts</h2>
+<ul id="latestposts">
+<li>
+    <a href="../../../../../blog/2014/01/27/apple-users-security-is-not-for-you/" lang="en">Apple users: security is not for you</a>
+</li>
+<li>
+    <a href="../../../../../blog/2013/05/02/why-bitcoin-transfers-are-not-instantaneous/" lang="en">Why bitcoin transfers are not instantaneous</a>
+</li>
+<li>
+    <a href="../../../../../blog/2013/05/01/the-cloudy-state-of-bitcoin-exchanges-in-europe/" lang="en">The cloudy state of bitcoin exchanges in Europe</a>
+</li>
+
+</ul>
+</nav>
+<hr />
+
+<nav>
+<h2>Tags</h2>
+<a style="font-size: 65%" href="../../../../../blog/tag/ada/">Ada</a> <a style="font-size: 68%" href="../../../../../blog/tag/android/">Android</a> <a style="font-size: 60%" href="../../../../../blog/tag/anime/">Anime</a> <a style="font-size: 62%" href="../../../../../blog/tag/asterisk/">Asterisk</a> <a style="font-size: 62%" href="../../../../../blog/tag/bitcoin/">Bitcoin</a> <a style="font-size: 68%" href="../../../../../blog/tag/bug/">Bug</a> <a style="font-size: 61%" href="../../../../../blog/tag/c/">C</a> <a style="font-size: 67%" href="../../../../../blog/tag/critiques/">Critiques</a> <a style="font-size: 61%" href="../../../../../blog/tag/erlang/">Erlang</a> <a style="font-size: 68%" href="../../../../../blog/tag/factor/">Factor</a> <a style="font-size: 67%" href="../../../../../blog/tag/forth/">Forth</a> <a style="font-size: 118%" href="../../../../../blog/tag/free-software/">Free Software</a> <a style="font-size: 68%" href="../../../../../blog/tag/geek/">Geek</a> <a style="font-size: 62%" href="../../../../../blog/tag/gentoo/">Gentoo</a> <a style="font-size: 60%" href="../../../../../blog/tag/geocaching/">Geocaching</a> <a style="font-size: 68%" href="../../../../../blog/tag/google/">Google</a> <a style="font-size: 61%" href="../../../../../blog/tag/haskell/">Haskell</a> <a style="font-size: 60%" href="../../../../../blog/tag/health/">Health</a> <a style="font-size: 64%" href="../../../../../blog/tag/ipv6/">IPv6</a> <a style="font-size: 62%" href="../../../../../blog/tag/j/">J</a> <a style="font-size: 60%" href="../../../../../blog/tag/java/">Java</a> <a style="font-size: 61%" href="../../../../../blog/tag/javascript/">Javascript</a> <a style="font-size: 64%" href="../../../../../blog/tag/jekyll/">Jekyll</a> <a style="font-size: 105%" href="../../../../../blog/tag/la-vie-et-le-reste/">La vie et le reste</a> <a style="font-size: 74%" href="../../../../../blog/tag/linux/">Linux</a> <a style="font-size: 67%" href="../../../../../blog/tag/logiciel-libre/">Logiciel libre</a> <a style="font-size: 68%" href="../../../../../blog/tag/legislation/">Législation</a> <a style="font-size: 106%" href="../../../../../blog/tag/net/">Net</a> <a style="font-size: 60%" href="../../../../../blog/tag/ovh/">OVH</a> <a style="font-size: 77%" href="../../../../../blog/tag/petits-tracas/">Petits tracas</a> <a style="font-size: 65%" href="../../../../../blog/tag/photo-and-imaging/">Photo and imaging</a> <a style="font-size: 102%" href="../../../../../blog/tag/programming/">Programming</a> <a style="font-size: 67%" href="../../../../../blog/tag/python/">Python</a> <a style="font-size: 65%" href="../../../../../blog/tag/recoverjpeg/">Recoverjpeg</a> <a style="font-size: 60%" href="../../../../../blog/tag/robotics/">Robotics</a> <a style="font-size: 65%" href="../../../../../blog/tag/ruby/">Ruby</a> <a style="font-size: 64%" href="../../../../../blog/tag/scala/">Scala</a> <a style="font-size: 61%" href="../../../../../blog/tag/science/">Science</a> <a style="font-size: 67%" href="../../../../../blog/tag/security/">Security</a> <a style="font-size: 61%" href="../../../../../blog/tag/software-patents/">Software patents</a> <a style="font-size: 64%" href="../../../../../blog/tag/technologie/">Technologie</a> <a style="font-size: 73%" href="../../../../../blog/tag/technology/">Technology</a> <a style="font-size: 60%" href="../../../../../blog/tag/urbi/">Urbi</a> <a style="font-size: 62%" href="../../../../../blog/tag/voip/">VoIP</a> <a style="font-size: 60%" href="../../../../../blog/tag/xmpp/">XMPP</a> <a style="font-size: 60%" href="../../../../../blog/tag/xorg/">Xorg</a> <a style="font-size: 61%" href="../../../../../blog/tag/zeromq/">ZeroMQ</a> <a style="font-size: 65%" href="../../../../../blog/tag/education/">Éducation</a>
+</nav>
+
+
+</aside>
+<footer id="page-footer">
+<div class="spacer"> </div>
+<hr />
+This site is maintained by
+    <a href="../../../../../sam.html#me" rel="author schema:creator" typeof="schema:Person"><span property="schema:name">Samuel Tardieu</span></a>
+    using <a href="http://jaspervdj.be/hakyll/">Hakyll</a>
+    and hosted by
+    <a href="http://www.online.net/" class="noicon" rel="schema:provider" typeof="schema:Organization"><span property="schema:name">Online SAS</span></a>. <a href="../../../../../rfc1149.html">Why <code>rfc1149.net</code>?</a>
+
+<script type="text/javascript">
+window.___gcfg = {lang: 'en'};
+(function() {
+var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+po.src = 'https://apis.google.com/js/plusone.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+})();
+</script>
+</footer>
+
+</div>
+</body>
+</html>
+

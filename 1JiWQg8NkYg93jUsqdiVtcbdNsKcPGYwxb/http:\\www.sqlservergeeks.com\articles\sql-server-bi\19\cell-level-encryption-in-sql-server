@@ -1,0 +1,220 @@
+http://www.sqlservergeeks.com/articles/sql-server-bi/19/cell-level-encryption-in-sql-server
+Cell level Encryption in SQL server
+Cell level Encryption in SQL server
+Who is online? 131 guests and 0 members
+Login | Register
+home
+articles
+forums
+blogs
+did-you-know
+quick tip
+podcasts
+files login
+about us
+events
+join us
+write for us
+newsletters
+register
+home
+» articles » Cell level Encryption in SQL server
+Cell level Encryption in SQL server
+Comments (6)
+Print
+Rating: 0/5 0 Votes
+change text size:
+A A A Published: 4/17/2011 11:39:43 AM
+by
+Sachin Nandanwar
+- Views:
+[20851]
+Email
+Encryption…It is one of the oldest sciences that have existed for a very long time even used by Neanderthals (pre historic humans).Encryption exists in different forms. Written form, sign languages even our fate is encrypted in the stars . Ancient civilizations like Egyptians, Romans, and Aztecs had implemented encryption in their own ways to suit their needs .The most famous one being “Caesar cipher”.
+With advancement in computer science and with bigger and more powerful supercomputers available there is a need to build much stronger encrypting algorithms with a more mathematical approach to the problem than a digital one. The latest approach being “Elliptical Curve Cryptography”. Since encryption algorithm is a very vast topic to ponder and is beyond the scope of this article I will leave to the user to do further reading. You can try googling “Elliptical Curve Cryptography” So what is Encryption ?
+In simple layman terms encryption is a process where in which the message is jumbled up so that it cannot be read or understood by any unwanted user or a machine in a trivial manner. Since advent of computer technology each and every computer programming language and database has inbuilt support for Encryption with SQL Server being no exception.
+Encryption in SQL Server
+There are two forms of encryption available with SQL Server. They are TDE and Cell level Encryption.TDE encrypts the whole database as such while Cell level encryption provides encryption at a much granular level i.e. at the cell level or the column level. There are pros and cons of using this encryption which I will list later.
+Today I am going to talk about the cell level encryption which has been available since SQL Server 2005 and supported in 2008 as well as Denali. In this article I am going to focus only on the cell level or the column level encryption which can be used to encrypt columns storing credit card numbers or SSN or women’s age (Just kidding ).
+Biggest advantage I can see with cell level encryption is that you do not have to change anything at the application level and the biggest disadvantage which I can see is that the schema must be changed to varbinary and then reconverted to the desired data type which can tremendously hurt performance. Encryption of the database occurs at the page level i.e. the data is encrypted at the page level on the DISK but when those pages are read to buffer pool they are decrypted and saved as clear text (Not sure why did the SQL Server team came up with this).I will be posting an article on the tit bits on how encryption is done at the data and the log file level in the near future.
+The supported algorithms for cell level encryption as well as TDE are AES with 128,196,256 bit keys and 3 key triple DES. Implementing encryption in SQL Server 2008 is simple.
+Create a master key
+Create a certificate
+Create a symmetric key and secure the key with the certificate
+Set the database or the columns on which you want encryption implemented
+I will give a walk through in the ways how to implement encryption at the cell level (column level)
+Let us first create a master key
+Create Master Key Encryption by Password='$abc~*'
+Then create a certificate with a subject.
+Create Certificate MCer With Subject='This is a test'
+Now let’s create symmetric key and encrypt it with the certificate we created which will use the AES 256 encryption algorithm.
+Create Symmetric Key SKey With Algorithm=AES_256 encryption by Certificate MCer
+Just to double check whether the certificates and keys are created you can query the sys.certificates and sys.symmetric_keys catalogue
+Certificate :
+Symmetric Key :
+Now the first thing we need to do will be to use the symmetric key we created using the OPEN SYMMETRIC KEY syntax.The key will remain open until the end of the session or when CLOSE statement is executed.
+OPEN SYMMETRIC KEY SKey DECRYPTION BY CERTIFICATE MCer The next block of code is a bit complex.Here you get a unique GUID for the symmetric key created using the key_guid function.Here we create a variable of the type uniqueidentifier and set its value to the encrypted value created by the symmetric key.In the example below we have encrypted the value of 1by using the in built encryptbykey function which takes the symmetric key certificate and the value to be encrypted as a parameter.
+Declare @var  uniqueidentifier Set @var=KEY_GUID('SKey') Select encryptbykey(@var,CONVERT(VARBINARY(256),1)) The o/p for the above select statement is shown below which shows the encrypted value for 1.
+Now if we wish to decrypt the data we will have to use the decryptbykey function.In the example below I have first encrypted the data i.e in our case 1 and then decrypted it using the decryptbykey function.
+Select convert(int,DECRYPTBYKEY(encryptbykey(KEY_GUID('SKey'),CONVERT(VARBINARY(256),1))))
+The o/p we get is 1 which is our actual value.
+To close the key you can use the CLOSE syntax.
+CLOSE SYMMETRIC KEY SKey
+At this point the data viewed earlier will return NULL. The behavior will be same if you try to decrypt the data without having permissions to key and certificate. With encryption implemented it is desirable that only the users having permissions to the certificate and key should be able to decrypt the data.To grant a user rights to see the data you can use the syntax below
+Grant Control on certificate :: [MCer] To [user]GoGrant View Definition on symmetric key :: [SKey] To [user]
+As you saw from above example how simple it is to implement cell level encryption with SQL Server.
+Performance Implications
+I had mentioned earlier in the article that performance will hurt on the columns having encrypted data. Say you have a column containing SSN numbers and a clustered index on the column and all the queries doing searches on this column works very well and fast due to the index. But further down the line you decide to implement encryption for the column. First thing you will have to do would be to change the column data type to varbinary which is one of the not so recommended data type for any forms of indexes.
+Say you have a normal query which searches for a SSN number ‘XXX-XX-XXXX’ (I hope I got the SSN format right)
+Select * from YourTable where SSN=&rsquo;XXX-XX-XXXX&rsquo;
+The search on the column will be the best with a clustered index on the SSN column. Now with encryption implemented on the column your query will turn to this
+Select * from YourTable where Convert(Nvarchar(30),decryptbykey(SSN))=&rsquo;XXX-XX-XXXX&rsquo;
+As it is a very well known fact that a function used on a column having an index invalidates the index and we lose all the advantages of the index on the encrypted column. Even Microsoft admits the performance hit the query will take with implementation of encryption on the table
+….performance for a very basic query (that selects and decrypts a single encrypted column) when using cell-level encryption tends to be around 20% worse. This inversely scales with workload size resulting in performance degradations that are several magnitudes worse when attempting to encrypt an entire database. One sample application with 10,000 rows was four times worse with one column encrypted, and 20 times worse with nine columns encrypted. Because cell-level encryption is custom to each application, performance degradation will vary depending on application and workload specifics. As noted in Impact on the Database, this compares to 3-5% for TDE on average and 28% in the worst case (assuming the encryption scan is not running)."
+One of the recommendations to make searches faster is to use another column which stores only hashes for the encrypted column. Since both the column value and the value to be searched will contain exactly same hashes then it becomes obvious that both the values are same. Something like this
+Select (HASHBYTES('SHA1','&rsquo;XXX-XX-XXXX'))
+Conclusion
+Cell level encryption offers much more granular approach than TDE as it does not cause the overhead of maintaining the security at the database level if your sensitive data is stored only in a few columns in a database. If performance is not an issue then Cell level encryption can be implemented in a much larger scope. The performance shortcomings can be overcomed by using the hash columns with encrypted columns which I had mentioned above. Also cell level encryption is available in all versions of SQL Server while TDE is available only in the Enterprise and Developer Editions.
+tags
+:
+Cell Level Encryption SQL Server, Encryption SQL Server
+To rate this article please register or login
+Author
+Sachin Nandanwar
+(Member since: 3/14/2011 4:21:32 PM)
+Comments (6)
+8/1/2011 9:28:18 AM
+Oleh said:
+Thanks! Very good article!
+by
+11/29/2011 8:58:17 PM
+hyderabad said:
+Very good presentation.
+by
+2/18/2012 6:46:45 PM
+Shawn said:
+thanks for a better explanation of SQL encryption than every other site i've found so far! i would like all to be aware tho, if you store a hash of the data in a column, then you are opening your data up to security holes. BitCoin is a crypto-currency, see a simple 2 minute video at weusecoins.com. for now, one only needs to understand BitCoin is a p2p peer-to-peer "internet" currency that you can keep the BitCoins on your computer or at a website that holds your BitCoins for you. they are traded at BitCoin exchange websites. well, the most popular BitCoin exchange website (Mt. Gox) got hacked in 2011 and they stored all user's passwords as hash values, and i believe they used SALT values with the hashed passwords too. their hashed password list got leaked to the public and the attackers just brute-forced attempts on many accounts until they found one account with lots of BitCoins in their account. they then sold all that user's BitCoin $ and it plummeted the price of BitCoins and closed the site for weeks. and they used more security than the above article mentions. my point is this:1: hashing the encrypted data and storing the hash value is a security hole. consider how secure you need your data. even using hashed values with a SALT value is much better, but still has a security hole. if you are only storing SSN #'s then there are only 1,000,000,000 SSN's and all #'s can be brute forced quickly.2: (my other point is) if you use BitCoin: Mt. Gox is still the most popularly used BitCoin exchange site. why on earth do people believe the hogwash on the site that says it is safe?!? Most popular is NOT always the smartest, and i would even say, the most popular is *usually* not the smartest to go with.)If you encrypt data and truly want it to be secure, then throw performance out the window. you cannot realistically want to compare many records in a short amount of time if you care about high security. but if you don't care for high security, then yeah, a hash of the data is a clever loop hole. :)if you appreciate my input, consider donating a dime to me. my BitCoin addy is 1JiWQg8NkYg93jUsqdiVtcbdNsKcPGYwxb and email me ('shawn' + current 4-digit-year + '@sorren.com') if you want to learn the easiest and cheapest ways to convert your currency into BitCoins. i'm happy to help share the wonderful BitCoin concept to anyone interested.-Shawn <><
+by
+3/27/2012 4:38:09 PM
+Brian said:
+Would you mind fixing your broken images
+by
+11/28/2012 7:09:42 AM
+Lakshmikanth Matta said:
+Wonderful. Is it possible at table level encryption. Images are not shown are probably broken
+by
+12/4/2012 8:39:17 PM
+Toni said:
+I use COALESCE quite a lot in my applications, and I would recmmoend everybody else to as well. It's a quick function, that would become quite messy if left up to your PHP/ASP applications to sort.
+by
+Leave a comment Name:
+* Email: (your email is kept secure)
+* Website:
+example: "http://www.SQLServerGeeks.com"
+Type the characters:
+*
+Email Subscriptions
+Get the Most Recent Blogs in your inbox
+Most Recent Articles Guidelines for Effective Transaction Log Management
+10/9/2013 7:15:54 PM by Rama Chandra Gowtham Peddada
+Views: 3233
+- Comments: 7
+SQL Server - What Is A Cursor?
+6/27/2011 11:43:36 AM by Piyush Bajaj
+Views: 67484
+- Comments: 7
+SQL Server – What is Common Table Expression (CTE)?
+7/13/2011 1:03:18 PM by Piyush Bajaj
+Views: 83695
+- Comments: 11
+SQL Server - How to Generate XML Output Using FOR XML? – PART 1
+9/19/2012 9:15:14 PM by Piyush Bajaj
+Views: 7648
+- Comments: 0
+A DBA's Approach To Setup Transactional Replication - 4 NonStop Days At Office
+8/27/2012 2:46:00 AM by Satnam Singh
+Views: 5055
+- Comments: 1
+Understanding SQL Server Performance Tuning - Why DateAdd is performing too slow.
+7/20/2012 11:34:42 AM by Satnam Singh
+Views: 8028
+- Comments: 9
+Somebody Has Manually Performed a DML Operation on the Subscriber - What to do next.
+7/17/2012 6:02:06 AM by Satnam Singh
+Views: 6107
+- Comments: 3
+A Deep Dive into Transactional Replication
+7/4/2012 5:14:26 PM by Satnam Singh
+Views: 6330
+- Comments: 3
+Why is NTEXT so bad to give a PAIN.
+7/2/2012 6:51:35 PM by Satnam Singh
+Views: 5468
+- Comments: 5
+Designing a Proper Backup Plan.
+6/20/2012 8:26:49 AM by Satnam Singh
+Views: 6201
+- Comments: 4
+An example of Real Point In Time Recovery
+6/14/2012 6:38:22 PM by Satnam Singh
+Views: 6960
+- Comments: 6
+Setting up Transactional Replication for Huge Databases - A Real World Scenario.
+5/2/2012 3:21:59 AM by Satnam Singh
+Views: 8688
+- Comments: 6
+Multiple NULL values in UNIQUE constraint
+4/12/2012 7:12:40 AM by Ravi Kumar
+Views: 16887
+- Comments: 2
+SQL Server: Index Fill Factor
+3/24/2011 6:02:05 PM by Sarabpreet Anand
+Views: 10723
+- Comments: 4
+SQL Server: The hidden power of Surface Area Configuration Tool
+3/26/2011 7:47:08 PM by Sarabpreet Anand
+Views: 14939
+- Comments: 5
+SQL Server: Resource Database
+3/27/2011 9:10:16 AM by Sarabpreet Anand
+Views: 14337
+- Comments: 9
+SQL Server: Auto-Truncate Log in Full Recovery Model
+3/29/2011 7:30:50 PM by Sarabpreet Anand
+Views: 51307
+- Comments: 10
+SQL Server: Restrict the use of NO_LOG and Truncate_Only
+4/3/2011 12:19:53 PM by Sarabpreet Anand
+Views: 45948
+- Comments: 2
+SQL Server: Sum of values for Time Slots
+4/5/2011 2:33:24 PM by Sachin Nandanwar
+Views: 8959
+- Comments: 1
+SQL Server: Controlling the growth of msdb database caused by Database Mail
+4/15/2011 10:39:56 AM by Amit Karkhanis
+Views: 23201
+- Comments: 11
+SQL Server: x
+4/24/2011 7:24:14 PM by Sarabpreet Anand
+Views: 1454
+- Comments: 0
+SQL Server: Range query Indexes
+4/7/2011 6:56:55 PM by Sachin Nandanwar
+Views: 6382
+- Comments: 0
+SQL Server: finding the month in which sales crossed a certain figure
+4/28/2011 2:23:06 PM by ravinder ravinder
+Views: 2634
+- Comments: 0
+SQL Server: Backing up an Analysis Services Database automatically – Part 1
+6/23/2011 6:52:02 PM by Amit Bansal
+Views: 64948
+- Comments: 4
+SQL Server: FileGroups?
+6/28/2011 2:25:16 PM by Sarabpreet Anand
+Views: 22860
+- Comments: 1
+Choose your language: English SQLServerGeeks powered by Communifire ® Version 2.1.4085.24163
+Copyright © 2014 SQLServerGeeks.com. Hosted by ORCSWeb
+

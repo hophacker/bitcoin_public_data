@@ -1,0 +1,213 @@
+http://www.bortzmeyer.org/recuperer-zone-dns.html
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 21:23:29 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Wed, 02 Jul 2014 19:02:45 GMT
+ETag: "21e0f-3169-4fd3a8994bf40"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 4645
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-07-02T21:02 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Récupérer une zone DNS
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Récupérer une zone DNS</h2><p>Première rédaction de cet article le 17 décembre 2006<br/>Dernière mise à jour le 16 décembre 2008<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Il est fréquent que l'on souhaite étudier le contenu d'une zone
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">DNS</a></b>. Il existe un mécanisme standard pour les
+transférer (cf. <a href="5936.html" class="rfc" title="Consultez l'analyse du RFC 5936">RFC 5936</a>) mais la plupart des serveurs de noms refusent désormais ce
+transfert. Il est donc préférable d'automatiser les essais.</p></div>
+<div class="para"><p>Le contenu d'une zone <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System" title="Consultez l'article &quot;Domain Name System&quot; de l'encyclopédie libre Wikipedia">DNS</a></b> permet de savoir
+le nombre d'enregistrements dans la zone (par exemple, on voit que le
+domaine de l'ex-<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Yougoslavie" title="Consultez l'article &quot;Yougoslavie&quot; de l'encyclopédie libre Wikipedia">Yougoslavie</a></b>,
+<code>.yu</code>, que l'<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Internet%20Assigned%20Numbers%20Authority" title="Consultez l'article &quot;Internet Assigned Numbers Authority&quot; de l'encyclopédie libre Wikipedia">IANA</a></b>, voudrait
+<a href="http://www.icann.org/announcements/announcement-2-05dec06.htm">supprimer</a>
+contient encore des dizaines de milliers de domaines), permet de les
+étudier en détail, peut permettre de détecter des bogues. Par exemple,
+il y a peu, <a href="http://louvre.museum/"><code>http://louvre.museum/</code></a> était inaccessible une
+fois sur deux car la vraie <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/adresse%20IP" title="Consultez l'article &quot;adresse IP&quot; de l'encyclopédie libre Wikipedia">adresse IP</a></b> du
+serveur Web avait été mise dans le fichier de zone de
+<code>.museum</code> en même temps que l'adresse IP
+« attrape-tout » de <code>.museum</code>, celle qui sert à
+récupérer les fautes de frappe. En récupérant le fichier de la zone
+<code>.museum</code>, le diagnostic a été bien plus facile à
+faire.</p></div>
+<div class="para"><p>Mais cela peut être jugé très indiscret : on comprend que de
+nombreux gestionnaires de zone refusent tout accès à cette zone (c'est
+le cas de presque tous les <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Registre%20(Noms%20de%20domaine)" title="Consultez l'article &quot;Registre (Noms de domaine)&quot; de l'encyclopédie libre Wikipedia">registres européens</a></b>). Ou qu'ils le fassent payer
+(c'est le cas des gros <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domaine%20de%20premier%20niveau" title="Consultez l'article &quot;Domaine de premier niveau&quot; de l'encyclopédie libre Wikipedia">TLD</a></b> commerciaux). Pour
+cette raison et aussi pour des raisons plus pratiques (un transfert de
+zone peut prendre pas mal de ressources, notamment si la zone est
+grosse), le transfert de zone est en général désactivé sur la plupart
+des serveurs de noms.</p></div>
+<div class="para"><p>Lorsqu'on cherche à obtenir une zone, il est donc pénible d'essayer
+les serveurs un par un. Pour la racine du DNS, par exemple, seuls deux
+serveurs sur les treize acceptent le transfert. D'où l'idée d'une
+simple automatisation, avec ce petit script
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Bourne%20shell" title="Consultez l'article &quot;Bourne shell&quot; de l'encyclopédie libre Wikipedia">shell</a></b> qui s'utilise ainsi :
+</p><pre>
+% try-get-zone fr
+No willing nameservers from which to transfer fr
+
+% try-get-zone museum
+Got museum from ns1.getty.edu.
+</pre><p>
+Ici, je n'ai pu obtenir
+<code><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/.fr" title="Consultez l'article &quot;.fr&quot; de l'encyclopédie libre Wikipedia">.fr</a></b></code>, protégé, mais
+<code><b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/.museum" title="Consultez l'article &quot;.museum&quot; de l'encyclopédie libre Wikipedia (en anglais)">.museum</a></b></code> est
+accessible.</p></div>
+<div class="para"><p>Voici le script : <a class="local-file" href="files/try-get-zone.sh" title="Récupérez le fichier &quot;try-get-zone.sh&quot;"><code>try-get-zone.sh</code></a></p></div>
+<div class="para"><p>Attention en interprétant les résultats : certains
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domaine%20de%20premier%20niveau" title="Consultez l'article &quot;Domaine de premier niveau&quot; de l'encyclopédie libre Wikipedia">TLD</a></b> comme
+<code><b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/.uk" title="Consultez l'article &quot;.uk&quot; de l'encyclopédie libre Wikipedia (en anglais)">.uk</a></b></code> ou
+<code><b><a class="wikipedia" hreflang="en" href="http://en.wikipedia.org/wiki/.jp" title="Consultez l'article &quot;.jp&quot; de l'encyclopédie libre Wikipedia (en anglais)">.jp</a></b></code> n'enregistrent qu'au
+troisième niveau (<code>co.uk</code> ou
+<code>or.uk</code> pour les britanniques). Même si on réussit
+à transférer le fichier de zone du TLD, le nombre d'enregistrements
+n'est donc pas forcément le bon (merci à Elisabeth Porteneuve pour
+avoir noté ce problème dans un test précédent).</p></div>
+<div class="para"><p>Une autre question est à garder en mémoire : s'il ne fait aucun
+doute que certaines zones sont transférables délibérement, dans
+d'autres cas, c'est simplement le responsable technique qui a fait une
+erreur, rendant la zone accessible sans s'en rendre compte. Il est
+normal dans ce cas de le prévenir...</p></div>
+<div class="para"><p>Une autre solution, mais qui est assez « limite » est, pour les
+zones signées avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Domain%20Name%20System%20Security%20Extensions" title="Consultez l'article &quot;Domain Name System Security Extensions&quot; de l'encyclopédie libre Wikipedia">DNSSEC</a></b>, d'utiliser le
+parcours de zone (<i class="foreign" xml:lang="en">zone walking</i>). Cette technique
+utilise le fait que DNSSEC permet, lorsqu'un nom de domaine n'existe
+pas dans la zone, de récupérer le nom du domaine suivant qui
+existe. De proche en proche, on peut ainsi dérouler toute la
+zone. Cette technique peut être mise en œuvre par un script comme celui de Kim-Minh Kaplan :
+</p><pre>
+
+#!/bin/sh
+# $Id: dnssec-walk.sh,v 1.6 2008/12/16 17:20:02 kaplan Exp $
+if test $# -lt 1 -o $# -gt 2
+then
+    echo "usage: $0 &lt;zone&gt; [&lt;resolver&gt;]" &gt;&amp;2
+    exit 1                                  
+fi
+zone=${1%.}.
+resolver=
+if test $# -eq 2
+then
+    resolver=@${2#@}
+fi
+
+pred=$zone
+step=$pred
+set -- `dig +short +dnssec $resolver $step NSEC`
+while test "$1" != "$zone"
+do
+    if test -z "$1"             # Walk next if NSEC not served
+    then
+        label=${step%.$zone}
+        step=$label-.$zone
+        set -- `dig +dnssec $resolver $step NSEC | grep ^$pred.*NSEC`
+        if test "$1" == "$pred"
+        then
+            shift
+            shift
+            shift
+            shift
+        else
+            echo $1 !!!
+        fi
+    else  
+        pred=$1
+        step=$1
+        echo $pred
+        set -- `dig +short +dnssec $resolver $pred NSEC`
+    fi                                                  
+done
+
+</pre><p>
+Elle est également implémentée dans le logiciel <a href="http://josefsson.org/walker/">DNSSEC walker</a> et aussi comme <a href="http://www.nlnetlabs.nl/svn/ldns/trunk/examples/ldns-walk.c">exemple ldns</a>.</p></div>
+<div class="para"><p>Attention, cette façon de récupérer la zone n'est probablement pas
+conforme aux conditions d'accès du registre. En outre, certains
+registres mettent en œuvre des restrictions qui empêchent le
+<i class="foreign" xml:lang="en">walker</i> de fonctionner.</p></div>
+<div class="para"><p>Un bon article sur les risques de sécurité associés au transfert de
+zone, avec une jolie zone ouverte pour la démonstration, est
+« <i class="foreign" xml:lang="en"><a href="http://www.digininja.org/projects/zonetransferme.php" hreflang="en">ZoneTransfer.me</a></i> ».</p></div>
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="recuperer-zone-dns.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="recuperer-zone-dns.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Frecuperer-zone-dns.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

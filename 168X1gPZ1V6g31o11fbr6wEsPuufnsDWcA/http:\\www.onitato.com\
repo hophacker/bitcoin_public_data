@@ -1,0 +1,274 @@
+http://www.onitato.com/
+HTTP/1.0 200 OK
+X-Object-Meta-Mtime: 1401547088.148465
+Accept-Ranges: bytes
+Last-Modified: Sat, 31 May 2014 14:38:16 GMT
+ETag: d20ad7540edec44ede124b09d0bd3e46
+X-Timestamp: 1401547095.75995
+Content-Type: text/html
+X-Trans-Id: txc0e2802b8bac4b60a449b-0053d032a1ord1
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 4634
+Cache-Control: public, max-age=853
+Expires: Wed, 23 Jul 2014 22:23:50 GMT
+Date: Wed, 23 Jul 2014 22:09:37 GMT
+Connection: close
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Linuturk's Natter</title>
+        <link rel="stylesheet" href="http://www.onitato.com/theme/css/main.css" />
+        <link href="http://www.onitato.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Linuturk's Natter Atom Feed" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/Linuturk/www.onitato.com">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://www.onitato.com/">Linuturk's Natter </a></h1>
+                <nav><ul>
+                    <li><a href="http://www.onitato.com/pages/disclaimer.html">disclaimer</a></li>
+                    <li><a href="http://www.onitato.com/pages/onitato.html">onitato?</a></li>
+                    <li><a href="http://www.onitato.com/category/personal.html">personal</a></li>
+                    <li><a href="http://www.onitato.com/category/rackspace.html">Rackspace</a></li>
+                    <li><a href="http://www.onitato.com/category/troubleshooting.html">troubleshooting</a></li>
+                    <li><a href="http://www.onitato.com/category/tutorial.html">tutorial</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://www.onitato.com/no-hassle-blog-automation-redux.html">No Hassle Blog Automation Redux</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-05-29T00:00:00">
+                Thu 29 May 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://www.onitato.com/author/justin-phelps.html">Justin Phelps</a>
+        </address>
+<p>In <a href="http://www.onitato.com/category/tutorial.html">tutorial</a>. </p>
+<p>tags: <a href="http://www.onitato.com/tag/drone.html">drone</a><a href="http://www.onitato.com/tag/pelican.html">pelican</a><a href="http://www.onitato.com/tag/jenkins.html">jenkins</a><a href="http://www.onitato.com/tag/blog.html">blog</a><a href="http://www.onitato.com/tag/automation.html">automation</a></p>
+</footer><!-- /.post-info --><p>Due to the difficulty in maintaining a full Jenkins instance, I have revisited the blog automation issue and have replaced Jenkins with Drone. Making use of a tool like Drone greatly simplifies the setup process and lowers the barrier of entry for this type of project.</p>
+<h2>Requirements</h2>
+<p>There are a few requirements for this setup:</p>
+<ul>
+<li>Rackspace Cloud Account</li>
+<li>Existing Pelican Blog</li>
+<li>Github Account</li>
+<li>Linux Administration Knowledge</li>
+</ul>
+<p>You should also read my <a href="http://www.onitato.com/no-hassle-blog-automation.html">original article</a>.</p>
+<h2>Drone</h2>
+<p>There are two options here for using Drone.</p>
+<h4>Drone.io</h4>
+<p>Register a free account at <a href="https://drone.io/">Drone.io</a>.</p>
+<p>Using Drone.io's free service has some disadvantages. You can't specify custom docker images for your testing. There also isn't a direct method to publish your blog output to Rackspace Cloud Files. I recommend you make use of the second option and run your own instance.</p>
+<h4>Open Source Drone</h4>
+<p>Run your own Drone instance using my <a href="https://github.com/rack-roles/drone">Ansible Drone Role</a>. Some key points of this setup include:</p>
+<ul>
+<li>The use of the undocumented <em>$DRONE_BUILD_DIR</em> environmental variable. This is the working directory where the git checkout is placed.</li>
+<li>The use of parameters {{rax_username}} and {{rax_apikey}}. You define these in your Drone instance settings. This feature allows you to keep secrets secure.</li>
+<li>Make sure the container you define is published to the CDN, and is enabled to serve as a Web Site. You can now enable this through the Rackspace Cloud Control Panel.</li>
+</ul>
+<p>Documentation and install instructions are available on <a href="https://github.com/drone/drone#getting-started">Drone's Github Page</a>. You can follow these instructions if you are unfamiliar with Ansible.</p>
+<h2>Docker</h2>
+<p>I maintain a Trusted Build in the Docker Registry for Pelican. The image name is <a href="https://index.docker.io/u/linuturk/ubuntu-pelican/">linuturk/ubuntu-pelican</a>. We will be using this image to simplify our .drone.yml.</p>
+<p>Remember, if you are using the free account provided by Drone.io, you won't be able to use this image.</p>
+<h2>.drone.yml</h2>
+<p>This file is used by the open source Drone.io to define the build process. You can find my current .drone.yml file <a href="https://github.com/Linuturk/www.onitato.com/blob/master/.drone.yml">in my repository.</a></p>
+<div class="highlight"><pre><span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">linuturk/ubuntu-pelican</span>
+<span class="l-Scalar-Plain">script</span><span class="p-Indicator">:</span>
+  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">make -C $DRONE_BUILD_DIR html</span>
+<span class="l-Scalar-Plain">publish</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">swift</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="p-Indicator">{{</span><span class="nv">rax_username</span><span class="p-Indicator">}}</span>
+    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="p-Indicator">{{</span><span class="nv">rax_apikey</span><span class="p-Indicator">}}</span>
+    <span class="l-Scalar-Plain">auth_url</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">https://identity.api.rackspacecloud.com/v2.0</span>
+    <span class="l-Scalar-Plain">region</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ORD</span>
+    <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">www.onitato.com</span>
+    <span class="l-Scalar-Plain">source</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">$DRONE_BUILD_DIR/output</span>
+    <span class="l-Scalar-Plain">branch</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">master</span>
+</pre></div>
+
+
+<p>There are three main sections to this file:</p>
+<ul>
+<li><strong>image</strong>: This defines the Docker image to use for the build.</li>
+<li><strong>script</strong>: This defines the commands to run for the build process.</li>
+<li><strong>publish</strong>: This is set to publish the contents of the output directory to Rackspace Cloud Files.</li>
+</ul>
+<p>The only options you should have to change for your deployment are <em>region</em> and <em>container</em>.</p>
+<h2>Setup</h2>
+<p>Here is a high level overview of the setup steps:</p>
+<ol>
+<li>Create a container in Cloud Files, and make sure you configure the Website Settings and ensure it is published to the CDN.</li>
+<li>Setup a DNS record for your domain to point to the CDN URL provided by Cloud Files.</li>
+<li>Install and configure an instance of the open source Drone project.</li>
+<li>Register your Drone instance with Github. Here's a <a href="http://drone.readthedocs.org/en/latest/setup.html#github">quick guide</a>.</li>
+<li>Use the Drone web interface to add your repository to Drone. This process also automatically creates the necessary webhooks in Github.</li>
+<li>Configure the necessary <a href="https://github.com/drone/drone#params-injection">Parameters</a> for the swift publish option.</li>
+<li>Add the .drone.yml file to your repository. Commit and push this change, and Github will notify Drone to process a build.</li>
+<li>Review the build in the Drone web interface to ensure it was published successfully.</li>
+</ol>
+<p>That should be all you need to do. Good luck!</p><p>There are <a href="http://www.onitato.com/no-hassle-blog-automation-redux.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.onitato.com/deploying-ansible-tower-using-heat.html" rel="bookmark"
+                           title="Permalink to Deploying Ansible Tower using HEAT">Deploying Ansible Tower using HEAT</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-03-10T00:00:00">
+                Mon 10 March 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://www.onitato.com/author/justin-phelps.html">Justin Phelps</a>
+        </address>
+<p>In <a href="http://www.onitato.com/category/tutorial.html">tutorial</a>. </p>
+<p>tags: <a href="http://www.onitato.com/tag/ansible.html">ansible</a><a href="http://www.onitato.com/tag/tower.html">tower</a><a href="http://www.onitato.com/tag/heat.html">heat</a><a href="http://www.onitato.com/tag/hot.html">hot</a><a href="http://www.onitato.com/tag/template.html">template</a></p>
+</footer><!-- /.post-info -->                <p>Deploying Ansible Tower isn't hard, but automating a server build and triggering the installation lowers the barrier of entry for trying out Tower. This article will describe the HEAT Template I've created to automate this process.</p>
+                <a class="readmore" href="http://www.onitato.com/deploying-ansible-tower-using-heat.html">read more</a>
+<p>There are <a href="http://www.onitato.com/deploying-ansible-tower-using-heat.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.onitato.com/ansible-rackspace-dynamic-inventory.html" rel="bookmark"
+                           title="Permalink to Ansible's Rackspace Dynamic Inventory Plugin">Ansible's Rackspace Dynamic Inventory Plugin</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-02-18T00:00:00">
+                Tue 18 February 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://www.onitato.com/author/justin-phelps.html">Justin Phelps</a>
+        </address>
+<p>In <a href="http://www.onitato.com/category/rackspace.html">Rackspace</a>. </p>
+<p>tags: <a href="http://www.onitato.com/tag/rackspace.html">rackspace</a><a href="http://www.onitato.com/tag/ansible.html">ansible</a><a href="http://www.onitato.com/tag/inventory.html">inventory</a><a href="http://www.onitato.com/tag/plugin.html">plugin</a></p>
+</footer><!-- /.post-info -->                <p>The Rackspace dynamic inventory plugin is a powerful tool, but the use of this plugin isn't well documented. Here's a quick tutorial on how to get started with this plugin.</p>
+                <a class="readmore" href="http://www.onitato.com/ansible-rackspace-dynamic-inventory.html">read more</a>
+<p>There are <a href="http://www.onitato.com/ansible-rackspace-dynamic-inventory.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.onitato.com/deploying-to-rackspace-using-salt-cloud.html" rel="bookmark"
+                           title="Permalink to Deploying to Rackspace using salt-cloud">Deploying to Rackspace using salt-cloud</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-02-11T00:00:00">
+                Tue 11 February 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://www.onitato.com/author/justin-phelps.html">Justin Phelps</a>
+        </address>
+<p>In <a href="http://www.onitato.com/category/rackspace.html">Rackspace</a>. </p>
+<p>tags: <a href="http://www.onitato.com/tag/rackspace.html">rackspace</a><a href="http://www.onitato.com/tag/salt.html">salt</a><a href="http://www.onitato.com/tag/salt-cloud.html">salt-cloud</a><a href="http://www.onitato.com/tag/configuration-management.html">configuration management</a></p>
+</footer><!-- /.post-info -->                <p>These instructions should be a nice and easy start to deploying Rackspace Cloud servers using the salt-cloud tool. Just follow along exactly, and at the end you should have a fully functional salt-cloud deployment tool.</p>
+                <a class="readmore" href="http://www.onitato.com/deploying-to-rackspace-using-salt-cloud.html">read more</a>
+<p>There are <a href="http://www.onitato.com/deploying-to-rackspace-using-salt-cloud.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.onitato.com/irc-logging-bot.html" rel="bookmark"
+                           title="Permalink to IRC Logging Bot">IRC Logging Bot</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-02-11T00:00:00">
+                Tue 11 February 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://www.onitato.com/author/justin-phelps.html">Justin Phelps</a>
+        </address>
+<p>In <a href="http://www.onitato.com/category/tutorial.html">tutorial</a>. </p>
+<p>tags: <a href="http://www.onitato.com/tag/irc.html">irc</a><a href="http://www.onitato.com/tag/pierc.html">pierc</a><a href="http://www.onitato.com/tag/python.html">python</a><a href="http://www.onitato.com/tag/logging.html">logging</a></p>
+</footer><!-- /.post-info -->                <p>One of the disadvantages of using IRC over another chat medium is the lack of logging while you aren't connected to the server. In this article, I will describe the process I used to implement logging for my favorite IRC channels.</p>
+                <a class="readmore" href="http://www.onitato.com/irc-logging-bot.html">read more</a>
+<p>There are <a href="http://www.onitato.com/irc-logging-bot.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 4
+        <a href="http://www.onitato.com/index2.html">&raquo;</a>
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://github.com/Linuturk/www.onitato.com/issues">Request a Topic</a></li>
+                            <li><a href="https://github.com/Linuturk/www.onitato.com/issues">Report an Issue</a></li>
+                            <li><a href="bitcoin:168X1gPZ1V6g31o11fbr6wEsPuufnsDWcA">Donate Bitcoin</a></li>
+                            <li><a href="http://linuturk.blogspot.com">Old Blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://www.onitato.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                            <li><a href="https://plus.google.com/112828903529889228389/posts">google+</a></li>
+                            <li><a href="https://github.com/Linuturk">github</a></li>
+                            <li><a href="https://www.facebook.com/linuturk">facebook</a></li>
+                            <li><a href="https://twitter.com/linuturk">twitter</a></li>
+                            <li><a href="http://www.linkedin.com/in/linuturk">linkedin</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34793085-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'linuturksnatter';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

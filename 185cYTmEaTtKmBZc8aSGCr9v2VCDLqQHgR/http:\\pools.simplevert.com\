@@ -1,0 +1,445 @@
+http://pools.simplevert.com/
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 22 Jul 2014 19:28:38 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 17770
+Connection: close
+
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Vertcoin Pool List - Brought to you by Simple Vert</title>
+  <meta name="description" content="A list of different Vert Coin mining pools and basic statistics for them">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/yeti/bootstrap.min.css" rel="stylesheet">
+  <link href="http://pools.simplevert.com/static/css/main.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://pools.simplevert.com/static/css/nv.d3.css?revision=6cfe70e">
+  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+  <script src="http://pools.simplevert.com/static/js/nv.d3.min.js"></script>
+  <script src="http://pools.simplevert.com/static/js/graph.js?revision=6cfe70e"></Script>
+  <script src="http://pools.simplevert.com/static/js/bootstrap.min.js"></Script>
+  <script src="http://pools.simplevert.com/static/js/jquery.tablesorter.min.js"></Script>
+</head>
+<body>
+  <div class="container text-center">
+    <div class="row">
+      <h1 style="font-size:51px;">
+        <a style="text-decoration:none;" href="http://simplevert.com">
+          <p>
+            <img src="http://pools.simplevert.com/static/img/pool.jpg" />
+            &nbsp;Vertcoin&nbsp;Pool&nbsp;List
+
+          </p>
+        </a>
+      </h1>
+      <small>brought to you by <a style="text-decoration:none;" href="http://simplevert.com">Simple Vert</a></small>
+    </div>
+
+  <!-- Alerts ================================================== -->
+  
+
+  
+<div class="container">
+  <div class="row page-header">
+    <div class="col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <small>Network Hashrate</small>
+          <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right"
+                       title="This hashrate is estimated based on the current difficulty. The equation is to calculate it yourself is (difficulty*(2^32))/block solve time"></i>
+                     <br><h4><p><span>3,310.29 MH/s</span></p></h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <small>Network Difficulty</small>
+          <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right"
+                       title="Network difficulty measures how difficult it is to solve a block. It is dynamically adjusted by the network to try to maintain a steady flow of currency."></i>
+                     <br><h4><p><span>140.86</span></p></h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <small>Network Height</small>
+          <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right"
+                       title="The last block solved on the network"></i>
+            <br><h4><p><span>126,012</span></p></h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <small>Total Worker Count</small>
+          <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right"
+                       title="The number of workers that we know about in the pools listed below"></i>
+                     <br><h4><p><span>3970</span></p></h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Network Breakdown</h2>
+<div id="chart2" style="max-height:600px;">
+  <svg></svg>
+</div>
+
+<script>
+//Pie chart example data. Note how there is only a single array of key-value pairs.
+function networkData() {
+  return  [{"label": "Crypto-pool.fr", "value": 6.263}, {"label": "Coinardia", "value": 6.795}, {"label": "Composed Chaos", "value": 19.87}, {"label": "pool.pm", "value": 23.418}, {"label": "Bitcrush", "value": 58.773}, {"label": "P2Pool 2 (1.5MH - 3MH)", "value": 62.784}, {"label": "P2Pool 3 (under 1.5MH)", "value": 63.616}, {"label": "VertSquad", "value": 81.131}, {"label": "Vertco.in", "value": 129.841}, {"label": "Verters", "value": 343.625}, {"label": "poolz.net", "value": 396.055}, {"label": "Give Me Coins", "value": 478.751}, {"label": "Coinotron", "value": 631.18}, {"label": "Simple Vert", "value": 757.602}, {"label": "P2Pool 1 (above 3MH)", "value": 874.195}, {"label": "Unlisted Sources", "value": 0}];
+}
+function hashrate_data() {
+  var obj = { "key" : "Pool Hashrate" ,
+  "values" : {}
+      }
+    return [obj]
+}
+function worker_data() {
+      var obj = { "key" : "Pool Workers" ,
+        "values" : {}
+      }
+    return [obj]
+}
+$(document).ready(function() {
+  $("#poolTable").tablesorter({
+    headers: {
+      1: { sorter: false }
+    },
+    sortList : [[ 4,1 ]], // hashrate default
+    textExtraction: function(node) {
+      var attr = $(node).attr('data-sort-value');
+      if (typeof attr !== 'undefined' && attr !== false) {
+        return attr;
+      }
+      return $(node).text(); 
+    } 
+  });
+});
+</script>
+<br />
+<div class="col-lg-12">
+  <div class="bs-example table-responsive">
+    <table id="poolTable" class="table table-striped table-hover tablesorter">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Payout Type</th>
+          <th>Workers</th>
+          <th>Fee</th>
+          <th>Hashrate</th>
+          <th>Average Worker</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr>
+          <td><a href="/pool/4">ltcp</a><small><a href="http://vertcoin.ltcp.net/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>Unavail</td>
+          <td>Unknown</td>
+          <td data-sort-value="0.0">Unavail</td>
+          <td data-sort-value="0">Unavail</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/8">Crypto-pool.fr</a><small><a href="http://vtc.crypto-pool.fr/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>21</td>
+          <td>Unknown</td>
+          <td data-sort-value="6.263">6.263 MH/s</td>
+          <td data-sort-value="298.24">298.24 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/10">pool.pm</a><small><a href="https://vtc.pool.pm/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>33</td>
+          <td>Unknown</td>
+          <td data-sort-value="23.418">23.418 MH/s</td>
+          <td data-sort-value="709.64">709.64 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/2">Vertco.in</a><small><a href="https://vertco.in/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>253</td>
+          <td>Unknown</td>
+          <td data-sort-value="129.841">129.841 MH/s</td>
+          <td data-sort-value="513.21">513.21 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/3">poolz.net</a><small><a href="http://vtcweb.poolz.net/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Pplns</td>
+          <td>372</td>
+          <td>Unknown</td>
+          <td data-sort-value="396.055">396.055 MH/s</td>
+          <td data-sort-value="1064.66">1064.66 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/5">Verters</a><small><a href="https://pool.verters.com/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>479</td>
+          <td>Unknown</td>
+          <td data-sort-value="343.625">343.625 MH/s</td>
+          <td data-sort-value="717.38">717.38 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/6">VertSquad</a><small><a href="https://vertsquad.com/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>129</td>
+          <td>Unknown</td>
+          <td data-sort-value="81.131">81.131 MH/s</td>
+          <td data-sort-value="628.92">628.92 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/7">Ecurie</a><small><a href="https://ecurie.io/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>Unavail</td>
+          <td>Unknown</td>
+          <td data-sort-value="0.0">Unavail</td>
+          <td data-sort-value="0">Unavail</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/9">Coinardia</a><small><a href="http://vtc.coinardia.com/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>14</td>
+          <td>Unknown</td>
+          <td data-sort-value="6.795">6.795 MH/s</td>
+          <td data-sort-value="485.36">485.36 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/1">Simple Vert</a><small><a href="http://simplevert.com">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Pplns</td>
+          <td>1214</td>
+          <td>Unknown</td>
+          <td data-sort-value="757.602">757.602 MH/s</td>
+          <td data-sort-value="624.05">624.05 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/11">Rapidhash</a><small><a href="https://vtc.rapidhash.net/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Prop</td>
+          <td>Unavail</td>
+          <td>Unknown</td>
+          <td data-sort-value="0.0">Unavail</td>
+          <td data-sort-value="0">Unavail</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/20">Coinotron</a><small><a href="http://www.coinotron.com">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>449</td>
+          <td>Unknown</td>
+          <td data-sort-value="631.18">631.18 MH/s</td>
+          <td data-sort-value="1405.75">1405.75 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/14">P2Pool 3 (under 1.5MH)</a><small><a href="http://lovok.no-ip.com/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>3</td>
+          <td>Unknown</td>
+          <td data-sort-value="63.616">63.616 MH/s</td>
+          <td data-sort-value="21205.33">21205.33 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/15">P2Pool 2 (1.5MH - 3MH)</a><small><a href="http://lovok.no-ip.com:82">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>3</td>
+          <td>Unknown</td>
+          <td data-sort-value="62.784">62.784 MH/s</td>
+          <td data-sort-value="20928.0">20928.0 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/16">P2Pool 1 (above 3MH)</a><small><a href="http://scanner.etyd.org/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>25</td>
+          <td>Unknown</td>
+          <td data-sort-value="874.195">874.195 MH/s</td>
+          <td data-sort-value="34967.8">34967.8 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/12">Bitcrush</a><small><a href="http://vert.bitcrush.info/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Pplns</td>
+          <td>134</td>
+          <td>Unknown</td>
+          <td data-sort-value="58.773">58.773 MH/s</td>
+          <td data-sort-value="438.6">438.6 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/17">vtcpool.co.uk</a><small><a href="https://vtcpool.co.uk/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Pplns</td>
+          <td>Unavail</td>
+          <td>Unknown</td>
+          <td data-sort-value="0.0">Unavail</td>
+          <td data-sort-value="0">Unavail</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/18">Composed Chaos</a><small><a href="https://vert.composedchaos.net">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>22</td>
+          <td>Unknown</td>
+          <td data-sort-value="19.87">19.87 MH/s</td>
+          <td data-sort-value="903.18">903.18 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/19">Coin Golem</a><small><a href="https://vtc.coingolem.com">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>Unavail</td>
+          <td>Unknown</td>
+          <td data-sort-value="0.0">Unavail</td>
+          <td data-sort-value="0">Unavail</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td><a href="/pool/21">Give Me Coins</a><small><a href="http://give-me-coins.com/">
+            <i class="fa fa-external-link" data-toggle="tooltip" data-placement="right"
+                       title=""></i></a></small></td>
+          <td>Unknown</td>
+          <td>819</td>
+          <td>Unknown</td>
+          <td data-sort-value="478.751">478.751 MH/s</td>
+          <td data-sort-value="584.56">584.56 KH/s/worker</td>
+          <td></td>
+          <td></td>
+        </tr>
+      
+      </tbody>
+    </table>
+  </div>
+</div>
+<small>* Note that P2Pool worker counts are pretty inaccurate. There is currently need for a more robust way to determine this number.<br></small><br>
+Pool missing? Message <a href="http://www.reddit.com/user/bitbumper">/u/bitbumper</a> on Reddit with API details and I'll get it added.
+
+  
+  <div class="row" style="padding-top:30px;padding-bottom:20px;">
+    <div class="col-lg-8 col-lg-offset-2 text-center">
+      <br>
+      <small>
+        
+        Running revision <a href="https://github.com/simplecrypto/pool_list/commit/6cfe70e">6cfe70e</a> released on 2014-05-30 19:06:37 -0500.
+        
+        <br>
+        Donate to the devs:
+        DOGE <a href="dogecoin:DAbhwsnEq5TjtBP5j76TinhUqqLTktDAnD">DAbhwsnEq5TjtBP5j76TinhUqqLTktDAnD</a><br>
+        BTC <a href="bitcoin:185cYTmEaTtKmBZc8aSGCr9v2VCDLqQHgR">185cYTmEaTtKmBZc8aSGCr9v2VCDLqQHgR</a><br>
+        VTC <a href="vertcoin:VkbHY8ua2TjxdL7gY2uMfCz3TxMzMPgmRR">VkbHY8ua2TjxdL7gY2uMfCz3TxMzMPgmRR</a>
+    </div>
+  </div>
+  
+  </div>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50381544-1', 'simplvert.com');
+    ga('send', 'pageview');
+
+  </script>
+
+  <a href="https://github.com/simplecrypto/pool_list"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
+</body>
+</html>

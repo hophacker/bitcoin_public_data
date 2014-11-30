@@ -1,0 +1,586 @@
+http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/
+HTTP/1.1 200 OK
+Date: Thu, 10 Jul 2014 18:51:17 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Fri, 10-Jul-2015 18:51:17 GMT; path=/
+Set-Cookie: lw_user_sid=a3e14e6a73bef7371783bb13095a76ab; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 10335
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-10T20:51:17Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Setting up and managing an APT repository with reprepro - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/" class="entry-title">Setting up and managing an APT repository with reprepro</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>If you are writing software for <a href="http://www.debian.org">Debian GNU/Linux</a> or deratives like <a href="http://www.ubuntu.com">Ubuntu</a> then setting up an APT repository is a very useful thing to do. It's often not possible to get your software into the official repositories of already released distributions. Setting up an APT repository for your users makes it very easy for them to keep up-to-date with the latest version of your software, far easier than providing .deb's as downloads on your website.</p>
+
+<p>In this tutorial I am going to show you how to set up and manage an APT repository using <a href="http://mirrorer.alioth.debian.org/">reprepro</a>. Reprepro makes it very easy to set up APT repositories that use a common /pool directory to store all the package files. Using a /pool directory means that you don't have to duplicate packages (especially source packages) across different distributions and versions. In this regard, reprepro is superior to APT tools such as apt-ftparchive. I am going to assume that you are already familliar with the <a href="http://www.debian.org/doc/manuals/repository-howto/repository-howto.en.html">basic workings of an APT repository</a>.</p>
+
+<h4>Setting up reprepro</h4>
+
+<h5>The distributions file</h5>
+
+<p>If you want to provide APT repositories for multiple distributions (Debian, Ubuntu, etcetera) then you should manage them separately. I am going to keep all my repositories under /var/packages/ and set up a repository for Ubuntu Dapper Drake. The directory /var/packages/ubuntu/ is going to be the base of the Ubuntu repository. Create a conf/ in the repository base to hold all the configuration files for this repository. The distributions file contains the information that reprepro needs to manage your repository. My configurations looks like this:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">Origin: Lone Wolves</div></li>
+<li class="li1"><div class="de1">Label: Lone Wolves</div></li>
+<li class="li1"><div class="de1">Codename: dapper</div></li>
+<li class="li1"><div class="de1">Architectures: i386 amd64 source</div></li>
+<li class="li1"><div class="de1">Components: main</div></li>
+<li class="li1"><div class="de1">Description: Lone Wolves APT Repository</div></li>
+<li class="li1"><div class="de1">SignWith: yes</div></li>
+<li class="li1"><div class="de1">DebOverride: override.dapper</div></li>
+<li class="li1"><div class="de1">DscOverride: override.dapper</div></li>
+</ol></div></div>
+
+<p>The above example contains one block of settings, but you can have multiple blocks separated by a newline in this configuration file. You would have, for example, one block for Ubuntu Dapper Drake, one for Edgy Eft, one for Breezy Badger, etcetera. The Origin, Label and Description field can be filled with whatever you want. The Codename is the specific distribution/version that this block of settings applies to. In this case it's dapper. The Architectures and Components fields speak for themselves. The SignWith fields indicates that you want to create a Release.gpg file, creating a signed APT repository. It is highly recommended that you do so. If you have multiple GPG keys installed on your APT server, you can also replace the "yes" value with something that tells GPG what key to use. A name or a key ID for example. Finally the DebOverride and DscOverride fields tell reprepro what files to use for the override rules. Override rules can be used to override .deb and .dsc configuration fields. The .dsc files always need an override file because .dsc files do not contain Section and Priority information, e.g. optional - games for <a href="http://www.gnome-hearts.org/">gnome-hearts</a>.</p>
+
+<h5>The options file</h5>
+<p>The options file is a list of command line options that you want to pass to reprepro everytime you run it. Creating an options file saves you many keystrokes when managing your APT repository. You can only put the long option names in it (e.g. verbose, not v) without the -- prefix. My options file looks like this:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">verbose</div></li>
+<li class="li1"><div class="de1">ask-passphrase</div></li>
+<li class="li1"><div class="de1">basedir .</div></li>
+</ol></div></div>
+
+<p>If you set the SignWith configuration field to use a GPG key that requires a password then you should set the ask-passphrase option in your options file or set up a GPG-agent to do the signing for you. By default reprepro will not ask you for your passphrase.
+
+<h5>The override file</h5>
+
+<p>The default location for override files is the override/ directory in the APT base directory. The override file has a very simple layout of "package_name option value". For example, the entry for gnome-hearts looks like this:
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">gnome-hearts &nbsp; &nbsp;Priority &nbsp; &nbsp; &nbsp; &nbsp;optional</div></li>
+<li class="li1"><div class="de1">gnome-hearts &nbsp; &nbsp;Section &nbsp; &nbsp; &nbsp; &nbsp; games</div></li>
+</ol></div></div>
+
+<h4>Managing your repository</h4>
+
+<p>The configuration of reprepro is now done, so it is time to add at least one package to it so that reprepro will generate all the required files and directories for you. You should always work from the base repository directory or specify the path to the base directory with the --basedir option (commandline options override options specified in the options file). Adding a .deb is very easy:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ reprepro includedeb &lt;codename&gt; &lt;debfile&gt;</div></li>
+</ol></div></div>
+
+<p>Or, for gnome-hearts:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ reprepro includedeb dapper ~/gnome-hearts_0.1.2-1_amd64.deb</div></li>
+<li class="li1"><div class="de1">/home/sander/gnome-hearts_0.1.2-1_amd64.deb: component guessed as 'main'</div></li>
+<li class="li1"><div class="de1">db: 'gnome-hearts' added to 'dapper|main|amd64'.</div></li>
+<li class="li1"><div class="de1">Exporting indices...</div></li>
+<li class="li1"><div class="de1">Successfully created './dists/dapper/Release.gpg.new'</div></li>
+</ol></div></div>
+
+<p>You can include .dsc, .udeb and .changes files with the commands includedsc, includeudeb and include respectively. The list command shows you what packages reside in the repository, and you can remove packages again with the remove command:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ reprepro -A amd64 list dapper gnome-hearts</div></li>
+<li class="li1"><div class="de1">dapper|main|amd64: gnome-hearts 0.1.2-1</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">$ reprepro -A amd64 remove dapper gnome-hearts</div></li>
+<li class="li1"><div class="de1">removing 'gnome-hearts' from 'dapper|main|amd64'...</div></li>
+<li class="li1"><div class="de1">db: 'gnome-hearts' removed from 'dapper|main|amd64'.</div></li>
+<li class="li1"><div class="de1">Exporting indices...</div></li>
+<li class="li1"><div class="de1">Successfully created './dists/dapper/Release.gpg.new'</div></li>
+<li class="li1"><div class="de1">Deleting files no longer referenced...</div></li>
+<li class="li1"><div class="de1">deleting and forgetting pool/main/g/gnome-hearts/gnome-hearts_0.1.2-1_amd64.deb</div></li>
+</ol></div></div>
+
+<h4>Setting up Apache</h4>
+
+<p>Now that the repository has been created it's time to let the world access it. At my registrar I have set up the <a href="http://packages.jejik.com">packages.jejik.com</a> subdomain to point to the IP address of my APT server. I am going to create a virtual host that points to the /var/packages/ directory and, at the same time, hides the conf/ and db/ directory. The db/ directory is created by reprepro when you add your first package. The result is that people will be able to add lines such as the folowing to their /etc/apt/sources.list file:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">## Lone Wolves Ubuntu APT repository</div></li>
+<li class="li1"><div class="de1">deb http://packages.jejik.com/ubuntu dapper main</div></li>
+<li class="li1"><div class="de1">deb-src http://packages.jejik.com/ubuntu dapper main</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">## Lone Wolves Debian APT repository</div></li>
+<li class="li1"><div class="de1">deb http://packages.jejik.com/debian stable main</div></li>
+<li class="li1"><div class="de1">deb-src http://packages.jejik.com/debian stable main</div></li>
+</ol></div></div>
+
+<p>Here is what the Apache configuration file looks like:</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&lt;<span class="kw3">VirtualHost</span> *&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">DocumentRoot</span> /var/packages</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerName</span> packages.jejik.com</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ErrorLog</span> /var/log/apache2/error.log</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">LogLevel</span> warn</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">CustomLog</span> /var/log/apache2/access.log combined</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerSignature</span> <span class="kw2">On</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Allow directory listings so that people can browse the repository from their browser too</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;<span class="kw3">Directory</span> <span class="st0">&quot;/var/packages&quot;</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Options</span> <span class="kw2">Indexes</span> <span class="kw2">FollowSymLinks</span> <span class="kw2">MultiViews</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">DirectoryIndex</span> index.html</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">AllowOverride</span> <span class="kw1">Options</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Order</span> <span class="kw1">allow</span>,<span class="kw1">deny</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">allow</span> <span class="kw1">from</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;/<span class="kw3">Directory</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Hide the conf/ directory for all repositories</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;<span class="kw3">Directory</span> <span class="st0">&quot;/var/packages/*/conf&quot;</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Order</span> <span class="kw1">allow</span>,<span class="kw1">deny</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Deny</span> <span class="kw1">from</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Satisfy</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;/<span class="kw3">Directory</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Hide the db/ directory for all repositories</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;<span class="kw3">Directory</span> <span class="st0">&quot;/var/packages/*/db&quot;</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Order</span> <span class="kw1">allow</span>,<span class="kw1">deny</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Deny</span> <span class="kw1">from</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">Satisfy</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;/<span class="kw3">Directory</span>&gt;</div></li>
+<li class="li1"><div class="de1">&lt;/<span class="kw3">VirtualHost</span>&gt;</div></li>
+</ol></div></div>
+
+<p>After this, it's a matter of restarting Apache and you should be able to access your repository from apt. Reprepro has many more functions than I have explained in this article. For example, you can use it to synchrionise with other APT repositories as well. Personally I don't have a need for that so I have not explored these features. I use my own APT repository primarily for distributions where my software cannot be added to the official repositories anymore. However, this article should give you more than enough information to manage your own repository for the software you write and/or package.</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2006-09-01T10:56:00Z">2006-09-01@10:56</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+															&nbsp;<a href="http://www.jejik.com/tag/apt" rel="tag">apt</a>
+															&nbsp;<a href="http://www.jejik.com/tag/repository" rel="tag">repository</a>
+															&nbsp;<a href="http://www.jejik.com/tag/reprepro" rel="tag">reprepro</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c1" class="number" id="c1">#1</a>
+																			Anonymous
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-09-01@21:43
+																																			</div>
+																Great! Thanks for this howto.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c2" class="number" id="c2">#2</a>
+																			Aussie
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-09-06@11:35
+																																			</div>
+																I have a quick question that is sort of related to this.<br />
+<br />
+I look after a number of PCs for my home. (most of them are either Debian or Ubuntu). Is it the same steps to set up a private repository for my network?<br />
+<br />
+What I want to do, is have one PC become a repository/server for all the PCs in my network. so instead of pulling packages or updates from the web all the time, I get them from a local server. (Thus, saving my monthly internet usage, as well as the Ubuntu server resources.)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c3" class="number" id="c3">#3</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-09-07@14:08
+																																			</div>
+																Yes, you could do it that way. You could use reprepro to fetch all the packages from the central debian or ubuntu repository to your local server, then adjust the /etc/apt/sources.list on your clients to point to your local server instead.<br />
+<br />
+I do vaguely remember reading about an easier way to do this with Debian. A way specifically designed for mirroring Debian's master archive, but I don't remember where I read that. I suggest you check the Debian sysadmin documentation or ask around on their mailing lists about that.<br />
+<br />
+The upside about using reprepro for that is that you can easily modify and overwrite the upstream debian/ubuntu packages. You could for example decide to repackage software with support for mp3 or video drivers or other non-free things that Debian and Ubuntu cannot distribute normally.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c4" class="number" id="c4">#4</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-10-16@22:56
+																																			</div>
+																How do you do to add source repository to be fully compiliant with GPL license?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-10-18@00:36
+																																			</div>
+																As far as reprepro is concerned, a source repository is just another architecture. As you can see in the listing of my conf/distributions I have specified three archirectures: i386, amd64 and source. Source packages are added to the repository with the includedsc command instead of the includedeb command.<br />
+<br />
+Reprepro then does all the magic by itself.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c6" class="number" id="c6">#6</a>
+																			The Beast
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-10-26@16:11
+																																			</div>
+																This is for Aussie. I have also been looking at setting up a local repository for my network. It looks like <a href="http://apt-proxy.sourceforge.net/" rel="nofollow">apt-proxy</a> might be viable, but there are links to similar projects from that page. Good luck.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c7" class="number" id="c7">#7</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-10-26@23:59
+																																			</div>
+																Thanks for that link The Beast. It looks really useful :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c8" class="number" id="c8">#8</a>
+																			mzilikazi
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2006-11-13@18:24
+																																			</div>
+																Another useful tool for mirroring an apt repo is approx:<br />
+apt-get install approx<br />
+<br />
+Easy to configure too.  Simply edit /etc/apt/approx.conf
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c9" class="number" id="c9">#9</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-09-19@19:57
+																																			</div>
+																I can never get the override files to kick in.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c10" class="number" id="c10">#10</a>
+																			Ajamison
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-04-28@19:40
+																																			</div>
+																Where is the repository meta data stored ? I ran the comman it succeded in adding packages but I did not realize i had to manually move the packages to the folder i wanted them in so i moved them and now the meta data fails how do i make it refresh the file location
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c11" class="number" id="c11">#11</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-04-29@09:56
+																																			</div>
+																Ajamison: On my system I did not have to move the packages manually. Reprepro copied them automatically for me to the correct location. Perhaps there is an error in your configuration?<br />
+<br />
+As for the metadata, that is stored in the usual place for a package repository: Under the indices/ and dists/ directories in various files like Contents.gz and Release.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c12" class="number" id="c12">#12</a>
+																			<a href="http://yziquel.homelinux.org/" class="name">Guillaume Yziquel<small> (http://yziquel.homelinux.org/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-10-11@11:45
+																																			</div>
+																The SignWith setting you described doesn't deal with multiple gpg keys. I tried adding a key identifier, but I have trouble making it working.<br />
+<br />
+There's also this ask-passphrase which is deprecated compared to gpg-agent. Again, still struggling to make it work.<br />
+<br />
+Thanks a lot for this doc.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c13" class="number" id="c13">#13</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-10-11@22:12
+																																			</div>
+																@Guillaume: The article was written over three years ago. It's no wonder some things have been deprecated in that time :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c14" class="number" id="c14">#14</a>
+																			Adrian Purser
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-11-12@12:54
+																																			</div>
+																I'm bit of a noob at debian package management. I'm trying to setup a repository that can host the same version of my app for various versions of ubuntu, hardy, jaunty and karmic. Is this possible or do I have to create a repository for each? <br />
+<br />
+If I try to add the same version (but with a different deb package file) using different codenames I get the following error -<br />
+<br />
+File "pool/non-free/i/imergescroll/imergescroll_1.0.7_i386.deb" is already registered with other md5sum!<br />
+<br />
+Thanks.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c15" class="number" id="c15">#15</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-11-12@14:04
+																																			</div>
+																Adrian, just make sure the package names are different. E.g:<br />
+<br />
+imergescroll_1.0.7~hardy1_i386.deb<br />
+imergescroll_1.0.7~hardy2_i386.deb<br />
+imergescroll_1.0.7~jaunty1_i386.deb<br />
+imergescroll_1.0.7~karmic1_i386.deb<br />
+<br />
+The 1.0.7 refers to the upstream version of the package. The ~hardy, ~karmic, etcetera point to the distribution version. The number after that is the package version. In the above example there are two imergescroll packages for Hardy, both based on the 1.0.7 upstream source code. This happens for example when the contents of the debian/ directory changes (e.g. a new control file, added dependencies, etcetera) but the program itself does not change.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c16" class="number" id="c16">#16</a>
+																			Adrian Purser
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-11-16@12:42
+																																			</div>
+																Thanks for your reply. I'm still having trouble and I think it's just down to my inexperience with this. I'm still getting the following error - <br />
+<br />
+$ sudo reprepro -Vb . includedeb karmic incoming/imergescroll_1.0.7~karmic1_i386.deb<br />
+incoming/imergescroll_1.0.7~karmic1_i386.deb: component guessed as 'non-free'<br />
+File "pool/non-free/i/imergescroll/imergescroll_1.0.7_i386.deb" is already registered with other md5sum!<br />
+(file: '4397e99047dcee4e64b4328238bd68c8 84880', database:'28e6f5f0428c3b64e8f6e6daac362e26 84684')!<br />
+There have been errors!<br />
+<br />
+Do I need to specify a different basedir for each distribution ? It seems to be stripping the codename from the filename when adding to the pool.<br />
+<br />
+Thanks again for your help.<br />
+<br />
+Regards<br />
+<br />
+Adrian
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c17" class="number" id="c17">#17</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-11-16@13:55
+																																			</div>
+																It shouldn't do that. Did you just rename the .deb file or did you change the files in the debian/ directory and rebuild the package? You should do the latter since IIRC reprepro reads the version information and the like from the package itself, not the filename.<br />
+<br />
+You shouldn't have to use different basedirs, but it is a valid workaround.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#c18" class="number" id="c18">#18</a>
+																			Adrian Purser
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-11-17@11:32
+																																			</div>
+																That was it, that worked a treat. Thankyou very much.
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2006/09/setting_up_and_managing_an_apt_repository_with_reprepro/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="84461eb24f59d767d309ee557c0765af" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2006%2F09%2Fsetting_up_and_managing_an_apt_repository_with_reprepro%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://labs.vivi.eng.br/blog/?p=4">labs.vivi.eng.br/blog/?p=4</a></li>
+															<li><a href="http://distributedinformation.com/blog/2007/04/22/debian-repository-for-twiki/">distributedinformation.com/...</a></li>
+															<li><a href="http://www.linuxquestions.org/questions/linux-networking-3/software-image-and-patchingsoftware-pushing-from-server-free-807745/#post3969978">www.linuxquestions.org/ques...</a></li>
+															<li><a href="http://blog.impermium.com/?p=63">blog.impermium.com/?p=63</a></li>
+															<li><a href="http://www.linuxquestions.org/questions/ubuntu-63/dpkg-genchanges-reprepro-for-making-ubuntu-repository-880020/#post4357886">www.linuxquestions.org/ques...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2010/03/how_to_correctly_create_odf_documents_using_zip/#c9">RPW: Maximum respect!
+This repacked...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

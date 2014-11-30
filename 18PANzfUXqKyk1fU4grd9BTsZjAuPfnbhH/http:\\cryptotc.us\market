@@ -1,0 +1,370 @@
+http://cryptotc.us/market
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Thu, 24 Jul 2014 00:14:58 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d58f47dc07624b0cbb6681ded36ec7d4b1406160898648; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.cryptotc.us; HttpOnly
+Set-Cookie: PHPSESSID=1ivoeu9ufpksd6kss4i4nl9c01; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+CF-RAY: 14ebebb088b202b6-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>OTC Cryptocurrency trading</title>
+		<script type="text/javascript" src="/extjs/ext-all.js"></script>
+		<link type="text/css" rel="stylesheet" href="/extjs/resources/css/ext-all.css" />
+				<script type="text/javascript" src="/javascript/cryptotc.js"></script>
+		<link type="text/css" rel="stylesheet" href="/css/cryptotc.css" />
+	</head>
+	<body style="background-color: #fff;">
+		<div id="logo">
+			<img src="/images/cryptotc.png" />
+		</div>
+		<div id="menu">
+			<a href='/'>Home</a> | <a href='/about'>About</a> | <span class='selected'>Market</span> | <a href='/signup'>Sign Up</a> | <a href='/login'>Sign In</a> | <a href='/contact'>Contact</a>
+		</div>
+		<div id="body"><div id="marketMenu" style="height: 100%;">
+
+</div>
+
+<div id="offerType">
+
+</div>
+
+<div id="makeOffer">
+
+</div>
+
+<div id="marketItems" style="">
+
+</div>
+
+
+<script type="text/javascript">
+
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', 'extjs/examples/ux');
+Ext.require([
+    'Ext.ux.plugins.FitToParent'
+]);
+
+
+
+
+Ext.onReady(function() {
+	
+	if('onhashchange' in window) {
+		window.onhashchange = function() {
+			var token = window.location.hash.substr(1);
+			if(marketstore != undefined) {
+				marketstore.coin = token;
+				marketstore.reload();
+			}
+		}
+	}
+	
+	
+	Ext.define('Model', {
+		extend: 'Ext.data.Model',
+		fields: [
+			{name: 'abbr', type: 'string'},
+			{name: 'name', type: 'string'},
+			{name: 'active', type: 'boolean'},
+			{name: 'add_date', type: 'integer'},
+		]
+	});
+
+	var store = Ext.create('Ext.data.Store', {
+		model: 'Model',
+		remoteSort: true,
+		proxy: {
+			type: 'ajax',
+			url: '/api/',
+			actionMethods: {
+				create : 'POST',
+				read   : 'POST',
+				update : 'POST',
+				destroy: 'POST'
+			},
+			reader: {
+				type: 'json',
+				totalProperty: 'total',
+				root: 'coins'
+			},
+			doRequest: function(operation, callback, scope) {
+				var writer  = this.getWriter();
+				var request = this.buildRequest(operation, callback, scope);
+				
+				if (operation.allowWrite()) {
+					request = writer.write(request);
+				}
+				
+				Ext.apply(request, {
+                    headers       : {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+                    timeout       : this.timeout,
+                    scope         : this,
+                    callback      : this.createRequestCallback(request, operation, callback, scope),
+                    method        : this.getMethod(request),
+                    jsonData      : this.jsonData,
+                    disableCaching: false
+                });
+				
+				Ext.Ajax.request(request);
+				
+				return request;
+			}
+		},
+		listeners: {
+			beforeload: function(store, operation, eOpts) {
+				store.proxy.jsonData = 'req={"object":"coin","method":"get","arguments":[{"sortby":"name","sortdir":"ASC"}]}';
+			},
+			load: function() {
+				var grid = Ext.getCmp('marketcoins');
+				var model = grid.getSelectionModel();
+				var store = grid.store;
+				if(window.location.hash.substr(1) == '') {
+					model.select(0);
+				}
+				else {
+					for(var i = 0; i < store.data.items.length; i++) {
+						if(store.data.items[i].data.abbr == window.location.hash.substr(1)) {
+							model.select(i);
+							return;
+						}
+					}
+					model.select(0);
+				}
+			},
+			scope: this
+		},
+		autoLoad: true
+	});
+	
+	
+	Ext.define('Grid', {
+		id: 'marketcoins',
+		extend: 'Ext.grid.Panel',
+		hideHeaders: true,
+		layout: 'fit',
+		height: '100%',
+		plugins : ['fittoparent'],
+		columns: [
+			{
+				dataIndex: 'name',
+				renderer: function(value, o, record) {
+					var str = Ext.String.format('{0} ({1})', value, record.get('abbr'));
+					var ts = new Date().getTime() / 1000;
+					if(ts - record.data.add_date < 259200) {
+						str += ' <img src="/images/new.png" />';
+					}
+                    return str;
+                },
+				flex: 1
+			}
+		],
+		selModel: Ext.create('Ext.selection.RowModel', {
+			mode: 'SINGLE',
+			listeners: {
+				scope: this,
+				select: function(selModel, rec) {
+					var record = rec.raw;
+					if(window.location.hash.substr(1) == record['abbr']) {
+						marketstore.coin = record['abbr'];
+						marketstore.reload();
+					}
+					document.location.href = '/market#' + record['abbr'];
+				}
+			}    
+		}),
+		title: 'OTC Coins For Trade'
+	});
+	
+	var marketMenu = Ext.create('Grid', {
+		store: store,
+		renderTo: 'marketMenu'
+	});
+	
+	var header = Ext.get(marketMenu.getEl().dom.children[0].id);
+	header.applyStyles("border-top-left-radius: 15px;");
+	
+	
+	
+	
+	Ext.define('MarketModel', {
+		extend: 'Ext.data.Model',
+		fields: [
+			{name: 'offer_id', type: 'int'},
+			{name: 'user_id', type: 'int'},
+			{name: 'username', type: 'string'},
+			{name: 'offer_coin', type: 'string'},
+			{name: 'offer_amount', type: 'float'},
+			{name: 'requested_coin', type: 'string'},
+			{name: 'requested_amount', type: 'float'},
+			{name: 'rate', type: 'float'},
+			{name: 'units', type: 'string'},
+			{name: 'created', type: 'string'},
+			{name: 'active', type: 'boolean'},
+			{name: 'confirmed', type: 'boolean'}
+		]
+	});
+	
+	var marketstore = Ext.create('Ext.data.Store', {
+		model: 'MarketModel',
+		remoteSort: true,
+		pageSize: 200,
+		page: 0,
+		coin: '',
+		type: 'coin',
+		proxy: {
+			type: 'ajax',
+			url: '/api/',
+			actionMethods: {
+				create : 'POST',
+				read   : 'POST',
+				update : 'POST',
+				destroy: 'POST'
+			},
+			reader: {
+				type: 'json',
+				root: 'offers'
+			},
+			doRequest: function(operation, callback, scope) {
+				var writer  = this.getWriter();
+				var request = this.buildRequest(operation, callback, scope);
+				
+				if (operation.allowWrite()) {
+					request = writer.write(request);
+				}
+				
+				Ext.apply(request, {
+                    headers       : {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+                    timeout       : this.timeout,
+                    scope         : this,
+                    callback      : this.createRequestCallback(request, operation, callback, scope),
+                    method        : this.getMethod(request),
+                    jsonData      : this.jsonData,
+                    disableCaching: false
+                });
+				
+				Ext.Ajax.request(request);
+				
+				return request;
+			}
+		},
+		listeners: {
+			beforeload: function(store, operation, eOpts) {
+				var offset = store.page * store.pageSize;
+				var sortBy = (store.sorters.items[0] == undefined) ? 'rate' : store.sorters.items[0].property;
+				var sortDir = (store.sorters.items[0] == undefined) ? 'DESC' : store.sorters.items[0].direction;
+				
+				store.proxy.jsonData = 'req={"object":"offer","method":"get","arguments":[{"' + store.type + '":"' + store.coin + '","offset":"' + offset + '","limit":' + store.pageSize + ',"sortby":"' + sortBy + '","sortdir":"' + sortDir + '"}]}';
+			},
+			load: function() {
+				
+			},
+			scope: this
+		}
+	});
+	
+	
+	var offertypecombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: '&nbsp;Display:',
+        renderTo: 'offerType',
+        displayField: 'name',
+		margin: 10,
+		editable: false,
+        store: [ [ "coin", "All Offers" ], [ "requested_coin", "Buy Offers" ], [ "offer_coin", "Sell Offers" ] ],
+        queryMode: 'local',
+		listeners: {
+			afterrender: function(combo) {
+				var recordSelected = combo.getStore().getAt(0);                     
+				combo.setValue(recordSelected.get('field1'));
+			},
+			change: function(field, newValue, oldValue) {
+				marketstore.type = newValue;
+				marketstore.reload();
+			}
+		}
+    });
+	
+		
+	Ext.define('MarketGrid', {
+		id: 'marketitems',
+		extend: 'Ext.grid.Panel',
+		layout: 'fit',
+		height: '100%',
+		plugins : ['fittoparent'],
+		columns: [
+			{
+				dataIndex: 'username',
+				header: 'Username',
+				flex: 1
+			},
+			{
+				dataIndex: 'offer_amount',
+				header: 'Offering',
+				flex: 1,
+				renderer:  Ext.util.Format.numberRenderer('0.00000000'),
+				align: 'right'
+			},
+			{
+				dataIndex: 'offer_coin',
+				header: 'Offer Coin',
+				flex: 1
+			},
+			{
+				dataIndex: 'requested_amount',
+				header: 'Requesting',
+				flex: 1,
+				renderer:  Ext.util.Format.numberRenderer('0.00000000'),
+				align: 'right'
+			},
+			{
+				dataIndex: 'requested_coin',
+				header: 'Request Coin',
+				flex: 1
+			},
+			{
+				header: 'Rate',
+				dataIndex: 'rate',
+				flex: 1,
+				renderer:  Ext.util.Format.numberRenderer('0.00000000'),
+				align: 'right'
+			},
+			{
+				header: 'Rate Units',
+				flex: 1,
+				dataIndex: 'units'
+			}
+		],
+		title: 'OTC Offers'
+	});
+	
+	var marketItems = Ext.create('MarketGrid', {
+		store: marketstore,
+		renderTo: 'marketItems'
+	});
+	
+	
+	
+});
+
+</script>
+
+		</div>
+		<div id="footer">
+			This website currently works solely off your donations [BTC 18PANzfUXqKyk1fU4grd9BTsZjAuPfnbhH, LTC LNHrMHXr7jCUgqVH71WeGhHs8iUKxLbFNm] - Copyright &copy; 2014 - <a href="/terms">Terms and Conditions</a>
+		</div>
+	</body>
+</html>
+
+

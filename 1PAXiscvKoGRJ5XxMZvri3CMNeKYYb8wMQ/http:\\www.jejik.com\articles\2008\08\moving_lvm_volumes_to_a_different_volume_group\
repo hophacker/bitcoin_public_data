@@ -1,0 +1,427 @@
+http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 18:17:34 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Thu, 23-Jul-2015 18:17:34 GMT; path=/
+Set-Cookie: lw_user_sid=e376fff4572827468fa5e1d25fbcd3a1; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 8609
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-23T20:17:34Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Moving LVM volumes to a different volume group - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/" class="entry-title">Moving LVM volumes to a different volume group</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p>I recently ordered a brand new PowerEdge T105 server from Dell because my current home server, a HP ProLiant G3, is much too power hungry for my liking. It consumes about 300 Watt round the clock, increasing my power bill by nearly &euro; 50 a month. The T105 consumer about a third of that, usually less. The new server came with an 80 GB hard disk. I partitioned it with LVM, installed Debian Lenny and moved over the bulk of my things from the old server to the new server. I did that manually over the course of two weeks because it was a good time to restructure and upgrade many other things in the process.</p>
+
+<p>When I was done only one thing remained: my media collection, which is stored on a 500 GB RAID1 array on the old server. That RAID1 array is also partitioned using LVM in a single 500 GB volume group. I took the two drives out of the old server, put them in the new server, copied over /etc/mdadm/mdadm.conf from the old server and all was well. Nearly. My media collection only uses a small part of the 500 GB volume group, so I wanted to move the OS volumes from the 80 GB volume group to the 500 GB volume group. That way I could take out the 80 GB disk and save some power. Problem: There is no obvious way to move a logical volume from one volume group to another. Additional problem: I can&#8217;t run the OS from the 80 GB volume group when I am migrating them. Cue <a href="http://www.sysresccd.org/Main_Page">SytemRescueCD</a>.</p>
+
+<p>At first I tried to use a <a href="http://debian-live.alioth.debian.org/">Debian Etch Live CD</a> and an <a href="http://www.ubuntu.com/getubuntu/download">Ubuntu 8.04 Live CD</a> to access my mdadm RAID and LVM volume groups from a Live CD but those didn&#8217;t work well. The 2.6.18 kernel in Debian Etch is too old to handle the T105 hardware. It could not get on-board gigabit ethernet working so I could not download the packages I needed to get mdadm and lvm working. Ubuntu was just as unsuccessful. While it did see my ethernet card, various kernel modules needed for mdadm and LVM are left out of the Live CD kernel in order to save space. So I went with SystemRescueCD which comes with both mdadm and LVM out-of-the-box.</p>
+
+<p>The system layout is quite simple. /dev/sda1 and /dev/sdb1 make up a 500 GB mdadm RAID1 volume. This RAID volume contains an LVM volume group called &ldquo;3ware&rdquo;, named so because in my old server it was connected to my <a href="http://www.jejik.com/articles/2008/04/benchmarking_linux_filesystems_on_software_raid_1/">3ware RAID card</a>. It contains a single logical volume called &ldquo;media&rdquo;. The original 80 GB disk is on /dev/sdc1 which contains an LVM volume group called &ldquo;linuxvg&rdquo;. Inside that volume group are three volumes: &ldquo;boot&rdquo;, &ldquo;root&rdquo; and &ldquo;swap&rdquo;. Goal: Move linuxvg-root and linuxvg-boot to the 3ware volume group. Additional goal: Rename 3ware to linuxvg. The latter is more for aesthetic reasons but as a bonus it also means that there is no need to fiddle with grub or fstab settings after the move.</p>
+
+<p>Before starting SystemRescueCD and start moving things around there are a few things that need to be done first. Start by making a copy of /etc/mdadm/mdadm.conf because you will need it later. Also, because the machine will be booting from the RAID array I need to install grub to those two disks.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># grub-install /dev/sda</div></li>
+<li class="li1"><div class="de1"># grub-install /dev/sdb</div></li>
+</ol></div></div>
+
+<p>Now it&#8217;s time to boot into SystemRescueCD. I start off by copying /etc/mdadm/mdadm.conf back and starting the RAID1 array. This command scans for all the arrays defined in mdadm.conf and tries to start them.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># mdadm --assemble --scan</div></li>
+</ol></div></div>
+
+<p>Next I need to make a couple of changes to /etc/lvm/lvm.conf. If I were to scan for LVM volume groups at this point, it would find the 3ware group three times: once in /dev/md0, /dev/sda1 and /dev/sdb1. So I adjust the filter setting in lvm.conf so it will not scan /dev/sda1 and /dev/sdb1.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">filter = [ &quot;r|/dev/cdrom|&quot;, &quot;r|/dev/sd[ab]1|&quot; ]</div></li>
+</ol></div></div>
+
+<p>LVM can now scan the hard drives and find all the volume groups.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># vgscan</div></li>
+</ol></div></div>
+
+<p>I disable the volume groups so that I can rename them. linuxvg becomes linuxold and 3ware becomes the new linuxvg. Then I re-enable the volume groups.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># vgchange -a n</div></li>
+<li class="li1"><div class="de1"># vgrename linuxvg linuxold</div></li>
+<li class="li1"><div class="de1"># vgrename 3ware linuxvg</div></li>
+<li class="li1"><div class="de1"># vgchange -a y</div></li>
+</ol></div></div>
+
+<p>Now I can create a new logical volume in the 500 Gb volume group for my boot partition and create an ext3 filesystem in it.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># lvcreate --name boot --size 512MB linuxvg</div></li>
+<li class="li1"><div class="de1"># mkfs.ext3 /dev/mapper/linuxvg-boot</div></li>
+</ol></div></div>
+
+<p>I create mount points to mount the original boot partition and the new boot partition and then use rsync to copy all the data. Don&#8217;t use cp for this! Rsync with the -ah option will preserve all soft links, hard links and file permissions while cp does not. If you do not want to use rsync you could also use the dd command to transfer the data directly from block device to block device.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># mkdir /mnt/src /mnt/dst</div></li>
+<li class="li1"><div class="de1"># mount -t ext3 /dev/mapper/linuxold-boot /mnt/src</div></li>
+<li class="li1"><div class="de1"># mount -t ext3 /dev/mapper/linuxvg-boot /mnt/dst</div></li>
+<li class="li1"><div class="de1"># rsync -avh /mnt/src/ /mnt/dst/</div></li>
+<li class="li1"><div class="de1"># umount /mnt/src /mnt/dst</div></li>
+</ol></div></div>
+
+<p>Rinse and repeat to copy over the root filesystem.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># lvcreate --name root --size 40960MB linuxvg</div></li>
+<li class="li1"><div class="de1"># mkfs.ext3 /dev/mapper/linuxvg-root</div></li>
+<li class="li1"><div class="de1"># mount -t ext3 /dev/mapper/linuxold-root /mnt/src</div></li>
+<li class="li1"><div class="de1"># mount -t ext3 /dev/mapper/linuxvg-root /mnt/dst</div></li>
+<li class="li1"><div class="de1"># rsync -avh /mnt/src/ /mnt/dst/</div></li>
+<li class="li1"><div class="de1"># umount /mnt/src /mnt/dst</div></li>
+</ol></div></div>
+
+<p>There's no sense in copying the swap volume. Simply create a new one.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># lvcreate --name swap --size 1024MB linuxvg</div></li>
+<li class="li1"><div class="de1"># mkswap /dev/mapper/linuxvg-swap</div></li>
+</ol></div></div>
+
+<p>And that's it. I rebooted into Debian Lenny to make sure that everything worked and I removed the 80 GB disk from my server. While this wans&#8217;t particularly hard, I do hope that the maintainers of LVM create an lvmove command to make this even easier.</p></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-08-25T17:01:00Z">2008-08-25@17:01</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/lvm" rel="tag">lvm</a>
+															&nbsp;<a href="http://www.jejik.com/tag/mdadm" rel="tag">mdadm</a>
+															&nbsp;<a href="http://www.jejik.com/tag/grub" rel="tag">grub</a>
+															&nbsp;<a href="http://www.jejik.com/tag/rsync" rel="tag">rsync</a>
+															&nbsp;<a href="http://www.jejik.com/tag/systemrescuecd" rel="tag">systemrescuecd</a>
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-26@22:06
+																																			</div>
+																is it difficult to run:<br />
+<br />
+sudo apt-get install mdadm lvm2<br />
+<br />
+?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c2" class="number" id="c2">#2</a>
+																			David M.
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-26@22:38
+																																			</div>
+																Two comments:<br />
+First you can use the ubuntu live cd to do this.  As the first comment indicates you just need to use apt-get to install mdadm and lvm2.  I've done this a number of times.  Mainly b/c it's much faster to do then to download another iso and burn another cd.<br />
+<br />
+Secondly I believe you can do this using lvm commands with the following steps.<br />
+<br />
+Run vgmerge to merge your two volume groups into one.  Then use pvmove to migrate you lv's off the 80GB drive.  Once you have the lv's all on the raid you can use vgreduce and pvremove to get the 80GB drive out of the volume group.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c3" class="number" id="c3">#3</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-26@23:55
+																																			</div>
+																Thanks for your comments.<br />
+<br />
+With regards to installing mdadm and lvm on Ubuntu: I tried that. It then complained about not finding kernel modules. So I installed the kernel modules as well, ran insmod and tried again, once more without success. lvm could see the volume group on my 80 GB drive but mdadm refused to see or start the RAID1. At that point I gave up and got SystemRescueCD because I knew it had everything out of the box.<br />
+<br />
+@David: Nice trick with the vgmerge and pvmove. I looked at the commands but didn't put them together like you did. Someone on #lvm recommended using rsync or dd instead so I went with that. I'll definitely try it next time such a situation comes up.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c4" class="number" id="c4">#4</a>
+																			<a href="http://furicle.blogspot.com" class="name">furicle<small> (http://furicle.blogspot.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-27@15:32
+																																			</div>
+																I'm pretty sure either the Alternate or Server CD in rescue mode would have worked 'out of the box' where the live cd wouldn't
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c5" class="number" id="c5">#5</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-27@16:19
+																																			</div>
+																Perhaps. I don't know the differences between the LiveCD kernel configuration and those for the Alternate or Server CDs.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c6" class="number" id="c6">#6</a>
+																			<a href="http://www.tgharold.com/techblog/" class="name">Thomas Harold<small> (http://www.tgharold.com/techblog/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-31@14:14
+																																			</div>
+																David M's comment from Aug 26th 2008 is pretty much spot on.  Especially if you are retiring an old VG or old PVs.<br />
+<br />
+One of the tricks that I did earlier this year was to move PVs around on a system where I was changing from a 160GB 7200 PRM SATA (RAID-1) to a 150GB 10k RPM SATA (RAID-1).  I also used the vgmerge, pvmove, vgreduce and pvremove commands.<br />
+<br />
+The other brute-force solution is to unmount the original file system, create an identically sized LV in the target VG, and simply use the dd command to copy the blocks from the old LV to the new LV.  But cp or rsync and mounting both at the same time works well.  Multiple ways to skin the cat and all that.<br />
+<br />
+(I greatly enjoy LVM's flexibility, it's saved me lots of trouble over the past few years where I needed to change things around on a Linux box.)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c7" class="number" id="c7">#7</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-02@10:00
+																																			</div>
+																I love LVM as well, especially when combined with grub2's new functionality of booting off an LVM volume. Finally it's no longer necessary to keep a separate /boot partition around.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c8" class="number" id="c8">#8</a>
+																			<a href="http://jkroon.blogs.uls.co.za" class="name">Jaco Kroon<small> (http://jkroon.blogs.uls.co.za)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-08@16:31
+																																			</div>
+																Based on pvmerge+pvmove one could do this without even needing a livecd.  Both those commands as well as the final vgreduce/pvremove commands can run on a live system, so you can continue working without having to worry about losing any data whilst this all happens.  The only downtime would be for the reboot to remove the 80GB drive, which may even be do-able in a powered up state if you have hot-swap drives :).
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c9" class="number" id="c9">#9</a>
+																			Stoat
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-06-10@19:56
+																																			</div>
+																VGmerge/PVmove is handy but it's of no use if you want to move stuff from one PV to a stripeset of PVs for speed (or to change the number of PVs in a stripset).<br />
+<br />
+Usual warnings apply. The underlaying LUNs for the PVs in my case are 15-drive 24Tb RAID6 arrays, so this is effectively RAID60, not RAID0... :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c10" class="number" id="c10">#10</a>
+																			<a href="http://pascal-schwarz.ch" class="name">iSO<small> (http://pascal-schwarz.ch)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-08-18@00:28
+																																			</div>
+																i think there is an even easier way:<br />
+<br />
+just create a new lv on the target vg with the same size, copy using dd, test, remove lv on source vg<br />
+<br />
+and about rsync/cp: doesnt "cp -arv" work aswell?<br />
+"--archive same as -dR --preserve=all"
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#c11" class="number" id="c11">#11</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-10-08@17:03
+																																			</div>
+																here is a step-by-step example on a similar setup<br />
+<br />
+http://pleasedonttouchthescreen.blogspot.com/2011/10/migrating-logical-volumes-between.html
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/08/moving_lvm_volumes_to_a_different_volume_group/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="45a59851f186ef94bbfd7578c764e063" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F08%2Fmoving_lvm_volumes_to_a_different_volume_group%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

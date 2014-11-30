@@ -1,0 +1,365 @@
+http://dba.stackexchange.com/tags/storage/hot
+Hottest 'storage' Answers - Database Administrators Stack Exchange
+current community
+chat
+blog
+Database Administrators
+Database Administrators Meta
+your communities Sign up
+or
+log in
+to customize your list.
+more stack exchange communities
+Stack Exchange
+sign up
+log in
+tour
+help
+Tour
+Start here for a quick overview of the site
+Help Center
+Detailed answers to any questions you might have
+Meta
+Discuss the workings and policies of this site
+Database Administrators
+Questions
+Tags
+Users
+Badges
+Unanswered
+Ask Question
+Tag Info
+users
+hot
+new
+synonyms
+Hot answers tagged storage day
+week
+month
+year
+all
+12
+Is it impossible to store 2^266 records on a database of some kind? [closed]
+Absolutely possible, because someone with the resources to store 6021188640340442162025691220451771208370039202613309330051794368412 Terabyte
+definitely has enough money to get a custom made database system for his purposes as well.
+I might be available as a contractor, for only 0.01€ per Terabyte.
+sql database-design storage answered Apr 1 at 7:54
+Twinkles
+1,153218
+9
+Adding SPARSE made table much bigger
+You need to rebuild the clustered index after making the columns sparse. The dropped columns still exist in the data page until you do this as can be seen with a query against sys.system_internals_partition_columns or using DBCC PAGE
+SET NOCOUNT ON;
+CREATE TABLE Thing (
+ThingId int IDENTITY CONSTRAINT PK PRIMARY KEY,
+USER_CHAR1 nvarchar(150) null,
+...
+sql-server-2008 sql null storage answered Feb 4 '12 at 16:42
+Martin Smith
+27k659111
+8
+Is it impossible to store 2^266 records on a database of some kind? [closed]
+You have to use compression (columnstores should do it). I suggest RLE (Run Length Encoding), you can store (5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAbuatmU ,1MsHWS1BnwMc3tLE8G35UXsS58fKipzB7a ,1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9) as the value and 115792089237316195423570985008687907853269984665640564039457584007913129639936 as the run length. Document ...
+sql database-design storage answered Apr 1 at 9:59
+Remus Rusanu
+28.4k23688
+7
+Stop SQL Server service(s) before defragmenting drive?
+Your problem is not disk fragmentation. Your problem is RAM and application table scans:
+4GB RAM ... 68GB ... Page life expectancy 20 seconds
+You need way more RAM. As in your new server should have way, way, way, way more than 12GB. Start with 64 GB, it costs basically dimes. And yes, fix your app to use indexes. 20 seconds is very clear indication of ...
+sql-server maintenance storage database-maintenance answered Mar 12 '13 at 10:22
+Remus Rusanu
+28.4k23688
+7
+Help with Cybernetics SAN Configuration
+SQL Server 2008 R2 installed on a virtual server
+IMO, the SQL Server VM should live with the rest of the VMs. If this device goes kaput (the Cybernetics website says nothing about the number of controllers in this model range, so presumably there's only one), you don't want all your eggs in one basket. Hopefully there are other, better protected devices ...
+sql-server sql-server-2008-r2 storage hardware answered Sep 21 '13 at 0:37
+Jon Seigel
+11.9k21949
+6
+Highly Concurrent Storage System
+If eventual consistency is acceptable and all your queries are aggregates then perhaps a low-latency OLAP system might work for you. Your requirement sounds a bit like an algorithmic trading platform. This type of architecture is often used in trading floor systems that have a requirement to carry out aggregate statistical analysis computations on up to ...
+architecture concurrency nosql storage answered Feb 9 '12 at 10:11
+ConcernedOfTunbridgeWells
+11.9k2652
+6
+Splitting TempDB into multiples files equal to number of CPUs
+1/4 to 1/2 files to cores has long been the recommendation...
+But there's now even better guidance. At PASS in 2011, my good friend Bob Ward, who’s the top guy in SQL
+Product Support, espoused a new formula: if you have less than 8
+cores, use #files = #cores. If you have more than 8 cores, use 8 files
+and if you’re seeing in-memory contention, add ...
+sql-server sql-server-2008-r2 storage tempdb disk-structures answered Jan 23 '13 at 22:43
+Mark Storey-Smith
+22.3k34185
+6
+How to Correctly Estimate the Average Number of I/O Operations my RAID 10 disk can offer?
+tl;dr Yes you can do a rough and ready calculation but benchmarking is advisable if you need accuracy. There are many factors beyond raw disk performance that can influence IOPs, in particular the RAID controller.
+If you have the technical specifications for the disk, the quick calculation to determine IOPs is: 1 / (average latency + average seek time) = ...
+database-administration optimization storage tuning answered Feb 28 '13 at 12:26
+Mark Storey-Smith
+22.3k34185
+6
+What are the low-level storage requirements? [closed]
+You didn't mention the Database platform, I can give insight on SQL Server.
+SQL Server ensures durability with a concept called WAL. Write ahead logging. This means that all changes are first written to log before the are applied tot the data files.
+When a row needs to be altered. The corresponding data (and possibly index) pages get fetched from disk into ...
+storage answered Dec 23 '13 at 9:22
+Edward Dortland
+1,919211
+6
+Is it impossible to store 2^266 records on a database of some kind? [closed]
+Unfortunately there are only 1080 atoms in the visible universe. But with only one atom given, it could be possible to describe the data purely by its position in the universe.
+The database has 2266 records with 52 bytes each, that is a database size of 52⋅2266 bytes. That means there are 25652⋅2266 ≈ 101082 possibe states the database could adopt.
+Using ...
+sql database-design storage answered Apr 1 at 9:50
+dulange
+612
+5
+Extreme storage beasts
+All one has to do is run these queries:
+MyISAM
+SELECT CONCAT(ROUND(KBS/POWER(1024,
+IF(PowerOf1024<0,0,IF(PowerOf1024>3,0,PowerOf1024)))+0.4999),
+SUBSTR(' KMG',IF(PowerOf1024<0,0,
+IF(PowerOf1024>3,0,PowerOf1024))+1,1))
+recommended_key_buffer_size FROM
+(SELECT LEAST(POWER(2,32),KBS1) KBS
+FROM (SELECT SUM(index_length) KBS1
+FROM ...
+mysql storage disk-structures answered Sep 21 '11 at 21:28
+RolandoMySQLDBA
+60.5k957140
+5
+Removing physical fragmentation
+No, backup / restore will keep all the fragmentation. Probably better to add a filegroup with files in the new location, and recreate all of your user tables on the new filegroup (by recreating the indexes with DROP_EXISTING, and as an online operation if possible). You won't be able to eliminate the original files entirely, but if you've moved all the user ...
+sql-server fragmentation storage answered Aug 23 '12 at 16:17
+Aaron Bertrand♦
+57k776158
+5
+Creating the database on different file groups
+One of the main benefits of utilizing multiple files and filegroups is that you have great control over file growth. Also, prominently you can control and optimize I/O performance, as putting database files on separate physical disks can lead to faster I/O. If you have an I/O expensive query across two tables, putting then on different disks can lead to ...
+sql-server sql-server-2008 storage filegroups answered Sep 11 '12 at 3:03
+Thomas Stringer
+22.7k33979
+5
+Splitting TempDB into multiples files equal to number of CPUs
+Like most general guidelines, it is a an oversimplification in its most positive light. At best, it is a good starting point (provided you don't aren't keeping the 1:1 core:data file ratio with a large amount of cores).
+There is no replacement for proper design and proper follow-up monitoring and baselining. The reason behind having multiple data files ...
+sql-server sql-server-2008-r2 storage tempdb disk-structures answered Jan 23 '13 at 22:42
+Thomas Stringer
+22.7k33979
+5
+How un-clustered is a CLUSTER USING table in PostgreSQL
+I am not entirely sure how much this information helps, but the system table pg_stats contains a correlation column:
+select schemaname,tablename,attname,correlation from pg_stats where schemaname='public' order by correlation;
+From the manual Statistical correlation between physical row ordering and logical ordering of the column values. This ...
+postgresql performance optimization storage disk-structures answered May 16 '13 at 21:51
+a_horse_with_no_name
+11k11742
+5
+do MYSQL views occupy physical space?
+To answer your question literally, yes, in MySQL, views do exist as occupied space on the disk. But of course they do: if the didn't, where would they exist? If you rebooted your server, how would the views persist?
+I imagine what you really meant was "do MySQL views occupy physical space in proportion to the number of rows they contain?", in which case the ...
+mysql view storage answered Apr 13 '13 at 18:04
+Tom Anderson
+1511
+5
+RAID Storage Technology Outdated? [closed]
+Before jumping at one article you should do a little research, after a short Google search "windows storage pools vs raid" I found this article which goes more in-depth. As far as I can tell this new tech doesn't completely replace raid but could be considered an alternative to raid ONLY if you are using windows server 2012. It also may not make sense if you ...
+storage windows-server disk-structures answered Jun 12 at 10:43
+waterfoul
+511
+4
+SQL Filegroup degrading performance
+Random thoughts
+The statistics etc weren't disable on rebuild into new filegroup?
+Maintenance tasks do not look at the filegroup?
+Heavily fragmented disk?
+Try MAXDOP 1
+Exactly same fillfactor etc?
+The IO looks way off so I wonder if stats or fragmentation is causing an issue
+sql-server sql-server-2008 performance storage answered Oct 7 '10 at 17:55
+gbn
+46.8k468121
+4
+Enumerate drives available to SQL Server
+I'm guessing you're actually running on a clustered instance.
+EXEC master..xp_fixeddrives is returning all the drives that the underlying OS is aware of, so a lot aren't available to your cluster instance
+use:
+SELECT * FROM sys.dm_io_cluster_shared_drives
+instead, which will just list the ones available to your instance
+sql-server permissions storage answered Oct 11 '12 at 11:26
+Stuart Moore
+1,788313
+4
+Query to check where database growth was?
+I profiled the query and this is the portion that returns the 'Disk Usage by Top Tables' results:
+exec sp_executesql @stmt=N'begin try SELECT TOP 1000
+(row_number() over(order by (a1.reserved + ISNULL(a4.reserved,0)) desc))%2 as l1,
+a3.name AS [schemaname],
+a2.name AS [tablename],
+a1.rows as ...
+sql-server sql-server-2008 sql storage answered Nov 7 '12 at 23:30
+Ali Razeghi
+2,5321318
+4
+Can I see the RAID group name for my SQL Server Database files?
+SQL Server doesn't have any access to anything that low level. Typically Windows can't even see the RAID group information given that each hardware vendor stores that differently and typically exposing that information to the OS doesn't have any benefit. You'll need to work with your hardware team to make the drive labels match, but even then that isn't ...
+sql-server sql-server-2008 storage answered Nov 27 '12 at 16:35
+mrdenny♦
+20.6k22048
+4
+SQL Server data files and RAID
+If you have a single RAID10 volume then as far as SQL Server is concerned you have one volume and you can't control how things are stored, splitting things into extra files unnecessarily will likely have detrimental effects as it would on a single disk.
+If you wish to try gain performance benefits from segregating data between spindles then you need to ...
+sql-server storage hardware datafile answered Dec 15 '13 at 21:25
+David Spillett
+7,8671431
+4
+Is it impossible to store 2^266 records on a database of some kind? [closed]
+Improving on Remus' answer, you could use a more powerful compression, storing nothing in the database. How would that work?
+Just like the difference between a method and a generator in Python, the difference between a function that returns a value or yields it when needed. Lets call it "lazy evaluation". As an example, assuming the table will hold all ...
+sql database-design storage answered Apr 1 at 10:57
+ypercube
+16.3k32958
+4
+RAID Storage Technology Outdated? [closed]
+As in the original article you linked:
+The question here is this: if you’re not segregating the workload at the physical resource level, is there any need to segregate the workloads at the logical level? For example, if tempdb and my user databases are in a single pool of disk on the array, should I bother having them on multiple LUNs (Logical Disks) on ...
+storage windows-server disk-structures answered Jun 12 at 12:06
+David Crowell
+3464
+3
+Oracle extents - How can I have so few with this large size?
+You may believe that this is a different question but my answer is going to be essentially identical assuming the additional information from the prior question is the same-- you're using automatic extent allocation and you're not sure how Toad is determining these numbers.
+The data you're getting from Toad appears to be incorrect or, at least, misleading. ...
+oracle oracle-11g-r2 storage answered May 8 '12 at 5:30
+Justin Cave
+11.8k11832
+3
+Oracle extents - How can I have so many with this small size?
+The data you're getting from Toad appears to be incorrect or, at least, misleading. If you are using a locally managed tablespace with automatic extent allocation, Oracle will determine your initial and next extent sizes automatically. In 11.2, the first 16 extents are going to be 64k in size (for a total of 1 MB). The next 63 extents are going to be 1 MB ...
+oracle oracle-11g-r2 storage answered May 7 '12 at 21:01
+Justin Cave
+11.8k11832
+3
+Storing Passport Numbers in a database
+Passport numbers should definitely be encrypted in the database. You should investigate the legality of collecting and storing this information before proceeding.
+best-practices encryption storage answered Nov 18 '11 at 17:06
+datagod
+4,2241029
+3
+Database placement on abstract storage structure
+What I would do is to benchmark the performance before and after the changes. There should be a performance gain after tempdb is moved to another drive. Use DMVs like sys.dm_io_virtual_file_stats to see the read and write wait times for the DB files. Use the perfmon physical disk counters: Avg. Disk sec/Read, Avg. Disk sec/Write, Disk Reads/sec, Disk ...
+sql-server sql-server-2008 sql-server-2005 storage answered Aug 19 '11 at 5:32
+StanleyJohns
+4,63611135
+3
+SQL Server - Separating data, log, and TempDB files on a SAN
+One thing to consider is that the log files are sequential writes where as the data files are non sequential. That is one of the reasons for separate LUNs. Log files write faster if they are on their own LUN because the spindles don't have to skip around, just write sequential. If you add in a data file then the spindles have to skip around and you lose ...
+sql-server performance storage san answered Feb 25 '13 at 20:47
+Kenneth Fisher
+4,194419
+Only top voted, non community-wiki answers of a minimum length are eligible
+73
+questions tagged
+storage Related Tags
+sql-server × 24
+mysql × 13
+sql-server-2008 × 7
+postgresql × 7
+performance × 6
+oracle × 6
+sql × 5
+oracle-11g-r2 × 4
+sql-server-2012 × 4
+disk-structures × 4
+hardware × 4
+sql-server-2008-r2 × 4
+clustering × 3
+innodb × 3
+postgresql-9.1 × 3
+database-tuning × 3
+partitioning × 3
+blob × 3
+replication × 2
+sql-server-2005 × 2
+datafile × 2
+mirroring × 2
+server × 2
+delete × 2
+optimization × 2
+tour
+help
+badges
+blog
+chat
+data
+legal
+privacy policy
+work here
+advertising info
+mobile
+contact us
+feedback
+Technology
+Life / Arts
+Culture / Recreation
+Science
+Other
+Stack Overflow
+Server Fault
+Super User
+Web Applications
+Ask Ubuntu
+Webmasters
+Game Development
+TeX - LaTeX
+Programmers
+Unix & Linux
+Ask Different (Apple)
+WordPress Development
+Geographic Information Systems
+Electrical Engineering
+Android Enthusiasts
+Information Security
+Database Administrators
+Drupal Answers
+SharePoint
+User Experience
+Mathematica
+more (14)
+Photography
+Science Fiction & Fantasy
+Graphic Design
+Seasoned Advice (cooking)
+Home Improvement
+Personal Finance & Money
+Academia
+more (10)
+English Language & Usage
+Skeptics
+Mi Yodeya (Judaism)
+Travel
+Christianity
+Arqade (gaming)
+Bicycles
+Role-playing Games
+more (21)
+Mathematics
+Cross Validated (stats)
+Theoretical Computer Science
+Physics
+MathOverflow
+more (7)
+Stack Apps
+Meta Stack Exchange
+Area 51
+Stack Overflow Careers
+site design / logo © 2014 stack exchange inc; user contributions licensed under cc by-sa 3.0 with attribution required
+rev 2014.7.11.1706
+Database Administrators Stack Exchange works best with JavaScript enabled
+

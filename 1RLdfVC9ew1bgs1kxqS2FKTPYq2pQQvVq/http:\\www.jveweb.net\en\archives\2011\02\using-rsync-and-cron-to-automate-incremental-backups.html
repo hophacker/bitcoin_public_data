@@ -1,0 +1,732 @@
+http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 14:39:41 GMT
+Server: Apache
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 11143
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Juan Valencia Escalante" />
+	<title>Using rsync and cron to automate incremental backups - Juan Valencia's website</title>
+	<link rel="alternate" href="http://www.jveweb.net/archivo/2011/02/usando-rsync-y-cron-para-automatizar-respaldos-incrementales.html" hreflang="es" lang="es" title="Versi&oacute;n en Espa&ntilde;ol" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 feed" href="http://www.jveweb.net/en/rss.xml" />
+    
+    <meta name="keywords" content="rsync, backup, incremental, suffix, backup-dir, delete, exclude, date, basename, cron, crontab, ssh-keygen, Host, HostName, User, sftp, mkdir, cd, put, /dev/fd/0, EOF, recursive, files-from, filter" />
+    <meta name="description" content="A guide about the backup functionality of rsync and a case example of running an automated incremental rotatory backup" />
+    
+	<!-- style START -->
+	<!-- default style -->
+	<link rel="stylesheet" type="text/css" href="http://www.jveweb.net/en/style.css" media="screen" />
+	<!-- for translations -->
+		<!--[if IE 6]>
+		<link rel="stylesheet" href="http://www.jveweb.net/en/ie6.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+	<!-- script START -->
+	<script type="text/javascript" src="http://www.jveweb.net/en/js/util.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>
+		<!-- script END -->
+</head>
+<body>
+<!-- wrap START -->
+<div id="wrap">
+<!-- container START -->
+<div id="container">
+<!-- header START -->
+<div id="header">
+	<div id="caption">
+		<h1 id="title"><a href="http://www.jveweb.net/en/index.html">Juan Valencia's website</a></h1>
+		<div id="tagline">Linux, Free and Open Source Software, Programming and some thoughts.</div>
+	</div>
+	<!-- navigation START -->
+	<div id="navigation">
+		<ul id="menus">
+			<li class="page_item page-item-1"><a class="home" title="Home" href="http://www.jveweb.net/en/index.html">Home</a></li>
+			<li class="page_item page-item-2"><a href="http://www.jveweb.net/en/linux_foss.html" title="Linux &amp; FOSS">Linux &amp; FOSS</a></li>
+			<li class="page_item page-item-3"><a href="http://www.jveweb.net/en/programming.html" title="Programming">Programming</a></li>
+			<li class="page_item page-item-4"><a href="http://www.jveweb.net/en/thoughts.html" title="Thoughts">Thoughts &amp; Opinion</a></li>
+			<li class="page_item page-item-5"><a href="http://www.jveweb.net/en/photography.html" title="Photography">Photography</a></li>
+			<li class="page_item page-item-6"><a href="http://www.jveweb.net/en/contact.html" title="Contact &amp; About me">Contact &amp; About me</a></li>
+			<li class="page_item page-item-7"><a href="http://www.jveweb.net/en/sitemap.html" title="Sitemap">Sitemap</a></li>
+			<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+		</ul>
+		<div class="fixed"></div>
+	</div>
+	<!-- navigation END -->
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+<!-- content START -->
+<div id="content">
+	<!-- main START -->
+	<div id="main">
+
+			<div class="post">
+			<h2><a class="title" href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html" rel="bookmark">Using rsync and cron to automate incremental backups</a></h2>
+			<div class="info">
+				<span class="date">Tuesday, February 15, 2011 | <a href="http://www.jveweb.net/archivo/2011/02/usando-rsync-y-cron-para-automatizar-respaldos-incrementales.html" rel="alternate">En Espa&#241;ol</a></span>
+				<div class="fixed"></div>
+			</div>
+			<div class="info">
+        <p>
+          <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;"
+href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html"></a> <g:plusone size="medium"></g:plusone>
+        </p>
+			</div>
+			<div class="content">
+<blockquote>
+      There are two kinds of people in the world: those who backup, and those 
+      who never experienced severe data loss.
+    </blockquote>
+    <p>
+      Data loss is a serious concern to both individuals and companies that 
+      rely in the use of computers for their every day life or operations. 
+      Those who have a Unix based system count with powerful tools to prevent 
+      this, such as <code>rsync</code> to backup the information, and <code>cron</code> 
+      to make the backup process automated. In previous posts I wrote about <a href="http://www.jveweb.net/en/archives/2010/11/synchronizing-folders-with-rsync.html">the 
+      basics of rsync</a> and <a href="http://www.jveweb.net/en/archives/2011/01/running-rsync-as-a-daemon.html">it's 
+      usage as a daemon</a>, as well as <a href="http://www.jveweb.net/en/archives/2011/01/using-cronjobs-in-linux.html">the 
+      basics of cron</a>. In this post the focus is on the backup 
+      functionality of <code>rsync</code>, and its conjoint usage with <code>cron</code> 
+      to automate the backup process.
+    </p>
+    <p>
+      <b>Topics</b><br /><a href="#jveweb_en_027_01">Full-backup and incremental 
+      backup.</a><br /><a href="#jveweb_en_027_02">The basics of the --backup 
+      parameter</a><br /><a href="#jveweb_en_027_03">Using a backup directory</a><br /><a href="#jveweb_en_027_04">Using 
+      the parameters --backup and --delete together</a><br /><a href="#jveweb_en_027_05">rsync 
+      and cron for automated incremental backups.</a><br /><a href="#jveweb_en_027_06">Rotatory 
+      incremental backup with rsync and cron</a><br /><a href="#jveweb_en_027_07">Example 
+      case:</a><br /><a href="#jveweb_en_027_08">Footnotes</a>
+    </p>
+    <h3 id="jveweb_en_027_01">
+      Full-backup and incremental backup.
+    </h3>
+    <p>
+      A full backup, as its name implies, is a copy of each and every one of 
+      the files and directories (and subdirectories) into a different 
+      location. This is a good way to backup your files (and the initial step 
+      of any incremental and differential backup system), however, as the 
+      number and the size of your files grows larger, it becomes burdensome 
+      and time consuming to do this full backup every single day, or whatever 
+      period of time you require based on the importance of the information 
+      and the frequency at which it changes. And yet, you should backup your 
+      information as often as required, specially if you are working with 
+      critical information.
+    </p>
+    <p>
+      Here is where incremental backups come in. As I wrote before in <a href="http://www.jveweb.net/en/archives/2010/11/synchronizing-folders-with-rsync.html#jveweb_en_014_04">Update 
+      the contents of a folder</a>, <code>rsync</code> allow us to transfer 
+      only the most recent changes to our files as well as the new files that 
+      were created since the last copy, by using its delta-transfer algorithm. 
+      When we enable the backup functionality of <code>rsync</code>, <code>rsync</code> 
+      copy the files that are about to be modified to either a new similarly 
+      named file but with a suffix, or to a directory dedicated to keep the 
+      backup information, and if we use the <code>--delete</code> parameter, 
+      it also copies the files that are about to be deleted. Then, once all of 
+      this files have been copied into the backup directory or they has been 
+      given a new name, <code>rsync</code> updates the files with the new 
+      information, and if the <code>--delete</code> parameter was used, the 
+      files that were previously removed from from the source folder are 
+      deleted in the destination folder. Using the <code>--backup</code> 
+      parameter enables the delta-transfer algorithm, so the use of the <code>-u</code> 
+      parameter is not necessary.
+    </p>
+    <p>
+      In this manner, we end with a fully updated folder, as well as a backup 
+      of the files that were modified since the last time that they were 
+      copied, using a smaller data transfer and without using a large area for 
+      a second full backup. Shall we need to revert back to a previous backup, 
+      all that we need to do is to copy back the files from the backup over 
+      the new updated ones and delete any files that were created after the 
+      time of the backup that we are restoring.
+    </p>
+    <h3 id="jveweb_en_027_02">
+      The basics of the --backup parameter
+    </h3>
+    <p>
+      To create a backup of the files that are about to be modified we use the 
+      parameter <code>--backup</code> (or <code>-b</code> in it's short form), 
+      e.g.:
+    </p>
+    <p>
+      <code class="snippet">rsync -a --backup source/ destination/<br />rsync 
+      -ab source/ destination/</code>
+    </p>
+    <p>
+      By default, the suffix <code>~</code> is appended to the name of the 
+      file that is saved as a backup, i.e., when we update <code>file01.txt</code>, 
+      this file will be copied into a file called <code>file01.txt~</code>, 
+      and then <code>file01.txt</code> will be updated with the new content. 
+      To change the suffix of the file that is created as a backup, we use the <code>--suffix</code> 
+      parameter, e.g.:
+    </p>
+    <p>
+      <code class="snippet">rsync -ab --suffix=.old source/ destination/</code>
+    </p>
+    <p>
+      This will add the suffix .old to the backup files, i.e., <code>file01.txt</code> 
+      would be copied into <code>file01.txt.old</code>, and then <code>file01.txt</code> 
+      would be updated with the new information. We can add the date of the 
+      backup to the suffix by using the command date together with the suffix 
+      parameter:
+    </p>
+    <p>
+      <code class="snippet">rsync -ab --suffix=_`date +%F` source/ destination/</code>
+    </p>
+    <p>
+      This would append the date in the format <code>YYYY-MM-DD</code> to the 
+      name of the file, e.g., if today were February 12, 2010, and we backup <code>file01.txt</code>, 
+      the resulting file would be called: <code>file01.txt_2010-02-12</code>
+    </p>
+    <p>
+      To restore from the backup if we only attached a suffix, we could use 
+      the following commands:
+    </p>
+    <p>
+      <code class="snippet">for name in *[suffix];<br />do<br />cp $name `basename 
+      $name [suffix]`;<br />done</code>
+    </p>
+    <p>
+      You can use <code>mv</code> instead of <code>cp</code> if you don't want 
+      to leave the backup file. As example of this, if we used --suffix=.old 
+      with rsync:
+    </p>
+    <p>
+      <code class="snippet">for name in *.old;<br />do<br />cp $name `basename 
+      $name .old`;<br />done</code>
+    </p>
+    <p>
+      As a note, if you use the suffix for the backups, it is recommended to 
+      add <code>~</code> at the end of the suffix anyway, so it is easier to 
+      differentiate between normal files and backup files, as well as handle 
+      the backups shall we need to restore the files.
+    </p>
+    <h3 id="jveweb_en_027_03">
+      Using a backup directory
+    </h3>
+    <p>
+      While using a suffix to backup the contents of a folder is enough in 
+      some cases, for more complex file and directory structures, we can 
+      create the backup of this files and the whole directory and subdirectory 
+      structure in a different folder instead of just rename the files. 
+      Another benefit of this is a better organization of the backups. We 
+      specify the directory where we want to store the backup by using the 
+      parameter <code>--backup-dir</code>, this use said folder in the 
+      destination directory, unless otherwise specified. If the specified 
+      directory doesn't already exists, <code>rsync</code> will create it. For 
+      example:
+    </p>
+    <p>
+      <code class="snippet">rsync -ab --backup-dir=backup source/ destination/</code>
+    </p>
+    <p>
+      This will create a folder called backup in the destination folder, and 
+      backup in there any files that are about to be modified. If we want the 
+      backup folder to be created in a different location, we can use:
+    </p>
+    <p>
+      <code class="snippet">rsync -abv 
+      --backup-dir=/home/juan/Backups/example_backup source/ destination/</code>
+    </p>
+    <p>
+      And this would have the backup stored in a directory called <code>example_backup</code> 
+      inside of <code>/home/juan/Backups</code>
+    </p>
+    <h3 id="jveweb_en_027_04">
+      Using the parameters --backup and --delete together
+    </h3>
+    <p>
+      As it was previously mentioned in this post, we can also delete the 
+      files from the destination folder that were already deleted in the 
+      source folder, this would synchronize the folders. With the <code>--backup</code> 
+      parameter, this files that are to be deleted in the destination folder 
+      would be copied into the backup directory as well, or they would be 
+      given a suffix if this is what you are using, before <code>rsync</code> 
+      deletes them from the folder. e.g.:
+    </p>
+    <p>
+      <code class="snippet">rsync -ab --delete source/ destination/</code>
+    </p>
+    <p>
+      But be careful with the parameter <code>--delete</code>. If we are 
+      storing backups in the destination folder, or in a directory inside of 
+      the destination folder, the <code>--delete</code> parameter is going to 
+      delete old backups, as they are not in the source folder. Or attempt to 
+      as in the following situation:
+    </p>
+    <p>
+      Say, we already have a folder called backup inside of the destination 
+      directory, and we use <code>rsync</code> again, using <code>--backup-dir=backup</code> 
+      one more time. As <code>rsync</code> is going to attempt to delete every 
+      file and folder that is not in the source directory, it would backup the 
+      backup folder, which would create a backup folder inside our already 
+      existing backup folder, and then it would attempt to delete the backup 
+      folder and fail because it is using it to backup files. Run this 
+      multiple times and you may end up with a backup folder inside a backup 
+      folder inside a backup folder, in resume, an undesirable mess.
+    </p>
+    <p>
+      If we are creating the backup folder inside of the destination folder, 
+      take the precaution of create exclusion rules to leave the backup 
+      folder(s) out of the <code>rsync</code> that is creating backups. For 
+      example, in this particular case:
+    </p>
+    <p>
+      <code class="snippet">rsync --ab --backup-dir=backup --delete 
+      --exclude=backup source/ destination/</code>
+    </p>
+    <p>
+      Some of this may not look as useful right now, but since the goal is to 
+      automate the backup process with <code>cron</code>, this <code>--backup-dir</code>, 
+      <code>--delete</code> <code>--exclude</code> parameters will become very 
+      handy for this.
+    </p>
+    <h3 id="jveweb_en_027_05">
+      rsync and cron for automated incremental backups.
+    </h3>
+    <p>
+      This section assumes that you know how to specify the time in a <code>crontab</code>, 
+      for more information about this, you can check my previous post Using 
+      cronjobs to automate tasks.
+    </p>
+    <p>
+      If we were to make a full daily backup, we could use the following <code>crontab</code>:
+    </p>
+    <p>
+      <code class="snippet">@daily rsync -au --delete source/ destination/</code>
+    </p>
+    <p>
+      This will synchronize the destination folder with the source folder, and 
+      we would do have a full backup at destination. However, we would only 
+      have the files in the exact same status as they were in source since the 
+      last copy. We can't go back at any other point in time. To leave a copy 
+      of the files as they were before we update the files, this is, an 
+      incremental backup, we should use:
+    </p>
+    <p>
+      <code class="snippet">@daily rsync -ab --backup-dir=old_`date +%F` 
+      --delete --exclude=old_* source/ destination/</code>
+    </p>
+    <p>
+      Now we would have the full backup in the destination directory, and a 
+      backup of the files as they were before this last backup in a directory. 
+      If this backup occurred on February 12, 2010, then the folder would be 
+      called <code>old_2010-02-12</code>. This would of course create a 
+      different backup folder for each and every day that it is run, and to 
+      restore the files to it's state on a certain day, we would need to 
+      sequentially copy the files from the most recent to the day that we want 
+      to restore over the full backup folder, and delete any new files that 
+      were created after that day.
+    </p>
+    <h3 id="jveweb_en_027_06">
+      Rotatory incremental backup with rsync and cron
+    </h3>
+    <p>
+      A rotatory incremental backup refers to the fact that we are reutilising 
+      a certain number of backup folders for the incremental backups. Instead 
+      of, for example, add the whole date to the name of a folder when we are 
+      doing a daily backup, we could use only the day of the week. This would 
+      create the folder <code>old_0</code>, <code>old_1</code> ... <code>old_6</code> 
+      and then, it would use again the folder <code>old_0</code> at the start 
+      of the next week. We would remove this folder if it exists, and recreate 
+      it for the new backup. In this manner we could go back in time up to 7 
+      days. The obvious advantage of this is that we would not end up with a 
+      massive number of backup folders (and a lot of old data) since we would 
+      be reutilising the space and the names of the folders. Seven days may be 
+      too short, we could use the number of the day in the month to be able to 
+      go back about 30 days in time, or the number of the day in the year to 
+      be able to go back up to 365 days in time.
+    </p>
+    <h3 id="jveweb_en_027_07">
+      Example case
+    </h3>
+    <p>
+      A rotatory daily incremental backup in a remote computer that have <code>rsync</code> 
+      over <code>SSH</code> access, that allows me to go back in time up to a 
+      year.
+    </p>
+    <p>
+      We start by setting up the environment for this. We need a remote 
+      computer that allows us to use <code>rsync</code> over <code>SSH</code> 
+      of course. I am going to use <a href="http://www.dreamhost.com/r.cgi?363096">Dreamhost</a> 
+      as an example since it gives me 50GB to do whatever I want with them 
+      (apart from the unlimited space for hosting websites), and it does give 
+      me this sort of access, so I use it for backup information that is not 
+      extremely private (I encrypt that private information when I back it up).
+    </p>
+    <p>
+      Since I am using <a href="http://www.dreamhost.com/r.cgi?363096">Dreamhost</a> 
+      as an example, I have to say that the backup users doesn't actually have 
+      a full SSH shell available, even though the hosting users that I create 
+      does, but we can do use <code>rsync</code> over <code>SSH</code>, and we 
+      can use <code>SFTP</code>. If you have a full <code>SSH</code> shell 
+      available where you perform the backups, you can follow the guide <a href="http://www.jveweb.net/en/archives/2010/08/passwordless-ssh-using-digital-signatures.html">Passwordless 
+      SSH using digital signatures</a> instead of the procedure described here 
+      to create authorized_keys via <code>SFTP</code>.
+    </p>
+    <p>
+      So, lets get started.
+    </p>
+    <p>
+      First of all, I create an entry in <code>~/.ssh/config</code> as seen in <a href="http://www.jveweb.net/en/archives/2010/08/defining-ssh-servers.html">Defining 
+      SSH servers</a>, and name it <code>remote_backup</code>. The entry looks 
+      like this:
+    </p>
+    <p>
+      <code class="snippet">Host remote_backup<br />HostName 
+      server_name.dreamhost.com<br />User my_username</code>
+    </p>
+    <p>
+      After this, I create the digital signature if I don't already have one:
+    </p>
+    <p>
+      <code class="snippet">ssh-keygen -t rsa -b 2048</code>
+    </p>
+    <p>
+      And I log in via <code>SFTP</code>, I create the <code>.ssh</code> 
+      folder, and I copy my newly generated or my already existent <code>id_rsa.pub</code> 
+      into <code>.ssh/authorized_keys</code> in the remote server, and since I 
+      am already there, before I exit I create the folders <code>Backups</code> 
+      and <code>my_work</code> that I am going to use:
+    </p>
+    <p>
+      <code class="snippet">sftp remote_backup<br />(Type the password. After 
+      log in we are in a SFTP shell and we use this commands)<br />mkdir .ssh<br />cd 
+      .ssh/<br />put -p /home/juan/.ssh/id_rsa.pub authorized_keys<br />cd ..<br />mkdir 
+      Backups<br />mkdir Backups/my_work<br />exit</code>
+    </p>
+    <p>
+      Remember to use your own information (host, usernames). If all went 
+      right, you can now simply type <code>SFTP</code> remote_backup and it 
+      would give you the <code>SFTP</code> prompt right away, without the need 
+      to type a password.
+    </p>
+    <p>
+      Since I need to delete folders that I am going to recycle as well as 
+      perform the backup, I am going to create a script that does both, and 
+      call this script daily with <code>cron</code>. The first time that this 
+      script is run it is going to create a full backup, as the destination 
+      directory in the host will be empty. In the case of Dreamhost, which I 
+      am using in the example, I will delete the folder that I am going to 
+      recycle via <code>SFTP</code>. But I will add the command to do this on 
+      a <code>SSH</code> shell in case you have it available, just uncomment 
+      it if you need it and comment the <code>SFTP</code> area. I am going to 
+      call this file <code>backup_auto.sh</code> and store it in my Scripts 
+      folder, and give it execution privileges:
+    </p>
+    <p>
+      <code class="snippet">touch ~/Scripts/backup_auto.sh<br />chmod u+x 
+      ~/Scripts/backup_auto.sh</code>
+    </p>
+    <p>
+      And then open the file in your favorite text editor, and add the 
+      following lines:
+    </p>
+    <p>
+      <code class="snippet">#!/bin/sh<br /><br />SUFFIX=$(date +%j)<br /><br /># 
+      Delete the folder in the remote host via SSH<br /># ssh remote_backup 'ls 
+      Backups/my_work/backup_'$SUFFIX' &amp;&amp; rm -r Backups/my_work/backup_'$SUFFIX<br /><br /># 
+      Delete the folder in the remote host via SFTP<br />sftp -b /dev/fd/0 
+      remote_backup &lt;&lt;EOF<br />cd Backups/my_work<br />rmdir backup_$SUFFIX<br />exit<br />EOF<br /><br /># 
+      Update the information, creating a backup folder and ignoring the rest of<br /># 
+      the backup folders<br />rsync -ab --recursive --files-from='to_backup.txt' 
+      --backup-dir=backup_$SUFFIX --delete --filter='protect backup_*' 
+      /home/lordjuan/ remote_backup:Backups/my_work/<br /></code>
+    </p>
+    <p>
+      And now, I create a file called <code>to_backup.txt</code>, and add the 
+      files and folders that I want to backup in the remote host, the paths 
+      are relative to the folder that we specify as the source folder, in my 
+      case, that would be home, so this files and folders reside in that 
+      folder. This file must be in the same folder that the script that we 
+      just made, otherwise <code>--files-from</code> won't find it:
+    </p>
+    <p>
+      <code class="snippet">touch ~/Scripts/to_backup.txt</code>
+    </p>
+    <p>
+      Open it in your favorite editor and add the files and folders that you 
+      want to backup, in my case this would be:
+    </p>
+    <p>
+      <code class="snippet">.vimrc<br />.vim/<br />Projects/<br />Documents/Work/<br />Scripts/</code>
+    </p>
+    <p>
+      At this point, we can test the script with:
+    </p>
+    <p>
+      <code class="snippet">sh ~/Scripts/backup_auto.sh</code>
+    </p>
+    <p>
+      The final step is edit our <code>crontab</code> file and make it run the 
+      script daily:
+    </p>
+    <p>
+      <code class="snippet">crontab -e</code>
+    </p>
+    <p>
+      Add at the bottom a line like this:
+    </p>
+    <p>
+      <code class="snippet">@daily /home/juan/Scripts/backup_auto.sh</code>
+    </p>
+    <p>
+      And this would be all, feel free to send me an e-mail if you find any 
+      factual errors or if something was confusing.
+    </p>
+    <h3 id="jveweb_en_027_08">
+      Footnotes
+    </h3>
+    <p>
+      This example uses <a href="http://www.dreamhost.com/r.cgi?363096">Dreamhost</a> 
+      because it is what I have available at the moment, other than local 
+      folders.
+    </p>
+    <p>
+      As I said in previous posts about <code>rsync</code>, the amount of 
+      options in this command is huge, and a post covering every aspect of <code>rsync</code> 
+      would be just so long, as <code>rsync</code> can be customized to handle 
+      virtually any particular need that someone may have. The purpose of this 
+      guide is to make it simple to use it for what I believe are common 
+      particular needs. Any of the articles covering <code>rsync</code> may be 
+      expanded in the future, or corrected if I find any factual errors.
+    </p>
+				<p class="under">
+				Categories: <a href="http://www.jveweb.net/en/archives/commands/index.html">Commands</a>, <a href="http://www.jveweb.net/en/archives/foss/index.html">FOSS</a>, <a href="http://www.jveweb.net/en/archives/linux/index.html">Linux</a>, <a href="http://www.jveweb.net/en/archives/rsync/index.html">rsync</a>, <a href="http://www.jveweb.net/en/archives/ssh/index.html">SSH</a>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+
+<div id="pagenavi">
+		<span class="newer"></span>
+		<span class="older"></span>
+		<div class="fixed"></div>
+</div>
+	</div>
+	<!-- main END -->
+<!-- sidebar START -->
+<div id="sidebar">
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3337979981448667";
+/* jveweb_en_300x250, created 11/7/10 */
+google_ad_slot = "6888076192";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a id="feedrss" title="Subscribe to this blog..." href="http://www.jveweb.net/en/rss.xml"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>
+				<ul id="feed_readers">
+					<li id="google_reader"><a class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Google</span></a></li>
+					<li id="youdao_reader"><a class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Youdao</span></a></li>
+					<li id="xianguo_reader"><a class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Xian Guo</span></a></li>
+					<li id="zhuaxia_reader"><a class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Zhua Xia</span></a></li>
+					<li id="yahoo_reader"><a class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>My Yahoo!</span></a></li>
+					<li id="newsgator_reader"><a class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>newsgator</span></a></li>
+					<li id="bloglines_reader"><a class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>Bloglines</span></a></li>
+					<li id="inezha_reader"><a class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://www.jveweb.net/en/rss.xml" rel="nofollow"><span>iNezha</span></a></li>
+				</ul>
+			</div>
+						<div class="fixed"></div>
+		</div>
+	</div>
+		  <div class="widget">
+				<a href='http://www.jveweb.net' title='jveweb.net en español' class="lonelink">jveweb.net en español</a>
+		</div>	
+	<!-- posts -->
+	<div class="widget">
+		<h3>Recent Posts</h3>
+		<ul>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/ghosts-from-the-past.html">Ghosts from the past</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/12/learning-from-a-mistake.html">Learning from a mistake</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/natures-gallery.html">Nature's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/flowerss-gallery.html">Flowers's gallery</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/chile-trekking-in-pochoco.html">Chile: Trekking in Pochoco</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-santa-lucia.html">Santiago de Chile: Santa Lucía</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-los-dominicos.html">Santiago de Chile: Los Domínicos</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/santiago-de-chile-downtown.html">Santiago de Chile: Downtown</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/10/here-comes-the-photographs.html">Here comes the photographs</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/to-chile.html">To Chile!</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/09/site-updates-im-still-here-the-future-of-this-website.html">Site updates: I'm still here! The future of this website</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/08/economic-uncertainty-in-the-world.html">Economic uncertainty in the world</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/a-journey-of-madness.html">A journey of madness</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/some-regular-expressions-and-how-to-use-them-in-php.html">Some regular expressions and how to use them in PHP</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/starting-the-photography-section.html">Starting the photography section</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/when-you-crash-against-the-wall-of-reality.html">When you crash against the wall of reality</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/now-this-is-bad-security-yet-another-sony-story.html">Now this is bad security (yet another Sony story)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-object-oriented-examples.html">Prepared MySQL statements in PHP (object oriented examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/prepared-mysql-statements-in-php-structured-examples.html">Prepared MySQL statements in PHP (structured examples)</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/07/an-sql-injection-attack.html">An SQL injection attack</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/split-and-merge-files-from-the-command-line.html">Split and merge files from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">The confusing prefixes for binary multiples</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/05/xorgconf-configuration-for-a-h770-series-monitor.html">xorg.conf configuration for a H770 series monitor</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/03/managing-mysql-from-the-command-line.html">Managing MySQL from the command line</a></li>
+<li><a href="http://www.jveweb.net/en/archives/2011/02/using-rsync-and-cron-to-automate-incremental-backups.html">Using rsync and cron to automate incremental backups</a></li>
+		</ul>
+	</div>
+	  <div class="widget">
+			<h3>Categories</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/xhtml/index.html' title='(X)HTML'>(X)HTML</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/announcements/index.html' title='Announcements'>Announcements</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/apache/index.html' title='Apache'>Apache</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/commands/index.html' title='Commands'>Commands</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/foss/index.html' title='FOSS'>FOSS</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/kde/index.html' title='KDE'>KDE</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/linux/index.html' title='Linux'>Linux</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/mysql/index.html' title='MySQL'>MySQL</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/photography/index.html' title='Photography'>Photography</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/php/index.html' title='PHP'>PHP</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/programming/index.html' title='Programming'>Programming</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/rsync/index.html' title='rsync'>rsync</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/slackware/index.html' title='Slackware'>Slackware</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/ssh/index.html' title='SSH'>SSH</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/text-manipulation/index.html' title='Text manipulation'>Text manipulation</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/thoughts/index.html' title='Thoughts'>Thoughts</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/vim/index.html' title='Vim'>Vim</a></li>
+				
+				</ul>
+		</div>	
+	  <div id="tag_cloud" class="widget">
+			<h3>Archives</h3>
+			<ul>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/12/index.html' title='December 2011'>December 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/10/index.html' title='October 2011'>October 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/09/index.html' title='September 2011'>September 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/08/index.html' title='August 2011'>August 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/07/index.html' title='July 2011'>July 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/06/index.html' title='June 2011'>June 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/05/index.html' title='May 2011'>May 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/04/index.html' title='April 2011'>April 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/03/index.html' title='March 2011'>March 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/02/index.html' title='February 2011'>February 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2011/01/index.html' title='January 2011'>January 2011</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/12/index.html' title='December 2010'>December 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/11/index.html' title='November 2010'>November 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/10/index.html' title='October 2010'>October 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/09/index.html' title='September 2010'>September 2010</a></li>
+				
+				<li><a href='http://www.jveweb.net/en/archives/2010/08/index.html' title='August 2010'>August 2010</a></li>
+				
+				</ul>
+		</div>		
+		<div class="widget">
+			<h3>Tip Jar</h3>
+			<ul>
+				<li><a href="http://flattr.com/thing/237912/jveweb-on-Flattr">Flattr jveweb.net</a></li>
+				<li>Bitcoin:<br /><small>1RLdfVC9ew1bgs1kxqS2FKTPYq2pQQvVq</small><br />see <a href="http://bitcoinme.com" rel="nofollow">http://bitcoinme.com</a></li>
+				<li>Paypal: paypal@jveweb.net</li>
+				<li>Liberty Reserve: U5664646</li>
+				<li>KoL: #1176202</li>
+				</ul>
+			<p>Tips helps me to keep the website mostly ad free.</p>
+		</div>	
+		<div class="widget">
+			<h3>Miscellaneous</h3>
+			<ul>
+				<li><a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a><br>
+				<small>Except for that G+ button that I just added =/, I'll fix it when I get a chance.</small></li>
+				<li><a href="http://jigsaw.w3.org/css-validator/check/referer">Valid CSS 2.1</a></li>
+				<li><a href="http://lynx.isc.org/">Lynx friendly</a></li>
+				<li><a href="http://www.dreamhost.com/green.cgi?jveweb.net">Green hosting</a></li>
+				<li>Sizes in <a href="http://www.jveweb.net/en/archives/2011/06/the-confusing-prefixes-for-binary-multiples.html">KiB, MiB, etc.</a></li>
+				<li>E-mail: contact at jveweb.net</li>
+			</ul>
+		</div>	
+</div>
+<!-- sidebar north END -->
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Go to Top</a>
+	<div id="copyright">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />Copyright &copy; 2011. All the text, images and resources in this website that are not attributed to somebody else were created by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/" rel="cc:attributionURL">Juan Valencia Escalante</a> and are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a> unless is otherwise stated.<br />Permissions beyond the scope of this license may be available by contacting the author at <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.jveweb.net/en/contact.html" rel="cc:morePermissions">http://www.jveweb.net/en/contact.html</a>.
+  </div>
+	<div id="themeinfo">
+	Theme ported to Thingamablog by The <a href="http://www.webdesignwomen.com" rel="nofollow">Web Design Women</a> of <a href="http://www.opensourceresources.org" rel="nofollow">Opensource Resources</a> (although I discontinued the use of Thingamablog, I just keep the design, for now)
+			</div>
+</div>
+<!-- footer END -->
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+<!-- Piwik --> 
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://jveweb.net/st/" : "http://jveweb.net/st/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://jveweb.net/st/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Tag -->
+</body>
+</html>

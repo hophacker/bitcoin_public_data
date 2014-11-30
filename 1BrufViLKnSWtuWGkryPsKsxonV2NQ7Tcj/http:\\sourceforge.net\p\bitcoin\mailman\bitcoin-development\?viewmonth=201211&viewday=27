@@ -1,0 +1,1112 @@
+http://sourceforge.net/p/bitcoin/mailman/bitcoin-development/?viewmonth=201211&viewday=27
+Bitcoin / Mailing Lists
+Error: CSS did not load.
+This may happen on the first request due to CSS mimetype issues.
+Try clearing your browser cache and refreshing.
+SourceForge
+Browse
+Enterprise
+Blog
+Help
+Jobs
+Log In
+or
+Join
+Solution Centers
+Smarter Commerce
+Go Parallel
+HTML5
+Smarter IT
+Resources
+Newsletters
+Work at SourceForge, help us to make it a better place! We have an immediate need for a Support Technician in our San Francisco or Denver office.
+Close
+Home
+Browse
+Projects
+Bitcoin
+Mailing Lists
+Bitcoin
+beta
+Brought to you by:
+gavinandresen,
+jgarzik,
+s_nakamoto,
+sf-editor1,
+sipa
+Summary
+Files
+Reviews
+Support
+Wiki
+Mailing Lists
+News
+Code
+bitcoin-development
+bitcoin-list
+bitcoin-test
+bitcoin-development
+— Core bitcoin development discussion
+You can subscribe to this list here.
+2011
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+(81)
+Jul
+(186)
+Aug
+(166)
+Sep
+(185)
+Oct
+(94)
+Nov
+(85)
+Dec
+(217)
+2012
+Jan
+(135)
+Feb
+(131)
+Mar
+(70)
+Apr
+(62)
+May
+(87)
+Jun
+(139)
+Jul
+(128)
+Aug
+(39)
+Sep
+(58)
+Oct
+(82)
+Nov
+(77)
+Dec
+(90)
+2013
+Jan
+(21)
+Feb
+(51)
+Mar
+(143)
+Apr
+(152)
+May
+(200)
+Jun
+(167)
+Jul
+(193)
+Aug
+(163)
+Sep
+(93)
+Oct
+(199)
+Nov
+(247)
+Dec
+(230)
+2014
+Jan
+(289)
+Feb
+(196)
+Mar
+(489)
+Apr
+(693)
+May
+(280)
+Jun
+(240)
+Jul
+(46)
+Aug
+Sep
+Oct
+Nov
+Dec
+S
+M
+T
+W
+T
+F
+S
+1
+2
+3
+4
+5
+6
+(5)
+7
+(1)
+8
+(4)
+9
+10
+11
+12
+13
+14
+15
+(1)
+16
+(3)
+17
+18
+19
+20
+21
+(2)
+22
+23
+24
+25
+(1)
+26
+(10)
+27
+(33)
+28
+(9)
+29
+(8)
+30
+Showing
+25
+50
+100
+250
+results of 33 Flat |
+Threaded
+1 2 > >> (Page 1 of 2)
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Gavin Andresen <gavinandresen@gm...> - 2012-11-27 21:40:02
+Spec updated: https://gist.github.com/4120476
+
+Notable changes are:
+
++ Removed SignedReceipt
+
++ Replaced Invoice.x509chain with a &#34;pki_type&#34; and &#34;pki_data&#34; to make
+using other identity systems cleaner.
+
++ Added a &#34;Why not an existing electronic invoice standard?&#34; section
+to the design notes
+
+-- 
+--
+Gavin Andresen
+
+
+Re: [Bitcoin-development] Draft BIP for Bloom filtering
+From: Pieter Wuille <pieter.wuille@gm...> - 2012-11-27 21:10:31
+On Wed, Nov 21, 2012 at 01:38:37PM -0500, Matt Corallo wrote:
+&gt; On Wed, 2012-11-21 at 16:15 +0100, Pieter Wuille wrote:
+&gt; &gt; On Wed, Oct 24, 2012 at 05:56:07PM +0200, Mike Hearn wrote:
+&gt; &gt; &gt; I&#39;ve written a draft BIP describing the bloom filtering protocol
+&gt; &gt; &gt; extension developed by myself and Matt.
+&gt; &gt; &gt; 
+&gt; &gt; &gt; https://en.bitcoin.it/wiki/BIP_0037
+&gt; &gt; 
+&gt; &gt; Two comments I made on the pullreq page, which are probably better discussed here:
+&gt; &gt; * The 0xFFFFFFFF/(n-1)*i seed value seems intended to result in large bit
+&gt; &gt;   differences between the different hash function&#39;s seeds. Together with the tweak,
+&gt; &gt;   however, the first and the last now get seeds tweak and tweak-1. I think
+&gt; &gt;   something simpler like k1*i+k2*n+tweak is better (with k1 and k2 arbitrary large
+&gt; &gt;   odd 32-bit integers).
+&gt; Meh, sure, whatever...I dont really think the seed values matter
+&gt; significantly (Murmur3 isnt that bad of a hash function...) (and the
+&gt; original algorithm wont result in a significant bit difference between
+&gt; the seeds in many cases).
+
+Sure, it&#39;s nothing important, but it seems like it fails to do what it was intended for.
+
+How about just this: tweak + i*0xFBA4C795 (number optimized to give large seed
+differences for every tweak). If you want variation when changing the number of hash
+functions, just choose a different seed. 
+
+&gt; &gt; Maybe the actual filter data in filterload can be made optional:
+&gt; &gt;   if it is omitted, it&#39;s assumed to be all zeroes (though that would mean the size
+&gt; &gt;   has to be specified).
+&gt; &gt; 
+&gt; I&#39;m not sure here, if you are sending a filter just to use filteradd to
+&gt; add things to it manually, you are doing something very, very, very
+&gt; wrong... Though we could certainly do some kind of compressed bloom
+&gt; filter encoding to allow for small filter loads (loading the few things
+&gt; you need to filteradd right away) where you anticipate adding
+&gt; significantly more filter elements down the road (can anyone even come
+&gt; up with a case where you anticipate doing this?), the filter is small
+&gt; enough (max 36kB) that I see little benefit for the large increase in
+&gt; complexity (or is this another repeat of the merkle branch discussion?)
+
+It&#39;s probably not worth it for something that is max 36 kilobytes. If ever
+necessary, we can define a new message type that just lists a number of bits to
+be set in the server-side filter.
+
+For now, I agree that you should just send the filter as intended, and not expect to
+do many filteradds (though you should take the implicitly-added txids into
+accounted when computing the filter size).
+
+-- 
+Pieter
+
+
+
+[Bitcoin-development] [ANNOUNCE] picocoin and libccoin -- C-based
+bitcoin library and client
+From: Jeff Garzik <jgarzik@ex...> - 2012-11-27 20:34:18
+Source code URL:  https://github.com/jgarzik/picocoin/
+
+I&#39;d like to announce another bitcoin implementation, which is really
+two useful pieces in one:
+
+     libccoin - a bitcoin library, written in C
+     picocoin - A lightweight, C-based SPV bitcoin wallet client
+
+libccoin supports all key network datastructures (block, transaction,
+etc.), script parsing and validation, transaction and block
+validation, a &#34;headers-only&#34; or full block database, and many other
+features essential to any bitcoin client.  libccoin passes all key
+encoding, script and transaction tests available in the Satoshi
+reference bitcoin client.
+
+picocoin is much more under construction.  When complete, it will be a
+very low resource, command line / JSON-driven bitcoin wallet.
+Advanced security features already implemented include required wallet
+encryption, fork-based process separation of P2P networking and wallet
+(and chroot/SELinux jailing coming soon), something that the reference
+Satoshi client does not even support.
+
+Status:  Alpha quality, developer release.  Passes reference client
+base58/script/transaction tests, but is still a developer-only
+preview.
+
+Feature list:
+
+    Intended to be a full-feature bitcoin support library.  The
+library will not be limited to &#34;what picocoin needs.&#34;
+    Supports all core data structures and network messages
+    Full script implementation
+    Passes hundreds of available reference client tests
+    Supports multiple block chains: main or testnet3
+    Very low resource usage (cpu, disk, and memory)
+    Small codebase (both source code and compiled object)
+    Supports advanced thin-client features such as &#34;bloom filtering&#34;,
+an upcoming proposal that will reduce client bandwidth usage.
+    Works on big endian machines, as well as little endian machines
+    Multi-platform: Linux supported currently.  Should work on
+OSX/BSD/Windows with minimal modifications.
+    libccoin should work on Windows.  picocoin will work on Windows,
+but be a bit less secure than other platforms due to lack of fork.
+    Improved security:  fork-based process separation firewall between
+networking and wallet code -- your wallet is never directly exposed to
+the network.
+    Follows the philosophy of &#34;do, not hype.&#34;  This library is already
+far more secure and capable than other libraries hyped as the &#34;future
+of bitcoin&#34; by their authors.
+
+Code contributions are welcome (see github URL above).
+Comments are welcome.
+Donations are welcome too (1BrufViLKnSWtuWGkryPsKsxonV2NQ7Tcj).
+
+-- 
+Jeff Garzik
+exMULTI, Inc.
+jgarzik@...
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Mike Hearn <mike@pl...> - 2012-11-27 18:17:04
+&gt; That hash would then be reported via some secure channel outside of bitcoin&#39;s
+&gt; domain.
+
+OK, I see. I guess that could be a reasonable fallback for the case
+where you have a secure channel.
+
+&gt; I don&#39;t understand what the relevance of multi-factor is to invoices?
+
+Yes, exactly. It&#39;s about paying who you think you&#39;re paying (when you
+confirm on a second uncompromised device).
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Andy Parkins <andyparkins@gm...> - 2012-11-27 17:27:06
+On Tuesday 27 November 2012 17:14:19 Mike Hearn wrote:
+
+&gt; That&#39;s pretty much what we have today - in future other schemes can be
+&gt; proposed as extensions. Protocol buffers are easily extended, they
+&gt; ignore unknown fields. Then you&#39;d wait and see what the invoice
+&gt; request looked like and produce an invoice with the right security
+&gt; bits.
+
+That&#39;s good; I&#39;ve not done anything with protocol buffers, so wasn&#39;t aware it 
+was that simple.
+
+&gt; &gt; In particular two additional identification types:
+&gt; &gt;  - GnuPG (obviously)
+&gt; 
+&gt; It&#39;s not obvious to me, incidentally. The web of trust has been
+&gt; dead-on-arrival since it was first proposed, and for good reasons.
+&gt; SSL/X.509, for better or worse, has significant usage.
+
+Sorry, I meant &#34;obviously&#34; in the sense that &#34;obviously that&#39;s the other one 
+that everyone will want&#34;.  The web-of-trust as a universal identity mechanism 
+is, I agree, not useful.  However, as a localised, smaller-scale identity 
+verification system it&#39;s used by every GnuPG user.  You become your own 
+certificate authority.  For example, I&#39;ve set up my whole family with GnuPG; 
+I&#39;ve set them up to trust me to authenticate (and I doubt any of them has ever 
+added anyone else).  Then I take on the responsibility of signing all my 
+family/friends keys and they don&#39;t need to worry about it.
+
+There&#39;s no reason that a small group of companies wouldn&#39;t do exactly the same 
+sort of thing.
+
+&gt; Your case of a small business is a perfect example of people who won&#39;t
+&gt; be using GPG. If they don&#39;t want to buy an SSL cert, they can just as
+
+Bear in mind, I was using that example as an example of a hash protected in a 
+GPG envelope, not a GPG-signed invoice.  People who&#39;ve already got their GPG 
+system in place will appreciate being able to leverage it.
+
+&gt; well put a reference number in the memo field or a &#34;Hey Bob, here is
+&gt; the bill we discussed&#34;. The payer does not get the multi-factor auth
+
+How can they put a hash of an invoice inside the invoice?  In my &#34;hash mode&#34; 
+invoices, it would be a random number (or possibly specifying the hash 
+algorithm) then the SignedInvoice would simply be the original invoice + hash.  
+That hash would then be reported via some secure channel outside of bitcoin&#39;s 
+domain.
+
+&gt; protection so if their computer has a virus, they may be hosed. But
+&gt; that&#39;s good incentive for sellers to get verified. Some CA authorities
+&gt; do it for free these days.
+
+I don&#39;t understand what the relevance of multi-factor is to invoices?  The 
+payment is performed via normal bitcoin mechanisms isn&#39;t it -- multi-factor or 
+not?  This invoice system has one primary job: to ensure that the target of 
+the payment is who the payer thinks it is -- that&#39;s not affected by multi-
+factor methods of protecting my wallet.
+
+
+
+Andy
+
+-- 
+Dr Andy Parkins
+andyparkins@...
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Mike Hearn <mike@pl...> - 2012-11-27 17:14:25
+&gt; Personally, I&#39;d like to see fewer implicit ties to X509.  With X509 as one
+&gt; option.
+
+That&#39;s pretty much what we have today - in future other schemes can be
+proposed as extensions. Protocol buffers are easily extended, they
+ignore unknown fields. Then you&#39;d wait and see what the invoice
+request looked like and produce an invoice with the right security
+bits.
+
+&gt; In particular two additional identification types:
+&gt;
+&gt;  - GnuPG (obviously)
+
+It&#39;s not obvious to me, incidentally. The web of trust has been
+dead-on-arrival since it was first proposed, and for good reasons.
+SSL/X.509, for better or worse, has significant usage.
+
+Your case of a small business is a perfect example of people who won&#39;t
+be using GPG. If they don&#39;t want to buy an SSL cert, they can just as
+well put a reference number in the memo field or a &#34;Hey Bob, here is
+the bill we discussed&#34;. The payer does not get the multi-factor auth
+protection so if their computer has a virus, they may be hosed. But
+that&#39;s good incentive for sellers to get verified. Some CA authorities
+do it for free these days.
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Andy Parkins <andyparkins@gm...> - 2012-11-27 17:03:49
+On Monday 26 November 2012 22:37:31 Gavin Andresen wrote:
+
+&gt; x509chain: one or more DER-encoded X.509 certificates that identifies
+&gt; the merchant. See the &#34;Certificates&#34; section below for details.
+
+Personally, I&#39;d like to see fewer implicit ties to X509.  With X509 as one 
+option.  For example, I&#39;d much prefer to see a doorway to the future left open 
+like this:
+
+    message Invoice {
+        repeated bytes issuerIdentityType;
+        repeated bytes issuerIdentityBytes;
+
+or similar, instead of &#34;x509chain&#34;.
+
+In particular two additional identification types:
+
+ - GnuPG (obviously)
+ - Hash based
+
+The hash-based system would be there as a method of leveraging an existing 
+trusted connection, without needing to get into the nitty-gritty of 
+certificates.  For example, I am paying for something on a web site; I 
+presumably already have a secure connection that I trust to that site.  That 
+site can issue me an invoice (which is to be sent to the bitcoin client) _and_ 
+a hash of the certificate on the same page.
+
+I trust that hash because I received it over a secure connection from a 
+trusted source.  When my bitcoin client pops up with the received invoice, it 
+shows me the hash of the invoice, and I can be sure that it is from the web 
+site I thought it was from.
+
+Imagine I&#39;m a (very) small business, I have two or three customers.  I want to 
+email one of my customers an invoice.  I don&#39;t want to have to get an X509 
+certificate, and I don&#39;t necessarily know how.  However, I can ring my 
+customer up and say &#34;I&#39;ve generated an invoice with my bitcoin client, it is 
+hashed A7DE-521X-9977.  Write that down and confirm it when you get my 
+invoice&#34;.  Alternatively, I might attach a file called
+invoice-A7DE-521X-9977.bitinv to a signed GnuPG email.  The receipient can 
+easily confirm I sent it because the filename must match the contents and 
+GnuPG protects against tampering.
+
+
+
+
+Andy
+
+-- 
+Dr Andy Parkins
+andyparkins@...
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Gavin Andresen <gavinandresen@gm...> - 2012-11-27 14:26:19
+One more thought:
+
+RE: &#34;Receipt&#34; verus &#34;Acceptance&#34; :
+
+I believe &#34;Receipt&#34; is the right term-- it means &#34;I got your payment&#34;,
+NOT &#34;your payment has cleared.&#34;  E.g. if I hand a merchant a paper
+check they&#39;ll hand me a receipt, but the check could still bounce.
+That&#39;s the analogy here-- a merchant might give you a receipt, but if
+the transaction is rejected by the network for whatever reason (Finney
+attack maybe) you cannot expect to go to court with your
+invoice/receipt and claim you made a valid payment.
+
+
+-- 
+--
+Gavin Andresen
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Gavin Andresen <gavinandresen@gm...> - 2012-11-27 14:05:25
+RE: SignedReceipt:  I agree it is superfluous.  I&#39;ll remove it from the spec.
+
+RE: &#34;it is controversial use of the host key to use it for digital
+signing of documents&#34;  :  The idea of embedding a x509 certificate
+chain comes from the IETF&#39;s JSON Object Signing and Encryption working
+group &#34;JWS&#34; specification, so I can&#39;t be TOO controversial.
+
+RE: the ifex-project and other electronic invoicing standards:  Thanks
+for the pointers, Walter! I&#39;m all for adopting the best ideas that
+have come before, as long as we end up with something useful and small
+enough to convince ourselves it is as secure as we can make it. I
+looked at the ifex spec, and quickly got lost. It would help me if you
+could write up what our motivating use cases would look like if
+implemented on top of ifex.
+
+RE: jgarzik&#39;s suggestion to allow txids in the Payment: that worries
+me, because it is trivial to create several different variations of
+the same transaction (same inputs to same outputs) with different
+txids (re-signing inputs uses a different signature nonce, which
+changes the signature/txid, for example).
+
+RE: using self-signed certificates:  as Mike said, I assume Bitcoin
+clients will have some way of managing root certificates, so experts
+could add trusted self-signed certs.
+
+-- 
+--
+Gavin Andresen
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Michael Gronager <gronager@ce...> - 2012-11-27 12:39:42
+&gt; No, the point of using X509 certs is to get a verified identity (a
+&gt; domain name) on the receipt, this is needed for multi-factor
+&gt; authentication. You can&#39;t do that without some kind of third party
+&gt; asserting to an identity.
+
+
+Agree that you need a third party to verify identity. But the verification policy of sites is the job for a payment provider not a payment technology. So if you would like verification of the site you could just sign the memo using standard S/MIME - why mix it with the payment protocol?
+
+Further, it is controversial use of the host key to use it for digital signing of documents, and not even within the policy of a host certificate as far as I recall.
+
+The problem you are trying to tackle is that we don&#39;t have an ID solution on the internet today for this purpose. Certificates for signing messages are distributed freely and insecurely only based on temporarily having an email from within an organization, and the host certificates are meant for SSL handshakes. Funnily, any CA can issue digital certificates for email signing for any domain, even though they don&#39;t own them, and without notifying the owner. DANE actually solves this, but until then using the host certificates is unintended use, it is cryptographically a nice solution, but legally and standard-wise a hack.
+
+/M
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Mike Hearn <mike@pl...> - 2012-11-27 12:03:41
+&gt; Further, the inclusion of x509 is not really needed in the spec - you don&#39;t need to sign the invoice with an x509, you can use the payment key.
+
+No, the point of using X509 certs is to get a verified identity (a
+domain name) on the receipt, this is needed for multi-factor
+authentication. You can&#39;t do that without some kind of third party
+asserting to an identity.
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Michael Gronager <gronager@ce...> - 2012-11-27 11:46:30
+&gt; 
+&gt; If a merchant/payment processor is willing to take the risk of zero or
+&gt; low confirmation transactions (because they are insured against it,
+&gt; for example), they were allowed to reply &#34;accepted&#34; immediately, and
+&gt; this would be a permanent proof of payment, even if the actual Bitcoin
+&gt; transaction that backs it gets reverted.
+
+I guess that moves the discussion from developers to lawyers ;) Even though you send a signed receipt, if you can proof you didn&#39;t get the money, you will never be expected to deliver the goods. (and you can even write that in the the receipt ...)
+
+So the SignedReceipt is legally not worth the bits it is composed of, hence I don&#39;t see the point in supporting it.
+
+If you are selling atoms you can usually wait for N confirmations (even though you start shipping I guess you can recall a parcel within 144 blocks). If you are selling bits (like access to a site), you can revoke that access once you discover the transaction did not go through. So I can&#39;t find a use case where a Signed Receipt in the proposed form is advantageous.
+
+/M
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Pieter Wuille <pieter.wuille@gm...> - 2012-11-27 11:36:22
+On Tue, Nov 27, 2012 at 11:42:01AM +0100, Michael Gronager wrote:
+&gt; &gt; 
+&gt; &gt; The SignedReceipt message is useful in the sense that it shows
+&gt; &gt; confirmation by the merchant, but if you don&#39;t get one, you can still
+&gt; &gt; prove you paid the invoice. So from this perspective perhaps
+&gt; &gt; SignedReceipt should be renamed to Acceptance or something like that,
+&gt; &gt; and then the spec should call out that a signed invoice plus accepted
+&gt; &gt; Bitcoin transactions is mathematically a proof of purchase.
+&gt; 
+&gt; Which is why I find the &#34;SignedReceipt&#34; somewhat superfluous. If you implement a payment system, like bit-pay/wallet you are likely to double that through some sort of e-mail receipt anyway.
+
+Gavin&#39;s proposal differs in this from my original proposal, where I
+exactly *didn&#39;t* want to couple the receipt with the acceptance of
+the Bitcoin transaction.
+
+If a merchant/payment processor is willing to take the risk of zero or
+low confirmation transactions (because they are insured against it,
+for example), they were allowed to reply &#34;accepted&#34; immediately, and
+this would be a permanent proof of payment, even if the actual Bitcoin
+transaction that backs it gets reverted.
+
+For that reason, I also had a separate &#34;pending&#34; state, which means the
+receiver isn&#39;t willing to just accept the current state as irrevocably
+paid. In this case, the sender was allowed to retry until the receipt
+sayd &#34;accepted&#34; or &#34;rejected&#34;.
+
+The whole point was to avoid that customers/merchants would have to
+deal with the uncertainty involved in Bitcoin transaction. At some
+point, someone is going to accept the transaction (whether that is at
+0 or at 120 confirmations), and acceptance will at the higher level
+be considered a boolean anyway - not some &#34;probably, unless reorg&#34;.
+
+-- 
+Pieter
+
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Michael Gronager <gronager@ce...> - 2012-11-27 10:42:14
+&gt; 
+&gt; The SignedReceipt message is useful in the sense that it shows
+&gt; confirmation by the merchant, but if you don&#39;t get one, you can still
+&gt; prove you paid the invoice. So from this perspective perhaps
+&gt; SignedReceipt should be renamed to Acceptance or something like that,
+&gt; and then the spec should call out that a signed invoice plus accepted
+&gt; Bitcoin transactions is mathematically a proof of purchase.
+
+Which is why I find the &#34;SignedReceipt&#34; somewhat superfluous. If you implement a payment system, like bit-pay/wallet you are likely to double that through some sort of e-mail receipt anyway.
+
+Further, the inclusion of x509 is not really needed in the spec - you don&#39;t need to sign the invoice with an x509, you can use the payment key. The proof would still be equally binding, and valid also for non holders of x509 (server) certificates (like normal people).
+Finally, host certificates does not normally keep in their &#34;purpose&#34; S/MIME Signing. So you are bending the intended use of the x509 certificate anyway.
+
+/M
+
+&gt; 
+&gt; ------------------------------------------------------------------------------
+&gt; Monitor your physical, virtual and cloud infrastructure from a single
+&gt; web console. Get in-depth insight into apps, servers, databases, vmware,
+&gt; SAP, cloud infrastructure, etc. Download 30-day Free Trial.
+&gt; Pricing starts from $795 for 25 servers or applications!
+&gt; http://p.sf.net/sfu/zoho_dev2dev_nov
+&gt; _______________________________________________
+&gt; Bitcoin-development mailing list
+&gt; Bitcoin-development@...
+&gt; https://lists.sourceforge.net/lists/listinfo/bitcoin-development
+
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Mike Hearn <mike@pl...> - 2012-11-27 10:23:37
+On Tue, Nov 27, 2012 at 9:43 AM, Michael Gronager &lt;gronager@...&gt; wrote:
+&gt; * What if the SignedReceipt is not received AND the transactions IS posted on the p2p.
+
+I think this is a problem with confusing terminology rather then the
+spec itself.
+
+The original formulation had a receipt being something generated
+purely by the buyer. The signed Invoice message  + the Bitcoin
+transactions paying to the outputs + the merkle branches showing
+acceptance by the network *is* the receipt.
+
+The SignedReceipt message is useful in the sense that it shows
+confirmation by the merchant, but if you don&#39;t get one, you can still
+prove you paid the invoice. So from this perspective perhaps
+SignedReceipt should be renamed to Acceptance or something like that,
+and then the spec should call out that a signed invoice plus accepted
+Bitcoin transactions is mathematically a proof of purchase.
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Michael Gronager <gronager@ce...> - 2012-11-27 09:03:29
+Short comments:
+
+* What if the SignedReceipt is not received AND the transactions IS posted on the p2p. Then you have payed for the goods, but you don&#39;t have a receipt. This could happen both from malice or system failures.
+** Suggestion - sign the invoice with the key to which to send the transaction, the proof of payment, equivalent to a signed receipt is then in the blockchain.
+
+This scheme would work both with or without x509, if you want to include x509, the message in the invoice could simply be signed by the x509 certificate as well.
+
+PRO: Any user can send signed invoices, not only those with a x509 cert.
+PRO: No limbo situation with no SignedReceipt
+CON: This disables the use of anything but payment to key/address incl multisig etc.
+
+However, the wast majority of use will anyway be payment to key/address.
+
+Support of general pay to script could be supported through the payment scheme proposed earlier by Mike: No non-fee payments are accepted, except in a group - i.e. it is up to the merchant to generate the final transaction incl the fees, and that one could be to a general script. This also keeps the support of pay to general script needed for a client to a minimum.
+
+Cheers,
+
+Michael
+
+
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Mike Hearn <mike@pl...> - 2012-11-27 08:44:52
+Luke-Jr - common subset of what operating systems ship is fine for me
+as long as people do due diligence around mobile OS&#39; here. It seems
+easier to me to just grab a list from a popular browser, on the
+grounds that SSL is mostly used by them so nobody is going to buy an
+SSL cert rejected by IE/Firefox/Chrome/etc. But intersecting OS lists
+is effectively the same.
+
+For my own clients I&#39;d just ship my own copy of the canonical CA certs
+regardless, because integrating with each operating systems
+proprietary crypto APIs is a lot of work vs just loading a pem file
+into OpenSSL. If there are a lot of people who want to use the OS cert
+management UIs then I guess that can be a point wallet clients compete
+on.
+
+&gt; Removing that and adding a opaque string called domain name, or
+&gt; identityName would be sufficient to move the conversation forward
+&gt; without the x.509 baggage.
+
+But it would result in implementations that do not meet the requirements.
+
+Yes, X.509 has problems. It&#39;s in the proposal because we can get the
+effect we want (verifiable domain names in the UI) in about 50 lines
+of code, today, with the id-verified keys people actually have already
+bought.
+
+As Gavin says, we can add optional fields later to extend the protocol
+in a backwards compatible way.
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Walter Stanish <walter@st...> - 2012-11-27 04:17:43
+&gt;&gt; We are not establishing an IETF working group, which is an option that
+&gt;&gt; was explored prior to the Paris meeting and has been sidelined at
+&gt;&gt; present for depth-of-bureaucracy by the backing commercial entities.
+&gt;&gt; Rather, we are establishing a top-level IANA registry group. This is
+&gt;&gt; not anticipated by the IETF old-guard working with us to be either (a)
+&gt;&gt; controversial or (b) possible to block.
+&gt;
+&gt; My last note in this sub-thread.
+
+Mine too!
+
+&gt; There are no IANA registry groups, there is no such thing, and no way
+&gt; to form one.
+
+Reading between the lines, I believe this phrase, which is not my own
+but that of experienced IETF staff, refers to the groups visible at
+http://www.iana.org/protocols/ (which you yourself cited). Whether it
+is formally used or not is unknown to me.
+
+&gt; The IETF can ask the IANA to form a registry but these
+&gt; things take lots of support and take a long time,
+
+Expert opinion estimates six weeks, and by current estimates, we
+should have an arrival circa February.
+
+&gt; and these are only
+&gt; created through standards track RFC. ICANN runs the IANA and there is
+&gt; no such framework that you elude to. Review
+&gt; http://www.iana.org/protocols/
+
+I would like to suggest that perhaps exactly this sort of banter is an
+excellent illustration for the Bitcoin community of what we have been
+up against in this (conceivable simple an public benefit oriented)
+endeavour. If you also look at the fact that the ISO4217 registry (to
+take currency/commodity codes as just one example) there is apparently
+not even a public list of requirements for codepoint issue.  This sort
+of thing is *exactly* why the internet community appears to
+desperately need an open registry - allowing public internet bodies
+(IANA) to function to support innovation and interconnectivity for all
+sectors of the internet&#39;s various financial communities so that
+anyone, including innovators, can obtain interoperability via simple,
+hassle-free paths, without encountering self-important bureaucrats.
+
+We anticipate victory circa February.
+
+- Walter
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Rick Wesson <rick@su...> - 2012-11-27 03:54:50
+&gt;
+&gt; We are not establishing an IETF working group, which is an option that
+&gt; was explored prior to the Paris meeting and has been sidelined at
+&gt; present for depth-of-bureaucracy by the backing commercial entities.
+&gt; Rather, we are establishing a top-level IANA registry group. This is
+&gt; not anticipated by the IETF old-guard working with us to be either (a)
+&gt; controversial or (b) possible to block.
+
+My last note in this sub-thread.
+
+There are no IANA registry groups, there is no such thing, and no way
+to form one. The IETF can ask the IANA to form a registry but these
+things take lots of support and take a long time, and these are only
+created through standards track RFC. ICANN runs the IANA and there is
+no such framework that you elude to. Review
+http://www.iana.org/protocols/
+
+If you are applying for a gTLD, good luck with that.
+
+
+-rick
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Walter Stanish <walter@st...> - 2012-11-27 03:31:44
+&gt;&gt; We are currently working with IETF staff, with open offers of support
+&gt;&gt; from multiple well funded commercial bodies, to transition these
+&gt;&gt; proposals through to IANA management.
+&gt;
+&gt; I hate to inform you that you have been mislead. The IETF and the IANA
+&gt; do not operate as you outlined above. Having spent too many years
+&gt; within ICANN/IETF/IANA I can assure you are mistaken.
+&gt; Your drafts are expired and it appears that there is no support for a
+&gt; &#34;finance&#34; working group in the IETF.
+
+We are not establishing an IETF working group, which is an option that
+was explored prior to the Paris meeting and has been sidelined at
+present for depth-of-bureaucracy by the backing commercial entities.
+Rather, we are establishing a top-level IANA registry group. This is
+not anticipated by the IETF old-guard working with us to be either (a)
+controversial or (b) possible to block.
+
+- Walter
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Rick Wesson <rick@su...> - 2012-11-27 03:29:18
+On Mon, Nov 26, 2012 at 7:16 PM, Walter Stanish &lt;walter@...&gt; wrote:
+&gt;&gt;&gt; X-ISO4217-A3
+&gt;&gt;
+&gt;&gt; I see that draft-stanish-x-iso4217-a3 is not standards track, is there
+&gt;&gt; a reason for this?
+&gt;
+&gt; Of the three currently published proposals, all are essentially IANA
+&gt; registry proposals.
+&gt;
+&gt; We are currently working with IETF staff, with open offers of support
+&gt; from multiple well funded commercial bodies, to transition these
+&gt; proposals through to IANA management.
+
+I hate to inform you that you have been mislead. The IETF and the IANA
+do not operate as you outlined above. Having spent too many years
+within ICANN/IETF/IANA I can assure you are mistaken.
+Your drafts are expired and it appears that there is no support for a
+&#34;finance&#34; working group in the IETF.
+
+
+-rick
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Walter Stanish <walter@st...> - 2012-11-27 03:16:35
+&gt;&gt; X-ISO4217-A3
+&gt;
+&gt; I see that draft-stanish-x-iso4217-a3 is not standards track, is there
+&gt; a reason for this?
+
+Of the three currently published proposals, all are essentially IANA
+registry proposals.
+
+We are currently working with IETF staff, with open offers of support
+from multiple well funded commercial bodies, to transition these
+proposals through to IANA management.
+
+It appears that the Independent Stream Editor path will be used to
+transition these through to IANA, at which time the proposals
+themselves will be converted to Informational status.
+
+(As far as I understand right now, Within the IETF, Standards Track
+has special meaning and entails relatively large degrees of
+bureaucracy that are not within the current contributors&#39; resources.
+It is also worth pointing out that many popular protocols implemented
+on the majority of systems (IIRC, such as IMAP) never reach formal
+standardization for this reason. It should be noted that in these
+cases, this does not make the protocols any less attractive as
+potential components for system implementation.)
+
+&gt; It also doesn&#39;t appear to address ~any of the the targeted items here.
+&gt; Is there another draft I should be looking for which has more overlap
+&gt; with the discussion here?
+
+As outlined in the previous post:
+  - Internet Financial EXchange (IFEX). A proposal under development
+that facilitates the negotiation of financial transactions between
+internet-based financial endpoints. (The area we would love your
+input) http://www.ifex-project.org/our-proposals/ifex
+
+As well as the information linked to above, significant but not
+particularly well grounded discussions have occurred regarding the
+IFEX-based paradigm for settlement versus some other proposed
+paradigms, in particular Ripple (as it appeared some months ago),
+which can be read here:
+https://groups.google.com/forum/?fromgroups#!topic/rippleusers/v4bEBZZVEsA[1-25]
+
+Kind regards and with the hopes of combining our efforts as a joint
+proposal that can benefit other currencies/commodities and settlement
+systems as well as Bitcoin,
+Walter Stanish
+Skype:walter.stanish
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Gregory Maxwell <gmaxwell@gm...> - 2012-11-27 02:47:58
+On Mon, Nov 26, 2012 at 9:16 PM, Walter Stanish &lt;walter@...&gt; wrote:
+&gt; X-ISO4217-A3
+
+I see that draft-stanish-x-iso4217-a3 is not standards track, is there
+a reason for this?
+
+It also doesn&#39;t appear to address ~any of the the targeted items here.
+Is there another draft I should be looking for which has more overlap
+with the discussion here?
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Walter Stanish <walter@st...> - 2012-11-27 02:16:10
+&gt; This is the next big &#34;lets all agree to do things the same way&#34; thing
+&gt; I think we should tackle. I&#39;m particularly looking for feedback from
+&gt; other bitcoin client developers, even if it is just a quick &#34;looks
+&gt; reasonable, if everybody else is going to do it then I will
+&gt; (eventually) too...&#34;
+
+I agree this is a very pertinent subject, and with a bit of looking
+around it is clear that there is a requirement here for emerging
+financial ecosystems of many types, certainly not just for the Bitcoin
+community, which until now seems to have been getting along just about
+OK despite the current levels of complexity.
+
+That said, I have a number of serious concerns with the proposal.
+
+1. Undue Broadening of Scope: From an architectural perspective, if
+one accepts the unix mantra of &#34;do one thing and do it well&#34; as
+reasonable and time-proven doctrine, given that Bitcoin is already
+trying to be both a commodity and a distributed consensus-based
+settlement system, does it really make sense to attempt to tack-on
+business-level functions?
+
+2. X.509: I have read (somewhere or other, recently) that it is
+generally considered bad form to mandate specific cryptographic
+systems in new protocols where open support is possible. Given the
+recent issues with X.509, the security nightmare that already exists
+with the volume of (sometimes cracked, sometimes
+government-compromised?) issuers, and the complexity of the scheme, it
+seems a little strange to singularly mandate X.509, despite its
+widespread use at present.  There are also a swathe of potential
+issues around DNS interdependence, information leakage within
+certificates themselves and/or their DNS-interpretation by clients,
+etc. I would consider suggesting open support with initial support for
+GPG, as it is apparently preferred as a simple and further
+decentralized solution by the majority of the open source and
+cryptographic software development community.
+
+3. Failure to Review Existing Work: I would urge anyone to be wary of
+adopting any proposal that does not inform itself through reference to
+existing protocols in the same area.  In this area there are a few
+protocols in current use (chiefly in Europe) such as those listed at
+http://en.wikipedia.org/wiki/Invoice#Electronic_invoices as well as
+various hosted platforms such as http://xero.co.nz/ (chiefly
+Australia/New Zealand). Often, existing work shows its age with
+after-the-fact alterations that sit poorly with initial assumptions:
+exactly the kind of situation one can walk in to developing against a
+proposal before adequately researching the area.
+
+4. Complexity of Metadata: Physical and digital invoicing for
+businesses operating at scale often requires delivery terms, product
+classification codes, locale-specific taxation (often at multiple
+levels), various fees and discounts (sometimes fulfillment-speed
+linked with multiple tiers/thresholds), and other features that I am
+skeptical are ever going to be made fully available within a business
+protocol tacked on to a hybrid digital currency/settlement system
+(like Bitcoin) as a secondary concern.
+
+5. Non-BTC Currencies/Currency-like Commodities: No approach to
+non-BTC currencies appears to have been made, which makes the
+&#34;invoice&#34; of limited utility for almost all businesses, save those
+willing to accept all of the &#39;capital risk&#39; (exchange rate fluctuation
+risk) inherent in a BTC-based fulfilment process with a potential term
+long enough to justify an invoicing process. (Does this narrow scope
+actually cover any existing business?)
+
+6. DNS: As already mentioned with regards to X.509: a huge red flag as
+an area of potential vulnerability, or at least information leakage.
+
+I must now admit that in raising the above I am definitely biased.  My
+employer (Payward, Inc.) and other organizations (OpenCoin, Inc.,
+etc.) have been working with the Internet Engineering Task Force
+(IETF) on tabling some open proposals within this area under the
+auspices of the Internet Financial Exchange Project
+(http://ifex-project.org/).  Our hope is to facilitate the requisite
+standardisation within internet-connected systems to deal with what is
+perhaps fairly characterised as a relatively heterogeneous outlook on
+the rise of cryptographic (and other alternate) currencies and
+commodities, and emerging settlement infrastructures.
+
+Whilst the current Bitcoin proposal is admirable for correctly raising
+the area as one of immediate concern, I hope that the above points out
+some of the perhaps as-yet unconsidered complexities and draws in to
+question whether Bitcoin is in fact the appropriate place to implement
+a solution, given the hassles that will entail.  After all, wouldn&#39;t
+Bitcoin developer time would be better spent improving the core of
+bitcoin (ie. distributed settlement system and commodity) rather than
+adding new features?
+
+I would invite parties within the Bitcoin community with an interest
+in non directly settlement-linked financial transaction negotiation
+and reporting features to consider contributing to the existing,
+re-usable efforts at the IFEX Project, rather than supporting the
+extension of one currency/commodity and settlement infrastructure (ie.
+Bitcoin) which IMHO is likely to detract from developer time, increase
+complexity, and perhaps result in a less polished and re-applicable
+solution overall.
+
+Our proposals:
+ - X-ISO4217-A3 (X-ISO4217-A3). A published proposal that provides a
+mechanism for the open identification of currencies or currency-like
+commodities on the internet.  (Bitcoin is registered as XBTC).
+http://www.ifex-project.org/our-proposals/x-iso4217-a3
+ - Internet IBAN (IIBAN). A published proposal that provides a
+mechanism for the open identification of financial endpoints on the
+internet. (IBAN compatible, checksum-included, name-squatting problem
+avoiding. The registry of entities is IANA-managed, encourages GPG
+use, and avoids the X.509 requirement.)
+http://www.ifex-project.org/our-proposals/iiban
+ - Internet MIC (IMIC). A published proposal that provides a mechanism
+for the open identification of financial markets on the internet.
+(Such as most Bitcoin exchanges)
+http://www.ifex-project.org/our-proposals/imic
+ - Internet Financial EXchange (IFEX). A proposal under development
+that facilitates the negotiation of financial transactions between
+internet-based financial endpoints. (The area we would love your
+input) http://www.ifex-project.org/our-proposals/ifex
+
+Sincerely and with the utmost respect for the Bitcoin project&#39;s excellent work,
+Walter Stanish
+
+
+Re: [Bitcoin-development] Payment Protocol Proposal:
+Invoices/Payments/Receipts
+From: Gavin <gavinandresen@gm...> - 2012-11-27 01:20:43
+Supporting DNSSEC/DANE in the future when they are widely deployed is a great idea.
+
+Note that the x509chain field is &#39;repeated&#39;, and any repeated field may have zero entries. So I would suggest supporting other PKI systems in the future by adding optional new fields (for maximum compatibility or security merchants might want to include both a x509chain AND 
+
+--
+Gavin Andresen
+
+
+
+Showing
+25
+50
+100
+250
+results of 33 Flat |
+Threaded
+1 2 > >> (Page 1 of 2)
+SourceForge
+About
+Site Status
+@sfnet_ops
+Powered by Allura
+Find and Develop Software
+Create a Project
+Software Directory
+Top Downloaded Projects
+Community
+Blog
+@sourceforge
+Job Board
+Resources
+Help
+Site Documentation
+Support Request
+Real-Time Support
+Copyright © 2014 SourceForge. All Rights Reserved.
+SourceForge is a Dice Holdings, Inc. company.
+Terms
+Privacy
+Opt Out Choices
+Advertise
+SourceForge.JP
+

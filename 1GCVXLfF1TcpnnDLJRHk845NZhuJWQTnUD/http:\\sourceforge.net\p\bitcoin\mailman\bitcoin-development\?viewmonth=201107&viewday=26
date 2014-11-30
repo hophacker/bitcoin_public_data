@@ -1,0 +1,737 @@
+http://sourceforge.net/p/bitcoin/mailman/bitcoin-development/?viewmonth=201107&viewday=26
+Bitcoin / Mailing Lists
+Error: CSS did not load.
+This may happen on the first request due to CSS mimetype issues.
+Try clearing your browser cache and refreshing.
+SourceForge
+Browse
+Enterprise
+Blog
+Help
+Jobs
+Log In
+or
+Join
+Solution Centers
+Smarter Commerce
+Go Parallel
+HTML5
+Smarter IT
+Resources
+Newsletters
+Work at SourceForge, help us to make it a better place! We have an immediate need for a Support Technician in our San Francisco or Denver office.
+Close
+Home
+Browse
+Projects
+Bitcoin
+Mailing Lists
+Bitcoin
+beta
+Brought to you by:
+gavinandresen,
+jgarzik,
+s_nakamoto,
+sf-editor1,
+sipa
+Summary
+Files
+Reviews
+Support
+Wiki
+Mailing Lists
+News
+Code
+bitcoin-development
+bitcoin-list
+bitcoin-test
+bitcoin-development
+— Core bitcoin development discussion
+You can subscribe to this list here.
+2011
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+(81)
+Jul
+(186)
+Aug
+(166)
+Sep
+(185)
+Oct
+(94)
+Nov
+(85)
+Dec
+(217)
+2012
+Jan
+(135)
+Feb
+(131)
+Mar
+(70)
+Apr
+(62)
+May
+(87)
+Jun
+(139)
+Jul
+(128)
+Aug
+(39)
+Sep
+(58)
+Oct
+(82)
+Nov
+(77)
+Dec
+(90)
+2013
+Jan
+(21)
+Feb
+(51)
+Mar
+(143)
+Apr
+(152)
+May
+(200)
+Jun
+(167)
+Jul
+(193)
+Aug
+(163)
+Sep
+(93)
+Oct
+(199)
+Nov
+(247)
+Dec
+(230)
+2014
+Jan
+(289)
+Feb
+(196)
+Mar
+(489)
+Apr
+(693)
+May
+(280)
+Jun
+(240)
+Jul
+(45)
+Aug
+Sep
+Oct
+Nov
+Dec
+S
+M
+T
+W
+T
+F
+S
+1
+(23)
+2
+(19)
+3
+(4)
+4
+(7)
+5
+(5)
+6
+(2)
+7
+(11)
+8
+(6)
+9
+(2)
+10
+(10)
+11
+(2)
+12
+(7)
+13
+(6)
+14
+(3)
+15
+(3)
+16
+(9)
+17
+(10)
+18
+(2)
+19
+(3)
+20
+21
+(1)
+22
+23
+(1)
+24
+25
+26
+(13)
+27
+(15)
+28
+(13)
+29
+30
+(6)
+31
+(3)
+Showing
+13
+results of 13 Flat |
+Threaded
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Matt Corallo <bitcoin-list@bl...> - 2011-07-26 17:18:38
+Attachments:
+Message as HTML On Tue, 2011-07-26 at 09:50 -0700, Rick Wesson wrote:
+&gt; [snip]
+&gt; 
+&gt; &gt; I totally agree, however I don&#39;t think DNS-based resolving is a good
+&gt; &gt; idea here.  HTTPS does have several advantages over a DNSSEC-based
+&gt; &gt; solution without any significant drawbacks that I can see.
+&gt; 
+&gt; To restate your (con dnssec) points:
+&gt;    o DNS resolution of bitcoin addresses is bad because of potential
+&gt; MITM attacks
+&gt;    o DNSSEC is not a security measure for mitigating DNS resolution of
+&gt; bitcoin addresses
+&gt;       because the application would require its own dnssec enabled stub resolver
+That is one point, but yes.
+&gt; 
+&gt; Please restate
+&gt;    o HTTPS is your preferred method for resolution because?
+Because it allows for the giving of different addresses to each client
+based on IP much easier.  Its possible with DNS by setting TTL to 0 and
+hoping that Bitcoin clients will be using their own resolver, but that
+is far from guaranteed.  Additionally, HTTPS stuff has already been
+coded and implemented, so there&#39;s that...
+
+Frankly, HTTPS&#39; advantages are very small here, but since they exist,
+and DNS has no advantages that I can see, I don&#39;t see any reason to go
+with DNS here.  I much prefer using a HTTPS library (of which there are
+many which have had much more thorough security audits) than a
+DNSSEC-implementing DNS recursion library with the root trust anchors
+and root servers built-in (are there any?).
+
+Maybe I&#39;m missing something here?
+
+Matt
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Rick Wesson <rick@su...> - 2011-07-26 16:51:05
+[snip]
+
+&gt; I totally agree, however I don&#39;t think DNS-based resolving is a good
+&gt; idea here.  HTTPS does have several advantages over a DNSSEC-based
+&gt; solution without any significant drawbacks that I can see.
+
+To restate your (con dnssec) points:
+   o DNS resolution of bitcoin addresses is bad because of potential
+MITM attacks
+   o DNSSEC is not a security measure for mitigating DNS resolution of
+bitcoin addresses
+      because the application would require its own dnssec enabled stub resolver
+
+Please restate
+   o HTTPS is your preferred method for resolution because?
+
+If you can enumerate your advantages so I can develop a proper
+response to the points you have raised.
+
+thanks,
+
+-rick
+
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: phantomcircuit <phantomcircuit@co...> - 2011-07-26 16:49:06
+dns resolution is far simpler to implement than properly checking the https certificate chain
+
+Matt Corallo &lt;bitcoin-list@...&gt; wrote:
+
+&gt;For some reason my mail client is being thick and not responding
+&gt;on-list, sorry about that...
+&gt;
+&gt;On Tue, 2011-07-26 at 08:34 -0700, Rick Wesson wrote:
+&gt;&gt; &gt; Most OSes dont do any resolving at all, they just query upstream
+&gt;&gt; &gt; resolvers.  In the case of the coffee shop, that upstream resolver is
+&gt;&gt; &gt; the attacker.  This attacker can easily just claim that the zone you
+&gt;&gt; &gt; requested is not DNSSEC signed and return their data and the OS will not
+&gt;&gt; &gt; be any wiser.  AFAIK, most OSes dont have a mechanism to require the
+&gt;&gt; &gt; zone queried is DNSSEC signed meaning you have to implement a full DNS
+&gt;&gt; &gt; resolver in Bitcoin in order for it to be secure.
+&gt;&gt; 
+&gt;&gt; Matt,
+&gt;&gt; 
+&gt;&gt; The same attack can apply to https with a self signed cert where it is
+&gt;&gt; the A record that is replaced by the attacker and the https request is
+&gt;&gt; sent to evil.com&#39;s server which responds to the request with an answer
+&gt;&gt; in the form you expect. This is what lots of malware does on windows
+&gt;&gt; to steel bank login credentials, securing http doesn&#39;t prevent such an
+&gt;&gt; attack.
+&gt;If you are using a self-signed cert to do any kind of important data
+&gt;transfer you are just being stupid.  Here I am assuming your computer
+&gt;isnt actually compromised, but only the network is, which I think is a
+&gt;fairly good assumption.
+&gt;&gt; 
+&gt;&gt; Windows has supported DNSSEC since 2008 as have most of the unix
+&gt;&gt; variants, mac osx since 10.3 Android also seems to include DNSSEC
+&gt;&gt; capable resolvers.
+&gt;&gt; 
+&gt;&gt; If this thread is really about DNSSEC then we might move it to a more
+&gt;&gt; appropriate forum for discussing how applications leverage DNS
+&gt;&gt; security extensions.  Its taken some years to get the specs done and
+&gt;&gt; the root signed I expect it to take many more to enable the
+&gt;&gt; applications to leverage the deployed infrastructure.
+&gt;No, DNSSEC is very well done, this thread is specifically about the
+&gt;security implications of using DNSSEC for Bitcoin address communication.
+&gt;IMO it is not a good idea, as for it to be secure against a coffee-shop
+&gt;network MITMer you have to implement a full resolver with root trust
+&gt;anchors and knowledge of root servers in Bitcoin, which does not seem
+&gt;like a good idea.
+&gt;&gt; 
+&gt;&gt; I am interested in working on the issues surrounding usability and I
+&gt;&gt; find that remembering and communicating a bitcoin address are current
+&gt;&gt; limiting factors in the acceptance and deployment of this software. My
+&gt;&gt; goal is for simpler user experience.
+&gt;I totally agree, however I don&#39;t think DNS-based resolving is a good
+&gt;idea here.  HTTPS does have several advantages over a DNSSEC-based
+&gt;solution without any significant drawbacks that I can see.
+&gt;
+&gt;Matt
+&gt;
+&gt;------------------------------------------------------------------------------
+&gt;Magic Quadrant for Content-Aware Data Loss Prevention
+&gt;Research study explores the data loss prevention market. Includes in-depth
+&gt;analysis on the changes within the DLP market, and the criteria used to
+&gt;evaluate the strengths and weaknesses of these DLP solutions.
+&gt;http://www.accelacomm.com/jaw/sfnl/114/51385063/
+&gt;_______________________________________________
+&gt;Bitcoin-development mailing list
+&gt;Bitcoin-development@...
+&gt;https://lists.sourceforge.net/lists/listinfo/bitcoin-development
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Matt Corallo <bitcoin-list@bl...> - 2011-07-26 16:24:51
+Attachments:
+Message as HTML For some reason my mail client is being thick and not responding
+on-list, sorry about that...
+
+On Tue, 2011-07-26 at 08:34 -0700, Rick Wesson wrote:
+&gt; &gt; Most OSes dont do any resolving at all, they just query upstream
+&gt; &gt; resolvers.  In the case of the coffee shop, that upstream resolver is
+&gt; &gt; the attacker.  This attacker can easily just claim that the zone you
+&gt; &gt; requested is not DNSSEC signed and return their data and the OS will not
+&gt; &gt; be any wiser.  AFAIK, most OSes dont have a mechanism to require the
+&gt; &gt; zone queried is DNSSEC signed meaning you have to implement a full DNS
+&gt; &gt; resolver in Bitcoin in order for it to be secure.
+&gt; 
+&gt; Matt,
+&gt; 
+&gt; The same attack can apply to https with a self signed cert where it is
+&gt; the A record that is replaced by the attacker and the https request is
+&gt; sent to evil.com&#39;s server which responds to the request with an answer
+&gt; in the form you expect. This is what lots of malware does on windows
+&gt; to steel bank login credentials, securing http doesn&#39;t prevent such an
+&gt; attack.
+If you are using a self-signed cert to do any kind of important data
+transfer you are just being stupid.  Here I am assuming your computer
+isnt actually compromised, but only the network is, which I think is a
+fairly good assumption.
+&gt; 
+&gt; Windows has supported DNSSEC since 2008 as have most of the unix
+&gt; variants, mac osx since 10.3 Android also seems to include DNSSEC
+&gt; capable resolvers.
+&gt; 
+&gt; If this thread is really about DNSSEC then we might move it to a more
+&gt; appropriate forum for discussing how applications leverage DNS
+&gt; security extensions.  Its taken some years to get the specs done and
+&gt; the root signed I expect it to take many more to enable the
+&gt; applications to leverage the deployed infrastructure.
+No, DNSSEC is very well done, this thread is specifically about the
+security implications of using DNSSEC for Bitcoin address communication.
+IMO it is not a good idea, as for it to be secure against a coffee-shop
+network MITMer you have to implement a full resolver with root trust
+anchors and knowledge of root servers in Bitcoin, which does not seem
+like a good idea.
+&gt; 
+&gt; I am interested in working on the issues surrounding usability and I
+&gt; find that remembering and communicating a bitcoin address are current
+&gt; limiting factors in the acceptance and deployment of this software. My
+&gt; goal is for simpler user experience.
+I totally agree, however I don&#39;t think DNS-based resolving is a good
+idea here.  HTTPS does have several advantages over a DNSSEC-based
+solution without any significant drawbacks that I can see.
+
+Matt
+[Bitcoin-development] "To:" addresses missing
+From: John Smith <witchspace81@gm...> - 2011-07-26 14:41:14
+Attachments:
+Message as HTML I first thought it was a problem in my UI, after syncing to the latest git
+version. But the following screenshot says enough:
+
+http://img24.imageshack.us/img24/7363/screencpf.png
+
+The address are also missing in the detailed transaction view. It appears
+that the problem is in script.cpp:
+
+        BOOST_FOREACH(PAIRTYPE(opcodetype, valtype)&amp; item, vSolution)
+        {
+            uint160 hash160;
+            if (item.first == OP_PUBKEY)
+                addressRet.SetPubKey(item.second);
+            else if (item.first == OP_PUBKEYHASH)
+                addressRet.SetHash160((uint160)item.second);
+            if (keystore == NULL || keystore-&gt;HaveKey(addressRet))
+                return true;
+        }
+
+It will only return &#34;true&#34; on keys that are in the keystore (your own
+private keys...). After commenting out the &#34;if (keystore == NULL ...&#34; line,
+the display is fixed.
+
+But that simple solution might have impact somewhere else.
+
+JS
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Matt Corallo <bitcoin-list@bl...> - 2011-07-26 13:23:53
+Attachments:
+Message as HTML On Mon, 2011-07-25 at 20:35 -0700, Rick Wesson wrote:
+&gt; Matt,
+&gt; 
+&gt; I started from the premise that I can&#39;t remember a bitcoin address but
+&gt; I can/do remember email addresses which, as an identity are easy
+&gt; labels for humans to remember. The IPv4 address is the metaphor I
+&gt; consider. As someone who actually worked on parts of DNSSEC I do
+&gt; believe in it -- and that it offers reasonable security for
+&gt; transactions.
+
+&gt; Remember MITM attacks on DNS for a transaction are for the sender
+&gt; against the merchant, and it is only the wallet ID that would be
+&gt; available. These identifiers are something people use &#34;like&#34; an
+&gt; identity in that they are frequently shared in public spaces.
+&gt; 
+Yes, DNSSEC is great if you are running your own recursive name server.
+However, that is probably something like 0.01% of the people out there.
+If this were to be made secure, one would have to implement a full
+recursive nameserver inside of Bitcoin with the root trust anchors
+hardcoded in.  This seems like way overkill to do name-&gt;address mapping.
+(My attack scenario here is coffee shop wifi with the default DNS
+resolvers being somewhere at the ISP and a ARP (or other) MITM attack
+intercepting and playing with your DNS queries).
+Additionally, HTTPS mapping offers some advantages such as ease of
+offering up different to different people by eg. IP address (could be
+done by setting DNS TTL to 0 and assuming all users will be using a
+built-in resolver, but its still not guaranteed that other clients would
+use a built-in resolver and then the IP of the resolver is not the same
+as the IP of the Bitcoin node).  
+Not that DNS is a terrible idea, but there are clear advantages for
+using HTTPS (or similar) mapping over DNS and I see no clear advantage
+for using DNS over HTTPS (aside from the &#34;that is what it is designed
+for&#34; argument, which I would claim is an invalid argument as you have to
+consider the technology, not its intent).
+&gt; Also, a DNS mapping does not prevent or deny anyone from leveraging
+&gt; HTTP(S) for simular mapping. My point is that DNS is designed for name
+&gt; to thing mapping and its done a decent job. What I like about the DNS
+&gt; is that it is frequently leveraged as a proxy for identity and http
+&gt; URIs are not. Where https://wesson.us/ricks-bitcoin-address doesn&#39;t
+&gt; feel like and identity (to me) and rick.wesson.us does.
+&gt; 
+&gt; My point is about usability and user experience. Bitcoin if used in
+&gt; the DNS might make DNSSEC more popular which IMHO is a good thing.
+Hold on there, Bitcoin is still tiny, I highly, highly doubt it will
+make a difference to DNSSEC adoption.
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: John Smith <witchspace81@gm...> - 2011-07-26 08:04:24
+Attachments:
+Message as HTML &gt; I only meant that foo.bar.net is not the same formatting.
+&gt; foo@... would be.
+&gt;
+
+Yes please use email-like addresses, whatever is decided on the underlying
+protocol.
+
+JS
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Luke-Jr <luke@da...> - 2011-07-26 06:19:27
+On Tuesday, July 26, 2011 12:54:23 AM Rick Wesson wrote:
+&gt; &gt; 1. Right now you practically need a unique Bitcoin address per
+&gt; &gt; transaction.
+&gt; 
+&gt; I&#39;d like to find ways to alievate this requirement.
+
+Admittedly, my proposal to email a signed message allows one to reuse 
+addresses, but there is still a privacy concern.
+
+&gt; &gt; 2. DNSSEC is on the edge of becoming illegal in the US.
+&gt; 
+&gt; really, pointers please. DHS was a huge funder for DNSSEC asn .mil was
+&gt; the first domain to deploy it. I think you may be miss-informed.
+
+http://www.google.com/search?q=%22PROTECT+IP+act%22+DNSSEC
+
+&gt; &gt; 3. Emails aren&#39;t merely domains.
+&gt; 
+&gt; correct, I was speaking about an &#34;address&#34; that used the same/simular
+&gt; formatting but did not use the SMTP protocol.
+
+I only meant that foo.bar.net is not the same formatting.
+foo@... would be.
+
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Rick Wesson <rick@su...> - 2011-07-26 04:54:29
+&gt;
+&gt; 1. Right now you practically need a unique Bitcoin address per transaction.
+
+I&#39;d like to find ways to alievate this requirement.
+
+&gt; 2. DNSSEC is on the edge of becoming illegal in the US.
+
+really, pointers please. DHS was a huge funder for DNSSEC asn .mil was
+the first domain to deploy it. I think you may be miss-informed.
+
+&gt; 3. Emails aren&#39;t merely domains.
+
+correct, I was speaking about an &#34;address&#34; that used the same/simular
+formatting but did not use the SMTP protocol.
+
+-rick
+
+&gt; I would propose something like resolving foo@... to a SRV lookup for
+&gt; _bitcoinaddressresolution._tcp.foo.bar.net, expecting a cert for bar.net,
+&gt; making a HTTPS request for /bitcoinaddressresolution?foo@..., and also
+&gt; sending an email to foo@... (the usual way) signed with the keys used for
+&gt; the transaction. ;)
+&gt;
+
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Luke-Jr <luke@da...> - 2011-07-26 04:23:06
+On Monday, July 25, 2011 11:35:34 PM Rick Wesson wrote:
+&gt; I started from the premise that I can&#39;t remember a bitcoin address but
+&gt; I can/do remember email addresses which, as an identity are easy
+&gt; labels for humans to remember. The IPv4 address is the metaphor I
+&gt; consider. As someone who actually worked on parts of DNSSEC I do
+&gt; believe in it -- and that it offers reasonable security for
+&gt; transactions.
+
+1. Right now you practically need a unique Bitcoin address per transaction.
+2. DNSSEC is on the edge of becoming illegal in the US.
+3. Emails aren&#39;t merely domains.
+
+I would propose something like resolving foo@... to a SRV lookup for 
+_bitcoinaddressresolution._tcp.foo.bar.net, expecting a cert for bar.net, 
+making a HTTPS request for /bitcoinaddressresolution?foo@..., and also 
+sending an email to foo@... (the usual way) signed with the keys used for 
+the transaction. ;)
+
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Rick Wesson <rick@su...> - 2011-07-26 04:07:05
+Matt,
+
+I started from the premise that I can&#39;t remember a bitcoin address but
+I can/do remember email addresses which, as an identity are easy
+labels for humans to remember. The IPv4 address is the metaphor I
+consider. As someone who actually worked on parts of DNSSEC I do
+believe in it -- and that it offers reasonable security for
+transactions.
+
+Remember MITM attacks on DNS for a transaction are for the sender
+against the merchant, and it is only the wallet ID that would be
+available. These identifiers are something people use &#34;like&#34; an
+identity in that they are frequently shared in public spaces.
+
+Also, a DNS mapping does not prevent or deny anyone from leveraging
+HTTP(S) for simular mapping. My point is that DNS is designed for name
+to thing mapping and its done a decent job. What I like about the DNS
+is that it is frequently leveraged as a proxy for identity and http
+URIs are not. Where https://wesson.us/ricks-bitcoin-address doesn&#39;t
+feel like and identity (to me) and rick.wesson.us does.
+
+My point is about usability and user experience. Bitcoin if used in
+the DNS might make DNSSEC more popular which IMHO is a good thing.
+
+-rick
+
+
+On Mon, Jul 25, 2011 at 6:35 PM, Matt Corallo &lt;bitcoin-list@...&gt; wrote:
+&gt; On Mon, 2011-07-25 at 17:29 -0700, Rick Wesson wrote:
+&gt;&gt; I&#39;ve just joined the list with the goals of producing a patch to
+&gt;&gt; sendtoaddress in rpc.cpp to support DNS lookups so that one could
+&gt;&gt; publish a TXT record in the DNS with their wallet address to
+&gt;&gt; facilitate sending of coin.
+&gt;
+&gt; But...why?
+&gt; Using URIs is much simpler and can be more useful in terms of being able
+&gt; to give different addresses and/or values per user.
+&gt; Also, despite DNSSec being &#34;out there&#34; DNS is still very insecure to
+&gt; transmit something that will result in money transfer...some idiot tries
+&gt; it on public WiFi and a MITM steals your coins...DNS is really just not
+&gt; well suited for this kind of thing.
+&gt; If you want nice name-&gt;address mapping, a simple HTTPS server with
+&gt; addresses and client support (there are some patches around for this)
+&gt; works much better in the end.
+&gt;
+&gt; ------------------------------------------------------------------------------
+&gt; Magic Quadrant for Content-Aware Data Loss Prevention
+&gt; Research study explores the data loss prevention market. Includes in-depth
+&gt; analysis on the changes within the DLP market, and the criteria used to
+&gt; evaluate the strengths and weaknesses of these DLP solutions.
+&gt; http://www.accelacomm.com/jaw/sfnl/114/51385063/
+&gt; _______________________________________________
+&gt; Bitcoin-development mailing list
+&gt; Bitcoin-development@...
+&gt; https://lists.sourceforge.net/lists/listinfo/bitcoin-development
+&gt;
+&gt;
+
+
+Re: [Bitcoin-development] bitcoin DNS addresses
+From: Matt Corallo <bitcoin-list@bl...> - 2011-07-26 01:36:08
+Attachments:
+Message as HTML On Mon, 2011-07-25 at 17:29 -0700, Rick Wesson wrote:
+&gt; I&#39;ve just joined the list with the goals of producing a patch to
+&gt; sendtoaddress in rpc.cpp to support DNS lookups so that one could
+&gt; publish a TXT record in the DNS with their wallet address to
+&gt; facilitate sending of coin.
+
+But...why?
+Using URIs is much simpler and can be more useful in terms of being able
+to give different addresses and/or values per user.
+Also, despite DNSSec being &#34;out there&#34; DNS is still very insecure to
+transmit something that will result in money transfer...some idiot tries
+it on public WiFi and a MITM steals your coins...DNS is really just not
+well suited for this kind of thing.
+If you want nice name-&gt;address mapping, a simple HTTPS server with
+addresses and client support (there are some patches around for this)
+works much better in the end.
+[Bitcoin-development] bitcoin DNS addresses
+From: Rick Wesson <rick@su...> - 2011-07-26 01:24:57
+Attachments:
+Message as HTML I&#39;ve just joined the list with the goals of producing a patch to
+sendtoaddress in rpc.cpp to support DNS lookups so that one could publish a
+TXT record in the DNS with their wallet address to facilitate sending of
+coin.
+
+I&#39;m proposing something like the code below, which works but needs
+additional error handling.
+
+also working on a internet-draft to describe how to put bitcoin addresses in
+the DNS which I hope to post the first draft of this week.
+
+I&#39;d appreciate comments on issues around annomity, community push back and
+any other issues you might have with leveraging the DNS for bitcoin
+transactions.
+
+thanks,
+
+-rick
+
+
+Value sendtoaddress(const Array&amp; params, bool fHelp)
+{
+   if (fHelp || params.size() &lt; 2 || params.size() &gt; 4)
+       throw runtime_error(
+           &#34;sendtoaddress &lt;bitcoinaddress&gt; &lt;amount&gt; [comment]
+[comment-to]\n&#34;
+           &#34;&lt;amount&gt; is a real and is rounded to the nearest 0.00000001&#34;);
+
+/**
+; &lt;&lt;&gt;&gt; DiG 9.7.3 &lt;&lt;&gt;&gt; _btc.rick.wesson.us txt
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 43754
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;_btc.rick.wesson.us.           IN      TXT
+
+;; ANSWER SECTION:
+_btc.rick.wesson.us.    300     IN      TXT     &#34;BTC=1;
+1GCVXLfF1TcpnnDLJRHk845NZhuJWQTnUD&#34;
+
+;; Query time: 143 msec
+**/
+
+
+   string strAddress = params[0].get_str();
+   string dname=&#34;_btc.&#34;;
+   if(strAddress.find(&#34;@&#34;)){
+      unsigned char answer[255];
+      int len=0;
+      dname.append(strAddress);
+      dname.replace(dname.find(&#34;@&#34;), 1, &#34;.&#34;);
+
+      if((len = res_query(dname.c_str(), C_IN, T_TXT, answer, PACKETSZ)) &lt;
+0) {
+        string dnsAnswer=(char*)answer;
+        int i=dnsAnswer.find(&#34;BTC=1;&#34;);
+        if( i &lt; 0) throw runtime_error( dname + &#34; is not associated with a
+bitcoin address&#34;);
+        i += 6;
+        i = dnsAnswer.find(&#34;1&#34;, 6) ; // address start with a one (1)
+        dnsAnswer.erase(0,i);
+        strAddress=dnsAnswer;
+      }
+
+   }
+   // Amount
+   int64 nAmount = AmountFromValue(params[1]);
+...
+Showing
+13
+results of 13 Flat |
+Threaded
+SourceForge
+About
+Site Status
+@sfnet_ops
+Powered by Allura
+Find and Develop Software
+Create a Project
+Software Directory
+Top Downloaded Projects
+Community
+Blog
+@sourceforge
+Job Board
+Resources
+Help
+Site Documentation
+Support Request
+Real-Time Support
+Copyright © 2014 SourceForge. All Rights Reserved.
+SourceForge is a Dice Holdings, Inc. company.
+Terms
+Privacy
+Opt Out Choices
+Advertise
+SourceForge.JP
+

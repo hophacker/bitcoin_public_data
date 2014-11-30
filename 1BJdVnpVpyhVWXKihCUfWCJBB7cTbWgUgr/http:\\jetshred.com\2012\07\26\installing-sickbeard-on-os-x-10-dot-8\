@@ -1,0 +1,209 @@
+http://jetshred.com/2012/07/26/installing-sickbeard-on-os-x-10-dot-8/
+HTTP/1.1 200 OK
+Server: nginx/1.1.19
+Date: Thu, 24 Jul 2014 06:13:52 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11320
+Connection: close
+Vary: Accept-Encoding
+X-Powered-By: Express
+Cache-Control: public, max-age=0
+ETag: "-670370592"
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+    <title>Installing SickBeard on OS X 10.8</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css?v=69dfe595af" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+    
+    <meta name="generator" content="Ghost 0.4" />
+<link rel="alternate" type="application/rss+xml" title="JetShred" href="/rss/">
+<link rel="canonical" href="http://jetshred.com/2012/07/26/installing-sickbeard-on-os-x-10-dot-8/" />
+</head>
+<body class="post-template">
+
+    
+    
+
+
+
+<main class="content" role="main">
+
+    <article class="post">
+
+        
+        <header class="post-header">
+            <a class="blog-logo" href="http://jetshred.com">
+                
+                    <span class="blog-title">JetShred</span>
+                
+            </a>
+        </header>
+
+        
+        
+
+            <span class="post-meta"><time datetime="2012-07-26">26 Jul 2012</time> </span>
+
+            <h1 class="post-title">Installing SickBeard on OS X 10.8</h1>
+
+            <section class="post-content">
+                <p>SickBeard only has two real requirements to run on your Mac. The first being Python, which comes with Mountain Lion, and the second is Cheetah, which will need to be installed.</p>
+
+<p>However, for SickBeard to be useful you’ll also need <a href="http://www.sabnzbd.org">SABnzbd+</a> and a Usenet provider like <a href="http://www.usenetserver.com/partners/?a_aid=jetshred&amp;a_bid=818629b6">UsenetServer</a>. They have a fast and reliable service and offer a 14 day free trial with 10 GB of downloads to test it out.</p>
+
+<p>To install Cheetah, we’ll need to install the Command Line tools.  </p>
+
+<h2>Installing Command Line tools</h2>  
+
+<p>Command Line Tools are needed because Cheetah has to be built and compiled from source code. First you will need to have Xcode installed. If you don’t have it already it is available as a free download from the Mac App Store. Open Xcode and open Preferences. Choose <em>Downloads</em> and then select <em>Command Line Tools</em> and click the <em>Install</em> button. Once this finishes you can close Xcode.</p>
+
+<p><img alt="" src="http://jetshred.com/site-assets/images/2012/command-line-tools.png" />  </p>
+
+<h2>Installing Cheetah</h2>  
+
+<p>So now that the requirements for Cheetah have been set we need to download and install Cheetah from source. Open Terminal and run the following commands.</p>
+
+<pre><code>curl http://pypi.python.org/packages/source/C/Cheetah/Cheetah-2.4.4.tar.gz -o cheetah.tar.gz
+
+tar -zxvf cheetah.tar.gz  
+cd Cheetah-2.4.4  
+sudo python setup.py install  
+</code></pre>
+
+<h2>Installing SickBeard</h2>  
+
+<p>To make sure that we are installing the latest and greatest version of SickBeard and to make it easier to keep the software up to date we will be using git. So first you need to install git if you don’t have it already. You can get the OS X binary <a href="http://git-scm.com/download">here</a>. If you have still have Terminal open cmd+q out of it and then reopen. cd to the directory you want to install SickBeard in. Then type and run the following:  </p>
+
+<pre>git clone git://github.com/midgetspy/Sick-Beard.git</pre>
+
+<p>Once this finishes downloading you will have a folder called Sick-Beard. cd int the new folder and then type the following:  </p>
+
+<pre>python sickbeard.py -d</pre>
+
+<p>The -d tell SickBeard to run as a daemon. This way when you close terminal it won’t close the app. At this point you should be looking at a browser window opened to SickBeard. If you don’t see this then just fire up your favorite browser and navigate to <a href="http://localhost:8081">http://localhost:8081</a>.  </p>
+
+<h2>Autostarting SickBeard on Login and Keeping it Running</h2>  
+
+<p>Starting from the command line every time can be a bit of a pain, so let’s make it easier. Currently SickBeard has an issue with running in daemon mode under Mountain Lion that causes the app to spontaneously close. I’ve made a simple AppleScript app that gets around this bug. It starts SickBeard in non-daemon mode but still works pretty much the same way.</p>
+
+<p>Since daemon mode is what’s not working all that’s necessary to get around the bug is to not use daemon mode. Here it is:</p>
+
+<p><figure class="code"><figcaption><span>SickBeard Heartbeat Script</span><a href="http://jetshred.com/downloads/2012/SickBeardHB.zip">Download App </a></figcaption>  </p>
+
+<pre><code># This script starts SickBeard and suppressed the output so
+# that it runs as if in daemon mode while avoiding the daemon mode
+# issue. Once you have changed the settings
+# save this script as an Application and add it to your Login Items.
+# Change the following line to the path to your SickBeard folder
+
+set pathToSickBeard to "~/Development/Sick-Beard"
+
+#You probably don't want to change anything below here
+
+do shell script "python " &amp; pathToSickBeard &amp; "/SickBeard.py &gt; /dev/null 2&gt;&amp;1 &amp;"  
+</code></pre>
+
+<p><a href="http://jetshred.com/downloads/2012/SickBeardHB.zip">Download</a> the app and open it in AppleScript Editor. You’ll probably have to open AppleScript Editor and open the app through the File –&gt; Open. Set the path of your SickBeard folder and then set the loopTime to the frequency of which you want it to check to make sure SickBeard is running. The default is to check every minute. I have already edited the plist file for this app so that it will not show an icon in dock.</p>
+
+<p>Once you are done, save the AppleScript app and move it to your Applications folder. Now you just need to add it as a Login Item. Open <em>System Preferences</em> –&gt; <em>Users &amp; Groups</em> and click the <em>Login Items</em> tab. Click the plus icon and add the SickBeardHB app. The app is configured so that it will not show in your dock.  </p>
+
+<h2>SickBeard is installed, now what?</h2>  
+
+<p>SickBeard is now installed on your machine but it still needs to be configured. Lucky for you, I happen to have written a <a href="http://jetshred.com/2012/07/31/configuring-sickbeard-to-work-with-sabnzbd-plus/">guide</a> for just that, <a href="http://jetshred.com/2012/07/31/configuring-sickbeard-to-work-with-sabnzbd-plus/">getting SickBeard configured and working with SABnzbd+</a>.</p>
+            </section>
+
+            <footer class="post-footer">
+
+                <section class="author">
+                    <h4>Jon</h4>
+                    <p>Has this site helped you? Want to say thanks? Throw some bitcoin my way - 1BJdVnpVpyhVWXKihCUfWCJBB7cTbWgUgr</p>
+                </section>
+
+                <section class="share">
+                    <h4>Share this post</h4>
+                    <a class="icon-twitter" href="http://twitter.com/share?text=Installing%20SickBeard%20on%20OS%20X%2010.8&url=http://jetshred.com/2012/07/26/installing-sickbeard-on-os-x-10-dot-8/"
+                        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                        <span class="hidden">Twitter</span>
+                    </a>
+                    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://jetshred.com/2012/07/26/installing-sickbeard-on-os-x-10-dot-8/"
+                        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                        <span class="hidden">Facebook</span>
+                    </a>
+                    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://jetshred.com/2012/07/26/installing-sickbeard-on-os-x-10-dot-8/"
+                       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                        <span class="hidden">Google+</span>
+                    </a>
+                </section>
+
+            </footer>
+
+        
+		<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jetshred'; // required: replace example with your forum shortname
+    // var disqus_identifier = '26'; // make sure to use the post.id as an identifier, otherwise disqus will use the pages url per default, which might be problematic...
+ 
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </article>
+
+</main>
+
+    <footer class="site-footer">
+        <a class="subscribe icon-feed" href="http://jetshred.com/rss/"><span class="tooltip">Subscribe!</span></a>
+        <div class="inner">
+			<section><a href="/disclaimer">Disclaimer</a> | <a href="privacy">Privacy</a></section>
+             <section class="copyright">All content copyright <a href="http://jetshred.com/">JetShred</a> &copy; 2014 &bull; All rights reserved.</section>
+             <section class="poweredby">Proudly published with <a class="icon-ghost" href="http://ghost.org">Ghost</a> and hosted by <a href="https://www.digitalocean.com/?refcode=ca99181cef79">Digital Ocean</a></section>
+        </div>
+    </footer>
+
+    
+    <script src="/shared/vendor/jquery/jquery.js?v=69dfe595af"></script>
+
+    
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js?v=69dfe595af"></script>
+    <script type="text/javascript" src="/assets/js/index.js?v=69dfe595af"></script>
+		<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://stats.capsify.com/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "1"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<script type='text/javascript'>var _merchantSettings=_merchantSettings || [];_merchantSettings.push(['AT', '10lbRk']);(function(){var autolink=document.createElement('script');autolink.type='text/javascript';autolink.async=true; autolink.src= ('https:' == document.location.protocol) ? 'https://autolinkmaker.itunes.apple.com/js/itunes_autolinkmaker.js' : 'http://autolinkmaker.itunes.apple.com/js/itunes_autolinkmaker.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(autolink, s);})();</script>
+<!-- End Piwik Code -->
+</body>
+</html>
+

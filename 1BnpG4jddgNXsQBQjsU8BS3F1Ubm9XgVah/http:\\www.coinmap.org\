@@ -1,0 +1,87 @@
+http://www.coinmap.org/
+HTTP/1.0 200 OK
+Content-Type: text/html
+Accept-Ranges: bytes
+ETag: "3304816511"
+Last-Modified: Mon, 07 Jul 2014 15:45:33 GMT
+Content-Length: 5454
+Connection: close
+Date: Wed, 23 Jul 2014 16:01:36 GMT
+Server: lighttpd/1.4.35
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>CoinMap</title>
+<meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="localization" hreflang="cz" href="lang/cz.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="de" href="lang/de.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="en" href="lang/en.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="it" href="lang/it.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="jp" href="lang/jp.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="pt_br" href="lang/pt_br.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="sk" href="lang/sk.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="localization" hreflang="ru" href="lang/ru.json" type="application/vnd.oftn.l10n+json"/>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link href="css/MarkerCluster.css" rel="stylesheet" type="text/css" />
+<link href="css/MarkerCluster.Default.css" rel="stylesheet" type="text/css" />
+<link href="css/leaflet-search.min.css" rel="stylesheet" type="text/css" />
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script src="js/leaflet.markercluster.js"></script>
+<script src="js/leaflet-search.min.js"></script>
+<script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
+<script src="js/Google.js"></script>
+<script src="js/qrcode.min.js"></script>
+<!--
+<script src="js/Permalink.js"></script>
+<script src="js/Permalink.Line.js"></script>
+<script src="js/Permalink.Marker.js"></script>
+<script src="js/Permalink.Layer.js"></script>
+-->
+<script src="data/coins.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/l10n.min.js"></script>
+<script src="js/coinmap.js"></script>
+<script src="js/coinmap-icons.js"></script>
+<script src="js/coinmap-overpass.js"></script>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link rel="icon" type="image/png" href="img/favicon.png" />
+<meta name="bitcoin" content="1BnpG4jddgNXsQBQjsU8BS3F1Ubm9XgVah" />
+<meta name="litecoin" content="LLTbGv9HtFPM5zeWJx9p6GGYhDGr5K4uQE" />
+<meta name="keywords" content="coinmap,map,bitcoin,openstreetmap,litecoin" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+<body onload="coinmap()">
+<div class='leaflet-right leaflet-almost-top' id='marker-above'>
+    <div class='leaflet-control-layers leaflet-control-layers-expanded leaflet-control leaflet-container' id='marker-list'>
+    </div>
+</div>
+<div id="lang">
+  <a id="en"><img src="img/flags/gb.png" alt="en" title="English"/></a>
+  <a id="de"><img src="img/flags/de.png" alt="de" title="Deutsch"/></a>
+  <a id="ru"><img src="img/flags/ru.png" alt="ru" title="Русский"/></a>
+  <a id="it"><img src="img/flags/it.png" alt="it" title="Italiano"/></a>
+  <a id="jp"><img src="img/flags/jp.png" alt="jp" title="日本語"/></a>
+  <a id="pt_br"><img src="img/flags/br.png" alt="pt_br" title="Português brasileiro"/></a>
+  <a id="cz"><img src="img/flags/cz.png" alt="cz" title="Český"/></a>
+  <a id="sk"><img src="img/flags/sk.png" alt="sk" title="Slovenský"/></a>
+</div>
+<div id="map"></div>
+<div id="btn_footer_open">
+  <div id="btn_footer_open"><span data-l10n="about-project">About project</span></div>
+</div>
+<div id="footer">
+  <div id="btn_footer_close" title="Close">&times;</div>
+  <span data-l10n="how-to">To list your venue go to <a id="osm_edit_link" href="http://www.openstreetmap.org/edit" target="_blank">OpenStreetMap editor</a> and add <strong>payment:bitcoin=yes</strong> tag to it (or <strong>payment:litecoin=yes</strong> for Litecoin).</span><br/>
+  <span data-l10n="please-on-ground">Please don't create new venues unless they have <a href="http://en.wikipedia.org/wiki/Brick_and_mortar">physical presence</a> on ground!</span><br/>
+  <span data-l10n="every-hour">Venue data are updated every hour. Currently there are</span> <b><a href="http://www.bitcoinpulse.com/chart/coinmap/num_venues/total" target="_blank"><span id="bitcoin_count">0</span></a></b> (BTC) <span data-l10n="and-">and</span> <b><span id="litecoin_count">0</span></b> (LTC) <span data-l10n="places">places on the map.</span><br/>
+  <span data-l10n="official-thread-source">Official <a href="https://bitcointalk.org/index.php?topic=175900">BitcoinTalk thread</a> | Source code available from <a href="https://github.com/prusnak/coinmap" target="_blank">Github</a></span><br/>
+  <span data-l10n="donations">Donations are welcome at <a href="bitcoin:1BnpG4jddgNXsQBQjsU8BS3F1Ubm9XgVah">1BnpG4jddgNXsQBQjsU8BS3F1Ubm9XgVah</a> and <a href="litecoin:LLTbGv9HtFPM5zeWJx9p6GGYhDGr5K4uQE">LLTbGv9HtFPM5zeWJx9p6GGYhDGr5K4uQE</a>.</span><br/>
+</div>
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-15639638-7', 'coinmap.org');ga('send', 'pageview');</script>
+</body>
+</html>
+

@@ -1,0 +1,755 @@
+http://bkchain.org/doge
+HTTP/1.1 200 OK
+Server: nginx/1.4.1 (Ubuntu)
+Date: Tue, 22 Jul 2014 23:37:18 GMT
+Content-Type: text/html
+Content-Length: 34674
+Connection: close
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta name="description" content="Dogecoin Block Explorer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta keywords="Dogecoin DOGE block explorer chain blockchain cryptocurrency cryptocoin">
+
+    <title>Dogecoin Block Explorer</title>
+    
+    <script src="/static/js/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.timeago.js" type="text/javascript"></script>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/static/css/jquery.treetable.css" rel="stylesheet"/>
+    
+    <script src="/static/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $("abbr.timeago").timeago();
+        $("[rel='tooltip']").tooltip();
+      });
+      
+      // Setup jQuery.timeago
+      jQuery.timeago.settings.strings.suffixAgo = null;
+      jQuery.timeago.settings.strings.seconds = "< 1 minute";
+      jQuery.timeago.settings.strings.minute = "1 minute";
+      jQuery.timeago.settings.strings.minutes = "%d minutes";
+      jQuery.timeago.settings.strings.hour = "1 hour";
+      jQuery.timeago.settings.strings.hours = "%d hours";
+      jQuery.timeago.settings.strings.day = "a day";
+      jQuery.timeago.settings.strings.days = "%d days";
+      jQuery.timeago.settings.strings.month = "a month";
+      jQuery.timeago.settings.strings.months = "%d months";
+      jQuery.timeago.settings.strings.year = "a year";
+      jQuery.timeago.settings.strings.years = "%d years";
+    </script>
+    
+
+
+    <style>
+@media (max-width: 767px) {
+  .navbar-nav .open .dropdown-menu {
+    position: absolute;
+  }
+  body {
+    font-size: 13px;
+  }
+  
+  .hash {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    width: 350px;
+  }
+}
+
+#form-pass {
+  width: 680px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  border-width: 1px;
+  border-color: #ddd;
+  border-style: solid;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+#form-pass #electrum-seed {
+  width: 400px;
+}
+
+#form-pass button {
+  width: 120px;
+}
+
+#form-pass .progress {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+#form-pass #electrum-generated-seed {
+  width: 640px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+.nav .nav-header {
+    cursor: default;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.glyphicon-refresh-animate {
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .hash {
+    width: 200px;
+  }
+}
+
+/* Space out content a bit */
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+td {
+  white-space: nowrap;
+}
+
+/* Custom page header */
+.header {
+  border-bottom: 2px solid #e5e5e5;
+}
+
+/* Customize container */
+@media (min-width: 1000px) {
+  .container {
+    max-width: 970px;
+  }
+}
+
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+  padding-bottom: 6px;
+}
+
+    #wrapper {
+        padding: 40px 0px 0px 0px;
+        text-align: left;
+		//width: 970px;   
+		//margin-left: auto;
+		//margin-right: auto; 	
+    	//padding: 16px;
+        //min-height: 100%;
+    }
+
+    a:link { text-decoration: none; color: #00308C; }
+    a:visited { text-decoration: none; color: #5A14FF; }
+    a:hover { text-decoration: none; color: #37BE00; }
+
+    h1 { display : inline; font-weight: normal; font-size: 14px; }
+
+    #header { height: 52px; font-size: 12px; margin-bottom: 20px; padding-bottom:8px; border-bottom: 1px solid #ccc; }
+    #header-nav { float: right; }
+    #header-menu { float: left; margin-top: 2px; clear:left; }
+    .logo { float: left; }
+    #footer { text-align: center; }
+
+    .tx-vin { margin-right: -5%; }
+    .tx-vout { margin-left: -5%; }
+
+    .tx-list { margin-top: 32px; }
+
+    .tx-separator {  padding: -30px 10px -30px 10px; float: left; }
+
+    .tx-sm { width: 970px; border: 2px solid #ddd; padding: 4px; margin-bottom: 6px;}
+    .tx-sm-caption { width: 962px; background-color: #E8E8E8; padding: 6px; border-bottom: 2px solid #ddd; }
+
+    .addr-caption { font-size: 16px; font-weight: bold; }
+
+    .pos { color: #03700C; }
+    .neg { color: #9C0800; }
+    
+    .search-area { margin-top: -6px; }
+    #search { width: 430px; }
+
+    .error { background-color: #FFE3EE; width: 300px; margin: 64px;   border: 1px solid #aaa; box-shadow: 2px 2px 2px #aaa; padding: 16px; text-align: center; }
+    
+    .navbar-main
+    {
+        float: left;
+        margin-top: 5px;
+    }
+
+table.treetable tr.collapsed span.indenter a {
+  background-image: url(data:image/png;base64,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);
+}
+
+table.treetable tr.expanded span.indenter a {
+  background-image: url(data:image/png;base64,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);
+}
+
+.backup-entry {
+  height: 140px;
+}
+
+.backup-public {
+  float: left;
+}
+
+.backup-public-qrcode {
+  float: left;
+}
+
+.backup-public-address {
+  float: left;
+  padding-left: 10px;
+}
+
+.backup-private {
+  text-align: right;
+}
+
+.backup-private-qrcode {
+  float: right;
+  padding-top: 30px;
+}
+
+.backup-private-address {
+  float: right;
+  padding-right: 10px;
+}
+    </style>
+
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46282374-1', 'bkchain.org');
+  ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="/doge" class="navbar-brand">bkchain</a>
+        <div class="navbar-main">
+          <ul class="nav nav-pills list-inline">
+            <li class="dropdown">
+              <a href="/doge" class="dropdown-toggle" data-toggle="dropdown">Dogecoin <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/btc">Bitcoin</a></li>
+                <li><a href="/ltc">Litecoin</a></li>
+                <li><a href="/ppc">Peercoin</a></li>
+                <li><a href="/nmc">Namecoin</a></li>
+                <li class="active"><a href="/doge">Dogecoin</a></li>
+              </ul>
+            </li>
+            <li><a href="/doge/wallet">Wallet <span class="label label-danger">exp</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <form class="navbar-form navbar-right form-inline" method="GET" action="/doge/search">
+          <div class="form-group"><input type="text" class="form-control" id="search" name="search" placeholder="block id, block hash, transaction hash or address (DOGE)"/></div>
+          <button type="submit" class="btn btn-success">Search</button>
+        </form>
+      </div>
+    </div>
+</nav>
+    
+<div class='container'>
+    <div id='wrapper'>
+
+
+<div>
+  <table class="table table-condensed table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Live transactions</th>
+        <th class="text-center">Age</th>
+        <th class="text-center">Total Sent<br/>(DOGE)</th>
+        <th class="text-center">Destroyed<br/>(DOGE days)</th>
+      </tr>
+    </thead>
+    <tbody id="livetx">
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/19baae199561292f5de9a975d47cc4ac67d54503f88162b4dc4b743defe524d6'>19baae199561292f5de9...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:37:08Z">2014-07-22 23:37:08 UTC</abbr></td>
+	    <td class="text-right">34.33293878</td>
+	    <td class="text-right">784.12</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/871868058d8f9009f7b3c7130be54677d7989eebe39155f3c47090ec77f5b47d'>871868058d8f9009f7b3...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:59Z">2014-07-22 23:36:59 UTC</abbr></td>
+	    <td class="text-right">33.12027648</td>
+	    <td class="text-right">1.00</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/30d665cf019e432efb8823eca5c29bc6913653e0e894ba9d80e729fc13a9be87'>30d665cf019e432efb88...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:59Z">2014-07-22 23:36:59 UTC</abbr></td>
+	    <td class="text-right">40.59904</td>
+	    <td class="text-right">14042948.26</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/3d822875aad8cc5a75538471a070629195ac303758571c8adb55a24107d17c1b'>3d822875aad8cc5a7553...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:54Z">2014-07-22 23:36:54 UTC</abbr></td>
+	    <td class="text-right">42.2360816</td>
+	    <td class="text-right">18.61</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/374bb3d39a8cfcd278af803557b626fb772e15f0ec41ba9ec147a331891af455'>374bb3d39a8cfcd278af...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:49Z">2014-07-22 23:36:49 UTC</abbr></td>
+	    <td class="text-right">8.20235936</td>
+	    <td class="text-right">438.81</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/4c438fc9fb9ca65004f49079fcea8b2b63aed5ffc66500d673f3f0a9c310c73d'>4c438fc9fb9ca65004f4...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:43Z">2014-07-22 23:36:43 UTC</abbr></td>
+	    <td class="text-right">35.7176016</td>
+	    <td class="text-right">387768.86</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/8d4833ca916e4c01237d43954b3b6db561e5997a4e11fb441e657eb7518cfe07'>8d4833ca916e4c01237d...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:27Z">2014-07-22 23:36:27 UTC</abbr></td>
+	    <td class="text-right">17.42877952</td>
+	    <td class="text-right">1.41</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/cb167dcf23d70901b96fae159c26d1b30d1e5ee463b73762246e1894797ba620'>cb167dcf23d70901b96f...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:24Z">2014-07-22 23:36:24 UTC</abbr></td>
+	    <td class="text-right">23.15382188</td>
+	    <td class="text-right">983.53</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/bbdfd5ade2f5d0be4c9e8bed8a89bcb6f255c7517f3bec8f27bf41fc4ac87ad9'>bbdfd5ade2f5d0be4c9e...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:08Z">2014-07-22 23:36:08 UTC</abbr></td>
+	    <td class="text-right">22.80235311</td>
+	    <td class="text-right">31.73</td>
+      </tr>
+
+      <tr>
+	    <td class="text-left"><a href='/doge/tx/ea14bab171a4760e29a32913ac97f5ffb8c414dc1d211c858b0bf65a1050e48e'>ea14bab171a4760e29a3...</a></td>
+	    <td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:36:06Z">2014-07-22 23:36:06 UTC</abbr></td>
+	    <td class="text-right">2.85279824</td>
+	    <td class="text-right">594.04</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<br style='clear:both;'/>
+
+<div>
+  <table class="table table-condensed table-striped">
+	<thead><tr>
+		<th class="text-center">Height</th>
+
+		<th class="text-center">Age</th>
+		<th class="text-center">Size<br/>(bytes)</th>
+		<th class="text-center">Tx<br/>Count</th>
+		<th class="text-center">Total Sent<br/>(DOGE)</th>
+        <th class="text-center">Destroyed<br/>(DOGE days)</th>
+
+		<th class="text-center">Reward<br/>(DOGE)</th>
+	</tr></thead>
+	<tbody id="liveblock">
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/e85f1e02925bc1c822e7ec8cd3fd1b8b2e1c0e22fc0203ee1fe8d85d9e3b2f65'>309297</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:31:49Z">2014-07-22 23:31:49 UTC</abbr></td>
+		<td class="text-center">882</td>
+		<td class="text-center">4</td>
+		<td class="text-right">300684.76</td>
+        <td class="text-right">137.81</td>
+
+		<td class="text-right">62500.01</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/82c8d8e4b6fe31988791753e942a11f77a6705292874913b90c4bb9c43ce7600'>309296</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:31:32Z">2014-07-22 23:31:32 UTC</abbr></td>
+		<td class="text-center">427</td>
+		<td class="text-center">2</td>
+		<td class="text-right">3199999.00</td>
+        <td class="text-right">19629.62</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/62cbe5a314212a5d0c716c963204901dc18cc9b22b22f67cf5d7bbc4cdd741cd'>309295</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:31:17Z">2014-07-22 23:31:17 UTC</abbr></td>
+		<td class="text-center">656</td>
+		<td class="text-center">3</td>
+		<td class="text-right">292717.00</td>
+        <td class="text-right">16.94</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/7bd434fda552067c5d0bbef1bf87d3c2355af2c111ecd6cf74ada662761bfe42'>309294</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:31:07Z">2014-07-22 23:31:07 UTC</abbr></td>
+		<td class="text-center">5242</td>
+		<td class="text-center">3</td>
+		<td class="text-right">292769.00</td>
+        <td class="text-right">3.39</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/15f947d9dc1722e623bb239068cce8e8c162525b0d7d86087e3a12f6f1ff9365'>309293</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:31:05Z">2014-07-22 23:31:05 UTC</abbr></td>
+		<td class="text-center">3859</td>
+		<td class="text-center">11</td>
+		<td class="text-right">3573117.41</td>
+        <td class="text-right">58055077.27</td>
+
+		<td class="text-right">62503.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/a9da638a2119b301307a3339d26d6e5d5af99439fcac6c5b86f5c3ef9c18de9d'>309292</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:29:54Z">2014-07-22 23:29:54 UTC</abbr></td>
+		<td class="text-center">3780</td>
+		<td class="text-center">9</td>
+		<td class="text-right">1006078.72</td>
+        <td class="text-right">83650958.66</td>
+
+		<td class="text-right">62504.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/52e14647cfa28836e4727490502c22879440efc56eca30f16a8ad4e90c6115b1'>309291</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:28:07Z">2014-07-22 23:28:07 UTC</abbr></td>
+		<td class="text-center">657</td>
+		<td class="text-center">3</td>
+		<td class="text-right">292822.00</td>
+        <td class="text-right">18.64</td>
+
+		<td class="text-right">62501.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/d5a319713f3114a9a2a74effaf63f54f24accc4d98de0dd6ac21b18b7290c27d'>309290</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:27:56Z">2014-07-22 23:27:56 UTC</abbr></td>
+		<td class="text-center">2794</td>
+		<td class="text-center">10</td>
+		<td class="text-right">4023917.09</td>
+        <td class="text-right">32082.28</td>
+
+		<td class="text-right">62505.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/1b5878056e79db5cbf55a503adb01955c2b6b92fee14fdc4df52fa53428c06ed'>309289</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:26:43Z">2014-07-22 23:26:43 UTC</abbr></td>
+		<td class="text-center">656</td>
+		<td class="text-center">3</td>
+		<td class="text-right">292911.00</td>
+        <td class="text-right">37.29</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/e1f8254a8f3d93a1c05913ccf71cfada45f8fb1905287d1711ec7371fb7adc46'>309288</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:26:21Z">2014-07-22 23:26:21 UTC</abbr></td>
+		<td class="text-center">1553</td>
+		<td class="text-center">5</td>
+		<td class="text-right">596542.17</td>
+        <td class="text-right">4669.81</td>
+
+		<td class="text-right">62501.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/84d69550ac07955626dc68ba2c5d181aebc61e12d101036195de55142b4eb96e'>309287</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:25:58Z">2014-07-22 23:25:58 UTC</abbr></td>
+		<td class="text-center">11976</td>
+		<td class="text-center">32</td>
+		<td class="text-right">13280545.88</td>
+        <td class="text-right">5221963.51</td>
+
+		<td class="text-right">62518.10</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/ab5efd80cd82ac7eb48f643057e021476ea757c52ad5ffd379413d3daf059d1d'>309286</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:19:49Z">2014-07-22 23:19:49 UTC</abbr></td>
+		<td class="text-center">879</td>
+		<td class="text-center">4</td>
+		<td class="text-right">4346502.00</td>
+        <td class="text-right">8370.15</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/ab3bbf7b987344e936f6fb84d8cc15c9e5d56b5fc30776433fe99599bf058a02'>309285</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:19:15Z">2014-07-22 23:19:15 UTC</abbr></td>
+		<td class="text-center">3005</td>
+		<td class="text-center">10</td>
+		<td class="text-right">437986.85</td>
+        <td class="text-right">422896.70</td>
+
+		<td class="text-right">62503.10</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/d76f7a732666ab69c1675b52d5fad6df00de607395b18019a11b1b845fde1a42'>309284</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:19:17Z">2014-07-22 23:19:17 UTC</abbr></td>
+		<td class="text-center">10465</td>
+		<td class="text-center">10</td>
+		<td class="text-right">7513629.78</td>
+        <td class="text-right">23783.85</td>
+
+		<td class="text-right">62502.01</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/27a5cfc249a3b1c8aef1718ad85fc9434bb41e6fc507205b728a651a957e25a5'>309283</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:15:27Z">2014-07-22 23:15:27 UTC</abbr></td>
+		<td class="text-center">429</td>
+		<td class="text-center">2</td>
+		<td class="text-right">1.00</td>
+        <td class="text-right">0.00</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/db786cfab3754ddcf26b923907fedecb145cf5c5b2fa945b652cd3e40c1d77ac'>309282</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:15:23Z">2014-07-22 23:15:23 UTC</abbr></td>
+		<td class="text-center">1142</td>
+		<td class="text-center">4</td>
+		<td class="text-right">881987.35</td>
+        <td class="text-right">3026.24</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/513b635086efceae360615a139aef4bfc54529439759968dd3c1d637973ef80e'>309281</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:15:19Z">2014-07-22 23:15:19 UTC</abbr></td>
+		<td class="text-center">1368</td>
+		<td class="text-center">5</td>
+		<td class="text-right">211132.93</td>
+        <td class="text-right">102142.50</td>
+
+		<td class="text-right">62501.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/2e663ca49b4bd06421d039b0de7071a75a490df4f922a7a8fd0aa7d39fb6c2d7'>309280</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:15:59Z">2014-07-22 23:15:59 UTC</abbr></td>
+		<td class="text-center">1924</td>
+		<td class="text-center">5</td>
+		<td class="text-right">1721278.04</td>
+        <td class="text-right">9856.71</td>
+
+		<td class="text-right">62501.00</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/b050eb191bca95b9fee4cee1092868641f8ef7b5a700b8209dac2a915924d04a'>309279</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:14:49Z">2014-07-22 23:14:49 UTC</abbr></td>
+		<td class="text-center">2502</td>
+		<td class="text-center">6</td>
+		<td class="text-right">182703.51</td>
+        <td class="text-right">1225246.25</td>
+
+		<td class="text-right">62501.10</td>
+      </tr>
+
+      <tr>
+		<td class="text-center"><a href='/doge/block/f51a62f0b73715c5efbeb8721fc2b61bbf57d4edfe45615865cb3750b46bfc78'>309278</a></td>
+
+		<td class="text-center"><abbr class="timeago" rel="tooltip" data-animation="false" title="2014-07-22 23:15:09Z">2014-07-22 23:15:09 UTC</abbr></td>
+		<td class="text-center">650</td>
+		<td class="text-center">3</td>
+		<td class="text-right">537102.00</td>
+        <td class="text-right">2206.84</td>
+
+		<td class="text-right">62500.00</td>
+      </tr>
+
+	</tbody>
+  </table>
+</div>
+
+<p>
+  <center>
+    Previous -
+    <a href="/doge/index/1">Next</a></center>
+</p>
+
+    <script language="javascript" type="text/javascript">
+    var livetx;
+    var liveblock;
+    function init()
+    {
+        livetx = document.getElementById("livetx");
+        liveblock = document.getElementById("liveblock");
+        websocket = new WebSocket("ws://bkchain.org/doge/livetx");
+        websocket.onopen = function(evt) { websocket.send(JSON.stringify({ subscribe: 'livetx' })); };
+        websocket.onerror = function(evt) { };
+        websocket.onmessage = function(evt) { writeToScreen(JSON.parse(evt.data)); };
+        
+        // Remove text nodes to have a clean childNodes list
+        for(var i=0;i<livetx.childNodes.length;i++)
+        {
+          if(livetx.childNodes[i].nodeType==3)
+            livetx.removeChild(livetx.childNodes[i--]);
+          else
+            continue;
+        }
+
+        // Remove text nodes to have a clean childNodes list
+        for(var i=0;i<liveblock.childNodes.length;i++)
+        {
+          if(liveblock.childNodes[i].nodeType==3)
+            liveblock.removeChild(liveblock.childNodes[i--]);
+          else
+            continue;
+        }
+    }
+ function writeToScreen(message)
+ {
+   var pre = document.createElement("tr");
+   
+   var itemtype = message['item'];
+   var output;
+   var maxItems;
+
+   // TODO: Switch to jquery
+   if (itemtype == 'tx')
+   {
+     pre.innerHTML =
+		"<td class=\"text-left\"><a href='/doge/tx/" + message['hash'] + "'>" + message['hash'].substring(0, 20) + "...</a></td>"
+		+ "<td class=\"text-center\"><abbr class=\"timeago\" rel=\"tooltip\" data-animation=\"false\" title=\"" + message['time'] + "Z\">" + message['time'] + " UTC</abbr></td>"
+		+ "<td class=\"text-right\">" + message['output'] / 100000000 + "</td>"
+		+ "<td class=\"text-right\">" + (message['coinage_destroyed'] / 100000000).toFixed(2) + "</td>";
+     output = livetx;
+     maxItems = 10;
+   }
+   
+   else if (itemtype == 'block')
+   {
+     pre.innerHTML =
+        "<td class=\"text-center\"><a href='/doge/block/" + message['hash'] + "'>" + message['height'] + "</a></td>"
+
+		+ "<td class=\"text-center\"><abbr class=\"timeago\" rel=\"tooltip\" data-animation=\"false\" title=\"" + message['time'] + "Z\">" + message['time'] + " UTC</abbr></td>"
+		+ "<td class=\"text-center\">" + message['size'] + "</td>"
+		+ "<td class=\"text-center\">" + message['txcount'] + "</td>"
+		+ "<td class=\"text-right\">" + (message['out'] / 100000000).toFixed(2) + "</td>"
+        + "<td class=\"text-right\">" + (message['coinage_destroyed'] / 100000000).toFixed(2) + "</td>";
+
+	  pre.innerHTML += "<td class=\"text-right\">" + (message['reward'] / 100000000).toFixed(2) + "</td>";
+     output = liveblock;
+     maxItems = 20;
+   }
+
+   else
+   {
+     return;
+   }
+   
+   while (output.childNodes.length >= maxItems)
+    output.removeChild(output.childNodes[output.childNodes.length - 1]);
+
+   // If last row was not grey, this one will be
+   //var classAttributes = "blocklist-row";
+   //if (output.childNodes.length > 1 && output.childNodes[1].getAttribute("class").indexOf('row-grey') == -1)
+   //  classAttributes += " row-grey";
+   //pre.setAttribute("class", classAttributes);
+   
+   
+   if (output.childNodes.length > 1)
+    output.insertBefore(pre, output.childNodes[0]);
+   else
+    output.appendChild(pre);
+    
+   $("abbr.timeago").timeago();
+ }
+ window.addEventListener("load", init, false);
+</script>
+
+	</div>
+</div>
+
+<p>
+  <center>
+  Please help support development and server cost:<br style='clear:both;'/><br style='clear:both;'/>
+  BTC: <a href="/btc/address/1LLqMFskaSaZ3w2LuH6dbQaULcy1Bu1b2R">1LLqMFskaSaZ3w2LuH6dbQaULcy1Bu1b2R</a><br style='clear:both;'/>
+  PPC: <a href="/ppc/address/PEiZ7r4KR85izAhfzQKJgJxdQkQ6PPXXEX">PEiZ7r4KR85izAhfzQKJgJxdQkQ6PPXXEX</a><br style='clear:both;'/>
+  LTC: <a href="/ltc/address/LXzHvrRMQVEHj6gvK4rsZ7HGopgqfxS7PS">LXzHvrRMQVEHj6gvK4rsZ7HGopgqfxS7PS</a><br style='clear:both;'/>
+  DOGE: <a href="/doge/address/DLm1XX5JcxQeGL5nXmkFCMJXCorcFQXRnT">DLm1XX5JcxQeGL5nXmkFCMJXCorcFQXRnT</a>
+  </center>
+  <br/>
+  <center><a href="/static/api.txt">API</a> - <a href="mailto:admin@bkchain.org">Contact</a> - <a href="https://github.com/bkchain/bkchain.org">Source code + Static version</a></center>
+</p>
+
+</body>
+</html>
+

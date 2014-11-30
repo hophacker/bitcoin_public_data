@@ -1,0 +1,206 @@
+http://www.bortzmeyer.org/tester-protocoles-reseaux-avec-pertes.html
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 15:37:09 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Wed, 02 Jul 2014 19:03:30 GMT
+ETag: "23931-284f-4fd3a8c436480"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 4017
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-07-02T21:03 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Tester un protocole réseau en présence de perte de paquets
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Tester un protocole réseau en présence de perte de paquets</h2><p>Première rédaction de cet article le 12 mars 2007<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>Lorsqu'on veut tester un <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Protocole%20de%20communication" title="Consultez l'article &quot;Protocole de communication&quot; de l'encyclopédie libre Wikipedia">protocole</a></b> réseau ou bien un programme qui
+utilise un réseau, il peut être pratique de regarder ce qu'ils donnent
+avec un réseau de mauvaise qualité ; beaucoup de bogues ne se révèlent
+qu'alors. Une fonction pratique du noyau <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Linux" title="Consultez l'article &quot;Linux&quot; de l'encyclopédie libre Wikipedia">Linux</a></b>, <b class="emphasis">Netem</b>,
+permet de le faire.</p></div>
+<div class="para"><p>Il faut utiliser le système <a href="http://linux-net.osdl.org/index.php/Netem">Netem</a>
+(<i class="foreign" xml:lang="en">Network Emulation</i>). Cela impose de l'avoir compilé
+dans le noyau :
+</p><pre>
+ Networking --&gt;
+   Networking Options --&gt;
+     QoS and/or fair queuing --&gt;
+        Network emulator
+</pre><p>Sur une machine <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Debian" title="Consultez l'article &quot;Debian&quot; de l'encyclopédie libre Wikipedia">Debian</a></b>, vous pouvez regarder si le noyau a été
+compilé avec cette option :
+</p><pre>
+% grep -i netem /boot/config-2.6.18-4-686 
+CONFIG_NET_SCH_NETEM=m
+</pre><p>
+Si le code de Netem est en module, comme c'est le cas ici, il faut le
+charger :
+</p><pre>
+modprobe sch_netem
+</pre></div>
+<div class="para"><p>Ensuite, il faut le programme <code>tc</code> qui se trouve
+dans le paquetage <code>iproute</code> (ou
+<code>iproute2</code>, cela dépend des systèmes).</p></div>
+<div class="para"><p>tc est très complexe et mal documenté. Mais on trouve de nombreux
+textes en ligne. Ici, nous nous limiterons à son utilisation pour
+Netem. Commençons par un cas simple :
+</p><pre>
+tc qdisc add dev  tap0 root netem delay 50ms loss 50% 
+</pre><p>
+(On peut annuler l'effet de cette commande avec <code>tc qdisc del
+dev  tap0 root netem</code>.) Ce script crée une "qdisc" (<i class="foreign" xml:lang="en">queuing discipline</i>) Netem avec
+imposition d'un délai de 50 ms et, en prime, 50 % de perte de
+paquets. Elle s'applique à <b class="emphasis">tous</b> les paquets
+passant par l'interface tap0, ce qui est sans doute trop brutal. Si on
+veut sélectionner les paquets :
+</p><pre>
+DEVICE="tap0"
+INTERESTING="4"
+DEST_PORT="7"
+CLEAN_FIRST="YES"
+USE_IPTABLES="YES"
+
+if [ ! -z "$CLEAN_FIRST" ]; then
+   tc qdisc del dev ${DEVICE} parent 1:2
+   tc qdisc del dev ${DEVICE} root
+   iptables -t mangle -F INPUT
+   iptables -t mangle -F OUTPUT
+fi
+
+tc qdisc add dev ${DEVICE} root handle 1: prio
+
+tc qdisc add dev ${DEVICE} parent 1:2 handle 4: netem delay 50ms loss 50% 
+
+if [ -z "$USE_IPTABLES" ]; then
+    tc filter add dev ${DEVICE} protocol ip parent 1:0 prio 2 u32 \
+         match ip dport ${DEST_PORT} 0xffff flowid 10:5
+else
+    tc filter add dev ${DEVICE} protocol ip parent 1:0 prio 2 \
+        handle ${INTERESTING} fw flowid 10:5
+    iptables -t mangle -A INPUT -i ${DEVICE} -p tcp --dport ${DEST_PORT} \
+        -j MARK --set-mark ${INTERESTING}
+    iptables -t mangle -A OUTPUT -o ${DEVICE} -p tcp --sport ${DEST_PORT} \
+        -j MARK --set-mark ${INTERESTING}
+fi
+</pre><p>
+Ce script crée également une "qdisc" Netem avec
+imposition d'un délai de 50 ms et 50 % de perte de
+paquets.</p></div>
+<div class="para"><p>L'envoi des paquets à cette qdisc (ici, uniquement les paquets à
+destination du <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Port%20(logiciel)" title="Consultez l'article &quot;Port (logiciel)&quot; de l'encyclopédie libre Wikipedia">port</a></b>
+7, celui du service "echo") peuvent se faire de deux façons
+(dans le script ci-dessus, cela dépend de la valeur de la variable
+<code>USE_IPTABLES</code> : on peut utiliser
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/iptables" title="Consultez l'article &quot;iptables&quot; de l'encyclopédie libre Wikipedia">iptables</a></b>, qui dispose de très nombreuses
+possibilités de sélection des paquets intéressants, ou bien on peut
+tout faire avec tc, ce qui dispense d'apprendre iptables mais offre
+moins de possibilités de choix.</p></div>
+<div class="para"><p>Le résultat se voit nettement, ici avec <a href="http://echoping.sourceforge.net/">echoping</a>. Sans Netem, la
+ligne est très rapide :
+</p><pre>
+Minimum time: 0.019670 seconds (3304525 bytes per sec.)
+Maximum time: 0.043468 seconds (1495353 bytes per sec.)
+Average time: 0.022324 seconds (2911665 bytes per sec.)
+Standard deviation: 0.007052
+Median time: 0.019978 seconds (3253579 bytes per sec.)
+</pre><p>
+Avec les paramètres Netem ci-dessus :
+</p><pre>
+Minimum time: 8.224572 seconds (7903 bytes per sec.)
+Maximum time: 275.318547 seconds (236 bytes per sec.)
+Average time: 58.501345 seconds (1111 bytes per sec.)
+Standard deviation: 80.538300
+Median time: 22.027636 seconds (2951 bytes per sec.)
+</pre></div>
+<div class="para"><p>Il existait aussi un module <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Netfilter" title="Consultez l'article &quot;Netfilter&quot; de l'encyclopédie libre Wikipedia">Netfilter</a></b>,
+pom-base-random, qui faisait à peu près la même chose mais il semble
+avoir disparu.</p></div>  
+<div class="para"><p>Avec <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/FreeBSD" title="Consultez l'article &quot;FreeBSD&quot; de l'encyclopédie libre Wikipedia">FreeBSD</a></b>, <a href="http://info.iet.unipi.it/~luigi/ip_dummynet">dummynet</a>
+permet de faire à peu près la même chose et est apparu bien avant
+Netem. par exemple :
+</p><pre>
+ipfw add 1000 pipe 1 tcp from judith to kiwi echo
+ipfw pipe 1 config plr 0.5
+</pre><p>
+et les paquets "echo" envoyés par judith à kiwi seront détruits une
+fois sur deux.</p></div>
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="tester-protocoles-reseaux-avec-pertes.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="tester-protocoles-reseaux-avec-pertes.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Ftester-protocoles-reseaux-avec-pertes.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

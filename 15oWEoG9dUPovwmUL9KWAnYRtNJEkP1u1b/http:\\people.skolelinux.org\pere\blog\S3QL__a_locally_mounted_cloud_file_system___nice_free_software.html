@@ -1,0 +1,624 @@
+http://people.skolelinux.org/pere/blog/S3QL__a_locally_mounted_cloud_file_system___nice_free_software.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 18:05:59 GMT
+Server: Apache/2.2.16 (Debian)
+Last-Modified: Tue, 17 Jun 2014 09:27:30 GMT
+ETag: "44604-6003-4fc04c0b50480"
+Accept-Ranges: bytes
+Content-Length: 24579
+Connection: close
+Content-Type: text/html; charset=UTF-8
+Content-Language: en-US
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>Petter Reinholdtsen: S3QL, a locally mounted cloud file system - nice free software</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="http://people.skolelinux.org/pere/blog/style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://people.skolelinux.org/pere/blog/vim.css" />
+
+
+  </head>
+  <body>
+    <div class="title">
+ <h1>
+     <a href="http://people.skolelinux.org/pere/blog/">Petter Reinholdtsen</a>
+     
+ </h1>
+ 
+</div>
+
+
+    <div class="entry">
+      <div class="title">S3QL, a locally mounted cloud file system - nice free software</div>
+      <div class="date"> 9th April 2014</div>
+      <div class="body"><p>For a while now, I have been looking for a sensible offsite backup
+solution for use at home.  My requirements are simple, it must be
+cheap and locally encrypted (in other words, I keep the encryption
+keys, the storage provider do not have access to my private files).
+One idea me and my friends had many years ago, before the cloud
+storage providers showed up, was to use Google mail as storage,
+writing a Linux block device storing blocks as emails in the mail
+service provided by Google, and thus get heaps of free space.  On top
+of this one can add encryption, RAID and volume management to have
+lots of (fairly slow, I admit that) cheap and encrypted storage.  But
+I never found time to implement such system.  But the last few weeks I
+have looked at a system called
+<a href="https://bitbucket.org/nikratio/s3ql/">S3QL</a>, a locally
+mounted network backed file system with the features I need.</p>
+
+<p>S3QL is a fuse file system with a local cache and cloud storage,
+handling several different storage providers, any with Amazon S3,
+Google Drive or OpenStack API.  There are heaps of such storage
+providers.  S3QL can also use a local directory as storage, which
+combined with sshfs allow for file storage on any ssh server.  S3QL
+include support for encryption, compression, de-duplication, snapshots
+and immutable file systems, allowing me to mount the remote storage as
+a local mount point, look at and use the files as if they were local,
+while the content is stored in the cloud as well.  This allow me to
+have a backup that should survive fire.  The file system can not be
+shared between several machines at the same time, as only one can
+mount it at the time, but any machine with the encryption key and
+access to the storage service can mount it if it is unmounted.</p>
+
+<p>It is simple to use.  I'm using it on Debian Wheezy, where the
+package is included already.  So to get started, run <tt>apt-get
+install s3ql</tt>.  Next, pick a storage provider.  I ended up picking
+Greenqloud, after reading their nice recipe on
+<a href="https://greenqloud.zendesk.com/entries/44611757-How-To-Use-S3QL-to-mount-a-StorageQloud-bucket-on-Debian-Wheezy">how
+to use S3QL with their Amazon S3 service</a>, because I trust the laws
+in Iceland more than those in USA when it come to keeping my personal
+data safe and private, and thus would rather spend money on a company
+in Iceland.  Another nice recipe is available from the article
+<a href="http://www.admin-magazine.com/HPC/Articles/HPC-Cloud-Storage">S3QL
+Filesystem for HPC Storage</a> by Jeff Layton in the HPC section of
+Admin magazine.  When the provider is picked, figure out how to get
+the API key needed to connect to the storage API.  With Greencloud,
+the key did not show up until I had added payment details to my
+account.</p>
+
+<p>Armed with the API access details, it is time to create the file
+system.  First, create a new bucket in the cloud.  This bucket is the
+file system storage area.  I picked a bucket name reflecting the
+machine that was going to store data there, but any name will do.
+I'll refer to it as <tt>bucket-name</tt> below.  In addition, one need
+the API login and password, and a locally created password.  Store it
+all in ~root/.s3ql/authinfo2 like this:
+
+<p><blockquote><pre>
+[s3c]
+storage-url: s3c://s.greenqloud.com:443/bucket-name
+backend-login: API-login
+backend-password: API-password
+fs-passphrase: local-password
+</pre></blockquote></p>
+
+<p>I create my local passphrase using <tt>pwget 50</tt> or similar,
+but any sensible way to create a fairly random password should do it.
+Armed with these details, it is now time to run mkfs, entering the API
+details and password to create it:</p>
+
+<p><blockquote><pre>
+# mkdir -m 700 /var/lib/s3ql-cache
+# mkfs.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl s3c://s.greenqloud.com:443/bucket-name
+Enter backend login: 
+Enter backend password: 
+Before using S3QL, make sure to read the user's guide, especially
+the 'Important Rules to Avoid Loosing Data' section.
+Enter encryption password: 
+Confirm encryption password: 
+Generating random encryption key...
+Creating metadata tables...
+Dumping metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Compressing and uploading metadata...
+Wrote 0.00 MB of compressed metadata.
+# </pre></blockquote></p>
+
+<p>The next step is mounting the file system to make the storage available.
+
+<p><blockquote><pre>
+# mount.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl --allow-root s3c://s.greenqloud.com:443/bucket-name /s3ql
+Using 4 upload threads.
+Downloading and decompressing metadata...
+Reading metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Mounting filesystem...
+# df -h /s3ql
+Filesystem                              Size  Used Avail Use% Mounted on
+s3c://s.greenqloud.com:443/bucket-name  1.0T     0  1.0T   0% /s3ql
+#
+</pre></blockquote></p>
+
+<p>The file system is now ready for use.  I use rsync to store my
+backups in it, and as the metadata used by rsync is downloaded at
+mount time, no network traffic (and storage cost) is triggered by
+running rsync.  To unmount, one should not use the normal umount
+command, as this will not flush the cache to the cloud storage, but
+instead running the umount.s3ql command like this:
+
+<p><blockquote><pre>
+# umount.s3ql /s3ql
+# 
+</pre></blockquote></p>
+
+<p>There is a fsck command available to check the file system and
+correct any problems detected.  This can be used if the local server
+crashes while the file system is mounted, to reset the "already
+mounted" flag.  This is what it look like when processing a working
+file system:</p>
+
+<p><blockquote><pre>
+# fsck.s3ql --force --ssl s3c://s.greenqloud.com:443/bucket-name
+Using cached metadata.
+File system seems clean, checking anyway.
+Checking DB integrity...
+Creating temporary extra indices...
+Checking lost+found...
+Checking cached objects...
+Checking names (refcounts)...
+Checking contents (names)...
+Checking contents (inodes)...
+Checking contents (parent inodes)...
+Checking objects (reference counts)...
+Checking objects (backend)...
+..processed 5000 objects so far..
+..processed 10000 objects so far..
+..processed 15000 objects so far..
+Checking objects (sizes)...
+Checking blocks (referenced objects)...
+Checking blocks (refcounts)...
+Checking inode-block mapping (blocks)...
+Checking inode-block mapping (inodes)...
+Checking inodes (refcounts)...
+Checking inodes (sizes)...
+Checking extended attributes (names)...
+Checking extended attributes (inodes)...
+Checking symlinks (inodes)...
+Checking directory reachability...
+Checking unix conventions...
+Checking referential integrity...
+Dropping temporary indices...
+Backing up old metadata...
+Dumping metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Compressing and uploading metadata...
+Wrote 0.89 MB of compressed metadata.
+# 
+</pre></blockquote></p>
+
+<p>Thanks to the cache, working on files that fit in the cache is very
+quick, about the same speed as local file access.  Uploading large
+amount of data is to me limited by the bandwidth out of and into my
+house.  Uploading 685 MiB with a 100 MiB cache gave me 305 kiB/s,
+which is very close to my upload speed, and downloading the same
+Debian installation ISO gave me 610 kiB/s, close to my download speed.
+Both were measured using <tt>dd</tt>.  So for me, the bottleneck is my
+network, not the file system code.  I do not know what a good cache
+size would be, but suspect that the cache should e larger than your
+working set.</p>
+
+<p>I mentioned that only one machine can mount the file system at the
+time.  If another machine try, it is told that the file system is
+busy:</p>
+
+<p><blockquote><pre>
+# mount.s3ql --cachedir /var/lib/s3ql-cache --authfile /root/.s3ql/authinfo2 \
+  --ssl --allow-root s3c://s.greenqloud.com:443/bucket-name /s3ql
+Using 8 upload threads.
+Backend reports that fs is still mounted elsewhere, aborting.
+#
+</pre></blockquote></p>
+
+<p>The file content is uploaded when the cache is full, while the
+metadata is uploaded once every 24 hour by default.  To ensure the
+file system content is flushed to the cloud, one can either umount the
+file system, or ask S3QL to flush the cache and metadata using
+s3qlctrl:
+
+<p><blockquote><pre>
+# s3qlctrl upload-meta /s3ql
+# s3qlctrl flushcache /s3ql
+# 
+</pre></blockquote></p>
+
+<p>If you are curious about how much space your data uses in the
+cloud, and how much compression and deduplication cut down on the
+storage usage, you can use s3qlstat on the mounted file system to get
+a report:</p>
+
+<p><blockquote><pre>
+# s3qlstat /s3ql
+Directory entries:    9141
+Inodes:               9143
+Data blocks:          8851
+Total data size:      22049.38 MB
+After de-duplication: 21955.46 MB (99.57% of total)
+After compression:    21877.28 MB (99.22% of total, 99.64% of de-duplicated)
+Database size:        2.39 MB (uncompressed)
+(some values do not take into account not-yet-uploaded dirty blocks in cache)
+#
+</pre></blockquote></p>
+
+<p>I mentioned earlier that there are several possible suppliers of
+storage.  I did not try to locate them all, but am aware of at least
+<a href="https://www.greenqloud.com/">Greenqloud</a>,
+<a href="http://drive.google.com/">Google Drive</a>,
+<a href="http://aws.amazon.com/s3/">Amazon S3 web serivces</a>,
+<a href="http://www.rackspace.com/">Rackspace</a> and
+<a href="http://crowncloud.net/">Crowncloud</A>.  The latter even
+accept payment in Bitcoin.  Pick one that suit your need.  Some of
+them provide several GiB of free storage, but the prize models are
+quite different and you will have to figure out what suits you
+best.</p>
+
+<p>While researching this blog post, I had a look at research papers
+and posters discussing the S3QL file system.  There are several, which
+told me that the file system is getting a critical check by the
+science community and increased my confidence in using it.  One nice
+poster is titled
+"<a href="http://www.lanl.gov/orgs/adtsc/publications/science_highlights_2013/docs/pg68_69.pdf">An
+Innovative Parallel Cloud Storage System using OpenStack’s SwiftObject
+Store and Transformative Parallel I/O Approach</a>" by Hsing-Bung
+Chen, Benjamin McClelland, David Sherrill, Alfred Torrez, Parks Fields
+and Pamela Smith.  Please  have a look.</p>
+
+<p>Given my problems with different file systems earlier, I decided to
+check out the mounted S3QL file system to see if it would be usable as
+a home directory (in other word, that it provided POSIX semantics when
+it come to locking and umask handling etc).  Running
+<a href="http://people.skolelinux.org/pere/blog/Testing_if_a_file_system_can_be_used_for_home_directories___.html">my
+test code to check file system semantics</a>, I was happy to discover that
+no error was found.  So the file system can be used for home
+directories, if one chooses to do so.</p>
+
+<p>If you do not want a locally file system, and want something that
+work without the Linux fuse file system, I would like to mention the
+<a href="http://www.tarsnap.com/">Tarsnap service</a>, which also
+provide locally encrypted backup using a command line client.  It have
+a nicer access control system, where one can split out read and write
+access, allowing some systems to write to the backup and others to
+only read from it.</p>
+
+<p>As usual, if you use Bitcoin and want to show your support of my
+activities, please send Bitcoin donations to my address
+<b><a href="bitcoin:15oWEoG9dUPovwmUL9KWAnYRtNJEkP1u1b&label=PetterReinholdtsenBlog">15oWEoG9dUPovwmUL9KWAnYRtNJEkP1u1b</a></b>.</p>
+</div>
+      
+      <div class="tags">Tags: <a href="http://people.skolelinux.org/pere/blog/tags/debian">debian</a>, <a href="http://people.skolelinux.org/pere/blog/tags/english">english</a>, <a href="http://people.skolelinux.org/pere/blog/tags/personvern">personvern</a>, <a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet</a>.</div>
+      
+      
+    </div>
+    
+
+    
+
+    <div id="sidebar">
+      
+
+
+<h2>Archive</h2>
+<ul>
+
+<li>2014
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/01/">January (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/02/">February (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/03/">March (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/04/">April (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/05/">May (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2014/06/">June (2)</a></li>
+
+</ul></li>
+
+<li>2013
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/01/">January (11)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/02/">February (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/03/">March (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/04/">April (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/06/">June (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/07/">July (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/08/">August (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/09/">September (5)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/10/">October (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/11/">November (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2013/12/">December (3)</a></li>
+
+</ul></li>
+
+<li>2012
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/01/">January (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/02/">February (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/03/">March (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/04/">April (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/05/">May (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/06/">June (20)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/07/">July (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/08/">August (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/09/">September (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/10/">October (17)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/11/">November (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2012/12/">December (7)</a></li>
+
+</ul></li>
+
+<li>2011
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/01/">January (16)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/02/">February (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/03/">March (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/04/">April (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/05/">May (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/06/">June (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/07/">July (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/08/">August (6)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/09/">September (4)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/10/">October (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/11/">November (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2011/12/">December (1)</a></li>
+
+</ul></li>
+
+<li>2010
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/01/">January (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/02/">February (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/03/">March (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/04/">April (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/06/">June (14)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/07/">July (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/08/">August (13)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/09/">September (7)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/10/">October (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/11/">November (13)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2010/12/">December (12)</a></li>
+
+</ul></li>
+
+<li>2009
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/01/">January (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/02/">February (8)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/03/">March (12)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/04/">April (10)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/05/">May (9)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/06/">June (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/07/">July (4)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/08/">August (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/09/">September (1)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/10/">October (2)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/11/">November (3)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2009/12/">December (3)</a></li>
+
+</ul></li>
+
+<li>2008
+<ul>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2008/11/">November (5)</a></li>
+
+<li><a href="http://people.skolelinux.org/pere/blog/archive/2008/12/">December (7)</a></li>
+
+</ul></li>
+
+</ul>
+
+
+
+<h2>Tags</h2>
+<ul>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/3d-printer">3d-printer (13)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/amiga">amiga (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/aros">aros (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bankid">bankid (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bitcoin">bitcoin (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bootsystem">bootsystem (14)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/bsa">bsa (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/chrpath">chrpath (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/debian">debian (99)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/debian edu">debian edu (147)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/digistan">digistan (10)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/dld">dld (15)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/docbook">docbook (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/drivstoffpriser">drivstoffpriser (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/english">english (248)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/fiksgatami">fiksgatami (21)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/fildeling">fildeling (12)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/freeculture">freeculture (12)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/freedombox">freedombox (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/frikanalen">frikanalen (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/intervju">intervju (40)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/isenkram">isenkram (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/kart">kart (18)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ldap">ldap (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/lenker">lenker (7)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ltsp">ltsp (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/mesh network">mesh network (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/multimedia">multimedia (28)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/norsk">norsk (246)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/nuug">nuug (162)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/offentlig innsyn">offentlig innsyn (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/open311">open311 (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/opphavsrett">opphavsrett (46)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/personvern">personvern (72)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/raid">raid (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/reactos">reactos (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/reprap">reprap (11)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/rfid">rfid (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/robot">robot (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/rss">rss (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/ruter">ruter (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/scraperwiki">scraperwiki (2)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sikkerhet">sikkerhet (40)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sitesummary">sitesummary (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/skepsis">skepsis (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/standard">standard (44)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/stavekontroll">stavekontroll (3)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/stortinget">stortinget (9)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/surveillance">surveillance (25)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/sysadmin">sysadmin (1)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/valg">valg (8)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/video">video (42)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/vitenskap">vitenskap (4)</a></li>
+
+ <li><a href="http://people.skolelinux.org/pere/blog/tags/web">web (32)</a></li>
+
+</ul>
+
+
+    </div>
+    <p style="text-align: right">
+ Created by <a href="http://steve.org.uk/Software/chronicle">Chronicle v4.6</a>
+</p>
+
+  </body>
+</html>
+

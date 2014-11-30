@@ -1,0 +1,319 @@
+http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 03:26:26 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=dceaf8ecb3f0a5addafc4728443ab08561406085985853; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.oli.me.uk; HttpOnly
+Last-Modified: Sat, 26 Apr 2014 13:24:40 GMT
+Cache-Control: max-age=86400
+Expires: Thu, 24 Jul 2014 03:26:34 GMT
+Vary: Accept-Encoding
+CF-RAY: 14e4c6c392cf0f03-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Searching JavaScript arrays with a binary search - Oliver.prototype.blog</title>
+<meta name="author" content="Oliver Caldwell">
+<meta name="description" content="We are asking browsers to do more and more as they become more capable. I&rsquo;m not sure if that&rsquo;s a good thing or not, but that&rsquo;s a &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Oliver.prototype.blog" type="application/atom+xml">
+ 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29131116-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<h1><a href="/">Oliver.prototype.blog</a></h1>
+<h2>A place to share my knowledge and escapades in the world of web development.</h2>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:oli.me.uk"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archives/">Archives</a></li>
+<li><a href="/about-me/">About me</a></li>
+<li><a href="https://github.com/Wolfy87/oli.me.uk">Source</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Searching JavaScript arrays with a binary search</h1>
+<p class="meta">
+<time datetime="2013-06-08T08:52:00+01:00" pubdate data-updated="true">Jun 8<span>th</span>, 2013</time>
+| <a href="#disqus_thread">Comments</a>
+</p>
+</header>
+<div class="entry-content"><p>We are asking browsers to do more and more as they become more capable. I&rsquo;m not sure if that&rsquo;s a good thing or not, but that&rsquo;s a heated flame war that should be saved for another day.</p>
+<p>There may come a time in your browser (ab)use in which you need to search a ridiculous amount or values within a cat gif processing platform. Or maybe you need to search through all of the elements in a bloated DOM.</p>
+<p>You will probably find that <code>indexOf</code> doesn&rsquo;t quite cut it in those situations. In fact, if you <em>do</em> happen survive the inevitable violent explosion caused by your CPU trying to take the easy way out, you might want to try a JavaScript search method that is better suited for that much data.</p>
+<p>This is where you have an excuse to suggest a binary search and blow everyone else&rsquo;s minds.</p>
+ 
+<h2>What is it</h2>
+<p>A binary search searches by splitting your array into smaller and smaller chunks until it finds your desired value. Unlike the normal <code>indexOf</code> which searches from left to right in a simple iteration. <a href="http://en.wikipedia.org/wiki/Binary_search_algorithm">The binary search Wikipedia article</a> explains it best (as always). There are a couple of downsides; It will be slower with smaller data sets (this needs proving) and the array you are searching <strong>needs to be sorted</strong>.</p>
+<p>Because a binary search is <a href="http://en.wikipedia.org/wiki/Logarithmic_time#Logarithmic_time">O(log n)</a>, and not O(n) like <code>indexOf</code>, it&rsquo;s great for large sets of data. I set up a little <a href="http://jsperf.com/binaryindexof-and-indexof">jsPerf for my version</a> of the JavaScript implementation; it is searching <strong>100,000</strong> numbers.</p>
+<p>The source for my <a href="https://gist.github.com/Wolfy87/5734530">JavaScript binary search implementation</a> is currently held in a gist. The really cool thing about this is that it&rsquo;s only 138 bytes when minified, that&rsquo;s tiny enough to fit inside a tweet.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Performs a binary search on the host array. This method can either be</span>
+</span><span class='line'><span class="cm"> * injected into Array.prototype or called with a specified scope like this:</span>
+</span><span class='line'><span class="cm"> * binaryIndexOf.call(someArray, searchElement);</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @param {*} searchElement The item to search for within the array.</span>
+</span><span class='line'><span class="cm"> * @return {Number} The index of the element which defaults to -1 when not found.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">binaryIndexOf</span><span class="p">(</span><span class="nx">searchElement</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">minIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">maxIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">currentIndex</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">currentElement</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="nx">minIndex</span> <span class="o">&lt;=</span> <span class="nx">maxIndex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">currentIndex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">minIndex</span> <span class="o">+</span> <span class="nx">maxIndex</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">currentElement</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">currentIndex</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">currentElement</span> <span class="o">&lt;</span> <span class="nx">searchElement</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">minIndex</span> <span class="o">=</span> <span class="nx">currentIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">currentElement</span> <span class="o">&gt;</span> <span class="nx">searchElement</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">maxIndex</span> <span class="o">=</span> <span class="nx">currentIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nx">currentIndex</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p><em>Edit: I&rsquo;ve swapped <code>Math.floor</code> for <code>number | 0</code> at <a href="http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/#comment-924876342">Yehonatan&rsquo;s reccomendation</a>. <a href="http://jsperf.com/jsfvsbitnot/8">It&rsquo;s faster sometimes</a>.</em></p>
+<h2>Real world use case</h2>
+<p>Okay, you might not want to search an array of numbers. Say you were working on a JavaScript map implementation, as I will be talking about in my next post, you might need to search an array of objects. As long as this array contains some kind of number you can use as an index whilst sorting, then it can be done.</p>
+<p>Say we have a <code>Model</code> class that each have a numerical ID or publish time. The first thing you would need to do is sort them. You can either do this with a sorting function like this&hellip;</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">models</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">id</span> <span class="o">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">id</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Or you can do it the smart way which kills two birds with one stone. You define a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf"><code>valueOf</code> method</a> which returns the ID. This value can then be used by the default sort method and, more importantly, within the <code>binaryIndexOf</code> method which needs the comparison operators to work correctly in order to find things.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Model</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">valueOf</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">models</span><span class="p">.</span><span class="nx">sort</span><span class="p">();</span> <span class="c1">// Smooth!</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>So now that your models are sorted and their greater than and less than comparison operators will work, you can use the <code>binaryIndexOf</code> method on it to search through your 100,000 models. Why are you even doing this to a browser, you monster.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// You can either execute it with call like this:</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">binaryIndexOf</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">models</span><span class="p">,</span> <span class="nx">someModel</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Or you can inject it into the prototype of Array to have a more native feel.</span>
+</span><span class='line'><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">binaryIndexOf</span> <span class="o">=</span> <span class="nx">binaryIndexOf</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">models</span><span class="p">.</span><span class="nx">binaryIndexOf</span><span class="p">(</span><span class="nx">someModel</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Let me know what you think and if you have any improvements or suggestions. I hope this can help to destroy a bottleneck or two (or 100,000).</p>
+<h2>Edit: Where should you stick it?</h2>
+<p><a href="http://www.reddit.com/r/javascript/comments/1fx4od/searching_javascript_arrays_with_a_binary_search/caeo5is">doomslice over on reddit</a> suggested that I return the <a href="http://en.wikipedia.org/wiki/Two%27s_complement">twos compliment</a> in place of -1. As far as I can tell, this means returning the negative version of the last place that was checked. So if you wanted to insert a value and wanted to know where you should put it, you could run the function and use the returned number to splice the value into the array.</p>
+<p>This way you can add items without ruining the order. You don&rsquo;t exactly want to go re-sorting potentially thousands of values every time you add something. Here&rsquo;s the modified function I came up with, as well as a working example. It demonstrates finding where to insert an element and then inserting it.</p>
+<iframe width="100%" height="300" src="http://jsfiddle.net/Wolfy87/5dcWN/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<p>As you can see, because I use the bitwise NOT operator (<code>~</code>, also suggested by doomsice!) on the index during the splice, it will always insert the element in the right place, even if there is an identical value already there! Pretty cool. You do have to be careful though, now you are going to need to check for <code>index &lt; 0</code>, and not <code>index === -1</code> when you are looking for existence of a value.</p>
+</div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">Posted by <span class="fn">Oliver Caldwell</span></span>
+<time datetime="2013-06-08T08:52:00+01:00" pubdate data-updated="true">Jun 8<span>th</span>, 2013</time>
+<span class="categories">
+<a class='category' href='/categories/algorithms/'>algorithms</a>, <a class='category' href='/categories/javascript/'>javascript</a>, <a class='category' href='/categories/search/'>search</a>
+</span>
+</p>
+<div class="sharing">
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/" data-via="OliverCaldwell" data-counturl="http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/">Tweet</a>
+</div>
+<p class="meta">
+<a class="basic-alignment left" href="/2013/06/05/implementing-a-message-bus-in-javascript/" title="Previous Post: Implementing a message bus in JavaScript">&laquo; Implementing a message bus in JavaScript</a>
+<a class="basic-alignment right" href="/2013/06/12/maps-in-javascript/" title="Next Post: Maps in JavaScript">Maps in JavaScript &raquo;</a>
+</p>
+</footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Bitcoin</h1>
+<p>Like what I do here? Want even more? Spur me on with a small donation, it will probably go towards a coffee that will fuel my next post or project.</p>
+<script type='text/javascript' src='http://coinwidget.com/widget/coin.js'></script>
+<script type='text/javascript'>
+		CoinWidgetCom.go({
+			wallet_address: '1BE2s3dsELzBHGk3su2U6GfAqSXcA65P34',
+			currency: 'bitcoin',
+			counter: 'hide',
+			alignment: 'bl',
+			qrcode: true,
+			auto_show: false,
+			lbl_button: 'Donate',
+			lbl_address: 'My Bitcoin Address:',
+			lbl_count: 'donations',
+			lbl_amount: 'BTC'
+		});
+	</script>
+</section>
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/2014/04/26/installing-vimdeck-on-arch/">Installing Vimdeck on Arch</a>
+</li>
+<li class="post">
+<a href="/2014/03/18/always-remain-a-beginner/">Always remain a beginner</a>
+</li>
+<li class="post">
+<a href="/2013/12/13/test-private-methods/">Test private methods</a>
+</li>
+<li class="post">
+<a href="/2013/12/05/graph-from-scratch/">Graph from scratch</a>
+</li>
+<li class="post">
+<a href="/2013/09/25/grabbing-elements-from-the-dom/">Grabbing elements from the DOM</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>GitHub Repos</h1>
+<ul id="gh_repos">
+<li class="loading">Status updating...</li>
+</ul>
+<a href="https://github.com/Wolfy87">@Wolfy87</a> on GitHub
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/libs/jXHR.js"></script>
+<script type="text/javascript" src="/javascripts/github.js"></script>
+<script type="text/javascript">
+	github.showRepos({
+		user: 'Wolfy87',
+		count: 5,
+		skip_forks: true,
+		target: '#gh_repos'
+	});
+</script>
+<p>
+Copyright &copy; 2014 - Oliver Caldwell -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'olimeuk';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/';
+        var disqus_url = 'http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

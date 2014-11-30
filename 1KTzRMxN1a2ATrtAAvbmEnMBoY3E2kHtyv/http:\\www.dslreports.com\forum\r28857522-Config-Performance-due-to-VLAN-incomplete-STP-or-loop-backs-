@@ -1,0 +1,3516 @@
+http://www.dslreports.com/forum/r28857522-Config-Performance-due-to-VLAN-incomplete-STP-or-loop-backs-
+[Config] Performance due to VLAN, incomplete STP, or loop backs? - Cisco | DSLReports Forums
+login · registerfoodsite Home
+Reviews
+Tools
+Forums
+FAQs
+Find Service
+News
+Maps
+About
+All Forums
+Hot Topics
+Gallery
+how-to block ads
+Forums → Equipment Support → Hardware By Brand → Cisco > [Config] Performance due to VLAN, incomplete STP, or loop backs?
+Search Topic: uniqs2875
+share
+« [Config] VPN Cisco 2620xm router cannot see local lan • [HELP] Will this traffic be NATted? »page: 1 · 2 · 3 · 4 · 5 · 6 · next Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman [Config] Performance due to VLAN, incomplete STP, or loop backs?Good Morning,I am the DBA and desktop support for an auto parts supplier.We have been using Netech to supply our Cisco hardware, a "default" or rather basic config (we have just been assigning ports to a VLAN and adding descriptions using CNA), and troubleshooting, but our relationship is going away due to repeat over promise and under deliver issues.Straw that broke the back was our printer vendor swapped out ~63 printers, set them to an IP, but ~18 were not reachable, Netech was unable to repair and we were able to clear every switch's ARP cache, and that "resolved" the issue.Another issue that's been going on for awhile is transferring a file from any server on VLAN 11 to a desktop on VLAN 20 goes at ~280 KBs. Despite both ports being auto auto (10/100 full), hooked with a ~100 foot CAT5e, terminated well and tested.Would anyone be willing to review our configs (sorry they're so nasty) to see how we can correct and improve our performance?Thank you much!Switch 01version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+service password-encryption
+service sequence-numbers
+!
+hostname SWIT-01
+!
+enable secret 5 &lt;password&gt;
+!
+username admin privilege 15 password 7 &lt;password&gt;
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+ip subnet-zero
+ip routing
+no ip domain-lookup
+ip dhcp excluded-address 10.16.5.1 10.16.5.99
+ip dhcp excluded-address 10.16.251.1 10.16.251.10
+!
+ip dhcp pool Wireless_Guest
+   network 10.16.5.0 255.255.255.0
+   dns-server 4.2.2.1 
+   default-router 10.16.5.1 
+!
+ip dhcp pool CAPWAP
+   network 10.16.251.0 255.255.255.0
+   default-router 10.16.251.1 
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2  1
+mls qos srr-queue input cos-map queue 1 threshold 3  0
+mls qos srr-queue input cos-map queue 2 threshold 1  2
+mls qos srr-queue input cos-map queue 2 threshold 2  4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3  3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3  0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3  32
+mls qos srr-queue input dscp-map queue 2 threshold 1  16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2  33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2  49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2  57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3  5
+mls qos srr-queue output cos-map queue 2 threshold 3  3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3  2 4
+mls qos srr-queue output cos-map queue 4 threshold 2  1
+mls qos srr-queue output cos-map queue 4 threshold 3  0
+mls qos srr-queue output dscp-map queue 1 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3  48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3  56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3  16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3  32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1  8
+mls qos srr-queue output dscp-map queue 4 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3  0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+no file verify auto
+!
+mac access-list extended block
+ permit host 0019.e766.6200 host 0000.0c07.acfa
+mac access-list extended block2
+ permit host 0019.e766.6220 host 0000.0c07.acfa
+spanning-tree mode pvst
+no spanning-tree optimize bpdu transmission
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 2
+ duplex full
+ speed 100
+!
+interface FastEthernet0/2
+ switchport access vlan 2
+ duplex full
+ speed 100
+!
+interface FastEthernet0/3
+ switchport access vlan 10
+ switchport mode access
+ duplex full
+ speed 100
+ spanning-tree portfast
+!
+interface FastEthernet0/4
+ switchport access vlan 8
+ switchport trunk allowed vlan 4
+ switchport mode access
+ duplex full
+ speed 100
+!
+interface FastEthernet0/5
+ switchport access vlan 8
+ switchport trunk allowed vlan 4
+ switchport mode access
+ power inline never
+!
+interface FastEthernet0/6
+ switchport access vlan 8
+ switchport trunk allowed vlan 4
+ switchport mode access
+ power inline never
+!
+interface FastEthernet0/7
+ switchport access vlan 254
+ duplex full
+ speed 100
+!
+interface FastEthernet0/8
+ switchport access vlan 3
+ duplex full
+ speed 100
+!
+interface FastEthernet0/9
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/10
+ switchport access vlan 255
+ duplex full
+ speed 100
+!
+interface FastEthernet0/11
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/12
+ switchport access vlan 10
+ switchport mode access
+ power inline never
+!
+interface FastEthernet0/13
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/14
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/15
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/16
+ description *-serv-07*
+ switchport access vlan 20
+ switchport mode access
+ duplex full
+ speed 100
+!
+interface FastEthernet0/17
+ switchport access vlan 11
+!
+interface FastEthernet0/18
+ switchport access vlan 11
+ switchport mode access
+ duplex full
+ speed 100
+!
+interface FastEthernet0/19
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/20
+ switchport access vlan 11
+ duplex full
+ speed 100
+!
+interface FastEthernet0/21
+ switchport access vlan 11
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ duplex full
+ speed 100
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/22
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ duplex full
+ speed 100
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/23
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/24
+ switchport access vlan 2
+ switchport mode access
+!
+interface FastEthernet0/25
+ switchport access vlan 20
+ switchport mode access
+!
+interface FastEthernet0/26
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/27
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/28
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/29
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/30
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/31
+ description *bklnk sw 7 f0\16*
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/32
+ description Justin Office
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/33
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/34
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/35
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/36
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/37
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/38
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/39
+ switchport access vlan 11
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/40
+ description -WLC-02
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/41
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/42
+ description -WLC-04
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/43
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/44
+ description VoiceGW
+ switchport access vlan 30
+!
+interface FastEthernet0/45
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/46
+ switchport access vlan 30
+ switchport mode access
+ duplex full
+!
+interface FastEthernet0/47
+ description AP-02
+ switchport access vlan 250
+ switchport mode access
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/48
+ description AP-01
+ switchport access vlan 250
+ switchport mode access
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/4
+!
+interface Vlan1
+ ip address 10.16.1.1 255.255.255.0
+!
+interface Vlan3
+ ip address 10.16.3.2 255.255.255.0
+ standby 13 ip 10.16.3.1
+ standby 13 priority 110
+ standby 13 authentication 3
+!
+interface Vlan5
+ ip address 10.16.5.2 255.255.255.0
+ ip access-group 199 in
+ standby 15 ip 10.16.5.1
+ standby 15 priority 110
+ standby 15 authentication 5
+!
+interface Vlan6
+ ip address 10.16.6.2 255.255.255.0
+ ip helper-address 10.16.3.16
+ standby 16 ip 10.16.6.1
+ standby 16 priority 110
+ standby 16 authentication 6
+!
+interface Vlan10
+ ip address 10.16.10.2 255.255.255.0
+ standby 110 ip 10.16.10.1
+ standby 110 priority 110
+ standby 110 authentication 10
+!
+interface Vlan11
+ ip address 10.16.11.2 255.255.255.0
+ standby 111 ip 10.16.11.1
+ standby 111 priority 110
+ standby 111 authentication 11
+!
+interface Vlan15
+ ip address 10.16.15.2 255.255.255.0
+ ip helper-address 10.16.3.16
+ standby 115 ip 10.16.15.1
+ standby 115 priority 110
+ standby 115 authentication 15
+!
+interface Vlan20
+ ip address 10.16.20.2 255.255.255.0
+ ip helper-address 10.16.3.16
+ standby 120 ip 10.16.20.1
+ standby 120 priority 110
+ standby 120 authentication 20
+!
+interface Vlan30
+ ip address 10.16.30.2 255.255.255.0
+ standby 130 ip 10.16.30.1
+ standby 130 priority 110
+ standby 130 authentication 30
+!
+interface Vlan37
+ no ip address
+!
+interface Vlan50
+ ip address 10.16.50.2 255.255.255.0
+ standby 150 ip 10.16.50.1
+ standby 150 priority 110
+ standby 150 authentication 50
+!
+interface Vlan100
+ ip address 10.16.100.2 255.255.255.0
+ standby 140 ip 10.16.100.1
+ standby 140 priority 110
+ standby 140 authentication 40
+!
+interface Vlan250
+ ip address 10.16.250.2 255.255.255.0
+ standby 250 ip 10.16.250.1
+ standby 250 priority 110
+ standby 250 authentication arl250
+!
+interface Vlan251
+ ip address 10.16.251.1 255.255.255.0
+!
+interface Vlan254
+ ip address 10.16.254.4 255.255.255.240
+ standby 154 ip 10.16.254.2
+ standby 154 priority 110
+ standby 154 authentication 54
+!
+interface Vlan255
+ ip address 10.16.255.4 255.255.255.240
+ standby 155 ip 10.16.255.2
+ standby 155 priority 110
+ standby 155 authentication 55
+!
+ip default-gateway 10.16.255.1
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.16.255.6
+ip route 10.0.0.0 255.0.0.0 10.16.254.1
+ip route 10.19.0.0 255.255.0.0 10.16.255.6
+ip route 10.21.0.0 255.255.0.0 10.16.255.6
+ip route 10.25.0.0 255.255.0.0 10.16.255.6
+ip route 10.26.0.0 255.255.0.0 10.16.255.6
+ip route 10.28.0.0 255.255.0.0 10.16.255.6
+ip route 10.30.0.0 255.255.0.0 10.16.255.6
+ip route 10.100.0.0 255.255.0.0 10.16.255.6
+ip http server
+!
+!
+access-list 199 permit udp any any eq bootps
+access-list 199 permit udp any any eq bootpc
+access-list 199 permit udp 10.16.5.0 0.0.0.255 host 4.2.2.1 eq domain
+access-list 199 permit tcp 10.16.5.0 0.0.0.255 host 4.2.2.1 eq domain
+access-list 199 deny   ip any 10.0.0.0 0.255.255.255
+access-list 199 deny   ip any 172.16.0.0 0.7.255.255
+access-list 199 deny   ip any 192.168.0.0 0.0.255.255
+access-list 199 permit ip 10.16.5.0 0.0.0.255 any
+access-list 700 permit 0000.0000.0000   0000.0c07.acfa
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+control-plane
+!
+!
+line con 0
+ password 7 &lt;password&gt;
+ login local
+line vty 0 4
+ password 7 &lt;password&gt;
+ login local
+line vty 5 15
+ password 7 &lt;password&gt;
+ login local
+!
+!
+monitor session 1 source interface Fa0/10
+monitor session 1 destination interface Fa0/3
+ntp clock-period 36030327
+ntp server 18.145.0.30
+ 
+Switch 02version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+service password-encryption
+service sequence-numbers
+!
+hostname SWIT-02
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 &lt;password&gt;
+!
+username admin privilege 15 password 7 &lt;password&gt;
+!
+!
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+system mtu routing 1500
+ip routing
+no ip domain-lookup
+ip dhcp excluded-address 10.16.5.1 10.16.5.99
+!
+ip dhcp pool Wireless_Guest
+   network 10.16.5.0 255.255.255.0
+   dns-server 4.2.2.1 
+   default-router 10.16.5.1 
+!
+!
+!
+mls qos map policed-dscp  24 26 46 to 0
+mls qos map cos-dscp 0 8 16 24 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2 1
+mls qos srr-queue input cos-map queue 1 threshold 3 0
+mls qos srr-queue input cos-map queue 2 threshold 1 2
+mls qos srr-queue input cos-map queue 2 threshold 2 4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3 3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2 9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3 0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3 32
+mls qos srr-queue input dscp-map queue 2 threshold 1 16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2 33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2 49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2 57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3 24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3 40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3 5
+mls qos srr-queue output cos-map queue 2 threshold 3 3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3 2 4
+mls qos srr-queue output cos-map queue 4 threshold 2 1
+mls qos srr-queue output cos-map queue 4 threshold 3 0
+mls qos srr-queue output dscp-map queue 1 threshold 3 40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3 24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3 48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3 56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3 16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3 32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1 8
+mls qos srr-queue output dscp-map queue 4 threshold 2 9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3 0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+crypto pki trustpoint TP-self-signed-960515200
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-960515200
+ revocation-check none
+ rsakeypair TP-self-signed-960515200
+!
+!
+crypto pki certificate chain TP-self-signed-960515200
+ certificate self-signed 01
+&lt;cut&gt;
+  quit
+!
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig (STP)
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+spanning-tree mode pvst
+no spanning-tree optimize bpdu transmission
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+class-map match-all AutoQoS-VoIP-RTP-Trust
+ match ip dscp ef 
+class-map match-all AutoQoS-VoIP-Control-Trust
+ match ip dscp cs3  af31 
+!
+!
+policy-map AutoQoS-Police-CiscoPhone
+ class AutoQoS-VoIP-RTP-Trust
+  set dscp ef
+  police 320000 8000 exceed-action policed-dscp-transmit
+ class AutoQoS-VoIP-Control-Trust
+  set dscp cs3
+  police 32000 8000 exceed-action policed-dscp-transmit
+!
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/2
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/3
+ description *ulnk sw07 f0/1*
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/4
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/5
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/6
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/7
+ switchport access vlan 10
+ no mdix auto
+!
+interface FastEthernet0/8
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/9
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/10
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/11
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/12
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/13
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/14
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/15
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/16
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/17
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/18
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/19
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/20
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/21
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/22
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/23
+ switchport access vlan 11
+ switchport mode access
+ switchport port-security
+ switchport port-security aging time 2
+ switchport port-security violation restrict
+ switchport port-security aging type inactivity
+ macro description cisco-desktop
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/24
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/25
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/26
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/27
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/28
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/29
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/30
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/31
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/32
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/33
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/34
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/35
+ switchport access vlan 15
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/36
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/37
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/38
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/39
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/40
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/41
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/42
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/43
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/44
+ switchport access vlan 10
+ no mdix auto
+!
+interface FastEthernet0/45
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/46
+ switchport access vlan 11
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/47
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface FastEthernet0/48
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ priority-queue out 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ no mdix auto
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+ service-policy input AutoQoS-Police-CiscoPhone
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/4
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Vlan1
+ ip address 10.16.1.2 255.255.255.0
+!
+interface Vlan3
+ ip address 10.16.3.3 255.255.255.0
+ standby 13 ip 10.16.3.1
+ standby 13 priority 50
+ standby 13 authentication arl13
+!
+interface Vlan5
+ ip address 10.16.5.3 255.255.255.0
+ ip access-group 199 in
+ standby 15 ip 10.16.5.1
+ standby 15 priority 50
+ standby 15 authentication arl15
+!
+interface Vlan6
+ ip address 10.16.6.3 255.255.255.0
+ ip helper-address 10.16.3.17
+ standby 16 ip 10.16.6.1
+ standby 16 priority 50
+ standby 16 authentication arl16
+!
+interface Vlan10
+ ip address 10.16.10.3 255.255.255.0
+ standby 110 ip 10.16.10.1
+ standby 110 priority 50
+ standby 110 authentication arl110
+!
+interface Vlan11
+ ip address 10.16.11.3 255.255.255.0
+ standby 111 ip 10.16.11.1
+ standby 111 priority 50
+ standby 111 authentication arl111
+!
+interface Vlan15
+ ip address 10.16.15.3 255.255.255.0
+ ip helper-address 10.16.3.17
+ standby 115 ip 10.16.15.1
+ standby 115 priority 50
+ standby 115 authentication arl115
+!
+interface Vlan20
+ ip address 10.16.20.3 255.255.255.0
+ ip helper-address 10.16.3.17
+ standby 120 ip 10.16.20.1
+ standby 120 priority 50
+ standby 120 authentication arl120
+!
+interface Vlan30
+ ip address 10.16.30.3 255.255.255.0
+ standby 130 ip 10.16.30.1
+ standby 130 priority 50
+ standby 130 authentication arl130
+!
+interface Vlan50
+ ip address 10.16.50.3 255.255.255.0
+ standby 150 ip 10.16.50.1
+ standby 150 priority 50
+ standby 150 authentication arl150
+!
+interface Vlan100
+ ip address 10.16.100.3 255.255.255.0
+ ip helper-address 10.16.3.16
+ standby 140 ip 10.16.100.1
+ standby 140 priority 50
+ standby 140 authentication arl140
+!
+interface Vlan250
+ ip address 10.16.250.3 255.255.255.0
+ standby 250 ip 10.16.250.1
+ standby 250 priority 50
+ standby 250 authentication arl250
+!
+interface Vlan254
+ ip address 10.16.254.5 255.255.255.240
+ standby 154 ip 10.16.254.2
+ standby 154 priority 50
+ standby 154 authentication arl154
+!
+interface Vlan255
+ ip address 10.16.255.5 255.255.255.240
+ standby 155 ip 10.16.255.2
+ standby 155 priority 50
+ standby 155 authentication arl155
+!
+ip default-gateway 10.16.255.1
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.16.255.6
+ip route 10.0.0.0 255.0.0.0 10.16.254.1
+ip route 10.19.0.0 255.255.0.0 10.16.255.1
+ip http server
+ip http secure-server
+!
+access-list 199 permit udp any any eq bootps
+access-list 199 permit udp any any eq bootpc
+access-list 199 permit udp 10.16.5.0 0.0.0.255 host 4.2.2.1 eq domain
+access-list 199 permit tcp 10.16.5.0 0.0.0.255 host 4.2.2.1 eq domain
+access-list 199 deny   ip any 10.0.0.0 0.255.255.255
+access-list 199 deny   ip any 172.16.0.0 0.7.255.255
+access-list 199 deny   ip any 192.168.0.0 0.0.255.255
+access-list 199 permit ip 10.16.5.0 0.0.0.255 any
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+!
+line con 0
+ password 7 &lt;password&gt;
+ login local
+line vty 0 4
+ password 7 &lt;password&gt;
+ login local
+ length 0
+line vty 5 15
+ password 7 &lt;password&gt;
+ login local
+!
+ntp clock-period 36028792
+ntp server 18.145.0.30
+ 
+actions · 2013-Dec-3 11:02 am · Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman Switch 03version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+service password-encryption
+service sequence-numbers
+!
+hostname SWIT-03
+!
+enable secret 5 &lt;password&gt;
+enable password 7 &lt;password&gt;
+!
+username admin privilege 15 password 7 &lt;password&gt;
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+ip subnet-zero
+no ip domain-lookup
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2  1
+mls qos srr-queue input cos-map queue 1 threshold 3  0
+mls qos srr-queue input cos-map queue 2 threshold 1  2
+mls qos srr-queue input cos-map queue 2 threshold 2  4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3  3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3  0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3  32
+mls qos srr-queue input dscp-map queue 2 threshold 1  16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2  33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2  49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2  57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3  5
+mls qos srr-queue output cos-map queue 2 threshold 3  3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3  2 4
+mls qos srr-queue output cos-map queue 4 threshold 2  1
+mls qos srr-queue output cos-map queue 4 threshold 3  0
+mls qos srr-queue output dscp-map queue 1 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3  48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3  56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3  16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3  32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1  8
+mls qos srr-queue output dscp-map queue 4 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3  0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+no file verify auto
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/2
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/3
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/4
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/5
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/6
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/7
+ description *Rad Time/Focus*
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/8
+ description Rad PLC Ethernet
+ switchport access vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/9
+ description H06
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/10
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/11
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/12
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/13
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/14
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/15
+ switchport access vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/16
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/17
+ description H19
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/18
+ switchport access vlan 10
+ switchport trunk allowed vlan 4
+ switchport mode access
+!
+interface FastEthernet0/19
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/20
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/21
+ switchport access vlan 10
+ switchport trunk allowed vlan 10
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/22
+ description *IP Time/Focus*
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/23
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+!
+interface FastEthernet0/24
+ switchport access vlan 8
+ switchport trunk allowed vlan 4
+ switchport mode access
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Vlan1
+ ip address 10.16.1.3 255.255.255.0
+!
+ip default-gateway 10.16.1.1
+ip classless
+ip http server
+!
+!
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ password 7 &lt;password&gt;
+ login
+line vty 0 4
+ password 7 &lt;password&gt;
+ login local
+line vty 5 15
+ password 7 &lt;password&gt;
+ login local
+ 
+Switch 04version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+service password-encryption
+service sequence-numbers
+!
+hostname SWIT-04
+!
+enable secret 5 &lt;password&gt;
+enable password 7 &lt;password&gt;
+!
+username admin privilege 15 password 7 &lt;password&gt;
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+ip subnet-zero
+no ip domain-lookup
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2  1
+mls qos srr-queue input cos-map queue 1 threshold 3  0
+mls qos srr-queue input cos-map queue 2 threshold 1  2
+mls qos srr-queue input cos-map queue 2 threshold 2  4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3  3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3  0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3  32
+mls qos srr-queue input dscp-map queue 2 threshold 1  16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2  33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2  49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2  57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3  5
+mls qos srr-queue output cos-map queue 2 threshold 3  3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3  2 4
+mls qos srr-queue output cos-map queue 4 threshold 2  1
+mls qos srr-queue output cos-map queue 4 threshold 3  0
+mls qos srr-queue output dscp-map queue 1 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3  48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3  56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3  16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3  32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1  8
+mls qos srr-queue output dscp-map queue 4 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3  0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+no file verify auto
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 250
+ switchport mode access
+ power inline never
+!
+interface FastEthernet0/2
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/3
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/4
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/5
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/6
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/7
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/8
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/9
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/10
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/11
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/12
+ description K37
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/13
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ power inline never
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/14
+ description H40
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/15
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/16
+ description H38
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/17
+ description Rack &amp; Pinion PLC
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/18
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/19
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/20
+ description Dead Port (Shut)
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet0/21
+ description H15
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/22
+ description K43
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/23
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/24
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Vlan1
+ ip address 10.16.1.4 255.255.255.0
+!
+ip default-gateway 10.16.1.1
+ip classless
+ip http server
+!
+!
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ password 7 &lt;password&gt;
+ login
+line vty 0 4
+ password 7 &lt;password&gt;
+ login local
+line vty 5 15
+ password 7 &lt;password&gt;
+ login local
+ 
+Switch 05version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+service password-encryption
+service sequence-numbers
+!
+hostname SWIT-05
+!
+enable secret 5 &lt;password&gt;
+enable password 7 &lt;password&gt;
+!
+username admin privilege 15 password 7 &lt;password&gt;
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+ip subnet-zero
+no ip domain-lookup
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2  1
+mls qos srr-queue input cos-map queue 1 threshold 3  0
+mls qos srr-queue input cos-map queue 2 threshold 1  2
+mls qos srr-queue input cos-map queue 2 threshold 2  4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3  3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3  0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3  32
+mls qos srr-queue input dscp-map queue 2 threshold 1  16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2  33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2  49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2  57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3  5
+mls qos srr-queue output cos-map queue 2 threshold 3  3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3  2 4
+mls qos srr-queue output cos-map queue 4 threshold 2  1
+mls qos srr-queue output cos-map queue 4 threshold 3  0
+mls qos srr-queue output dscp-map queue 1 threshold 3  40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3  48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3  56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3  16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3  32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1  8
+mls qos srr-queue output dscp-map queue 4 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3  0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+!
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+no file verify auto
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/2
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/3
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/4
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/5
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/6
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/7
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/8
+ description AP-13
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/9
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/10
+ description Transmission PLC
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/11
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/12
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/13
+ switchport access vlan 250
+ switchport mode access
+!
+interface FastEthernet0/14
+ switchport access vlan 10
+ switchport mode access
+!
+interface FastEthernet0/15
+ switchport access vlan 10
+ switchport mode access
+!
+interface FastEthernet0/16
+ switchport access vlan 20
+ switchport mode access
+!
+interface FastEthernet0/17
+ description Power Steering PLC
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/18
+ switchport access vlan 8
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/19
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/20
+ description H30
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/21
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/22
+ description AP-14
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/23
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape  10  0  0  0 
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+!
+interface FastEthernet0/24
+ description H28
+ switchport access vlan 10
+ switchport mode access
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Vlan1
+ ip address 10.16.1.5 255.255.255.0
+!
+ip default-gateway 10.16.1.1
+ip classless
+ip http server
+ip http secure-server
+!
+!
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ password 7 &lt;password&gt;
+ login
+line vty 0 4
+ password 7 &lt;password&gt;
+ login local
+line vty 5 15
+ password 7 &lt;password&gt;
+ login local
+ 
+Switch 06version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log datetime
+no service password-encryption
+service sequence-numbers
+!
+hostname SWIT-06
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 &lt;password&gt;
+enable password 7 &lt;password&gt;
+!
+!
+!
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+system mtu routing 1500
+no ip domain-lookup
+!
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2 1
+mls qos srr-queue input cos-map queue 1 threshold 3 0
+mls qos srr-queue input cos-map queue 2 threshold 1 2
+mls qos srr-queue input cos-map queue 2 threshold 2 4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3 3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2 9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3 0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3 32
+mls qos srr-queue input dscp-map queue 2 threshold 1 16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2 33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2 49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2 57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3 24 25 26 27 28 29 30 31
+mls qos srr-queue input dscp-map queue 2 threshold 3 40 41 42 43 44 45 46 47
+mls qos srr-queue output cos-map queue 1 threshold 3 5
+mls qos srr-queue output cos-map queue 2 threshold 3 3 6 7
+mls qos srr-queue output cos-map queue 3 threshold 3 2 4
+mls qos srr-queue output cos-map queue 4 threshold 2 1
+mls qos srr-queue output cos-map queue 4 threshold 3 0
+mls qos srr-queue output dscp-map queue 1 threshold 3 40 41 42 43 44 45 46 47
+mls qos srr-queue output dscp-map queue 2 threshold 3 24 25 26 27 28 29 30 31
+mls qos srr-queue output dscp-map queue 2 threshold 3 48 49 50 51 52 53 54 55
+mls qos srr-queue output dscp-map queue 2 threshold 3 56 57 58 59 60 61 62 63
+mls qos srr-queue output dscp-map queue 3 threshold 3 16 17 18 19 20 21 22 23
+mls qos srr-queue output dscp-map queue 3 threshold 3 32 33 34 35 36 37 38 39
+mls qos srr-queue output dscp-map queue 4 threshold 1 8
+mls qos srr-queue output dscp-map queue 4 threshold 2 9 10 11 12 13 14 15
+mls qos srr-queue output dscp-map queue 4 threshold 3 0 1 2 3 4 5 6 7
+mls qos queue-set output 1 threshold 1 138 138 92 138
+mls qos queue-set output 1 threshold 2 138 138 92 400
+mls qos queue-set output 1 threshold 3 36 77 100 318
+mls qos queue-set output 1 threshold 4 20 50 67 400
+mls qos queue-set output 2 threshold 1 149 149 100 149
+mls qos queue-set output 2 threshold 2 118 118 100 235
+mls qos queue-set output 2 threshold 3 41 68 100 272
+mls qos queue-set output 2 threshold 4 42 72 100 242
+mls qos queue-set output 1 buffers 10 10 26 54
+mls qos queue-set output 2 buffers 16 6 17 61
+mls qos
+!
+crypto pki trustpoint HTTPS_SS_CERT_KEYPAIR
+ enrollment selfsigned
+ serial-number
+ revocation-check none
+ rsakeypair HTTPS_SS_CERT_KEYPAIR
+!
+!
+crypto pki certificate chain HTTPS_SS_CERT_KEYPAIR
+ certificate self-signed 01
+&lt;cut&gt;
+  quit
+!
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig (STP)
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+interface FastEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/2
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/3
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/4
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/5
+ switchport access vlan 5
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/6
+ switchport access vlan 5
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/7
+ switchport access vlan 2
+ switchport mode access
+!
+interface FastEthernet0/8
+ switchport access vlan 255
+ switchport mode access
+!
+interface FastEthernet0/9
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/10
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/11
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/12
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/13
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/14
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/15
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/16
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/17
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/18
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/19
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/20
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/21
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/22
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/23
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/24
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/25
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/26
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/27
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/28
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/29
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/30
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/31
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/32
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/33
+ switchport access vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/34
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/35
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/36
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/37
+ switchport access vlan 250
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/38
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/39
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ switchport port-security maximum 3
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/40
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/41
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/42
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/43
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/44
+ switchport access vlan 30
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/45
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/46
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/47
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface FastEthernet0/48
+ switchport access vlan 20
+ switchport trunk encapsulation dot1q
+ switchport mode access
+ switchport voice vlan 30
+ srr-queue bandwidth share 10 10 60 20
+ srr-queue bandwidth shape 10 0 0 0
+ mls qos trust device cisco-phone
+ mls qos trust cos
+ auto qos voip cisco-phone 
+ storm-control broadcast level 5.00
+ spanning-tree portfast
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+!
+interface GigabitEthernet0/3
+!
+interface GigabitEthernet0/4
+!
+interface Vlan1
+ ip address 10.16.1.6 255.255.255.0
+!
+ip default-gateway 10.16.1.1
+ip classless
+ip http server
+ip http secure-server
+!
+snmp-server community &lt;password&gt; RO
+snmp-server community &lt;password&gt; RW
+!
+!
+line con 0
+line vty 0 4
+ password &lt;password&gt;
+ login
+line vty 5 15
+ password &lt;password&gt;
+ login
+ 
+Switch 07version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+!
+hostname SWIT-07
+!
+enable secret 5 &lt;password&gt;
+!
+no aaa new-model
+clock timezone UTC -5
+clock summer-time UTC recurring
+ip subnet-zero
+!
+!
+mls qos map cos-dscp 0 8 16 26 32 46 48 56
+mls qos srr-queue input bandwidth 90 10
+mls qos srr-queue input threshold 1 8 16
+mls qos srr-queue input threshold 2 34 66
+mls qos srr-queue input buffers 67 33 
+mls qos srr-queue input cos-map queue 1 threshold 2  1
+mls qos srr-queue input cos-map queue 1 threshold 3  0
+mls qos srr-queue input cos-map queue 2 threshold 1  2
+mls qos srr-queue input cos-map queue 2 threshold 2  4 6 7
+mls qos srr-queue input cos-map queue 2 threshold 3  3 5
+mls qos srr-queue input dscp-map queue 1 threshold 2  9 10 11 12 13 14 15
+mls qos srr-queue input dscp-map queue 1 threshold 3  0 1 2 3 4 5 6 7
+mls qos srr-queue input dscp-map queue 1 threshold 3  32
+mls qos srr-queue input dscp-map queue 2 threshold 1  16 17 18 19 20 21 22 23
+mls qos srr-queue input dscp-map queue 2 threshold 2  33 34 35 36 37 38 39 48
+mls qos srr-queue input dscp-map queue 2 threshold 2  49 50 51 52 53 54 55 56
+mls qos srr-queue input dscp-map queue 2 threshold 2  57 58 59 60 61 62 63
+mls qos srr-queue input dscp-map queue 2 threshold 3  24 25 26 27 28 29 30 31
+mls qos srr-queuactions &middot; 2013-Dec-3 11:09 am &middot;   aryobaPremium,MVMjoin:2002-08-22kudos:4 aryoba MVM  reply to Nsane_iceman From your posts, it seemed that the first two switches (first post) were your main/core switches while the remaining switches (second post) were your access switches. Do you mind posting the following for further info?show versionshow licenseIn addition, I don't see any posted router and/or firewall configuration. Is there a reason why?actions &middot; 2013-Dec-3 11:18 am &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix   reply to Nsane_iceman Also can you describe how you have them connected?I'm guessing you have them daisy chained via the gig portsin which cast you're going 7 deepI can't find it right now but I recall being taught that 5 was the max number of switches before you'd have issues, thus you want a more star topo not a chainSo I'd buy one 24port gig switch, likely a good idea to have it be a L3 switch with ipservices or higherthen make that switch the core that all 7 of your current ones link to, next I'd do a 2 port etherchannel for the link from each switch to to core switchfrom a brief glance it looks like all of your switches are 48 10/100 with 2x gig and you always want to use the gig in that case for uplink but with 7 switches you might be maxing one or more of those gig linksand it looks that the first two are doing your intervlan routing but still they look to only be 48 port 10/100 which means your uplink setup is questionable.I would strongly look into 1 or 2 3560-X's 24 or more gig port switches and let them be your core, with that model you can stack them so that'd count as one switch to cover the redundancy.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 11:41 am &middot;   Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman   reply to aryobasaid by aryoba:From your posts, it seemed that the first two switches (first post) were your main/core switches while the remaining switches (second post) were your access switches. Do you mind posting the following for further info?show versionshow licenseIn addition, I don't see any posted router and/or firewall configuration. Is there a reason why?Morning aryoba,Thank you for your reply.Core switches are 1 and 6 in the server room and 7 is connected to the servers.Others are out on the warehouse floor along with ~4 unmanaged Netgear switches due to very very long Ethernet runs (warehouse is 1 million+ sq feet).AT&T provides our router/firewall and bounded T1 MIS line. It's two eth interfaces hook to switch 1 and 6. Same goes for the corporate MPLS line. We lack access to both.Below is the sh ver. show license just gives me:"#show license                    ^% Invalid input detected at '^' marker."SW 01:Cisco IOS Software, C3560 Software (C3560-IPSERVICES-M), Version 12.2(25)SEB2, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2005 by Cisco Systems, Inc.Compiled Tue 07-Jun-05 23:34 by netechROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(25r)SEA, RELEASE SOFTWARE (fc)SWIT-01 uptime is 1 year, 46 weeks, 4 days, 5 hours, 31 minutesSystem returned to ROM by power-onSystem restarted at 06:03:08 UTC Thu Jan 12 2012System image file is "flash:c3560-ipservices-mz.122-25.SEB2/c3560-ipservices-mz.122-25.SEB2.bin"cisco WS-C3560-48PS (PowerPC405) processor (revision K0) with 118784K/12280K bytes of memory.Processor board ID CAT0918Z0C5Last reset from power-on16 Virtual Ethernet interfaces48 FastEthernet interfaces4 Gigabit Ethernet interfacesSW 02:Cisco IOS Software, C3560 Software (C3560-IPBASEK9-M), Version 12.2(55)SE5, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2012 by Cisco Systems, Inc.Compiled Thu 09-Feb-12 18:46 by netechImage text-base: 0x01000000, data-base: 0x02D00000ROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(53r)SEY4, RELEASE SOFTWARE (fc1)SWIT-02 uptime is 45 weeks, 4 days, 22 hours, 45 minutesSystem returned to ROM by power-onSystem image file is "flash:/c3560-ipbasek9-mz.122-55.SE5/c3560-ipbasek9-mz.122-55.SE5.bin"cisco WS-C3560V2-48PS (PowerPC405) processor (revision P0) with 131072K bytes of memory.Processor board ID FDO1644Y3E5Last reset from power-on14 Virtual Ethernet interfaces48 FastEthernet interfaces4 Gigabit Ethernet interfacesSW 03:Cisco IOS Software, C3560 Software (C3560-IPSERVICES-M), Version 12.2(25)SEB2, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2005 by Cisco Systems, Inc.Compiled Tue 07-Jun-05 23:34 by netechROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(25r)SEA, RELEASE SOFTWARE (fc)SWIT-03 uptime is 15 weeks, 4 days, 20 hours, 55 minutesSystem returned to ROM by error - Debug Exception (Could be NULL pointer dereference) Exception (0x2000)!, PC 0x9936FCSystem image file is "flash:c3560-ipservices-mz.122-25.SEB2/c3560-ipservices-mz.122-25.SEB2.bin"cisco WS-C3560-24PS (PowerPC405) processor (revision M0) with 118784K/12280K bytes of memory.Processor board ID CAT0921K0KGLast reset from power-on1 Virtual Ethernet interface24 FastEthernet interfaces2 Gigabit Ethernet interfacesSW 04:Cisco IOS Software, C3560 Software (C3560-IPSERVICES-M), Version 12.2(25)SEB2, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2005 by Cisco Systems, Inc.Compiled Tue 07-Jun-05 23:34 by netechROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(25r)SEA, RELEASE SOFTWARE (fc)SWIT-04 uptime is 19 weeks, 6 days, 20 hours, 2 minutesSystem returned to ROM by power-onSystem image file is "flash:c3560-ipservices-mz.122-25.SEB2/c3560-ipservices-mz.122-25.SEB2.bin"cisco WS-C3560-24PS (PowerPC405) processor (revision M0) with 118784K/12280K bytes of memory.Processor board ID CAT0921K0KZLast reset from power-on1 Virtual Ethernet interface24 FastEthernet interfaces2 Gigabit Ethernet interfacesSW 05:Cisco IOS Software, C3560 Software (C3560-ADVIPSERVICESK9-M), Version 12.2(25)SEB4, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2005 by Cisco Systems, Inc.Compiled Tue 30-Aug-05 17:56 by netechROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(25r)SEA, RELEASE SOFTWARE (fc)SWIT-05 uptime is 1 year, 39 weeks, 4 days, 17 hours, 27 minutesSystem returned to ROM by power-onSystem restarted at 18:22:23 UTC Wed Feb 29 2012System image file is "flash:c3560-advipservicesk9-mz.122-25.SEB4/c3560-advipservicesk9-mz.122-25.SEB4.bin"cisco WS-C3560-24PS (PowerPC405) processor (revision L0) with 118784K/12280K bytes of memory.Processor board ID CAT0914K0YQLast reset from power-on1 Virtual Ethernet interface24 FastEthernet interfaces2 Gigabit Ethernet interfacesSW 06:Cisco IOS Software, C3560 Software (C3560-IPBASEK9-M), Version 12.2(55)SE5, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2012 by Cisco Systems, Inc.Compiled Thu 09-Feb-12 18:46 by netechImage text-base: 0x01000000, data-base: 0x02D00000ROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(53r)SEY4, RELEASE SOFTWARE (fc1)SWIT-06 uptime is 6 weeks, 1 day, 1 hour, 1 minuteSystem returned to ROM by power-onSystem image file is "flash:/c3560-ipbasek9-mz.122-55.SE5/c3560-ipbasek9-mz.122-55.SE5.bin"cisco WS-C3560V2-48PS (PowerPC405) processor (revision P0) with 131072K bytes of memory.Processor board ID FDO1639Y1P8Last reset from power-on1 Virtual Ethernet interface48 FastEthernet interfaces4 Gigabit Ethernet interfacesSW 07:Cisco IOS Software, C3560 Software (C3560-IPSERVICES-M), Version 12.2(25)SEB2, RELEASE SOFTWARE (fc1)Copyright (c) 1986-2005 by Cisco Systems, Inc.Compiled Tue 07-Jun-05 23:34 by netechROM: Bootstrap program is C3560 boot loaderBOOTLDR: C3560 Boot Loader (C3560-HBOOT-M) Version 12.2(25r)SEA, RELEASE SOFTWARE (fc)SWIT-07 uptime is 1 year, 46 weeks, 4 days, 5 hours, 23 minutesSystem returned to ROM by power-onSystem restarted at 06:27:36 UTC Thu Jan 12 2012System image file is "flash:c3560-ipservices-mz.122-25.SEB2/c3560-ipservices-mz.122-25.SEB2.bin"cisco WS-C3560-24PS (PowerPC405) processor (revision L0) with 118784K/12280K bytes of memory.Processor board ID CAT0914Z2E2Last reset from power-on1 Virtual Ethernet interface24 FastEthernet interfaces2 Gigabit Ethernet interfaces--Avatar by: dandelion | Tell me, tell me what you're after. I just want to get there faster.actions &middot; 2013-Dec-3 11:46 am &middot;   TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:51 edit TomS_ MVM  reply to Nsane_iceman With all of the QoS going on on these switches, I wouldnt be surprised if that is part of the problem. There appears to be a lot of shaping/policing and what not configured, are you sure the servers or other switch uplinks arent connected to ports that have some kind of bandwidth profile on them?Rule of thumb, start simple, then add on functionality until it breaks, then at least you know what to look at.Interface descriptions to .. describe .. what is plugged in to a port, or what its function is would also be massively handy!But I suspect you might want to get someone on-site to trawl through these things and work it out, rather than post on a forum. actions &middot; 2013-Dec-3 11:56 am &middot;   Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX1 edit Nsane_iceman   reply to DarkLogixCNA Topology view Morning DarkLogix,Thank you for your reply. Attached is a screen shot of the topology in CNA.SWIT-01 is connected to:SWIT-02 via g0/2 (fiber)SWIT-04 via g0/1 (fiber to IDF)SWIT-06 via g0/3 (eth)SWIT-07 via f0/31 (looking to move sw07 and vmware to another rack to use g0/4)SWIT-02 is connected to:SWIT-01 via g0/2 (fiber)SWIT-05 via g0/1 (fiber to IDF)SWIT-07 via f0/3 (eth)SWIT-03 is connected to:SWIT-04 via g0/1SWIT-05 via g0/2SWIT-04 is connected to:SWIT-01 via g0/1 (fiber to IDF)SWIT-03 via g0/2SWIT-05 is connected to:SWIT-02 via g0/1SWIT-03 via g0/2SWIT-06 is connected to:SWIT-01 via g0/1 (eth)SWIT-07 is connected to:SWIT-01 via f0/16SWIT-02 via f0/1--Avatar by: dandelion | Tell me, tell me what you're after. I just want to get there faster.actions &middot; 2013-Dec-3 12:16 pm &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix   Ok I'd defiantly look into a switch with multiple fiber linkslike say a WS-C3560E-12D-Sit has 12x 2x ports so IIRC it can do 24x SFP (it could do 12x 10g bu that'd be expensive) and then have a gig link to your vmware setupthen instead of those netgears you'd be able to run fiber the full distance (netgears aren't the solution to long runnes fiber is)you might also have some issues with your QOS but I can till you'll have issues with the topo too.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 12:28 pm &middot;  
+
+    aryobaPremium,MVMjoin:2002-08-22kudos:4 aryoba MVM  reply to Nsane_iceman Looking at the "show version" output, I don't quite understand the consideration of having some switches running various flavor of IOS images; IP Base, IP Services, and Advanced IP Services. Perhaps you can enlighten us?To add what  TomS_  mentioned, perhaps can you also describe what devices connected to which switch ports? This is to make sure that proper device connect to properly-configured switch port.In addition to what  DarkLogix  brought up, is there by any chance professional wiring test conducted to see whether your inside-wall cabling are capable of supporting at least 1 Gbps speed?actions &middot; 2013-Dec-3 12:35 pm &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:31 edit DarkLogix   Just looked around some more and here's a more current switch for what I was suggestingWS-C3750X-24S-E odd that there isn't a 24 spf 3560-Xdepending on cost limits I'd lean to the 3560E I posted about but if cost isn't then the 3750-Xthough the 3750X can have an uplink module giving it ether 2x 10g ports or 4 more gig ports and unlike the 3560E the 3750X is stackableremember with a L2 loop STP will kill one of the links to prevent a network outage so while you have a loop one port somewhere should be down.with what I suggest your network would have better backbone bandwidth which should help. (though that QOS might also be at fault)--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 1:12 pm &middot;   Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman   reply to DarkLogix said by DarkLogix:Ok I'd defiantly look into a switch with multiple fiber linkslike say a WS-C3560E-12D-Sit has 12x 2x ports so IIRC it can do 24x SFP (it could do 12x 10g bu that'd be expensive) and then have a gig link to your vmware setupthen instead of those netgears you'd be able to run fiber the full distance (netgears aren't the solution to long runnes fiber is)you might also have some issues with your QOS but I can till you'll have issues with the topo too.Updated my post on uplinks. There is fiber to the IDFs and either a Netgear was used due to lack of ports (need a 48 and not 24) or in two or three cases a run that was too long from the IDF.WS-C3560E-12D-S might be a bit overkill and corporate is looking at going with Cisco Meraki for the gig upgrade.--Avatar by: dandelion | Tell me, tell me what you're after. I just want to get there faster.actions &middot; 2013-Dec-3 2:06 pm &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix   that 3560E would be the minimum to fix the topo not overkill at all.you'd have 24 SFP ports you have 7 switches if you do etherchannel as I said then that's 14 of 24 in use with only 10 left for expansionjust googled "cisco Meraki""Cisco Meraki is the leader in cloud controlled WiFi,"only one thing to say oh crap I feel bad for you if you're going to have to use a cloud controlled network. (that just sounds like the worst idea ever)--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 2:10 pm &middot;   Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman   reply to aryoba said by aryoba:Looking at the "show version" output, I don't quite understand the consideration of having some switches running various flavor of IOS images; IP Base, IP Services, and Advanced IP Services. Perhaps you can enlighten us?I have no idea, or the details of the differences, but I'll find out.said by aryoba:To add what  TomS_  mentioned, perhaps can you also describe what devices connected to which switch ports? This is to make sure that proper device connect to properly-configured switch port.I'll get a list going and find a command I can use the IP to show the port it's on. Mostly is going to be: printers (~63), desktops (~8), laptops on a dock (~12), Cisco phones (~20) that might also have a laptop plugged into it.said by aryoba:In addition to what  DarkLogix  brought up, is there by any chance professional wiring test conducted to see whether your inside-wall cabling are capable of supporting at least 1 Gbps speed?According to Southwest who made the new runs in the offices and cubes, the cables and jacks can do gig. Out on the warehouse floor with the printers and desktops, it's unlikely to get able to or needed.--Avatar by: dandelion | Tell me, tell me what you're after. I just want to get there faster.actions &middot; 2013-Dec-3 2:17 pm &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix   If you have an active smartnet then I'd just upgrade them all to the same version of IOS (maybe not the same bin file but version number and level, aka IP advanced services)that would solve the varying versions issue.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 2:22 pm &middot;   cramerPremiumjoin:2007-04-10Raleigh, NCkudos:8 cramer   reply to DarkLogix said by DarkLogix:only one thing to say oh crap I feel bad for you if you're going to have to use a cloud controlled network. (that just sounds like the worst idea ever)It's actually not that bad... for remote locations that have no IT staff.  The problem with Meraki is the extreme expense, and the never-ending support cost (read: yearly access fees to be able to use the very overpriced hardware.) But it is very nice looking hardware -- if Apple made network hardware, this would be it.actions &middot; 2013-Dec-3 2:27 pm &middot;   DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix   Who cares what it looks like I want it to preform and if my internet link is down I still want to be able to manage it.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions &middot; 2013-Dec-3 2:29 pm &middot;   cramerPremiumjoin:2007-04-10Raleigh, NCkudos:8 cramer   Indeed.  But for remote locations, if the internet is down, I cannot get there anyway.actions &middot; 2013-Dec-3 3:05 pm &middot;   Nsane_icemanPremiumjoin:2001-02-26North Richland Hills, TX Nsane_iceman   reply to DarkLogix said by DarkLogix:If you have an active smartnet then I'd just upgrade them all to the same version of IOS (maybe not the same bin file but version number and level, aka IP advanced services)that would solve the varying versions issue.Tried going to the Cisco web before, but when trying to do anything it tells me to contact my reseller or something for the S/N provided.--Avatar by: dandelion | Tell me, tell me what you're after. I just want to get there faster.actions &middot; 2013-Dec-3 3:17 pm &middot;   HELLFIREPremiumjoin:2009-11-25kudos:15 HELLFIRE   reply to Nsane_icemanWhat make / model of gear are you using exactly? -- EDIT : never mind, you posted this already.Who designed the topology that you have in your diagram?  Was it done by your company, or Netech?Some immediate thoughts of the switch configs themselves- is the MLS config default config, or configured in relation to some specific need?- multiple interfaces specify "switchport mode access," yet have "switchport trunk allowed."  If they're ACCESS  switches, don't see a need for this off the top of my head.- if switch01 and 06 are "core" switches, why do they have access devices hanging off of them?  Is this your requirement,  or something proposed by Netech?As mentioned by  aryoba  , you may want to look into standardizing your running IOS... and for that matterpossibly the make / model of switches.  One IOS and One type of switch definately makes things easier.I'd also look at redoing your topology.  Best practices for this would be along the lines of the followingif you wanted a 3layer or 2layer (collapsed core) design .  Add redundant links as needed for N+1 redundancy, but my 00000010bits is for sucha "simple" design there should be no physical loops between your core and access layers.      AT&amp;T
+     /    \
+core-A----core-B
+   |        |
+    Access-A,...
+ 
+Some sort of performance monitoring -- MRTG, etc -- and performance testing -- eg. IPERF -- and long term logging -- syslog-- is definately called for as well, if you don't have that set up yet.My 00000010bitsRegardsactions · 2013-Dec-3 3:30 pm · HELLFIREPremiumjoin:2009-11-25kudos:151 edit HELLFIRE reply to Nsane_iceman Another immediate thought... what does "show processor cpu history" "show processor mem" and "show log"on each device show? Anything constantly showing high or pegged CPU? Any indications of high memoryutil or repeating events like link flaps?Some other commands to run on each switch :- "show interface status | exclude full"- "show interface | i 5 min"- "show interface | i error"Just some dumb / simple thing(s) to check here.Regardsactions · 2013-Dec-3 3:35 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:51 edit TomS_ MVM reply to DarkLogix Erm, throwing more hardware at this problem is not likely the way to go about fixing it. You dont even know what the problem is yet, so suggesting "moar hardware" is like trying to hit a bullseye by firing bullets while blind folded.Besides, I dont see what converting this to a star topology is really meant to achieve.Based on the configs, most of the switch ports on switches 3 through 5 would appear to be things like IP phones with PCs, and I guess the occasional AP, so they look like access switches. There are only 3 devices in that ring, and Ive seen and built networks using a LOT more switches in a ring without any performance problems. The OP hasnt given any details about what the utilisation of the ports are on either side of the ring, so we dont know whether there are performance problems to even solve at those points in the network to begin with.The OP also hasnt mentioned the distances involved between switches, or the media used. Is it multi-mode fibre? Is that fibre laid in a star topology, or ring topology? What are the distances between patch panels/IDFs in the field? The distances might be too great to even form a star topology out of multi-mode by glassing through at each IDF around the ring.There are so many things unknown about this network that without asking the OP a million questions, we're going to spend a long time trying to solve this guys problem. Time that could have been used to get in a professional to sort it out.I dont say this because I have some grudge against giving away free advice or what ever, but I really dont think this is the right place to get this problem solved. Someone needs to go on-site and do proper testing and troubleshooting.actions · 2013-Dec-3 5:07 pm · tubbynetreminds me of the danse russePremium,MVMjoin:2008-01-16Chandler, AZkudos:1 tubbynet MVM ordinarily TomS_ , i'd agree with you. however -- i make decent coin proposing hardware solutions to design problems. i'm also a consultant -- so i must be smarter than anyone in the room -- otherwise i wouldn't be there.;-Pq.--"...if I in my north room dance naked, grotesquely before my mirror waving my shirt round my head and singing softly to myself..."actions · 2013-Dec-3 10:51 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:5 TomS_ MVM I call that a conflict of interest. :-Pactions · 2013-Dec-4 4:01 am · aryobaPremium,MVMjoin:2002-08-22kudos:4 aryoba MVM reply to tubbynet I recalled of what my manager in one of my previous workplace tired of listening of their Cisco reseller's new product selling attempts as priority instead of offering technical support or fix to existing product the customer already had I think these customer needs of having actual support of existing products customers already have drive certain Cisco solution company not to sell products as priority, though such company is usually rare to find or is small in size actions · 2013-Dec-4 9:45 am · tubbynetreminds me of the danse russePremium,MVMjoin:2008-01-16Chandler, AZkudos:1 tubbynet MVM reply to TomS_ said by TomS_:I call that a conflict of interest. :-Pthere's no conflict. my wallet size is my only interest ;-Pq.--"...if I in my north room dance naked, grotesquely before my mirror waving my shirt round my head and singing softly to myself..."actions · 2013-Dec-4 11:32 am · tubbynetreminds me of the danse russePremium,MVMjoin:2008-01-16Chandler, AZkudos:1 tubbynet MVM reply to aryoba said by aryoba:I recalled of what my manager in one of my previous workplace tired of listening of their Cisco reseller's new product selling attempts as priority instead of offering technical support or fix to existing product the customer already had aryoba , you know as well as anyone that i constantly troll these threads providing the most over the top or self-centered answer possible. turn on your bullshit filter when i type something absurd and you'll get where i come from.that being said -- there are a large number of times when additional hardware spend is warranted. i can't help when a customer jumps from partner to partner and gets sold a bag of shit. if its wrong from a technical perspective -- its wrong and additional hardware is warranted. if a customer is cheap and wants to make a bag of shit into a network, its going to run like a bag of shit. we can try to polish the turd, but its still a turd.part of being a good architect and engineer is knowing where compromises can be made and how to strategically forecast and plan a customer network and spend cycle to ensure that they meet the overall business and technology goals. this is where i get brought in. i try to be sensitive, especially in breakthrough or difficult accounts -- but i play it straight. shit is shit -- and i can't make it much better.q.--"...if I in my north room dance naked, grotesquely before my mirror waving my shirt round my head and singing softly to myself..."actions · 2013-Dec-4 11:41 am · aryobaPremium,MVMjoin:2002-08-22kudos:41 edit aryoba MVM reply to tubbynet said by tubbynet:said by TomS_:I call that a conflict of interest. :-Pthere's no conflict. my wallet size is my only interest ;-Pq.When you work for Cisco reseller company, you are constantly under pressure from Cisco to keep selling more and more Cisco products. I had been working for one such reseller company, so I have my share of experience seeing questionable implementations and practices just to make a quick buck actions · 2013-Dec-4 12:00 pm · aryobaPremium,MVMjoin:2002-08-22kudos:4 aryoba MVM reply to tubbynet One occasion was that there was rich customer, willing to spend $$$$ as necessary. The customer was famous (or rather infamous) of jumping from one consultant to another. The problem was that the customer did not seem to understand what exactly they looked for and never provided clear requirement. Even when you did get a requirement and you provided your best suggestions in return, the customer did not take the suggestion due to the fact that you were just consultant and not an employee.It was definitely unique customer attitude to work with actions · 2013-Dec-4 12:08 pm · TomS_Git-r-donePremium,MVMjoin:2002-07-19London, UKkudos:51 recommendation TomS_ MVM reply to tubbynet Yes but.... When you .... ah forget it. actions · 2013-Dec-4 12:24 pm · DarkLogixTexan and ProudPremiumjoin:2008-10-23Baytown, TXkudos:3 DarkLogix reply to cramer said by cramer:Indeed. But for remote locations, if the internet is down, I cannot get there anyway.That's when you use the intranet. or the backup intranet, or the serial port server that's connected to cell service.--semper idem1KTzRMxN1a2ATrtAAvbmEnMBoY3E2kHtyvactions · 2013-Dec-4 1:08 pm · Forums → Equipment Support → Hardware By Brand → Cisco« [Config] VPN Cisco 2620xm router cannot see local lan • [HELP] Will this traffic be NATted? »page: 1 · 2 · 3 · 4 · 5 · 6 · nextMost commented news this week[105] Verizon: Our Review Shows No Congestion; Netflix to Blame[95] Wall Street Whines About New 10 Mbps Min. Broadband Definition[67] Aereo's Plan B: Argue It's a Bonafide Cable Company[58] Sprint Testing New Lower Cost Data Plans[52] Alcatel Lucent Sets New 10 Gbps Copper Speed Record[50] Comcast Latest to Test Super Ultra Mega DVR[49] Groups, Leaders Want Verizon Investigated for Network Neglect[49] FCC Shot Clock on Comcast Merger Begins[42] Dish Internet TV to Target Cord Cutters and 'Cord Haters'[41] Google Fiber Slightly Behind Schedule in AustinHot Forum TopicsProblems again with Rcable [Start Communications]ABP being sued for blocking ads. [Security][rCable] CBC FIFA football stream keeps choking [Start Communications][Updated] Flash Player 14.0.0.145 [Software]Microsoft Security Bulletins for July 8 2014 [Security]Theoretical question about MD5 sum, Not about how secure it's not. [Security]Been waiting 3 mths for U-Verse installation...what are our options? [AT&T U-verse][Electrical] Laser printer and A/C on same circuit [Home Improvement]pir motion detector question [Home Improvement][CFL] Brighthouse Echo Whole House Network Solution [Bright House Networks]© DSLReports · Est.1999 · Saturday, 12-Jul 15:57:04 · feedback · terms · Mobile mode
+

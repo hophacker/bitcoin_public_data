@@ -1,0 +1,495 @@
+http://utf8everywhere.org/
+HTTP/1.1 200 OK
+Server: nginx/1.6.0
+Date: Tue, 22 Jul 2014 19:20:45 GMT
+Content-Type: text/html
+Connection: close
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>UTF-8 Everywhere</title>
+	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="data/style.css"/>
+</head>
+<body>
+<div class="topDiv">
+<h1><a class="aId" href="#">UTF-8 Everywhere</a></h1>
+<p class="subtitle">Manifesto</p>
+
+<h2 id="intro"><a class="aId" href="#intro">Purpose of this document</a></h2>
+
+<p>To promote usage and support of the UTF-8 encoding, to convince that this should be the default choice of encoding for storing text strings in memory or on disk, for communication and all other uses. We believe that all other encodings of Unicode (or text, in general) belong to rare edge-cases of optimization and should be avoided by mainstream users.</p>
+
+<p style="font-size: medium; float: right; width: 20em; border: 1px solid silver; margin: 0em 0em 1em 1em; padding: 1em; background-color: white;">This document contains special characters. Without proper rendering support, you may see question marks, boxes, or other symbols.</p>
+
+<p>In particular, we believe that the very popular UTF-16 encoding (mistakenly used as a synonym to ‘widechar’ and ‘Unicode’ in the Windows world) has no place in library APIs (except for specialized libraries, which deal with text).</p>
+
+<p>This document recommends choosing UTF-8 as string storage in Windows applications, despite the fact that this standard is less popular there, due to historical reasons and the lack of native UTF-8 support by the API. Yet, we believe that, even on this platform, the following arguments outweigh the lack of native support. Also, we recommend forgetting forever what ‘ANSI codepages’ are and what they were used for. It is in the customer’s bill of rights to mix any number of languages in any text string.</p>
+
+<p>We recommend avoiding C++ application code that depends on <code>UNICODE</code> or <code>_UNICODE</code> defines. This includes <code>TCHAR</code>/<code>LPTSTR</code> types on Windows and APIs defined as macros, such as <code>CreateWindow</code> and <code>_tcslen</code>. We also recommend alternative ways to reach the goals of these APIs.</p>
+
+<p>We also believe that, if an application is not supposed to specialize in text, the infrastructure must make it possible for the program to be unaware of encoding issues. For instance, a file copy utility should not be written differently to support non-English file names. <a href="http://www.joelonsoftware.com/articles/Unicode.html">Joel’s great article on Unicode</a> explains the encodings well for the beginners, but it lacks the most important part: how a programmer should proceed, if she does not care <a href="http://en.wikipedia.org/wiki/Opaque_data_type">what is inside the string</a>.</p>
+
+
+<h2 id="background"><a class="aId" href="#background">Background</a></h2>
+
+<p>In 1988, Joseph D. Becker published the <a href="http://unicode.org/history/unicode88.pdf">first Unicode draft proposal</a>. At the basis of his design was the naïve assumption that 16 bits per character would suffice. In 1991, the first version of the Unicode standard was published, with code points limited to 16 bits. In the following years many systems have added support for Unicode and switched to the UCS-2 encoding. It was especially attractive for new technologies, like Qt framework (1992), Windows NT 3.1 (1993) and Java (1995).</p>
+
+<p>However, it was soon discovered that 16 bits per character will not do for Unicode. In 1996, the UTF-16 encoding was created so existing systems would be able to work with non-16-bit characters. This effectively nullified the rationale behind choosing 16-bit encoding in the first place, namely being a fixed-width encoding. Currently Unicode spans over 109449 characters, about 74500 of them being CJK ideographs.</p>
+
+<div style="text-align:center">
+	<img src="data/nagoya-museum.jpg" style="text-align: center; max-width: 100%; width: 480px;" alt="A little child playing an encodings game in front of a large poster about encodings."/>
+	<div style="font-style: italic; margin:1ex;">Nagoya City Science Museum. Photo by Vadim Zlotnik.</div>
+</div>
+
+<p>Microsoft has, ever since, mistakenly used ‘Unicode’ and ‘widechar’ as synonyms for both ‘UCS-2’ and ‘UTF-16’. Furthermore, since UTF-8 cannot be set as the encoding for narrow string WinAPI, one must compile her code with <code>UNICODE</code>. Windows C++ programmers are educated that Unicode must be done with ‘widechars’. As a result of this mess, they are now among the most confused ones about what is the right thing to do about text.</p>
+
+<p>At the same time, in the Linux and the Web worlds, there is a silent agreement that UTF-8 is the most correct encoding for Unicode on the planet Earth. Even though it gives a strong preference to English and therefore to computer languages (such as C++, HTML, XML, etc) over any other text, it is seldom less efficient than UTF-16 for commonly used character sets.</p>
+
+<h2 id="facts"><a class="aId" href="#facts">The Facts</a></h2>
+
+<ul>
+	<li>In both UTF-8 and UTF-16 encodings, code points may take up to 4 bytes (contrary to what <a href="http://www.joelonsoftware.com/articles/Unicode.html">Joel says</a>).</li>
+
+	<li>UTF-8 is endianness independent. UTF-16 comes in two flavors: UTF-16LE and UTF-16BE (for different byte orders, respectively). Here we name them collectively as UTF-16.</li>
+
+	<li>Widechar is 2 bytes in size on some platforms, 4 on others.</li>
+
+	<li>UTF-8 and UTF-32 result the same order when sorted lexicographically. UTF-16 does not.</li>
+
+	<li>UTF-8 favors efficiency for English letters and other ASCII characters (one byte per character) while UTF-16 favors several Asian character sets (2 bytes instead of 3 in UTF-8). This is what made UTF-8 the favorite choice in the Web world, where English HTML/XML tags are intermixed with any-language text. Cyrillic, Hebrew and several other popular Unicode blocks are 2 bytes both in UTF-16 and UTF-8.</li>
+
+	<li>In the Linux world, narrow strings are considered UTF-8 by default almost everywhere. This way, for example, a file copy utility would not need to care about encodings. Once tested on ASCII strings for file name arguments, it would certainly work correctly for file names in any language, as arguments are treated as <a href="http://en.wikipedia.org/wiki/Opaque_data_type">cookies</a>. The code of the file copy utility would not need to change at all to support foreign languages. <code>fopen()</code> would accept Unicode seamlessly, and so would <code>argv</code>.</li>
+
+	<li>On Microsoft Windows, however, making a file copy utility that can accept file names in a mix of several different Unicode blocks requires advanced trickery. First, the application must be compiled as Unicode-aware. In this case, it cannot have <code>main()</code> function with standard-C parameters. It will then accept UTF-16 encoded <code>argv</code>. To convert a Windows program written with narrow text in mind to support Unicode, one has to refactor deep and to take care of each and every string variable.</li>
+
+	<li>On Windows, the <code>HKLM\SYSTEM\CurrentControlSet\Control\Nls\CodePage\ACP</code> registry key enables receiving non-ASCII characters, but only from a single ANSI codepage. An unimplemented value of 65001 would enable doing the above, on Windows.</li>
+
+	<li>
+		The standard library shipped with MSVC is poorly implemented. It forwards narrow-string parameters directly to the OS ANSI API. There is no way to override this. Changing <code>std::locale</code> does not work. It’s impossible to open a file with a Unicode name on MSVC using standard features of C++. The standard way to open a file is:
+		<pre><code>std::fstream fout(&quot;abc.txt&quot;);</code></pre>
+		The proper way to get around is by using Microsoft’s own hack that accepts wide-string parameter, which is a non-standard extension.
+	</li>
+
+	<li>There is no way to return Unicode from <code>std::exception::what()</code> other than using UTF-8.</li>
+
+	<li>UTF-16 is often misused as a fixed-width encoding, even by Windows native programs themselves: in plain Windows edit control (until Vista), it takes two backspaces to delete a character which takes 4 bytes in UTF-16. On Windows 7, the console displays that character as two invalid characters, regardless of the font used.</li>
+
+	<li>Many third-party libraries for Windows do not support Unicode: they accept narrow string parameters and pass them to the ANSI API. Sometimes, even for file names. In the general case, it is impossible to work around this, as a string may not be representable completely in any ANSI code page (if it contains characters from a mix of Unicode blocks). What is normally done on Windows for file names is getting an 8.3 path to the file (if it already exists) and feeding it into such a library. It is not possible if the library is supposed to create a non-existing file. It is not possible if the path is very long and the 8.3 form is longer than <code>MAX_PATH</code>. It is not possible if short-name generation is disabled in OS settings.</li>
+
+	<li>UTF-16 is very popular today, even outside the Windows world. Qt, Java, C#, Python, the ICU—they all use UTF-16 for internal string representation.</li>
+</ul>
+
+
+<h2 id="conclusions"><a class="aId" href="#conclusions">Our Conclusions</a></h2>
+
+<p>UTF-16 is the worst of both worlds—variable length and too wide. It exists for historical reasons, adds a lot of confusion and will hopefully die out.</p>
+
+<p>Portability, cross-platform interoperability and simplicity are more important than interoperability with existing platform APIs. So, the best approach is to use UTF-8 narrow strings everywhere and convert them back and forth on Windows before calling APIs that accept strings. <a href="#faq.cvt.perf">Performance is seldom an issue</a> of any relevance when dealing with string-accepting system APIs (e.g. UI code and file system APIs), but there is a huge advantage to using the same encoding everywhere, and <a href="#faq.liberal">we see no sufficient reason to do otherwise</a>.</p>
+
+<p>Speaking of performance, machines often use strings to communicate (e.g. HTTP headers, XML). Many see this as a mistake, but regardless of that it is nearly always done in English, giving UTF-8 further advantage there. Using different encodings for different kinds of strings significantly increases complexity and consequent bugs.</p>
+
+<p>In particular, we believe that adding <code>wchar_t</code> to C++ was a mistake, and so are the Unicode additions to C++11. What must be demanded from the implementations, though, is that the <em>basic execution character set</em> would be capable of storing any Unicode data. Then, every <code>std::string</code> or <code>char*</code> parameter would be Unicode-compatible. ‘If this accepts text, it should be Unicode compatible’—and with UTF-8, it is also easy to do.</p>
+
+<p><a href="http://www.boost.org/doc/libs/1_49_0/libs/locale/doc/html/rationale.html">The standard facets have many design flaws</a>. This includes <code>std::numpunct</code>, <code>std::moneypunct</code> and <code>std::ctype</code> not supporting variable-length encoded characters (non-ASCII UTF-8 and non-BMP UTF-16). They must be fixed:</p>
+
+<ul>
+	<li><code>decimal_point()</code> and <code>thousands_sep()</code> should return a string rather than a single code unit. (By the way C locales do support this, albeit not customizable.)</li>
+
+	<li><code>toupper()</code> and <code>tolower()</code> shall not be phrased in terms of code units, as it does not work in Unicode. For example, the German ß must be converted to SS and ﬄ to FFL.</li>
+</ul>
+
+
+<h2 id="how"><a class="aId" href="#how">How to do text on Windows</a></h2>
+
+<p>The following is what we recommend to everyone else for compile-time checked Unicode correctness, ease of use and better multi-platformness of the code. This substantially differs from what is usually recommended as the proper way of using Unicode on Windows. Yet, an in-depth research of these recommendations resulted in the same conclusion. So here it goes:</p>
+
+<ul>
+	<li>Do not use <code>wchar_t</code> or <code>std::wstring</code> in any place other than adjacent point to APIs accepting UTF-16.</li>
+
+	<li>Do not use <code>_T(&quot;&quot;)</code> or <code>L&quot;&quot;</code> literals in any place other than parameters to APIs accepting UTF-16.</li>
+
+	<li>Do not use types, functions, or their derivatives that are sensitive to the <code>UNICODE</code> constant, such as <code>LPTSTR</code> or <code>CreateWindow()</code>.</li>
+
+	<li>Yet, <code>UNICODE</code> and <code>_UNICODE</code> are always defined, to avoid passing narrow strings to WinAPI getting silently compiled.</li>
+
+	<li><code>std::strings</code> and <code>char*</code>, anywhere in the program, are considered UTF-8 (if not said otherwise).</li>
+
+	<li>
+		Only use Win32 functions that accept widechars (<code>LPWSTR</code>), never those which accept <code>LPTSTR</code> or <code>LPSTR</code>. Pass parameters this way:
+		<pre><code>::SetWindowTextW(widen(someStdString or &quot;string litteral&quot;).c_str())</code></pre>
+		(The policy uses conversion functions described below.)
+	</li>
+
+	<li>
+		With MFC strings:
+		<pre><code>CString someoneElse; // something that arrived from MFC.
+
+// Converted as soon as possible, before passing any further away from the API call:
+std::string s = str(boost::format(&quot;Hello %s\n&quot;) % narrow(someoneElse));
+AfxMessageBox(widen(s).c_str(), L&quot;Error&quot;, MB_OK);</code></pre>
+	</li>
+</ul>
+
+
+<h3 id="how.files"><a class="aId" href="#how.files">Working with files, filenames and fstreams on Windows</a></h3>
+
+<ul>
+	<li>Never produce text output files with non-UTF-8 content</li>
+
+	<li>Using <code>fopen()</code> should anyway be avoided for <a href="http://en.wikipedia.org/wiki/RAII">RAII/OOD</a> reasons. However, if necessary, use <code>_wfopen()</code> and WinAPI conventions as described above.</li>
+
+	<li>Never pass <code>std::string</code> or <code>const char*</code> filename arguments to the <code>fstream</code> family. MSVC CRT does not support UTF-8 arguments, but it has a non-standard extension which should be used as follows:</li>
+
+	<li>
+		Convert <code>std::string</code> arguments to <code>std::wstring</code> with <code>widen</code>:
+		<pre><code>std::ifstream ifs(widen(&quot;hello&quot;), std::ios_base::binary);</code></pre>
+		We will have to manually remove the conversion, when MSVC’s attitude to <code>fstream</code> changes.
+	</li>
+
+	<li>This code is not multi-platform and may have to be changed manually in the future.</li>
+
+	<li>Alternatively use a set of wrappers that hide the conversions.</li>
+</ul>
+
+
+<h3 id="how.cvt"><a class="aId" href="#how.cvt">Conversion functions</a></h3>
+
+<p>This guideline uses the conversion functions from the <a href="http://cppcms.com/files/nowide/html/">Boost.Nowide library</a> (it is not yet a part of boost):</p>
+
+<pre><code>std::string narrow(const wchar_t *s);
+std::wstring widen(const char *s);
+std::string narrow(const std::wstring &amp;s);
+std::wstring widen(const std::string &amp;s);</code></pre>
+
+<p>The library also provides a set of wrappers for commonly used standard C and C++ library functions that deal with files, as well as means of reading an writing UTF-8 through iostreams.</p>
+
+<p>These functions and wrappers are easy to implement using Windows’ <code>MultiByteToWideChar</code> and <code>WideCharToMultiByte</code> functions. Any other (possibly faster) conversion routines can be used.</p>
+
+
+<h2 id="faq"><a class="aId" href="#faq">FAQ</a></h2>
+
+<ol class="faqList">
+	<li>
+		<h3 id="faq.linuxer"><a class="aId" href="#faq.linuxer">Q: Are you a linuxer? Is this a concealed religious fight against Windows?</a></h3>
+		<p>A: No, I grew up on Windows, and I am a Windows fan. I believe that they did a wrong choice in the text domain, because they did it earlier than others.—<em>Pavel</em></p>
+	</li>
+
+	<li>
+		<h3 id="faq.anglophile"><a id="faq.angle.saxon"></a><a class="aId" href="#faq.anglophile">Q: Are you an Anglophile? Do you secretly think English alphabet and culture are superior to any other?</a></h3>
+		<p>A: No, and my country is non-ASCII speaking. I do not think that using a format which encodes ASCII characters in single byte is Anglo-centrism, or has anything to do with human interaction. Even though one can argue that source codes of programs, web pages and XML files, OS file names and other computer-to-computer text interfaces should never have existed, as long as they do exist, text is not only for human readers.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.why.care"><a class="aId" href="#faq.why.care">Q: Why do you guys care? I program in C# and/or Java and I don’t need to care about encodings at all.</a></h3>
+
+		<p>A: Not true. Both C# and Java offer a 16 bit <code>char</code> type, which is less than a Unicode character, congratulations. The .NET indexer <code>str[i]</code> works in units of the internal representation, hence a leaky abstraction once again. Substring methods will happily return an invalid string, cutting a non-BMP character in parts.</p>
+		
+		<p>Furthermore, you have to mind encodings when you are writing your text to files on disk, network communications, external devices, or any place for other program to read from. Please be kind to use <code>System.Text.Encoding.UTF8</code> (.NET) in these cases, never <code>Encoding.ASCII</code>, UTF-16 or cellphone PDU, regardless of the assumptions about the contents.</p>
+
+		<p>Web frameworks like ASP.NET do suffer from the poor choice of internal string representation in the underlying framework: the expected string output (and input) of a web application is nearly always UTF-8, resulting in significant conversion overhead in high-throughput web applications and web services.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.liberal"><a class="aId" href="#faq.liberal">Q: Why not just let any programmer use her favorite encoding internally, as long as she knows how to use it?</a></h3>
+		<p>A: We have nothing against correct using of any encoding. However, it becomes a problem when the same type, such as <code>std::string</code>, means different things in different contexts. While it is ‘ANSI codepage’ for some, for others, it means ‘this code is broken and does not support non-English text’. In our programs, it means Unicode-aware UTF-8 string. This diversity is a source of many bugs and much misery: this additional complexity is something that world does not really need, and the result is much Unicode-broken software, industry-wide.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.almostfw"><a class="aId" href="#faq.almostfw">Q: UTF-16 characters that take more than two bytes are extremely rare in the real world. This practically makes UTF-16 a fixed-width encoding, giving it a whole bunch of advantages. Can’t we just neglect these characters?</a></h3>
+		<p>A: Are you serious about not supporting all of Unicode in your software design? And, if you are going to support it anyway, how does the fact that non-BMP characters are rare practically change anything, except for making software testing harder? What does matter, however, is that text manipulations are relatively rare in real applications—compared to just passing strings around as-is. This means the "almost fixed width" has little performance advantage (see Performance), while having shorter strings may be significant.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.def.unicode"><a class="aId" href="#faq.def.unicode">Q: Why do you turn on the <code>UNICODE</code> define, if you do not intend to use Windows’ <code>LPTSTR</code>/<code>TCHAR</code>/etc macros?</a></h3>
+		<p>A: This is a precaution against plugging a UTF-8 char* string into ANSI-expecting functions of Windows API. We want it to generate a compiler error. It is the same kind of a hard-to-find bug as passing an <code>argv[]</code> string to <code>fopen()</code> on Windows: it assumes that the user will never pass non-current-codepage filenames. You will be unlikely to find this kind of a bug by manual testing, unless your testers are trained to supply Chinese file names occasionally, and yet it is a broken program logic. Thanks to <code>UNICODE</code> define, you get an error for that.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.naive"><a class="aId" href="#faq.naive">Q: Isn’t it quite naïve to think that Microsoft will stop using widechars one day?</a></h3>
+		<p>A: Let’s first see when they start supporting <code>CP_UTF8</code> as a valid locale. This should not be very hard to do. Then, we see no reason why anybody would continue using the widechar APIs. Also, adding support for <code>CP_UTF8</code> would ‘unbreak’ some of existing unicode-broken programs and libraries.</p>
+
+		<p>Some say that adding <code>CP_UTF8</code> support would <em>break</em> existing applications that use the ANSI API, and that this was supposedly the reason why Microsoft had to resort to creating the wide string API. This is not true. Even some popular ANSI encodings are variable length (Shift JIS, for example), so no correct code would become broken. The reason Microsoft chose UCS-2 is purely historical. Back then UTF-8 hasn’t yet existed, Unicode was believed to be ‘just a wider ASCII’, and it was cosidered important to use a fixed-width encoding.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.glossary"><a class="aId" href="#faq.glossary">Q: What are characters, code points, code units and grapheme clusters?</a></h3>
+
+		<p>A: Here is an excerpt of the definitions according to the Unicode Standard with our comments. Refer to the relevant sections of the standard for more detailed description.</p>
+
+		<dl>
+			<dt>Code point</dt>
+			<dd>Any numerical value in the Unicode codespace.<sup>[§3.4, D10]</sup> For instance: U+3243F. </dd>
+
+			<dt>Code unit</dt>
+			<dd>The minimal bit combination that can represent a unit of encoded text.<sup>[§3.9, D77]</sup> For example, UTF-8, UTF-16 and UTF-32 use 8-bit, 16-bit and 32-bit code units respectively. The above code point will be encoded as ‘<code>f0 b2 90 bf</code>’ in UTF-8, ‘<code>d889 dc3f</code>’ in UTF-16 and ‘<code>0003243f</code>’ in UTF-32. Note that these are just sequences of <em>groups of bits</em>; how they are stored further depends on the endianness of the particular encoding. So, when storing the above UTF-16 code units on an octet-oriented media, they will be converted to ‘<code>d8 89 dc 3f</code>’ for UTF-16BE and to ‘<code>89 d8 3f dc</code>’ for UTF-16LE.</dd>
+
+			<dt>Abstract character</dt>
+			<dd>
+				<p>A unit of information used for the organization, control, or representation of textual data.<sup>[§3.4, D7]</sup> The standard further says in §3.1:</p>
+
+				<blockquote><p>For the Unicode Standard, [...] the repertoire is inherently open. Because Unicode is a universal encoding, any abstract character that could ever be encoded is a potential candidate to be encoded, regardless of whether the character is currently known.</p></blockquote>
+
+				<p>The definition is indeed abstract. Whatever one can think of as a character—<em>is</em> an abstract character. For example, <img src="data/glyph-ungwe.png" style="vertical-align: -1ex" alt=""/> <em>tengwar letter ungwe</em> is an abstract character, although it is not yet representable in Unicode.</p>
+			</dd>
+
+			<dt>Encoded character</dt>
+			<dt>Coded character</dt>
+			<dd>
+				<p>A mapping between a code point and an abstract character.<sup>[§3.4, D11]</sup> For example, U+1F428 is a coded character which represents the abstract character 🐨 <span class="uniname">koala</span>.</p>
+
+				<p>This mapping is neither total, nor injective, nor surjective:</p>
+
+				<ul>
+					<li>Surragates, noncharacters and unassigned code points do not correspond to abstract characters at all.</li>
+					<li>Some abstract characters can be encoded by different code points; U+03A9 <span class="uniname">greek capital letter omega</span> and U+2126 <span class="uniname">ohm sign</span> both correspond to the same abstract character ‘Ω’, and <em>must be treated identically</em>.</li>
+					<li>Some abstract characters cannot be encoded by a single code point. These are represented by <em>sequences</em> of coded characters. For example, the only way to represent the abstract character ю́ <em>cyrillic small letter yu with acute</em> is by the sequence U+044E <span class="uniname">cyrillic small letter yu</span> followed by U+0301 <span class="uniname">combining acute accent</span>.</li>
+				</ul>
+				
+				<p>Moreover, for some abstract characters, there exist representations using multiple code points, <em>in addition</em> to the single coded character form. The abstract character ǵ can be coded by the single code point U+01F5 <span class="uniname">latin small letter g with acute</span>, or by the sequence &lt;U+0067 <span class="uniname">latin small letter g</span>, U+0301 <span class="uniname">combining acute accent</span>&gt;.</p>
+			</dd>
+
+			<dt>User-perceived character</dt>
+			<dd>Whatever the end user thinks of as a character. This notion is language dependent. For instance, ‘ch’ is two letters in English and Latin, but considered to be one letter in Czech and Slovak.</dd>
+
+			<dt>Grapheme cluster</dt>
+			<dd>A sequence of coded characters that ‘should be kept together’.<sup>[§2.11]</sup> Grapheme clusters approximate the notion of user-perceived characters in a language independent way. They are used for, e.g., cursor movement and selection.</dd>
+
+			<dt>Character</dt>
+			<dd>
+				<p>May mean any of the above. The Unicode Standard uses it as a synonym for <em>coded character</em>.<sup>[§3.4]</sup></p>
+
+				<p>When some programming language or library documentation says ‘character’, it almost always means a code unit. When an end user is asked about the number of characters in a string, she will count the user-perceived characters. When a programmer tries to count the number of characters, she will count the number of code units, code points, or grapheme clusters, according to the level of her expertise.  All this is a source of confusion, as people conclude that, if for the length of the string ‘🐨’ the library returns a value other than one, then it ‘does not support Unicode’.</p>
+			</dd>
+		</dl>
+	</li>
+
+	<li>
+		<h3 id="faq.asians"><a class="aId" href="#faq.asians">Q: Why would the Asians give up on UTF-16 encoding, which saves them 50% the memory per character?</a></h3>
+
+		<p>A: It does so only in artificially constructed examples containing only characters in the U+0800 to U+FFFF range. However, computer-to-computer text interfaces dominate any other. This includes XML, HTTP, filesystem paths and configuration files—they all use almost exclusively ASCII characters, and in fact UTF-8 is used just as often in those countries.</p>
+
+		<p>For a dedicated storage of Chinese books, UTF-16 may still be used as a fair optimization. As soon as the text is retrieved from such storage, it should be converted to the standard compatible with the rest of the world. Anyway, if storage is at premium, a lossless compression will be used. In such cases, UTF-8 and UTF-16 will take roughly the same space. Furthermore, ‘in the said languages, a glyph conveys more information than a [L]atin character so it is justified for it to take more space.’ (Tronic, <a href="http://programmers.stackexchange.com/a/102211/34925">UTF-16 harmful</a>).</p>
+
+		<p>Here are the results of a simple experiment. The space used by the HTML source of some web page (Japan article, retrieved from Japanese Wikipedia on 2012–01–01) is shown in the first column. The second column shows the results for text with markup removed, that is ‘select all, copy, paste into plain text file’.</p>
+
+		<table class="basicTable" style="width:100%">
+			<tbody>
+				<tr><th></th><th>HTML Source (Δ UTF-8)</th><th>Dense text (Δ UTF-8)</th></tr>
+				<tr><th>UTF-8</th><td>767 KB (0%)</td><td>222 KB (0%)</td></tr>
+				<tr><th>UTF-16</th><td>1 186 KB (+55%)</td><td>176 KB (−21%)</td></tr>
+				<tr><th>UTF-8 zipped</th><td>179 KB (−77%)</td><td>83 KB (−63%)</td></tr>
+				<tr><th>UTF-16LE zipped</th><td>192 KB (−75%)</td><td>76 KB (−66%)</td></tr>
+				<tr><th>UTF-16BE zipped</th><td>194 KB (−75%)</td><td>77 KB (−65%)</td></tr>
+			</tbody>
+		</table>
+
+		<p>As can be seen, UTF-16 takes about 50% more space than UTF-8 on real data, it only saves 20% for dense Asian text, and hardly competes with general purpose compression algorithms.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.boms"><a class="aId" href="#faq.boms">Q: What do you think about BOMs?</a></h3>
+		<p>A: They are another reason not to use UTF-16. UTF-8 has a BOM too, even though byte order is not an issue in this encoding. This is to manifest that this is a UTF-8 stream. If UTF-8 remains the only popular encoding (as it already is in the internet world), the BOM becomes redundant. In practice, many UTF-8 text files omit BOMs today. The Unicode Standard does not recommend using BOMs.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.crlf"><a class="aId" href="#faq.crlf">Q: What do you think about line endings?</a></h3>
+		<p>A: All files shall be read and written in binary mode since this guarantees interoperability—a program will always give the same output on any system. Since the C and C++ standards use <code>\n</code> as in-memory line endings, this will cause all files to be written in the POSIX convention. It may cause trouble when the file is opened in Notepad on Windows; however, any decent text viewer understands such line endings.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.uni.perf"><a class="aId" href="#faq.uni.perf">Q: But what about performance of text processing algorithms, byte alignment, etc?</a></h3>
+		<p>A: Is it really better with UTF-16? Maybe so. ICU uses UTF-16 for historical reasons, thus it is quite hard to measure. However, most of the times strings are treated as cookies, not sorted or reversed every second use. Smaller encoding is then favorable for performance.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.utf8.fossil"><a class="aId" href="#faq.utf8.fossil">Q: Isn’t UTF-8 merely an attempt to be compatible with ASCII? Why keep this old fossil?</a></h3>
+		<p>A: Maybe it was. Today, it is a better and more popular encoding of Unicode than any other.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.utf16.fault"><a class="aId" href="#faq.utf16.fault">Q: Is it really a fault of UTF-16 that people misuse it, assuming that it is 16 bits per character?</a></h3>
+		<p>A: Not really. But yes, safety is an important feature of every design.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.confuse"><a class="aId" href="#faq.confuse">Q: If <code>std::string</code> means UTF-8, wouldn’t that get confused with code that stores plain text in <code>std::string</code>s?</a></h3>
+		<p>A: There is no such thing as plain text. There is no reason for storing codepage-ANSI or ASCII-only text in a class named ‘string’.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.cvt.perf"><a class="aId" href="#faq.cvt.perf">Q: Won’t the conversions between UTF-8 and UTF-16 when passing strings to Windows slow down my application?</a></h3>
+
+		<p>A: First, you will do <em>some</em> conversion either way. It’s either when calling the system, or when interacting with the rest of the world. Even if your interaction with the system is more frequent in your application, here is a little experiment.</p>
+
+		<p>A typical use of the OS is to open files. This function executes in (184 ± 3)μs on my machine:</p>
+
+		<pre><code>void f(const wchar_t* name)
+{
+    HANDLE f = CreateFile(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+    DWORD written;
+    WriteFile(f, &quot;Hello world!\n&quot;, 13, &amp;written, 0);
+    CloseHandle(f);
+}</code></pre>
+
+		<p>While this runs in (186 ± 0.7)μs:</p>
+
+		<pre><code>void f(const char* name)
+{
+    HANDLE f = CreateFile(widen(name).c_str(), GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+    DWORD written;
+    WriteFile(f, &quot;Hello world!\n&quot;, 13, &amp;written, 0);
+    CloseHandle(f);
+}</code></pre>
+
+		<p>(Run with <code>name=&quot;D:\\a\\test\\subdir\\subsubdir\\this is the sub dir\\a.txt&quot;</code> in both cases. It was averaged over 5 runs. We used an optimized <code>widen</code> that relies on <code>std::string</code> contiguous storage guarantee given by C++11.)</p>
+
+		<p>This is just (1 ± 2)% overhead. Moreover, <code>MultiByteToWideChar</code> is almost surely suboptimal. Better UTF-8↔UTF-16 conversion functions exist.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.literal"><a class="aId" href="#faq.literal">Q: How do I write UTF-8 string literal in my C++ code?</a></h3>
+
+		<p>A: If you internationalize your software then all non-ASCII strings will be loaded from an external translation database, so it is not a problem.</p>
+
+		<p>If you still want to embed a special character you can do it as follows. In C++11 you can do it as:</p>
+
+		<p class="display"><code>u8&quot;∃y ∀x ¬(x ≺ y)&quot;</code></p>
+
+		<p>With compilers that do not support ‘u8’ you can hard-code the UTF-8 code units as follows:</p>
+
+		<p class="display"><code>&quot;\xE2\x88\x83y \xE2\x88\x80x \xC2\xAC(x \xE2\x89\xBA y)&quot;</code></p>
+
+		<p>However the most straightforward way is to just write the string as-is and save the source file encoded in UTF-8:</p>
+
+		<p class="display"><code>&quot;∃y ∀x ¬(x ≺ y)&quot;</code></p>
+
+		<p>Unfortunately, MSVC converts it to some ANSI codepage, corrupting the string. To work around this, save the file in UTF-8 <em>without BOM</em>. MSVC will assume that it is in the correct codepage and will not touch your strings. However, it renders it impossible to use Unicode identifiers and wide string literals (that you will not be using anyway).</p>
+	</li>
+
+	<li>
+		<h3 id="faq.validation"><a class="aId" href="#faq.validation">Q: How can I check for presence of a specific ASCII character, e.g. apostrophe (') for SQL injection prevention, or HTML markup special characters, etc. in a UTF-8 encoded string?</a></h3>
+		<p>A: Do as you would for an ASCII string. Every non-ASCII character is encoded in UTF-8 as a sequence of bytes, each of them having value greater than 127. This leaves no place for collision for a naïve algorithm—simple, fast and elegant.</p>
+		<p>Also, you can search for a UTF-8 encoded substring in a UTF-8 string as if it was a plain byte array—no need to mind code point boundaries. This is a design feature of UTF-8—a leading byte of an encoded code point can never hold value corresponding to one of trailing bytes of any other code point.</p>
+	</li>
+
+	<li>
+		<h3 id="faq.convert"><a class="aId" href="#faq.convert">Q: I have a complex large char-based Windows application. What is the easiest way to make it Unicode-aware?</a></h3>
+		<p>Keep the chars. Define <code>UNICODE</code> and <code>_UNICODE</code> to get compiler errors where <code>narrow()</code>/<code>widen()</code> should be used (this is done automatically by setting <strong>Use Unicode Character Set</strong> in Visual Studio project settings). Find all <code>fstream</code> and <code>fopen()</code> uses, and use wide overloads as described above. By now, you are almost done.</p>
+		<p>If you use 3rd-party libraries that do not support Unicode, e.g. forwarding file name strings as-is to <code>fopen()</code>, you will have to work around with tools such as <code>GetShortPathName()</code> as shown above.</p>
+	</li>
+	
+	<li>
+		<h3 id="faq.whats.now"><a class="aId" href="#faq.whats.now">Q: I already use this approach and I want to make our vision come true. What can I do?</a></h3>
+		<p>A: Review your code and see what library is most painful to use in portable Unicode-aware code. Open a bug report to the authors.</p>
+		<p>If you are a C or C++ library author, use <code>char*</code> and <code>std::string</code> with UTF-8 implied, and refuse to support ANSI code pages—since they are inherently Unicode-broken.</p>
+		<p>If you are a Microsoft employee, push for implementing support of the <code>CP_UTF8</code> as one of narrow API code pages.</p>
+	</li>
+</ol>
+
+
+<h2 id="myths"><a class="aId" href="#myths">Myths</a></h2>
+
+<p class="note">Note: If you are not familiar with the Unicode terminology, please read <a href="#faq.glossary">this FAQ</a> first.</p>
+
+<p class="note">Note: For the purpose of this discussion, indexing into the string is also a kind of character counting.</p>
+
+<h3 id="myth.utf16.o1"><a class="aId" href="#myth.utf16.o1">Counting characters can be done in constant time with UTF-16.</a></h3>
+
+<p>This is a common mistake by those who think that UTF-16 is a fixed-width encoding. It is not. In fact UTF-16 is a variable length encoding. Refer to <a href="#faq.almostfw">this FAQ</a> if you still deny the existence of non-BMP characters.</p>
+
+<p>Many try to fix this statement by switching encodings, and come with the following statement:</p>
+
+<h3 id="myth.utf32.o1"><a class="aId" href="#myth.utf32.o1">Counting characters can be done in constant time with UTF-32.</a></h3>
+
+<p>Now, the truth of this statement depends on the meaning of the ambiguous and overloaded word ‘character’. The only interpretations that would make the claim true are ‘code units’ and ‘code points’, which coincide in UTF-32. However, code points are not characters, neither according to Unicode nor according to the end user. Some of them are <em>non-characters</em>. These should not be interchanged though. So, assuming we can guarantee that the string does not contain non-characters, each code point would represent a single <em>coded character</em>, and we could count them.</p>
+
+<p>But, is it so an important achievement? Why the above concern raises at all?</p>
+
+<h3 id="myth.strlen"><a id="myth.nth.char"></a><a class="aId" href="#myth.strlen">Counting coded characters or code points is important.</a></h3>
+
+<p>The importance of code points is frequently overstated. This is due to misunderstanding of the complexity of Unicode, which merely reflects the complexity of human languages. It is easy to tell how many characters are there in ‘Abracadabra’, but it is not so simple for the following string:</p>
+
+<p class="display">Приве́т नमस्ते שָׁלוֹם</p>
+
+<p>The above string consists of 22 (!) code points but only 16 grapheme clusters. So, ‘Abracadabra’ consists of 11 code points, the above string consists of 22 code points, and further of 20 if converted to <a href="http://unicode.org/reports/tr15/">NFC</a>. Yet, the number of code points is irrelevant to almost any software engineering question, with perhaps the only exception of converting the string to UTF-32. For example:</p>
+
+<ul>
+	<li>For cursor movement, text selection and alike, grapheme clusters shall be used. <!-- 5.11 --></li>
+
+	<li>For limiting the length of a string in input fields, file formats, protocols, or databases, the length is measured in <em>code units</em> of some predetermined encoding. The reason is that any length limit is derived from the fixed amount of memory allocated for the string at a lower level, be it in memory, disk or in a particular data structure.</li>
+
+	<li>The size of the string as it appears on the screen is unrelated to the number of code points in the string. One has to communicate with the rendering engine for this. Code points do not occupy one column even in monospace fonts and terminals. POSIX takes this into account. <!-- POSIX, 3.103 Column Position --></li>
+</ul>
+
+<p>See also: <a href="https://dev.twitter.com/docs/counting-characters">How Twitter counts characters</a>.</p>
+
+<h3 id="myth.nfc"><a class="aId" href="#myth.nfc">In NFC each code point corresponds to one user-perceived character.</a></h3>
+
+<p>No, because the number of user-perceived characters that can be represented in Unicode is virtually infinite. Even in practice, most characters do not have a fully composed form. For example, the NFD string from the example above, which consists of three <em>real</em> words in three <em>real</em> languages, will consist of 20 code points in NFC. This is still far more than the 16 user-perceived characters it has.</p>
+
+<h3 id="myth.strlen.correctness"><a class="aId" href="#myth.strlen.correctness">The string <code>length()</code> operation must count user-perceived or coded characters. If not, it does not support Unicode properly.</a></h3>
+
+<p>Unicode support of libraries and programming languages is frequently judged by the value returned for the ‘length of the string’ operation. According to this evaluation of Unicode support, most popular languages, such as C#, Java, and even the ICU itself, would not support Unicode. For example, the length of the one character string ‘🐨’ will be often reported to be 2 where UTF-16 is used as for the internal string representation and 4 for the languages that internally use UTF-8. The source of the misconception is that the specification of these languages use the word ‘character’ to mean a code unit, while the programmer expects it to be something else.</p>
+
+
+<h2 id="about"><a class="aId" href="#about">About the authors</a></h2>
+
+<p>This manifesto was written by <a href="http://stackoverflow.com/users/73656/pavel-radzivilovsky">Pavel Radzivilovsky</a>, Yakov Galka and <a href="http://slavanov.com">Slava Novgorodov</a>, as a result of much experience and research of real-world Unicode issues and mistakes done by real-world programmers. The goal is to improve awareness of text issues and to inspire industry-wide changes to make Unicode-aware programming easier, ultimately improving the experience of users of those programs written by human engineers. Neither of us is involved in the Unicode consortium.</p>
+
+<p>Much of the text was inspired by <a href="http://programmers.stackexchange.com/questions/102205/should-utf-16-be-considered-harmful">discussions on StackOverflow initiated by Artyom Beilis</a>, the author of Boost.Locale. You can leave comments/feedback there. Additional inspiration came from the development conventions at <a href="http://www.visionmap.com">VisionMap</a> and Michael Hartl’s <a href="http://tauday.com/tau-manifesto">tauday.org</a>.</p>
+
+
+<h2 id="extern"><a class="aId" href="#extern">External links</a></h2>
+
+<ul>
+	<li><a href="http://www.unicode.org/">The Unicode Consortium</a></li>
+
+	<li><a href="http://site.icu-project.org/">International Components for Unicode</a> (ICU)</li>
+
+	<li><a href="http://www.joelonsoftware.com/articles/Unicode.html">Joel on Unicode</a>—‘The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets’</li>
+
+	<li><a href="http://cppcms.sourceforge.net/boost_locale/html/">Boost.Locale</a>—high quality localization facilities in a C++ way.</li>
+
+	<li><a href="http://programmers.stackexchange.com/questions/102205/should-utf-16-be-considered-harmful">Should UTF-16 be considered harmful</a> on StackOverflow, started by Artyom Beilis.</li>
+
+	<li><a href="https://dev.twitter.com/docs/counting-characters">How twitter counts characters</a></li>
+</ul>
+
+<h2 id="donate">Your help and feedback are much appreciated.</h2>
+<div style="text-align:center">
+<img src="data/utf8donate.png" /><br/>
+Bitcoin donate to: 1UTF8gQmvChQ4MwUHT6XmydjUt9TsuDRn<br/>
+The cash will be used for research and promotion.
+</div>
+
+
+<table class="layoutTable" style="border-top:1px solid silver; border-bottom:1px solid silver; padding:1ex 0ex; margin:1.5em 0 0.5em 0"><tr>
+<td><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict"/></a> <a href="http://jigsaw.w3.org/css-validator/check/referer"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!"/></a></td>
+<td><div class="g-plusone"></div></td>
+<td style="text-align:right">Last modified: 2014-07-05</td>
+</tr></table>
+</div>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31306173-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+</body>
+</html>
+

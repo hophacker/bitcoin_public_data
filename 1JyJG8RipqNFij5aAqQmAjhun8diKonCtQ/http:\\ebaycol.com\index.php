@@ -1,0 +1,526 @@
+http://ebaycol.com/index.php
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 23 Jul 2014 07:39:07 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+X-Frame-Options: SAME-ORIGIN
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Content-Encoding: gzip
+Vary: Accept-Encoding,User-Agent
+Set-Cookie: OK=de6be51ebcc52f03aa3f3861ba5db524c36bcf1d; expires=Wed, 23-Jul-2014 08:39:05 GMT
+Set-Cookie: PHPSESSID=188fa494f7cd51e10e14bb8e27967cd3; path=/
+Set-Cookie: PHPSESSID=2371e8a9e5ab727bcc0d3c9ce8f72548; path=/
+Set-Cookie: ccUser=2371e8a9e5ab727bcc0d3c9ce8f72548; expires=Wed, 30-Jul-2014 07:39:05 GMT; path=/; domain=ebaycol.com; httponly
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Compras en eBay, Amazon, Internet y Europa desde Colombia.</title>
+<meta name="description" content="eBaycol, Compre desde Colombia en todo Internet. - A USA, Amazon, eBay, Europa
+Directo de USA a Colombia bajos precios Con mi cuenta en eBay aseguro sus compras" />
+<meta name="keywords" content="ebaycol, Internet, Amazon, EBay,Colombia,dolares, tarjetas,
+paypal, compras, webhosting" />
+<meta property="og:url" content="http://www.ebaycol.com" />
+<meta property="og:image" content="http://ebaycol.com/images/uploads/logos_stores.jpg" />
+
+<link href="http://ebaycol.com/skins/Classic/styleSheets/layout.css" rel="stylesheet" type="text/css" />
+<link href="http://ebaycol.com/skins/Classic/styleSheets/style.css" rel="stylesheet" type="text/css" />
+<link href="http://ebaycol.com/skins/Classic/styleSheets/lightbox.css" rel="stylesheet" type="text/css" media="all, screen"  />
+<!--[if IE]>
+<link href="http://ebaycol.com/skins/Classic/styleSheets/ie.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+<script type="text/javascript" src="http://ebaycol.com/js/prototype.js"></script>
+<link rel="shortcut icon" href="http://ebaycol.com/favicon.ico" />
+<link rel="icon" type="image/gif" href="http://ebaycol.com/animated_favicon1.gif" />
+<script type="text/javascript">
+var fileBottomNavCloseImage = '/images/lightbox/close.gif';
+var fileLoadingImage = '/images/lightbox/loading.gif';
+</script>
+<script type="text/javascript" src="http://ebaycol.com/js/jslibrary.js"></script>
+<script type="text/javascript" src="http://ebaycol.com/js/scriptaculous.js?load=effects,builder"></script>
+<script type="text/javascript" src="http://ebaycol.com/js/lightbox.js"></script>
+<script type="text/javascript">
+ var RecaptchaOptions = {
+    theme : 'custom'
+ }
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7977136-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></head>
+
+<body onload="initialiseMenu();">
+  <div id="pageSurround"><a class="topHeaderImg" href="http://ebaycol.com/index.php"></a>
+	<div id="topHeader">
+	  <div>Busquedas avanzadas en Amazon &amp; eBay:  
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load('search', '1');
+  google.setOnLoadCallback(function() {
+    google.search.CustomSearchControl.attachAutoCompletion(
+      'partner-pub-0995424235790594:r19o-hfrjex',
+      document.getElementById('q'),
+      'cse-search-box');
+  });
+</script>
+<form action="http://www.google.com/cse" id="cse-search-box" target="_blank">
+  <div>
+    <input type="hidden" name="cx" value="partner-pub-0995424235790594:r19o-hfrjex" />
+    <input type="hidden" name="ie" value="ISO-8859-1" />
+    <input type="text" name="q" id="q" autocomplete="on" size="23" />
+    <input type="submit" name="sa" value="Buscar" />
+  </div>
+</form>
+<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=es"></script>
+</div>
+	  <div>  	<span class="txtSession">Visitante Bienvenido [</span><a href="http://ebaycol.com/index.php?_a=login&amp;redir=%2Findex.php" class="txtSession">Acceder</a> <span class="txtSession">|</span> <a href="http://ebaycol.com/index.php?_g=co&amp;_a=reg&amp;redir=%2Findex.php" class="txtSession">Registrarse</a><span class="txtSession">]</span>
+  
+  </div>
+	</div>
+  <div>
+<center><script type="text/javascript"><!--
+google_ad_client = "pub-0995424235790594";
+/* 728x90, created 7/21/10 */
+google_ad_slot = "0845335408";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></center>
+  <hr>
+<div><strong><div class="siteDocs">
+<a href="http://ebaycol.com" class="txtSiteDocs" >Inicio</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/tarifas/info_7.html" class="txtSiteDocs" >Tarifas</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/calcule-su-cotizacion/info_13.html" class="txtSiteDocs" >Calcule su cotizacion</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/contactenos/info_2.html" class="txtSiteDocs" >Contactenos</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/ayuda/info_5.html" class="txtSiteDocs" >Ayuda</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/quienes-somos/info_1.html" class="txtSiteDocs" >Quienes Somos</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/terms-condiciones/info_3.html" class="txtSiteDocs" >Terms &amp; Condiciones</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/seguridad/info_4.html" class="txtSiteDocs" >Seguridad</a>
+
+</div></strong></div>
+<center><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="700" height="130" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0">
+<param name="src" value="http://ebaycol.com/web_flash/ebaylogo.swf" /><embed type="application/x-shockwave-flash" width="700" height="130" src="http://ebaycol.com/web_flash/ebaylogo.swf"></embed>
+</object>
+</center>
+<br/>
+  <div class="colLeft">
+
+  </div>
+  <div class="colMid">
+	<div class="boxContent">
+<span class="txtContentTitle">Compre desde Colombia en todo Internet!</span>
+<br />
+<h1><span style="color: rgb(0, 0, 255);">Productos disponibles en eBay.com, Amazon.com, Internet, EE.UU. Se los compramos y traemos directo desde U.S.A. A Colombia</span></h1>
+<p><strong><span style="font-size: small;"><font color="#001217" style="color: rgb(0, 18, 23);">Cualquier producto disponible en </font><span style="text-decoration: underline;"><font size="+0"><u><font color="#0000e3"><font color="#ff0000">e</font>B<font color="#ffaf00">a</font><font color="#84cc2b">y</font>.com</font></u></font></span><font color="#001217" style="color: rgb(0, 18, 23);"><span style="text-decoration: underline;"><font color="#0000e3">&nbsp;</font></span>,&nbsp;<font color="#202020"><span style="text-decoration: underline;">Amazon.com</span></font></font></span></strong><span style="color: rgb(0, 18, 23); font-size: small;"><strong>&nbsp;o en Internet de U.S.A., Europa, Asia&nbsp;se los traemos a Colombia por bajo precio. Tenemos nuestra propia cuentas verificadas&nbsp;en PayPal U.S., <span style="text-decoration: underline;"><a href="https://www.moneybookers.com/app/?rid=11728379" target="_blank" title="MoneyBookers">Moneybookers</a></span>, eBay y Amazon.com tambien tenemos nuestras propias tarjetas de credito corporativas expedidas en Estados Unidos.<br />
+</strong></span></p>
+<p><span style="font-size: xx-small;">*NOTA: EL SEGURO CUBRE EL 100% DE SU COMPRA EN CASO DE PERDIDA O DA&Ntilde;O DE SU PEDIDO HASTA U$1000.00&nbsp;</span></p>
+<p>&nbsp;</p>
+<p><font color="#001217"><strong>No importa el peso, ni el valor aun si es mas de U$2000 USD en todo caso recibimos el 80%&nbsp;del precio total del precio cotizado y el saldo restante </strong></font><font color="#001217"><strong>cuando llegue a nuestras instalaciones en Bogota. <br />
+</strong><br />
+<em><strong><font color="#0000ff">Pregunta: </font>Ustedes compran con su propia T.C. y sus cuentas en Internet. Y cual es el costo de la comision?<br />
+<br />
+<font color="#0000ff">Respuesta: </font>En este caso la comision es del 15% + seguro*&nbsp;sobre el valor del articulo incluyendo el precio del envio dentro de USA. Pero el pago previo debe </strong></em></font><em><strong><font color="#001217">ser del&nbsp;80% del valor cotizado. <br />
+<br />
+<font color="#0000ff">Pregunta: </font>Que pasa si ya tengo mi propia cuenta en PayPal, eBay o Amazon.com? <br />
+<br />
+<font color="#0000ff">Respuesta: </font></font></strong><strong><font color="#001217"><span style="color: rgb(255, 0, 0);">(Ya no recibimos paquetes de terceros).</span></font></strong></em></p>
+<p><font color="#001217"><strong><br />
+El costo por&nbsp;libra americana&nbsp;es de <font color="#ff0000">U$5.50</font> del envio USA-COL.&nbsp;</strong></font><strike><font color="#001217"> </font></strike></p>
+<p><font size="2" style="color: rgb(0, 18, 23);"><strong>LA TARIFA DEL 15% ES PLANA PARA ORDENES CON UN PESO DE 10 LIBRAS O MAS, PESOS INFERIORES A&nbsp;5 KILOS NO TIENE CARGO EXTRA Y PARA ORDENES EN EBAY DE CLIENTES NUEVOS SOLO DEBEN SER PARA ITEMS EN &quot;BUY IT NOW (BIN)&quot;!</strong></font></p>
+<p>&nbsp;</p>
+<p><u><span style="color: rgb(255, 0, 0);"><font color="#ff0000"><font size="2" color="#001217" style="color: rgb(0, 18, 23);"><strong><font color="#e30000">AVISO IMPORTANTE: NOSOTROS NO REPRESENTAMOS A EBAY NI A AMAZON EN COLOMBIA, POR LO QUE NO RESPONDEMOS PREGUNTAS ACERCA DE COMPRAS HECHAS POR TERCEROS EN ESOS SITIOS. NI TAMPOCO DAMOS ASESORIAS EN COMPRAS DE TERCEROS!</font></strong></font></font></span></u><span style="color: rgb(255, 0, 0);"><font color="#ff0000"><font size="2" color="#001217" style="color: rgb(0, 18, 23);"><strong><font color="#e30000"><br />
+</font></strong><br />
+</font></font></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr />
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;<span style="font-family: Tahoma;"><font color="#993366"><strong><font size="5">Forma de pago y Env&iacute;o</font></strong></font></span>&nbsp;</p>
+<p>&nbsp;</p>
+<table border="0" align="left">
+    <tbody>
+        <tr>
+            <td><script type="text/javascript"><!--
+google_ad_client = "pub-0995424235790594";
+/* 336x280, created 8/26/09 */
+google_ad_slot = "8172490928";
+google_ad_width = 336;
+google_ad_height = 280;
+//-->
+</script><script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></td>
+        </tr>
+    </tbody>
+</table>
+<p><span style="font-size: small;">- Se paga el 80% del valor producto cotizado al momento de hacer el pedido y el 20% restante cuando el art&iacute;culo llegue a nuestras instalaciones.<br />
+</span><span style="font-size: small;"><br />
+- El pago se hace por consignaci&oacute;n en Bancolombia&nbsp;(usuarios Bogota)&nbsp;o Davivienda la consignaci&oacute;n fuera de Bogota en Davivienda es gratis o transferencia electr&oacute;nica sin costo&nbsp;(usuarios resto de Colombia). Env&iacute;o de dinero por Wenster Unions. (Para pago por medio de tarjeta de credito aplica comision del 5.99%. Opcionalmente puede pagar con tarjeta de credito sin cargo adicional en <span style="text-decoration: underline;"><a href="https://www.moneybookers.com/app/?rid=11728379" target="_blank" title="MoneyBookers">Moneybookers</a></span>).<br />
+</span><span style="font-size: small;"><br />
+- El tiempo de entrega del art&iacute;culo depende del proveedor elegido por Usted para realizar la compra. Aproximadamente de&nbsp;8 a 15 d&iacute;as despu&eacute;s de realizado el pedido y pagar el 80% del articulo cotizado.<br />
+</span></p>
+<p>&nbsp;<span style="font-size: small;"><br />
+- Este tiempo aplica para tiempo normal de entrega, no se hace responsable por demoras ajenas al servicio tales como disponibilidad de la tienda, m&eacute;todo de env&iacute;o, factores clim&aacute;ticos, entre otros.<br />
+</span>&nbsp;</p>
+<p><span style="font-size: small;">Para solicitar cotizaciones registrese gratuitamente </span><a href="http://www.ebaycol.com/index.php?_g=co&amp;_a=reg&amp;redir=%2Findex.php"><span style="font-size: small;">aca</span></a><span style="font-size: small;">.&nbsp; <br />
+Si ya se encuentra registrado favor ingresar&nbsp;a su </span><a href="http://www.ebaycol.com/index.php?_a=login&amp;redir=%2Findex.php"><span style="font-size: small;">cuenta</span></a><span style="font-size: small;">.</span></p>
+<div style="font-size: 20px;" class="F_Dark">&nbsp;</div>
+<p><font style="color: rgb(50, 56, 139); font-family: Arial,Helvetica,sans-serif; font-size: 16px; font-style: italic; font-weight: bold;">Acepto:</font></p>
+<p><strong>Moneybookers:</strong><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://www.moneybookers.com/app/?rid=11728379/" target="_blank"><img border="0" src="http://www.moneybookers.com/images/banners/es/es_fasteasysecure.gif" style="border-width: 1px; border-color: rgb(139, 133, 131);" alt="" /></a>&nbsp;<br />
+<br />
+<a href="https://www.paypal.com/us/verified/pal=omega.314%40live.com" target="_blank"><img width="128" height="128" border="0" src="http://www.ebaycol.com/web_images/paypal2.png" alt="PayPal" /></a><br />
+<img src="http://staff.maosongsoft.com/uploads/6124/90/5/122468981562.gif" style="width: 127px; height: 41px;" alt="Bancolombia" /><img src="http://img84.imageshack.us/img84/5022/davivienda.jpg" style="width: 125px; height: 32px;" alt="" /><br />
+<img src="http://staff.maosongsoft.com/uploads/6124/92/2/122469123329.jpg" alt="Davivienda" /><img src="http://staff.maosongsoft.com/uploads/6124/182/5/122478180897.gif" alt="" /><br />
+<img src="http://staff.maosongsoft.com/uploads/6124/182/5/122478180831.jpg" alt="" />&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+
+<div class="boxContent">
+<div class="txtContentTitle">Ultimas Noticias</div> 
+
+<span class="txtDefault">Haz click en el titulo para leer el articulo completo.</span><br/><br/>
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce13', 'blind');"><span class="announceDate">2014/07/10</span> - <strong> Mi feedback en eBay. </strong></div> 
+<div id="announce13" class="announceDiv" style="display:none;"><p class="announceText"><iframe width="510" height="265" src="http://www.mi-shop.co/rsseBay.html" frameborder="0">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+
+</p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce11', 'blind');"><span class="announceDate">2014/07/10</span> - <strong> Ahora recibimos Bitcoins. </strong></div> 
+<div id="announce11" class="announceDiv" style="display:none;"><p class="announceText"><p>Buenas noticias, le informamos que ahora&nbsp;recibimos pagos&nbsp;con&nbsp;&quot;<a target="_blank" href="http://es.wikipedia.org/wiki/Bitcoin">Bitcoins</a>&quot; Para todas sus compras en eBay, Amazon o cualquier otra tienda de Internet.</p>
+<p>Pagos seguros e inmediatos desde su celular, pc o email. Solo descargue la aplicacion oficial y haga bitcoins desde su pc y paguenos con&nbsp;sus bitcoins. Simplemente indiquenos que quiere pagar con los Bitcoins y le enviamos el presupuesto, limite diario U$2000.00 daily.</p>
+<p>Tasa de&nbsp;compra 10% menos valor oficial por bitcoin BTC.</p>
+<p><img width="261" height="103" alt="Bitcoins aceptados aqui" src="/images/uploads/btc.jpg" /></p>
+<p>Bitcoin addresses:</p>
+<p><strong>1JyJG8RipqNFij5aAqQmAjhun8diKonCtQ</strong></p>
+<p><iframe width="510" height="265" src="//www.youtube.com/embed/Gc2en3nHxA4" frameborder="0" allowfullscreen></iframe></p>
+</p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce10', 'blind');"><span class="announceDate">2012/10/26</span> - <strong> Buscador avanzado de eBay. </strong></div> 
+<div id="announce10" class="announceDiv" style="display:none;"><p class="announceText"><p>Ahora en la parte inferior del sitio encuentra&nbsp;un buscador avanzado&nbsp;puede hacer sus busquedas de eBay. Simplemente coloque lo que busca y selecciones la categoria para obterner un listado de los items disponibles en eBay. Tiene la opcion de busqueda avanzada para ver listados de otros paises y diferentes opciones. Tambien busque por categorias.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p></p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce7', 'blind');"><span class="announceDate">2012/11/10</span> - <strong> Calcule su cotizacion </strong></div> 
+<div id="announce7" class="announceDiv" style="display:none;"><p class="announceText"><p>Ahora puede calcular el costo de la cotizacion desde nuestro sitio visite el enlace siguiente:</p>
+<p><a href="http://ebaycol.com/calcule-su-cotizacion/info_13.html">http://ebaycol.com/calcule-su-cotizacion/info_13.html</a></p>
+</p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce6', 'blind');"><span class="announceDate">2011/09/07</span> - <strong> Res. Dian #0994 del 2011 </strong></div> 
+<div id="announce6" class="announceDiv" style="display:none;"><p class="announceText"><p>Nos permitimos informar que a partir de la fecha 22 de febrero de 2011&nbsp;cambiamos las tarifas que aplicamos, como los&nbsp;tiempos de entrada de mercancias la razon&nbsp;es la entrada en vigencia a partir del pasado 1ro de Marzo de 2011 de la resolucion de la <strong>Dian No. 0000994 del 4 de febrero de 2011</strong>, la cual introduce nuevos requisitos para el ingreso de carga al pais. Para ordenes en cantidades&nbsp;comerciales o de alto valor abra un tiempo mayor de espera.</p>
+<p>Sin embargo nuestras operaciones continuan intactas como le hemos hecho durante los ultimos 3 a&ntilde;os pasados...</p>
+<p>&nbsp;</p>
+<p><a href="http://www.eBaycol.com">www.eBaycol.com</a></p></p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce4', 'blind');"><span class="announceDate">2011/01/17</span> - <strong> Pago con tarjeta de credito. </strong></div> 
+<div id="announce4" class="announceDiv" style="display:none;"><p class="announceText"><p>Aceptamos el siguiente metodo eficiente con bajo costo de comision unicamente $2.95 en <a target="_blank" href="https://www.moneybookers.com/app/?rid=11728379/">Moneybookers</a>:</p>
+<p><br />
+<!-- Begin Moneybookers banner code --><a target="_blank" href="https://www.moneybookers.com/app/?rid=11728379/"><img border="0" alt="" width="468" height="60" style="border-bottom-color: #8b8583; border-right-width: 1px; border-top-color: #8b8583; border-top-width: 1px; border-bottom-width: 1px; border-right-color: #8b8583; border-left-color: #8b8583; border-left-width: 1px" src="http://www.moneybookers.com/images/banners/es/es_transfer_worldwide_468x60.gif" /></a> <!-- End of Moneybookers logo code --><br />
+&nbsp;</p>
+<p><a target="_blank" href="https://www.moneybookers.com/app/?rid=11728379/">Para incribirse haz click aca.</a></p></p></div>
+<div class="announceDivider"></div> 
+ 
+<div class="announceTitle" onclick="Effect.toggle('announce3', 'blind');"><span class="announceDate">2012/06/08</span> - <strong> Metodos de pago aceptados. </strong></div> 
+<div id="announce3" class="announceDiv" style="display:none;"><p class="announceText"><p>Estos son los metodos de pago aceptados y sus comisiones:</p>
+<p>Recibo pagos con todas las tarjetas de cr&eacute;dito y PayPal directamente sin necesidad de inscribirse.</p>
+<p>&nbsp;</p>
+<p>Cuentas bancarias sin cargo adicionales:</p>
+<p>Attn: Fabian W.<br />
+Davivienda Cta Corriente XXXX-6002-8594 (Consignacion nacional gratis).<br />
+Bancolombia Cta ahorros XXX-402-443-92 (Consignacion en Bogota gratis).<br />
+Celular: 3142390612, Fijo: +1 4003232</p>
+<p>Estas son mis reputaciones:</p>
+<p><a target="_blank" href="http://feedback.ebay.com/ebaymotors/ws/eBayISAPI.dll?ViewFeedback2&amp;ftab=AllFeedback&amp;userid=physicist1995&amp;iid=-1&amp;de=off&amp;items=100">Mi reputacion en eBay!</a><br />
+<a target="_blank" href="http://perfil.mercadolibre.com.co/PHYSICIST1995">Mi reputacion en ML!</a><br />
+<a target="_blank" href="https://www.paypal.com/us/verified/pal=omega.314%40live.com">Soy un usuario verificado de PayPal U.S.A.!</a></p>
+<p>Acepto pagos con tarjetas de credito en PayPal y <a target="_blank" href="https://www.moneybookers.com/app/?rid=11728379">Moneybookers.com</a></p>
+<p><a target="_blank" href="https://www.paypal.com/us/verified/pal=omega.314%40live.com"><img width="128" height="128" alt="PayPal" border="0" src="http://www.ebaycol.com/web_images/paypal2.png" /></a><br />
+<img alt="Bancolombia" style="width: 127px; height: 41px;" src="http://staff.maosongsoft.com/uploads/6124/90/5/122468981562.gif" /><img alt="" style="width: 125px; height: 32px;" src="http://img84.imageshack.us/img84/5022/davivienda.jpg" /><br />
+<img alt="Davivienda" src="http://staff.maosongsoft.com/uploads/6124/92/2/122469123329.jpg" /><img alt="" src="http://staff.maosongsoft.com/uploads/6124/182/5/122478180897.gif" /><br />
+<img alt="" src="http://staff.maosongsoft.com/uploads/6124/182/5/122478180831.jpg" />&nbsp;</p></p></div>
+<div class="announceDivider"></div> 
+<br/>
+<a href="http://ebaycol.com/ultimas-noticias/view_0.html" class="txtButton">Ver Mas</a>
+</div>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-0995424235790594";
+/* 468x15, creado 6/08/09 */
+google_ad_slot = "3156269645";
+google_ad_width = 468;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<iframe src="http://ebaycol.com/cgi-bin/ebay/ebay.cgi" name="iframe_ebay" frameborder="0" width="600" height="700"></iframe>
+  </div>
+  <div class="colRight">
+<div class="boxTitleRight">Links</div>
+<div class="boxContentLeft">
+<a href="http://www.amazon.com/" title="Amazon" accesskey="a" target="_blank">www.amazon.com </a><br  />
+<a href="http://www.ebay.com/" title="eBay" accesskey="e" target="_blank">www.ebay.com </a><br  />
+<a href="http://eshops.mercadolibre.com.co/physicist1995/" title="MercadoLibre" accesskey="m" target="_blank">www.mercadolibre.com </a><br  />
+<border="0" >
+</div>
+<div class="boxFootRight"></div>
+<div class="boxTitleRight">Contacto</div>
+<div class="boxContentLeft">
+e-mail: <script type="text/javascript">
+/*<![CDATA[*/
+
+/***********************************************
+* Encrypt Email script- Please keep notice intact
+* Tool URL: http://www.dynamicdrive.com/emailriddler/
+* **********************************************/
+<!-- Encrypted version of: info [at] *******.*** //-->
+
+var emailriddlerarray=[105,110,102,111,64,69,66,97,121,99,111,108,46,99,111,109]
+var encryptedemail_id22='' //variable to contain encrypted email 
+for (var i=0; i<emailriddlerarray.length; i++)
+ encryptedemail_id22+=String.fromCharCode(emailriddlerarray[i])
+
+document.write('<a href="mailto:'+encryptedemail_id22+'?subject=Solicitar informacion.">'+encryptedemail_id22+'</a>')
+
+/*]]>*/
+</script><br  />
+<a href="http://www.ebaycol.com/contactenos/info_2.html" title="Solicitar soporte o contactenos" accesskey="c" target="_blank">Solicitar soporte.</a><br  />
+Celular: 3142390612 <br  />
+Tel. en Bogota: 4003232 <br  />
+Tel. en USA: 1-786-462-6866
+<border="0" >
+</div>
+<div class="boxFootRight"></div>
+<script type="text/javascript"><!--
+google_ad_client = "pub-0995424235790594";
+/* 160x600, created 7/28/09 */
+google_ad_slot = "7089964600";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script><script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js"> 
+</script> 
+<p>
+<div class="boxTitleRight">Publicidad</div>
+<div class="boxContentLeft">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-0995424235790594";
+/* 120x90, creado 9/10/09 */
+google_ad_slot = "3764812149";
+google_ad_width = 120;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<border="0" >
+</div>
+<div class="boxFootRight"></div>
+<div class="boxTitleRight">Precio del Dolar TRM</div>
+<div class="boxContentLeft">
+$ <IFRAME SRC="http://www.preciodolar.com/preciodolar.php?get=7" TITLE="Dolar" WIDTH=55 HEIGHT=15 ALIGN=top FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=no NAME=COP-USD1 ALLOWTRANSPARENCY="true"></IFRAME>
+<border="0" >
+</div>
+<div class="boxFootRight"></div> 
+<div class="boxTitleRight">Compartir</div>
+<div class="boxContentLeft">
+<!-- AddThis Button BEGIN -->
+<a href="http://www.addthis.com/bookmark.php?v=250&pub=anabolmaster" onmouseover="return addthis_open(this, '', '[URL]', '[TITLE]')" onmouseout="addthis_close()" onclick="return addthis_sendto()"><img src="http://s7.addthis.com/static/btn/lg-bookmark-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?pub=anabolmaster"></script>
+<!-- AddThis Button END -->
+<border="0" >
+</div>
+<div class="boxFootRight"></div> 
+		<div class="boxTitleLeft">Ultimas Noticias</div>
+<div class="boxContentLeft">
+ 
+ 
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_13.html" class="txtDefault">Mi feedback en eBay.</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_11.html" class="txtDefault">Ahora recibimos Bitcoins.</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_10.html" class="txtDefault">Buscador avanzado de eBay.</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_7.html" class="txtDefault">Calcule su cotizacion</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_6.html" class="txtDefault">Res. Dian #0994 del 2011</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_4.html" class="txtDefault">Pago con tarjeta de credito.</a></li>  
+    </ul> 
+      
+    <ul id="mainmenu-nav"> 
+     <li class="li-nav"><a href="http://ebaycol.com/ultimas-noticias/view_3.html" class="txtDefault">Metodos de pago aceptados.</a></li>  
+    </ul> 
+      
+
+ 
+
+<br clear="all" /> <br/>
+<div align="center"><a href="http://ebaycol.com/ultimas-noticias/view_0.html" class="txtButton">Ver Mas</a></div> 
+</div>
+
+		<div class="boxTitleLeft">Idioma</div>
+<div class="boxContentLeft">
+	<select name="lang" class="dropDown" onchange="jumpMenu('parent',this,0)">
+				<option value="http://ebaycol.com/index.php?_g=sw&amp;r=%2Findex.php&amp;lang=en"  onmouseover="javascript:getImage('language/en/flag.gif');">English</option>
+		
+		<option value="http://ebaycol.com/index.php?_g=sw&amp;r=%2Findex.php&amp;lang=es" selected="selected" onmouseover="javascript:getImage('language/es/flag.gif');">Espa&ntilde;ol</option>
+		
+	</select>
+	
+	<img src="http://ebaycol.com/language/es/flag.gif" alt="" width="21" height="14" id="img" title="" /> 
+
+</div>
+
+		
+<div class="boxTitleLeft">Me Gusta!</div>
+<div class="boxContentLeft" style="text-align: center">
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+	fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+
+	<div class="fb-like" data-href="http://ebaycol.com/index.php" data-send="true" data-layout="box_count" data-width="80" data-show-faces="false"></div>
+</div>
+
+		<div class="boxTitleRight">Lista de Distribuci&oacute;n</div>
+<div class="boxContentRight txtCopy">
+	Suscr&iacute;base a nuestra lista de distribuci&oacute;n abajo:
+		<form action="/index.php" method="post">
+	<strong>Email:</strong>
+	<input name="email" type="text" size="14" maxlength="255" class="textbox" value="name@example.com" onclick="this.value='';" /> 
+	<input type="hidden" name="act" value="mailList" />
+	<div style="padding-top: 5px; text-align: center;">
+		<input name="submit" type="submit" value="&Uacute;nase Ahora" class="submit" />
+	</div>
+	</form>
+	
+</div>
+
+		
+<div class="boxTitleLeft">PayPal Verificado</div>
+<div class="boxContentLeft">
+<center>
+<a href="http://anonym.to/?https://www.paypal.com/verified/pal=omega.314&#64live.com" target="_blank">
+<img src="https://www.paypal.com/es_XC/i/icon/verification_seal.gif" border="0" alt="Official PayPal Seal">
+</a></center>
+</div>
+<div class="boxFootLeft"></div>
+
+<script type="text/javascript" src="http://jc.revolvermaps.com/r.js"></script><script type="text/javascript">rm_f1st('7','160','true','false','000000','2z5kuig21yu','true','ff8a00');</script><noscript><applet codebase="http://rc.revolvermaps.com/j" code="core.RE" width="160" height="160" archive="g.jar"><param name="cabbase" value="g.cab" /><param name="r" value="true" /><param name="n" value="false" /><param name="i" value="2z5kuig21yu" /><param name="m" value="7" /><param name="s" value="180" /><param name="c" value="ff8a00" /><param name="v" value="true" /><param name="b" value="000000" /><param name="rfc" value="true" /></applet></noscript>
+  </div>
+</div>
+
+<br clear="all" />
+
+<span style="float: right;"></span>
+
+<br clear="all" />
+
+<div><div class="siteDocs">
+<a href="http://ebaycol.com" class="txtSiteDocs" >Inicio</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/tarifas/info_7.html" class="txtSiteDocs" >Tarifas</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/calcule-su-cotizacion/info_13.html" class="txtSiteDocs" >Calcule su cotizacion</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/contactenos/info_2.html" class="txtSiteDocs" >Contactenos</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/ayuda/info_5.html" class="txtSiteDocs" >Ayuda</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/quienes-somos/info_1.html" class="txtSiteDocs" >Quienes Somos</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/terms-condiciones/info_3.html" class="txtSiteDocs" >Terms &amp; Condiciones</a>
+<span class="txtSiteDocs">|</span>
+<a href="http://ebaycol.com/seguridad/info_4.html" class="txtSiteDocs" >Seguridad</a>
+
+</div></div>
+
+</div>
+
+
+<div class="txtFooter">
+<p>Copyright &copy;2013 - <a href="#" target="_top">eBayCol</a></p>
+ <p>Contacto Tel: 4003232, Bogota, Colombia, 110821.  e-Mail: <script type="text/javascript">
+/*<![CDATA[*/
+
+/***********************************************
+* Encrypt Email script- Please keep notice intact
+* Tool URL: http://www.dynamicdrive.com/emailriddler/
+* **********************************************/
+<!-- Encrypted version of: info [at] *******.*** //-->
+
+var emailriddlerarray=[105,110,102,111,64,69,66,97,121,99,111,108,46,99,111,109]
+var encryptedemail_id22='' //variable to contain encrypted email 
+for (var i=0; i<emailriddlerarray.length; i++)
+ encryptedemail_id22+=String.fromCharCode(emailriddlerarray[i])
+
+document.write('<a href="mailto:'+encryptedemail_id22+'?subject=Solicitar informacion.">'+encryptedemail_id22+'</a>')
+
+/*]]>*/
+</script></p>
+Amazon, the Amazon logo, AmazonSupply, and the AmazonSupply logo are trademarks of Amazon.com, Inc. or its affiliates.
+</div>
+
+<script type="text/javascript">
+   var infolink_pid = 144319;
+   var infolink_wsid = 2;
+</script>
+<script type="text/javascript" src="http://resources.infolinks.com/js/infolinks_main.js"></script>
+<script type="text/javascript" src="http://anabolmaster.com/clickheat/js/clickheat.js"></script><noscript><p></p></noscript><script type="text/javascript"><!--
+clickHeatSite = 'eBaycol';clickHeatGroup = (document.title == '' ? '-none-' : encodeURIComponent(document.title));clickHeatServer = 'http://anabolmaster.com/clickheat/click.php';initClickHeat(); //-->
+</script>
+<div class='txtCopyright'></div>
+</body>
+</html>
+

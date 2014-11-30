@@ -1,0 +1,609 @@
+http://ivoras.net/blog/tree/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 09:50:57 GMT
+Server: Apache/2.2.27 (FreeBSD) mod_fcgid/2.3.6 mod_ssl/2.2.27 OpenSSL/0.9.8y
+Last-Modified: Tue, 22 Jul 2014 20:19:23 GMT
+ETag: "638f61-b6a0-4fecdf07828c0"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 11603
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Arrow of time</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	    <![endif]-->
+	<link rel="author" href="https://plus.google.com/102192077511626941735">
+  	<link rel="publisher" href="https://plus.google.com/102192077511626941735">
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="./">Arrow of time </a></h1>
+                <nav><ul>
+                    <li><a href="./category/brainstorming.html">Brainstorming</a></li>
+                    <li><a href="./category/hack.html">Hack</a></li>
+                    <li><a href="./category/hacktivism.html">Hacktivism</a></li>
+                    <li><a href="./category/misc.html">Misc</a></li>
+                    <li><a href="./category/projects.html">Projects</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="./2014/Jul-how-do-you-explain-an-os-kernel-to-a-layperson-an-old-text-about-the-matrix-as-an-operating-system.html">How do you explain an <span class="caps">OS</span> kernel to a layperson? + an old text about The Matrix as an Operating&nbsp;System</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-07-22T00:00:00">
+                Tue 22 July 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/kernel.html">kernel</a><a href="./tag/matrix.html">matrix</a><a href="./tag/movie.html">movie</a><a href="./tag/sf.html">sf</a></p>
+</footer><!-- /.post-info --><p>Earlier this year I was a guest at a gathering of people who were mostly involved with social sciences and politics and a topic soon arised in which I had to
+explain some of the things I work with. In this group of 10-ish people there were one or two who had even a vague idea what a kernel is (they were
+engineering students, actually), and were suitably impressed, but the rest of the group simply offered encouraging blank stares - they were waiting for me to
+explain what I just said. Well, the go-to approach when dealing with anything vaguely engineer-ish is to make an ad-hoc metaphor involving a car (at least
+for a male audience&#8230;). But&#8230; actually&#8230; how <span class="caps">DO</span> you compare something from a car with the kernel? You can&#8217;t compare it to the engine, or to the chasis,
+or even to the road the car travels on. It&#8217;s even worse when trying to explain what a kernel programmer can do within an operating system. What would <span class="caps">THAT</span> be
+in the world of car metaphors? A kernel programmer is definitely not a mechanic. Maybe, a car&#8230; architect? Of a sorts? After stuttering long enough I just
+went full retard and tried to impress the girls of the group by saying it&#8217;s like the kernel developer designs the very laws of physics on which the car runs.
+They were, sadly, still&nbsp;unconvinced.</p>
+<p>Can you do&nbsp;better?</p>
+<p><a class="reference external" href="http://www.imdb.com/title/tt0133093/">The Matrix</a> came out in 1999, and soon after I became interested in operating systems, which eventually lead me to
+working as a kernel developer on the FreeBSD project. But in the mean time i was learning and spent considerable time being appropriately geekily fascinated
+with the&nbsp;topic.</p>
+<p>Sometime in the early 2000s, probably somwhere around 2003 or 2004 I wrote what I think is a quite clever comparison between the characters and the happenings
+in The Matrix and its sequels and a (fictuous) operating system. To save this text from being lost in time like bytes on forgotten servers, and bring it Into The Cloud, I&#8217;m
+copy pasting this original text here below. Be warned: you <em>can</em> stretch out metaphors too&nbsp;far.</p>
+<hr class="docutils" />
+<p>Since one of my fascinations is operating systems design, implementation and maintenance, ever since I&#8217;ve first seen the Matrix movies I&#8217;ve thought some of the concepts in them can be related to familiar concepts in operating&nbsp;systems:</p>
+<ul class="simple">
+<li>The Matrix world: a running operating system, with userland (the &quot;common&quot; world, in which people live, and the kernel (the &quot;Matrix&quot; proper). Apparently it&#8217;s a pretty buggy <span class="caps">OS</span>&#8230;</li>
+<li>People: processes, both kernel processes and user processes. There&#8217;s a big distinction between normal, &quot;unprivileged&quot; people, and daemons with root privileges - &quot;agents&quot;. Root daemons can open privileged ports, kill random processes, manage memory,&nbsp;etc.</li>
+<li>Matrix: the kernel. It looks like a message passing kernel, not necessarily a microkernel (though they are some microkernel aspects, such as the abundance of kernel processes, strict separation of duty between them, and the already mentioned message passing). Kernel manages all processes, and performs operations on their behalf (such as keeping them alive, servicing them and recycling them). But there&#8217;s an apparent security defect: some userland processes can (because of a bug) transfer and execute parts of their programs in the kernel space. Only certain syscalls are affected (the &quot;phones&quot;), and this kind of privilege escalation garbles the userland process&#8217; return stack, such that if the process receives a signal, it segfaults and is garbage collected (if you&#8217;re killed in the Matrix, you&#8217;re dead for&nbsp;real).</li>
+<li>Oracle: the process (task) scheduler. Has all the numbers from process monitoring (resource usage) and knows in advance (broadly) how to schedule them to run to their&nbsp;optimum.</li>
+<li>Agents: system monitoring / intrusion detection / prevention system (<span class="caps">IDS</span> / <span class="caps">IPS</span>) with heuristical operation. Most of them have a kernel part (kernel module) but are basically daemons run with superuser privileges in the userland. They are tasked to find and kill processes which attempt to violate system&nbsp;security.</li>
+<li>The trainman: kernel-userland gateway / message passing queue. You&#8217;ve got to go through him if you want to validly pass data between userland and kernel. You also might be stuck in the queue&nbsp;forever.</li>
+<li>The Merovingian: networking / <span class="caps">IPC</span> stack. It&#8217;s his business to know everything going on between processes. Has a bug manifesting in occasional input / output data&nbsp;corruption.</li>
+<li>Vampires / ghosts: compatibility shims for older <span class="caps">API</span> / <span class="caps">KPI</span> versions. Their code is rudimentary and, for historical reasons, interfaces with parts of kernel normal processes shouldn&#8217;t (i.e. they have lots of layering&nbsp;violations).</li>
+<li>The Architect: kernel monitoring infrastructure (supervisor), tasked with monitoring processes, killing those that wedge and restarting those that crashed. Since it&#8217;s a realtime high-availability <span class="caps">OS</span>, the debugging and monitoring infrastructure has the absolute highest priority and is &quot;blessed&quot; to be infallible (thus, to limit the possibility of error, is very limited in its complexity). It&#8217;s been misconfigured to be overzealous, does availability checking too often, taking too many resources, and so interferes with the normal operation of the operating&nbsp;system.</li>
+<li>Keymaster: security / privilege subsystem. It&#8217;s stable, but unfortunately relies on the <span class="caps">VM</span> system and the <span class="caps">IPC</span> system which are buggy, and can be exploited by processes to gain more privileges from&nbsp;him.</li>
+<li><span class="caps">THE</span> <span class="caps">PLOT</span>: There&#8217;s a design bug between the <span class="caps">VM</span> (virtual memory) system, the process management system and the scheduler, manifesting under high system load (lots of processes, high memory pressure). It is a compound error, which results in at least three things:
+* Memory pages can get corrupt or missasigned to processes that don&#8217;t own them. Since kernel and userland share the <span class="caps">VM</span>, processes on either side can end up with memory pages from the other, revealing sensitive data and making way for security escalations. Mixing up the <span class="caps">VM</span> pages bypasses address space protection between the processes.
+* The <span class="caps">IPC</span> subsystem, bad as it already is, gets even worse when its data structures get corrupted or the memory load gets so high it deadlocks waiting for buffers.
+* The system monitor goes berserk, killing and restarting processes in a loop, unaware that it makes the things worse by building additional memory pressure and process load, eventually greatly helping spread the <span class="caps">VM</span> pages corruption between the&nbsp;processes.</li>
+<li>Agent Smith: privileged <span class="caps">IPC</span> daemon with part of it implemented as a kernel module. It&#8217;s so closely tied with the kernel module part that it shares data structures with it without sanity checking. Once it was killed by another privileged process, but it was in the middle of a syscall so when the monitor restarted him, the corruption which was already done to its process descriptor resulted in most of its program being executed in the kernel context. It continued to work in this corrupted state for a long time, wedged in a loop, erroneously tagging processes as security breaches and overwriting some of their memory pages with its&nbsp;own.</li>
+<li>Neo: Initially a userland network server process, the <span class="caps">VM</span> corruption resulted in it being assigned both superuser privileges and high priority (<span class="caps">CPU</span> time). Eventually, it got its executable memory pages mixed up with the <span class="caps">IDS</span> process Smith, but not the data pages. Before long it also starts killing processes, including Smith and his corrupted&nbsp;copies.</li>
+<li><span class="caps">THE</span> <span class="caps">ENDING</span>: process Smith eventually tries to kill the scheduler process, but since it&#8217;s itself scheduled by it, cannot do so reliably. The system gets wedged because the scheduler cannot perform its tasks anymore, including interrupt servicing, but the part of Smith&#8217;s code in the scheduler&#8217;s <span class="caps">VM</span> image (which is accidentally also the part shared with process Neo) still runs. Since there are only two processes running, they both are trying to kill each other. Meanwhile, since interrupts are no longer being served, the hardware watchdog timer wakes up, inserts a <span class="caps">NMI</span>, which wakes up the monitoring system. It decides the system is in a critical state and proceeds to kill all processes, then restarts them to bring the system up again. The&nbsp;End.</li>
+</ul>
+<p>Post mortem analysis: There appears to be an inherent flaw in the design of the operating system, especially in the <span class="caps">VM</span>, <span class="caps">IPC</span> and monitoring subsystems, resulting in a global memory corruption among processes and critical failure of address space protection for a small number of&nbsp;processes.</p>
+<p>Recommendation: More fine tuning is needed to settle out the proper process priorities, reduce priority inversions and imbalance. <span class="caps">VM</span> system probably needs to be rewritten and <span class="caps">IDS</span> system replaced with a less resource intensive version. System monitor needs to be modified not to start extensive operations if the system load is above a&nbsp;threshold.</p>
+<p>There! An interpretation of The Matrix without involving &quot;free will&quot; in any&nbsp;way.</p>
+<p>There are <a href="./2014/Jul-how-do-you-explain-an-os-kernel-to-a-layperson-an-old-text-about-the-matrix-as-an-operating-system.html#disqus_thread">comments</a>.</p>                </article>
+		<div class="gimme">Like this article? Thank me with some <a href="http://dogecoin.com/">Doge</a> at <a href="dogecoin://DKUKYfhKV6bT77rkv9oLViTp5N9F3VtHXY?amount=20000">DKUKYfhKV6bT77rkv9oLViTp5N9F3VtHXY</a><br>
+		    or <a href="http://bitcoin.org">BTC</a> at <a href="bitcoin:1MstKbw3XjeG3zE9biKyZ2XKADouuYfHAa?amount=0.01">1MstKbw3XjeG3zE9biKyZ2XKADouuYfHAa</a>!</div>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/Jul-on-constants-in-algorithmic-complexity-and-comparing-apples-to-oranges.html" rel="bookmark"
+                           title="Permalink to On constants in algorithmic complexity, and comparing apples to oranges">On constants in algorithmic complexity, and comparing apples to&nbsp;oranges</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-07-18T00:00:00">
+                Fri 18 July 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/hack.html">Hack</a>. </p>
+<p>tags: <a href="./tag/algorithms.html">algorithms</a><a href="./tag/complexity.html">complexity</a></p>
+</footer><!-- /.post-info -->                <p>Can an O(n!) algorithm be faster than an O(1) algorithm? Yes, of course it&nbsp;can.</p>
+<p>So I came across an interestring and almost trivial programming puzzle: <strong>given an arbitrary word and a dictionary of words, find all anagrams of the word present in the dictionary</strong>. At first I ...</p>
+                <a class="readmore" href="./2014/Jul-on-constants-in-algorithmic-complexity-and-comparing-apples-to-oranges.html">read more</a>
+<p>There are <a href="./2014/Jul-on-constants-in-algorithmic-complexity-and-comparing-apples-to-oranges.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/Jun-how-about-a-digital-price-tag.html" rel="bookmark"
+                           title="Permalink to How about a Digital Price Tag?">How about a Digital Price&nbsp;Tag?</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-29T00:00:00">
+                Sun 29 June 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/projects.html">Projects</a>. </p>
+<p>tags: <a href="./tag/cryptocurrency.html">cryptocurrency</a><a href="./tag/dogecoin.html">dogecoin</a><a href="./tag/bitcoin.html">bitcoin</a><a href="./tag/price-tag.html">price tag</a></p>
+</footer><!-- /.post-info -->                <p><strong>How about adding intelligent information to our price tags? BitCoin and DogeCoin (and others) already have payment URLs, but we can do better than&nbsp;that!</strong></p>
+<p>The easiest way to offer something for purchase using cryptocurrency is simply to link and/or describe what you want to the buyers on your ...</p>
+                <a class="readmore" href="./2014/Jun-how-about-a-digital-price-tag.html">read more</a>
+<p>There are <a href="./2014/Jun-how-about-a-digital-price-tag.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/Jun-can-ubi-be-tested-with-digital-currency.html" rel="bookmark"
+                           title="Permalink to Can UBI be tested with Digital Currency?">Can <span class="caps">UBI</span> be tested with Digital&nbsp;Currency?</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-27T00:00:00">
+                Fri 27 June 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/hacktivism.html">Hacktivism</a>. </p>
+<p>tags: <a href="./tag/cryptocurrency.html">cryptocurrency</a><a href="./tag/dogecoin.html">dogecoin</a><a href="./tag/bitcoin.html">bitcoin</a><a href="./tag/ubi.html">UBI</a></p>
+</footer><!-- /.post-info -->                <p><a class="reference external" href="http://www.pieria.co.uk/articles/the_central_paradox_of_the_21st_century">This article on the discrepancy between consumers&#8217; lifestyle and deteriorating workers&#8217; rights</a>
+has sparked a prodigiously long <a class="reference external" href="http://www.reddit.com/r/Futurology/comments/2950ho/the_central_paradox_of_the_21st_century_as/">discussion on the Futurology subreddit</a>
+(where the usual median length of the discussion is somewhere around 10 comments). Such topics now regularly venture into discussing the merits of
+<a class="reference external" href="http://en.wikipedia.org/wiki/Basic_income">Universal basic income</a> (<a class="reference external" href="http://basicincome2013.eu/"><span class="caps">UBI</span></a>), which ...</p>
+                <a class="readmore" href="./2014/Jun-can-ubi-be-tested-with-digital-currency.html">read more</a>
+<p>There are <a href="./2014/Jun-can-ubi-be-tested-with-digital-currency.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/Jun-the-pirate-party-of-croatia-what-went-wrong.html" rel="bookmark"
+                           title="Permalink to The Pirate party of Croatia - what went wrong">The Pirate party of Croatia - what went&nbsp;wrong</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-20T00:00:00">
+                Fri 20 June 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/hacktivism.html">Hacktivism</a>. </p>
+<p>tags: <a href="./tag/pirates.html">pirates</a><a href="./tag/politics.html">politics</a></p>
+</footer><!-- /.post-info -->                <p>The context of this article is that it&#8217;s a sort of a post-mortem written from
+my own perspective of what went wrong in the Pirate Party of Croatia, now that
+I&#8217;ve left it. I&#8217;ve been one of the founding members and after more than two years&#8217;
+work ...</p>
+                <a class="readmore" href="./2014/Jun-the-pirate-party-of-croatia-what-went-wrong.html">read more</a>
+<p>There are <a href="./2014/Jun-the-pirate-party-of-croatia-what-went-wrong.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/Jun-the-needle-search-server-pre-alpha.html" rel="bookmark"
+                           title="Permalink to The Needle Search Server - pre-alpha">The Needle Search Server -&nbsp;pre-alpha</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-15T00:00:00">
+                Sun 15 June 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/projects.html">Projects</a>. </p>
+<p>tags: <a href="./tag/needle.html">needle</a></p>
+</footer><!-- /.post-info -->                <p>I&#8217;ve talked about my new project, the <a class="reference external" href="http://ivoras.net/blog/tree/2014/May-starting-a-new-project-needle.html">Needle Search Server</a>
+before - it is supposed to be a light-weight full text search server written in C++
+and using <a class="reference external" href="https://code.google.com/p/leveldb/">LevelDB</a> for storage. I&#8217;ve arrived
+at a point where the code actually does something useful and I want to talk about ...</p>
+                <a class="readmore" href="./2014/Jun-the-needle-search-server-pre-alpha.html">read more</a>
+<p>There are <a href="./2014/Jun-the-needle-search-server-pre-alpha.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/May-a-brief-history-of-computing-in-error-messages.html" rel="bookmark"
+                           title="Permalink to A brief history of computing in error messages">A brief history of computing in error&nbsp;messages</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-05-27T00:00:00">
+                Tue 27 May 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/lore.html">lore</a><a href="./tag/errno.html">errno</a><a href="./tag/history.html">history</a><a href="./tag/errors.html">errors</a></p>
+</footer><!-- /.post-info -->                <p>Technologies and systems come and go but error messages stay. Of course, this
+is because errors are (or were, before exceptions) signified by integer
+<a class="reference external" href="http://stanislavs.org/helppc/dos_error_codes.html">error codes</a> and libraries maintain, among
+other things, dictionaries of human-readable messages to go with such codes.
+Most system programmers, or any other programmers which still ...</p>
+                <a class="readmore" href="./2014/May-a-brief-history-of-computing-in-error-messages.html">read more</a>
+<p>There are <a href="./2014/May-a-brief-history-of-computing-in-error-messages.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/May-dear-google-make-me-a-phone.html" rel="bookmark"
+                           title="Permalink to Dear Google, make me a Phone">Dear Google, make me a&nbsp;Phone</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-05-27T00:00:00">
+                Tue 27 May 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/brainstorming.html">Brainstorming</a>. </p>
+<p>tags: <a href="./tag/android.html">android</a><a href="./tag/mobile.html">mobile</a><a href="./tag/battery.html">battery</a></p>
+</footer><!-- /.post-info -->                <p>Dear Google, please make me a Phone which lasts 24h. Heck, even 18h would be a
+marked improvement since no phone that I&#8217;ve used lasts me even 12h. You see,
+I actually <strong>use</strong> my devices, they are not sitting in my pocket among the lint.
+Also, I don&#8217;t ...</p>
+                <a class="readmore" href="./2014/May-dear-google-make-me-a-phone.html">read more</a>
+<p>There are <a href="./2014/May-dear-google-make-me-a-phone.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/May-starting-a-new-project-needle.html" rel="bookmark"
+                           title="Permalink to Starting a new project - Needle">Starting a new project -&nbsp;Needle</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-05-21T00:00:00">
+                Wed 21 May 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/projects.html">Projects</a>. </p>
+<p>tags: <a href="./tag/needle.html">needle</a><a href="./tag/open-government.html">open-government</a><a href="./tag/hacktivism.html">hacktivism</a></p>
+</footer><!-- /.post-info -->                <p>I have recently built an &quot;Open Government&quot; service which takes all the documents
+from the official Croatian government gazette which, among other things,
+publishes laws, changes to laws, decisions of the Constitutional court, etc. and
+indexes them, offering <a class="reference external" href="http://zakoni.ivoras.net">two new services</a>: better
+full-text searchability and data &quot;push&quot; approach, allowing users ...</p>
+                <a class="readmore" href="./2014/May-starting-a-new-project-needle.html">read more</a>
+<p>There are <a href="./2014/May-starting-a-new-project-needle.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2014/May-switching-my-blog-to-pelican.html" rel="bookmark"
+                           title="Permalink to Switching my blog to Pelican">Switching my blog to&nbsp;Pelican</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-05-11T00:00:00">
+                Sun 11 May 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/blog.html">blog</a><a href="./tag/pelican.html">pelican</a></p>
+</footer><!-- /.post-info -->                <p>After using my own blog platform since 2008, I figured it&#8217;s time to give up on
+maintaining yet another piece of software just form my own use and switched this
+blog to <a class="reference external" href="http://docs.getpelican.com/">Pelican</a>. It&#8217;s the popular static html
+site generator (the old blog system was also static) and ...</p>
+                <a class="readmore" href="./2014/May-switching-my-blog-to-pelican.html">read more</a>
+<p>There are <a href="./2014/May-switching-my-blog-to-pelican.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Oct-2013-10-31.pkgng-goes-official-in-freebsd.html" rel="bookmark"
+                           title="Permalink to pkgng goes official in FreeBSD">pkgng goes official in&nbsp;FreeBSD</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-10-31T11:12:00">
+                Thu 31 October 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/pkgng.html">pkgng</a></p>
+</footer><!-- /.post-info -->                
+<p>As <a href="http://lists.freebsd.org/pipermail/freebsd-announce/2013-October/001510.html">seen on the announcements list</a>, pkgng is now officially up and running for FreeBSD! The infrastructure had some rough times before and the deployment was prolonged a bit, but now it&#8217;s finally there and the old pkg_* tools can be put to&nbsp;rest.</p>
+<p>The preferred format for referencing ...</p>
+                <a class="readmore" href="./2013/Oct-2013-10-31.pkgng-goes-official-in-freebsd.html">read more</a>
+<p>There are <a href="./2013/Oct-2013-10-31.pkgng-goes-official-in-freebsd.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Oct-2013-10-24.why-ufs-in-freebsd-is-great.html" rel="bookmark"
+                           title="Permalink to Why UFS in FreeBSD is great">Why <span class="caps">UFS</span> in FreeBSD is&nbsp;great</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-10-24T16:45:00">
+                Thu 24 October 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/ufs.html">UFS</a><a href="./tag/file-systems.html">file systems</a><a href="./tag/zfs.html">ZFS</a></p>
+</footer><!-- /.post-info -->                
+<p><a href="http://en.wikipedia.org/wiki/ZFS"><span class="caps">ZFS</span></a> is of course the rock-star file system in FreeBSD, with numerous features and new ones <a href="http://svnweb.freebsd.org/base?view=revision&amp;revision=256889">frequently</a> <a href="http://svnweb.freebsd.org/base?view=revision&amp;revision=256956">coming</a> <a href="http://svnweb.freebsd.org/base?view=revision&amp;revision=256999">in</a>, but <span class="caps">UFS</span> is also a pretty solid deal which is perfectly usable for a wide number of tasks. Here are some of my favourite <span class="caps">UFS</span>&nbsp;features.</p>
+<hr>
+<p><strong>#1:</strong> <span class="caps">UFS</span> is a pretty ...</p>
+                <a class="readmore" href="./2013/Oct-2013-10-24.why-ufs-in-freebsd-is-great.html">read more</a>
+<p>There are <a href="./2013/Oct-2013-10-24.why-ufs-in-freebsd-is-great.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Oct-2013-10-21.apache-2.2-and-perfect-forward-secrecy-pfs.html" rel="bookmark"
+                           title="Permalink to Apache 2.2 and Perfect Forward Secrecy (PFS)">Apache 2.2 and Perfect Forward Secrecy (<span class="caps">PFS</span>)</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-10-21T12:46:00">
+                Mon 21 October 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/apache.html">Apache</a><a href="./tag/openssl.html">OpenSSL</a></p>
+</footer><!-- /.post-info -->                
+<p><strong>Update</strong>: apparently (I haven&#8217;t tested it yet), <a href="http://www.apache.org/dist/httpd/CHANGES_2.2.26">Apache 2.2.26 finally supports <span class="caps">ECDH</span> cipher suites</a>! The remainder of this blog post is not as usable any more and you can simply use some <a href="http://ggramaize.wordpress.com/2013/08/02/tls-perfect-forward-secrecy-support-with-apache/">common SSLCipherSuite lines</a>.</p>
+<p>Using modern <a href="http://en.wikipedia.org/wiki/Perfect_forward_secrecy">Perfect Forward Secrecy</a> (<a href="http://vincent.bernat.im/en/blog/2011-ssl-perfect-forward-secrecy.html"><span class="caps">PFS</span></a>) cipher suites with <a class="ot-hashtag" href="https://plus.google.com/s/%23Apache">#Apache</a> 2.2 ...</p>
+                <a class="readmore" href="./2013/Oct-2013-10-21.apache-2.2-and-perfect-forward-secrecy-pfs.html">read more</a>
+<p>There are <a href="./2013/Oct-2013-10-21.apache-2.2-and-perfect-forward-secrecy-pfs.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Oct-2013-10-05.what-i-like-about-the-nimrod-programming-language.html" rel="bookmark"
+                           title="Permalink to What I like about the Nimrod programming language">What I like about the Nimrod programming&nbsp;language</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-10-05T23:02:00">
+                Sat 05 October 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/nimrod.html">Nimrod</a><a href="./tag/python.html">Python</a></p>
+</footer><!-- /.post-info -->                
+<p><a href="http://nimrod-code.org/">Nimrod</a> is a relatively new programming language which I find very interesting mainly because it is a compiled language and has a syntax which is a combination of Python&#8217;s and Pascal&#8217;s syntax, the two languages I find most aesthetically pleasing, with a small sprinkling of other influences, like ...</p>
+                <a class="readmore" href="./2013/Oct-2013-10-05.what-i-like-about-the-nimrod-programming-language.html">read more</a>
+<p>There are <a href="./2013/Oct-2013-10-05.what-i-like-about-the-nimrod-programming-language.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Oct-2013-10-01.pgrep---another-little-known-freebsd-command.html" rel="bookmark"
+                           title="Permalink to pgrep - another little known FreeBSD command">pgrep - another little known FreeBSD&nbsp;command</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-10-01T12:39:00">
+                Tue 01 October 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/pgrep.html">pgrep</a></p>
+</footer><!-- /.post-info -->                
+<p>Have you ever wanted to perform an action on a large set of processes which are forked from one another (or started from the same binary in some other way) but were stopped by the need to use awk or something else to parse the PIDs from the output of ...</p>
+                <a class="readmore" href="./2013/Oct-2013-10-01.pgrep---another-little-known-freebsd-command.html">read more</a>
+<p>There are <a href="./2013/Oct-2013-10-01.pgrep---another-little-known-freebsd-command.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Sep-2013-09-16.geom_shsec--a-shared-secret-disk-drive-geom-module.html" rel="bookmark"
+                           title="Permalink to GEOM_SHSEC: A shared secret disk drive GEOM module">GEOM_SHSEC: A shared secret disk drive <span class="caps">GEOM</span>&nbsp;module</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-09-16T15:22:00">
+                Mon 16 September 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/geom.html">GEOM</a></p>
+</footer><!-- /.post-info -->                
+<p><a href="http://www.freebsd.org/cgi/man.cgi?gshsec">GEOM_SHSEC</a> is one of the less frequently used <span class="caps">GEOM</span> modules from FreeBSD, but it is actually pretty interesting. It combines several drives (or any other entities which are presentable as <span class="caps">GEOM</span> devices - including <span class="caps">USB</span> memory keys and files) into a single virtual drive which has the property that all its ...</p>
+                <a class="readmore" href="./2013/Sep-2013-09-16.geom_shsec--a-shared-secret-disk-drive-geom-module.html">read more</a>
+<p>There are <a href="./2013/Sep-2013-09-16.geom_shsec--a-shared-secret-disk-drive-geom-module.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Aug-2013-08-30.viber-voip-messaging-app-working-on-freebsd-under-wine.html" rel="bookmark"
+                           title="Permalink to Viber voip+messaging app working on FreeBSD under Wine">Viber voip+messaging app working on FreeBSD under&nbsp;Wine</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-08-30T11:16:00">
+                Fri 30 August 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/wine.html">Wine</a><a href="./tag/viber.html">Viber</a></p>
+</footer><!-- /.post-info -->                
+<p>A friend told me that <a href="http://www.viber.com/">Viber</a> (a free VoIP + messaging application for smartphones, similar to Skype) now has a <a href="http://www.viber.com/products/windows/">Windows application</a> and it works for him on Wine on Linux, so I just had to try it out on FreeBSD - and it works. Surprisingly&nbsp;easy.</p>
+<hr>
+<p>I guess even Wine is ...</p>
+                <a class="readmore" href="./2013/Aug-2013-08-30.viber-voip-messaging-app-working-on-freebsd-under-wine.html">read more</a>
+<p>There are <a href="./2013/Aug-2013-08-30.viber-voip-messaging-app-working-on-freebsd-under-wine.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Jul-2013-07-09.people-will-be-people.html" rel="bookmark"
+                           title="Permalink to People will be people">People will be&nbsp;people</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-07-09T13:25:00">
+                Tue 09 July 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/nonsense.html">Nonsense</a></p>
+</footer><!-- /.post-info -->                
+<p>I am frequently <a href="http://m.guardian.co.uk/world/video/2013/jul/08/edward-snowden-video-interview">amused</a> by all the recent happenings <a href="http://www.guardian.co.uk/world/2013/jul/07/edward-snowden-venezuela-last-chance">around</a> <a href="http://en.wikipedia.org/wiki/Edward_Snowden">Snowden</a> and the revelations of privacy breaches by <a href="http://news.slashdot.org/story/13/07/09/0158219/uk-government-surveillance-faces-legal-challenge-in-secret-court">various</a> <a href="http://www.spiegel.de/international/world/whistleblower-snowden-claims-german-intelligence-in-bed-with-nsa-a-909904.html">governments</a>. Before going on, I&#8217;d like to say that I don&#8217;t offer any answers here in this text, just commentary, so it is probable you won&#8217;t learn anything ...</p>
+                <a class="readmore" href="./2013/Jul-2013-07-09.people-will-be-people.html">read more</a>
+<p>There are <a href="./2013/Jul-2013-07-09.people-will-be-people.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/Jun-2013-06-03.openvpn-on-freebsd.html" rel="bookmark"
+                           title="Permalink to OpenVPN on FreeBSD">OpenVPN on&nbsp;FreeBSD</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-06-03T22:21:00">
+                Mon 03 June 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/openvpn.html">OpenVPN</a><a href="./tag/networking.html">networking</a></p>
+</footer><!-- /.post-info -->                
+<p><a href="http://openvpn.net/index.php/open-source.html">OpenVPN</a> is probably the most popular semi-non-standard cross-platform <span class="caps">VPN</span> solution, with a large number of users and a pure userland implementation. It&#8217;s pretty easy to set up, but I often forget certain steps so here&#8217;s a tutorial for me to rememeber in the future&nbsp;:)</p>
+<hr>
+<p>I call OpenVPN semi-non-standard ...</p>
+                <a class="readmore" href="./2013/Jun-2013-06-03.openvpn-on-freebsd.html">read more</a>
+<p>There are <a href="./2013/Jun-2013-06-03.openvpn-on-freebsd.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="./2013/May-2013-05-17.bsdcan-and-freebsd-devsummit-2013.html" rel="bookmark"
+                           title="Permalink to BSDCan and FreeBSD DevSummit 2013">BSDCan and FreeBSD DevSummit&nbsp;2013</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-05-17T15:50:00">
+                Fri 17 May 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="./author/ivan-voras.html">Ivan Voras</a>
+        </address>
+<p>In <a href="./category/misc.html">Misc</a>. </p>
+<p>tags: <a href="./tag/freebsd.html">FreeBSD</a><a href="./tag/bsdcan.html">BSDCan</a><a href="./tag/devsummit.html">DevSummit</a><a href="./tag/2013.html">2013</a></p>
+</footer><!-- /.post-info -->                
+<p>It&#8217;s that time of the year again - time for the biggest, bestest gathering of <span class="caps">BSD</span> geeks from around the world - <a href="http://www.bsdcan.org/2013/">BSDCan 2013</a>. It was great to see old friends and new faces, exchange ideas and talk about the bright&nbsp;future.</p>
+<hr>
+<p>The main event was traditionally precceded by two days ...</p>
+                <a class="readmore" href="./2013/May-2013-05-17.bsdcan-and-freebsd-devsummit-2013.html">read more</a>
+<p>There are <a href="./2013/May-2013-05-17.bsdcan-and-freebsd-devsummit-2013.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 12
+        <a href="./index2.html">&raquo;</a>
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://www.freebsd.org/">FreeBSD</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://hrblog.ivoras.net">My Croatian blog</a></li>
+                            <li><a href="http://ivoras.net">Some (old) information on me</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://plus.google.com/+IvanVoras">My Google+ Profile</a></li>
+                            <li><a href="https://www.facebook.com/ivoras">My Facebook Profile</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3290291-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</body>
+</html>

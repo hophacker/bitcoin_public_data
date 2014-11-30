@@ -1,0 +1,283 @@
+http://www.enderminh.com/minh/photoresizer.aspx
+HTTP/1.1 200 OK
+Cache-Control: private
+Content-Type: text/html; charset=utf-8
+Server: Microsoft-IIS/8.0
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+X-Powered-By-Plesk: PleskWin
+Date: Tue, 22 Jul 2014 13:23:29 GMT
+Connection: close
+Content-Length: 11507
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2021219-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function () {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script><link rel="stylesheet" type="text/css" href="styles/main.css" />
+    <script src="http://coinwidget.com/widget/coin.js"></script>
+    
+<title>
+	Minh's Free PhotoResizer 1.8
+</title></head>
+    <body>
+        <form method="post" action="photoresizer.aspx" id="MainForm">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTEwMDUyNjYzMjhkZEehumZLjVi3oOxdT4YYUm7SwhdDr/3VSqMqokU3gP2p" />
+
+            <div>
+                
+    <div id="contentWrapper">
+        <div id="header">
+            <h1>
+                <a href="/">Minh T. Nguyen</a>
+            </h1>
+        </div>
+        <div id="middleWrapper">
+            <div id="menuSection">
+                <h3>
+                    Personal</h3>
+                <ul>
+                    <li><a href="default.aspx">Introduction</a> </li>
+                    <li><a href="https://plus.google.com/u/0/105928811308006518314/posts" target="_blank">
+                        Google+ Profile</a></li>
+                    <li><a href="http://www.linkedin.com/in/enderminh" target="_blank">LinkedIn Profile</a></li>
+                    <li><a href="multimedia.aspx">Multimedia</a> </li>
+                </ul>
+                <h3>
+                    Websites and Services</h3>
+                <ul>
+                    <li><a href="http://www.transitme.com" target="_blank">TransitMe</a> </li>
+                    <li><a href="vnconversions.aspx">Vietnamese Conversions</a> </li>
+                    <li><a href="utf8-to-unicode-converter.aspx">UTF-8 to Unicode Converter</a></li>
+                </ul>
+                <h3>
+                    Programs</h3>
+                <ul>
+                    <li><a href="diskspaceexplorer.aspx">DiskSpaceExplorer</a> </li>
+                    <li><a href="minhiaccess.aspx">MinhiAccess</a> </li>
+                    <li><a href="photoresizer.aspx">PhotoResizer</a> </li>
+                </ul>
+                <h3>
+                    Books and Articles</h3>
+                <ul>
+                    <li><a href="http://www.nycsubwayguide.com/" target="_blank">The Absolute Beginner’s Guide to the New York Subway</a></li>
+                    <li><a href="http://www.ddj.com/dept/windows/219501054" target="_blank">ASP.NET 2.0's
+                        Client Callback Feature</a> </li>
+                    <li><a href="http://goo.gl/BzUVi" target="_blank">Tips for Creating Great Photo Spheres</a></li>
+                    <li><a href="vsnet_tt.aspx">Visual Studio .NET Tips and Tricks</a> </li>
+                </ul>
+                <h3>
+                    Essays</h3>
+                <ul>
+                    <li><a href="abschluss.aspx">Abschlussrede</a> </li>
+                    <li><a href="civilrights.aspx">Civil Rights - The History of Gay Rights</a> </li>
+                    <li><a href="http://archive.dailycal.org/article/753/departing_professors_what_is_happening_to_diversit"
+                        target="_blank">Departing Professors: What is Happening to Diversity at UC?</a>
+                    </li>
+                    <li><a href="helloworld.aspx">Hello World</a> </li>
+                    <li><a href="restless.aspx">Restless in Seattle</a> </li>
+                    <li><a href="vietkieu.aspx">Viet Kieu Experience</a> </li>
+                    <li><a href="vietteaching.aspx">VN Teaching Experience</a> </li>
+                </ul>
+                <h3>
+                    Contact</h3>
+                <ul>
+                    <li><a href="contact.aspx">Contact Me</a> </li>
+                </ul>
+                <div style="margin:10px 0px 20px 40px">
+                    
+<script>
+    CoinWidgetCom.go({
+        wallet_address: "1CXTU1xjHVbynaqqCY2LdHBiWkysywzgDA"
+        , currency: "bitcoin"
+        , counter: "count"
+        , alignment: "bl"
+        , qrcode: true
+        , auto_show: false
+        , lbl_button: "Donate"
+        , lbl_address: "My Bitcoin Address:"
+        , lbl_count: "donations"
+        , lbl_amount: "BTC"
+    });
+</script>
+                </div>
+            </div>
+            <div id="mainSection">
+                
+                <div id="subTitleWrapper">
+                    <div id="addThis">
+                        
+<div style="width: 180px; padding: 0px; margin: 0px;">
+    <div style="width: 30px; padding: 0px; margin: 0px; float: left">
+        <div class="g-plusone" data-size="small" data-annotation="none">
+        </div>
+    </div>
+    <div style="width: 150px; padding: 0px; margin: 0px; float: left">
+        <div class="addthis_toolbox addthis_default_style">
+            <a class="addthis_button_preferred_1"></a><a class="addthis_button_preferred_2">
+            </a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4">
+            </a><a class="addthis_button_compact"></a><a class="addthis_counter addthis_bubble_style">
+            </a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function () {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
+    </script>
+    <script type="text/javascript">        var addthis_config = { "data_track_addressbar": true };</script>
+    <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid=enderminh"></script>
+</div>
+
+                    </div>
+                    <div id="subTitle">
+                        <h2>
+                            Minh's Free PhotoResizer 1.8
+                        </h2>
+                    </div>
+                </div>
+                <div class="cb">
+                </div>
+                
+    <div class="productDetails">
+        <div>
+            <div>
+                Requirement</div>
+            <div>
+                :</div>
+            <div>
+                <a href="http://www.microsoft.com/en-us/download/details.aspx?id=17851">.NET Framework
+                    4.0 or higher</a></div>
+            <div class="cb">
+            </div>
+        </div>
+        <div>
+            <div>
+                Size</div>
+            <div>
+                :</div>
+            <div>
+                45kb</div>
+            <div class="cb">
+            </div>
+        </div>
+        <div>
+            <div>
+                Download</div>
+            <div>
+                :</div>
+            <div>
+                <a href="http://download.cnet.com/Minh-s-Free-PhotoResizer/3000-2192_4-10977504.html" target="_blank">
+                    Download</a></div>
+                
+            <div class="cb">
+            </div>
+        </div>
+        <div>
+            <div>
+                License</div>
+            <div>
+                :</div>
+            <div>
+                Freeware</div>
+            <div class="cb">
+            </div>
+        </div>
+    </div>
+    <div class="cb">
+        <p align="center">
+            <img src="images/photoresizer.png" alt="Minh's Free PhotoResizer Screenshot" />
+            <img src="images/photoresizer2.png" style="margin-top: 5px" alt="Minh's Free PhotoResizer Screenshot" />
+        </p>
+        <div>
+            Need to batch resize photos on Windows? This is a very simple utility to allow you to batch-resize digital photos. You simply
+            indicate your maximum width or height in pixels and drag and drop your images (or
+            folder containing images) onto the window. The program will then batch-resize all
+            images into a subfolder. It can't get any easier than that. You can also choose
+            the output file type and install shell extensions so that you can right-click on
+            any photo in Windows Explorer and resize from there.<br />
+            <br />
+            <h3>Version history</h3>
+            <strong>Version 1.8 (January 17<sup>th</sup> 2013)</strong>
+            <ul>
+                <li>Added ability to decide on whether to resize always by width, always by height or by whatever is shorter/larger</li>
+                <li>Minor bug fixes</li>
+            </ul>
+            <strong>Version 1.7 (November 11<sup>th</sup> 2012)</strong>
+            <ul>
+                <li>Ability to automatically open output directory</li>
+                <li>Minor UI tweaks to make it even more intuitive</li>
+            </ul>
+            <strong>Version 1.61 (July 5<sup>th</sup> 2010)</strong>
+            <ul>
+                <li>Allows for choosing the output file type</li>
+                <li>Extend support to TIFF, JPEG, BMP, GIF and PNG codecs (input as well as output)</li>
+            </ul>
+            <strong>Version 1.5 (October 24<sup>th</sup> 2009)</strong>
+            <ul>
+                <li>Settings are now stored in registry</li>
+                <li>Shell extensions allow you to right-click on an image/folder to resize with previous
+                    settings</li>
+                <li>Added Check for Updates</li>
+                <li>Dragging lot of files into PhotoResizer will no longer lock up Windows Explorer
+                    during the resizing process</li>
+                <li>Renamed from "Minh's Stupid PhotoResizer" to "Minh's Free PhotoResizer"</li>
+            </ul>
+            <strong>Version 1.4 (December 20<sup>th</sup> 2008)</strong>
+            <ul>
+                <li>Add option to skip scaling up pictures that are already smaller than the desired
+                    size and copying them instead</li>
+                <li>Add time to completion prediction</li>
+            </ul>
+            <strong>Version 1.3 (August 23<sup>rd</sup> 2006)</strong>
+            <ul>
+                <li>Slightly faster JPEG saving algorithm</li>
+                <li>Retains EXIF meta-data tags</li>
+            </ul>
+            <strong>Version 1.2 (March 8<sup>th</sup> 2006)</strong>
+            <ul>
+                <li>Add support to set JPEG quality</li>
+            </ul>
+            <strong>Version 1.1 (Some time in 2003 or 2004)</strong>
+            <ul>
+                <li>Upgraded to use .NET Framework 1.1</li>
+            </ul>
+            <strong>Version 1.0 (November 20<sup>th</sup> 2002)</strong>
+            <ul>
+                <li>Initial version</li>
+            </ul>
+            </p>
+        </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="cb">
+    </div>
+    <div id="footer">
+        Copyright &copy;
+        2014<br />
+        Minh T. Nguyen
+    </div>
+
+            </div>
+        </form>
+        
+    </body>
+</html>
+

@@ -1,0 +1,411 @@
+http://procbits.com/2013/08/27/generating-a-bitcoin-address-with-javascript
+HTTP/1.1 200 OK
+x-amz-id-2: Vv8gV8qYcxGFtpfRkrrlbOiXsKB8iYD5uknY3jkOPY815B5jHBQVEGK2/ZM4vRa9
+x-amz-request-id: DEF82E123B5DE207
+Date: Wed, 23 Jul 2014 20:07:47 GMT
+Last-Modified: Sat, 07 Dec 2013 20:25:16 GMT
+ETag: "aea2ffbc11d38ff552c646faa918c004"
+Content-Type: text/html
+Content-Length: 49674
+Connection: keep-alive
+Server: AmazonS3
+
+<!DOCTYPE html>
+<title>Generating a Bitcoin Address with JavaScript</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="JP Richardson">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="/assets/css/highlight.css" rel="stylesheet">
+<link href="/assets/css/style.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css" rel="stylesheet">
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  
+  
+  
+</script>
+<div id="wrap">
+  <div class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="http://procbits.com" class="navbar-brand">procbits</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav pull-right"> 
+          <li><a href="/pages/about">About            </a></li>
+          <li><a href="/tags">Tags</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container"> <h1>Generating a Bitcoin Address with JavaScript</h1>
+
+<script src="/media/2013/08/bitcoinjs-min.js"></script>
+
+<p>If you&#39;re not familiar with Bitcoin, Bitcoin is essentially a P2P currency that has <a href="http://blockchain.info/charts/market-price">increased an order of magnitude in value within the last year</a>. This <a href="http://www.youtube.com/watch?v=Um63OQz3bjo">video</a> does a good job of explaining it. There are a number of libraries to work with Bitcoin in some of the most popular languages: <a href="https://github.com/MatthewLM/cbitcoin">C</a>, <a href="https://code.google.com/p/bitcoinj/">Java</a>, <a href="https://code.google.com/p/bitcoinsharp/">C#</a>, <a href="https://github.com/lian/bitcoin-ruby">Ruby</a>, <a href="https://github.com/laanwj/bitcoin-python">Python</a>, <a href="https://github.com/piotrnar/gocoin">Go</a>, and <a href="https://github.com/bitcoinjs/bitcoinjs-lib">JavaScript</a>. This article will focus exclusively on the JavaScript library.</p>
+<p><strong>Disclaimer:</strong> I am not a cryptographer and any such cryptography advice or implementations should be accepted as academic experimentation and not crypto best practices.</p>
+<h2 id="random-number-generation">Random Number Generation</h2>
+<p>I&#39;d be remiss if I didn&#39;t mention anything about random number generation. Random number generation is the basis of most cryptography and Bitcoin. Your Bitcoin addresses are only as secure as your random number generator. A random number generator that is said to be cryptographically secure if it is good enough to use for cryptography in that there is enough <a href="http://en.wikipedia.org/wiki/Entropy">entropy</a> for a person to predict the number generator. <code>Math.random()</code> is not cryptographically secure. This is because <code>Math.random()</code> is predictable. If it&#39;s predictable, an attacker could figure out your private key from your public key. The implications of someone else knowing your private key means that they can also spend your Bitcoins.</p>
+<p>At the time of this writing, the predominant <a href="">JavaScript Bitcoin library</a> uses <a href="https://code.google.com/p/crypto-js/">CryptoJS</a> which surprisingly uses <code>Math.random()</code>. This article shows how you can use the up and coming <a href="https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues"><code>window.crytpo</code> standard</a> or the <a href="http://bitwiseshiftleft.github.io/sjcl/">Stanford JavaScript Crypto Library</a></p>
+<p>further reading:</p>
+<ul>
+<li><a href="http://nakedsecurity.sophos.com/2013/07/09/anatomy-of-a-pseudorandom-number-generator-visualising-cryptocats-buggy-prng/">Anatomy of a pseudorandom number generator - Visualizing Cryptocat&#39;s buggy PRNG</a></li>
+<li><a href="http://crypto.stackexchange.com/questions/394/what-tests-can-i-do-to-ensure-my-prng-is-working-correctly">What tests can I do to ensure my PRNG is working correctly?</a></li>
+<li><a href="http://cacr.uwaterloo.ca/hac/about/chap5.pdf">Handbook of Applied Cryptography - Chapter 5: Pseudorandom Bits and Sequences</a></li>
+<li><a href="https://bitcointalk.org/index.php?topic=271831.0">Bitcoin Talk: Android Key Rotation</a></li>
+<li><a href="https://bitcointalk.org/index.php?topic=271486.0/">Bitcoin Talk: Bad Signatures leading to 55.82 BTC theft</a></li>
+<li><a href="http://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html">Android Developers: Some SecureRandom Thoughts</a></li>
+<li><a href="http://arstechnica.com/security/2013/08/all-android-created-bitcoin-wallets-vulnerable-to-theft/">All Android-created Bitcoin wallets vulnerable to theft</a></li>
+<li><a href="http://arstechnica.com/security/2013/08/google-confirms-critical-android-crypto-flaw-used-in-5700-bitcoin-heist/">Google confirms critical Android crypto flaw used in $5,700 Bitcoin heist</a></li>
+<li><a href="http://armoredbarista.blogspot.ch/2013/03/randomly-failed-weaknesses-in-java.html">Randomly failed! Weaknesses in Java Pseudo Random Number Generators</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues">window.crypto.getRandomValues()</a></li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<p>You&#39;re going to want to use the <a href="https://raw.github.com/bitcoinjs/bitcoinjs-lib/master/build/bitcoinjs-min.js">latest BitcoinJS client lib</a>. It&#39;s pretty outdated though. There are some more recent forks: <a href="https://github.com/bitfloor/bitcoinjs-lib">1</a>, <a href="https://github.com/twistandshout/bitcoinjs-lib">2</a>, and the one that <a href="https://github.com/DimeJet/bitcoinjs-lib">I will eventually maintain</a>. For now, use the outdated one, from BitcoinJS.</p>
+<p>I have included the library on this page. Just open up your Chrome Console or Firefox Console and start typing along.</p>
+<h2 id="bitcoin-keys-addresses-formats">Bitcoin Keys, Addresses, &amp; Formats</h2>
+<p>Bitcoin derives its security from the public-key crypto scheme <a href="http://en.wikipedia.org/wiki/Elliptic_curve_cryptography">Elliptic Curve Cryptography (ECC)</a>. So why did the designer of Bitcoin, <a href="https://en.bitcoin.it/wiki/Satoshi_Nakamoto">Satoshi Nakamoto</a>, decide to use ECC over the prevalent RSA crypto scheme? The primary benefit is the key size. According to the <a href="http://en.wikipedia.org/wiki/Elliptic_curve_cryptography">Wikipedia article on ECC</a>, &quot;a 256-bit ECC public key should provide comparable security to a 3072-bit RSA public key&quot;.</p>
+<p>The Elliptical Curve Cryptography <a href="http://www.secg.org/collateral/sec1_final.pdf">spec 2.2.1</a> states that the cryptography is governed by the equation:</p>
+<mjax>
+  $$ y^2 = (x^3 + ax + b) \bmod p $$
+</mjax>
+
+
+<p>The entire Elliptic curve domain is a sextuple, <a href="http://www.secg.org/collateral/sec1_final.pdf">spec 3.1.1</a>:</p>
+<mjax>
+  $$  T = (p, a, b, G, n, h) $$
+</mjax>
+
+
+<p>The precise details are out of scope for this article, read the spec for more info. Bitcoin uses the <a href="http://www.secg.org/collateral/sec2_final.pdf">secp256k1 (info on 2.7.1)</a> implementation, which uses <a href="http://en.wikipedia.org/wiki/Neal_Koblitz">Koblitz curves</a>.</p>
+<p>The sextuple parameters for secpk256k1 are:</p>
+<ul>
+<li><strong>p</strong>: FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F</li>
+<li><strong>a</strong>: 0</li>
+<li><strong>b</strong>: 7</li>
+<li><strong>G</strong> (compressed): 02 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798</li>
+<li><strong>G</strong> (uncompressed): 04 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8</li>
+<li><strong>n</strong>: FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141</li>
+<li><strong>h</strong>: 1</li>
+</ul>
+<p>thus reducing the elliptic curve equation to:</p>
+<mjax>
+    $$ y^2 = (x^3 + 7) \bmod p $$
+</mjax>
+
+
+<p>you really don&#39;t need to understand much of this. I mainly presented this material for academic purposes.</p>
+<h3 id="private-keys">Private Keys</h3>
+<p>Private keys are what allows you to spend your coins. A private key, <code>d</code> is any random number between <code>1</code> and <code>n - 1</code>. According to the <a href="http://www.secg.org/collateral/sec1_final.pdf">spec (3.2.1)</a>: &quot;an elliptic
+curve key pair <code>(d, Q)</code> associated with <code>T</code> consists of an elliptic curve secret key <code>d</code> which is an integer in the interval <code>[1, n - 1]</code>, and an elliptic curve public key <mjax>$ Q = (x_Q, y_Q) $</mjax> which is the point <mjax>$ Q = dG $</mjax>.</p>
+<p>You&#39;ll notice that we generate 32 random values. And <code>n</code> does not have a maximum of <mjax>$ 2^{256} - 1 $</mjax>, so it&#39;s theoretically possible to generate a key larger than the standard dictates. However, in practice, you really don&#39;t have to worry about it.</p>
+<p>let&#39;s generate a private key:</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">randArr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="c1">//create a typed array of 32 bytes (256 bits)</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="nx">randArr</span><span class="p">)</span> <span class="c1">//populate array with cryptographically secure random numbers</span>
+
+<span class="c1">//some Bitcoin and Crypto methods don&#39;t like Uint8Array for input. They expect regular JS arrays.</span>
+<span class="kd">var</span> <span class="nx">privateKeyBytes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">randArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span>
+  <span class="nx">privateKeyBytes</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">randArr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+
+<span class="c1">//if you want to follow the step-by-step results in this article, comment the </span>
+<span class="c1">//previous code and uncomment the following</span>
+<span class="c1">//var privateKeyBytes = Crypto.util.hexToBytes(&quot;1184CD2CDD640CA42CFC3A091C51D549B2F016D454B2774019C2B2D2E08529FD&quot;)</span>
+
+<span class="c1">//hex string of our private key</span>
+<span class="kd">var</span> <span class="nx">privateKeyHex</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">bytesToHex</span><span class="p">(</span><span class="nx">privateKeyBytes</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">privateKeyHex</span><span class="p">)</span> <span class="c1">//1184CD2CDD640CA42CFC3A091C51D549B2F016D454B2774019C2B2D2E08529FD</span>
+</pre></div>
+
+<p>simple enough, huh? But wait, this doesn&#39;t look like the private keys that you see in your Bitcoin clients. So, what&#39;s going on? Private keys typically use a format called the <a href="https://en.bitcoin.it/wiki/Wallet_import_format">Wallet Import Format (WIF)</a>.</p>
+<h4 id="wallet-import-format">Wallet Import Format</h4>
+<p>The Wallet Import Format (WIF) is shorter way to encode the private key. It is a <a href="https://en.bitcoin.it/wiki/Base58Check_encoding">base 58</a> encoding of <code>0x80</code> + private key + checksum.</p>
+<p>generate a WIF in JS:</p>
+<div class="highlight"><pre><span class="c1">//add 0x80 to the front, https://en.bitcoin.it/wiki/List_of_address_prefixes</span>
+<span class="kd">var</span> <span class="nx">privateKeyAndVersion</span> <span class="o">=</span> <span class="s2">&quot;80&quot;</span> <span class="o">+</span> <span class="nx">privateKeyHex</span>
+<span class="kd">var</span> <span class="nx">firstSHA</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">privateKeyAndVersion</span><span class="p">))</span>
+<span class="kd">var</span> <span class="nx">secondSHA</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">firstSHA</span><span class="p">))</span>
+<span class="kd">var</span> <span class="nx">checksum</span> <span class="o">=</span> <span class="nx">secondSHA</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">checksum</span><span class="p">)</span> <span class="c1">//&quot;206EC97E&quot;</span>
+
+<span class="c1">//append checksum to end of the private key and version</span>
+<span class="kd">var</span> <span class="nx">keyWithChecksum</span> <span class="o">=</span> <span class="nx">privateKeyAndVersion</span> <span class="o">+</span> <span class="nx">checksum</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keyWithChecksum</span><span class="p">)</span> <span class="c1">//&quot;801184CD2CDD640CA42CFC3A091C51D549B2F016D454B2774019C2B2D2E08529FD206EC97E&quot;</span>
+
+<span class="kd">var</span> <span class="nx">privateKeyWIF</span> <span class="o">=</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Base58</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">keyWithChecksum</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">privateKeyWIF</span><span class="p">)</span> <span class="c1">//&quot;5Hx15HFGyep2CfPxsJKe2fXJsCVn5DEiyoeGGF6JZjGbTRnqfiD&quot;</span>
+</pre></div>
+
+<p>You can verify that this checks out by looking at either at <a href="http://brainwallet.org">http://brainwallet.org</a> and entering the value of <code>privateKeyHex</code> for the input to <strong>Secret Exponent</strong>.  You can also verify <a href="http://gobittest.appspot.com/PrivateKey">http://gobittest.appspot.com/PrivateKey</a>.</p>
+<p>However, there is a much easier method to use:</p>
+<div class="highlight"><pre><span class="c1">//recall, &quot;privateKeyBytes&quot; is an array of random numbers</span>
+<span class="kd">var</span> <span class="nx">privateKeyWIF</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Address</span><span class="p">(</span><span class="nx">privateKeyBytes</span><span class="p">)</span> 
+<span class="nx">privateKeyWIF</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="mh">0x80</span> <span class="c1">//0x80 = 128, https://en.bitcoin.it/wiki/List_of_address_prefixes</span>
+<span class="nx">privateKeyWIF</span> <span class="o">=</span> <span class="nx">privateKeyWIF</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">privateKeyWIF</span><span class="p">)</span> <span class="c1">//&quot;5Hx15HFGyep2CfPxsJKe2fXJsCVn5DEiyoeGGF6JZjGbTRnqfiD&quot;</span>
+</pre></div>
+
+<h3 id="public-keys">Public Keys</h3>
+<p>Now that we have our private key, we can generate a public key. Recall that Bitcoin keys use the <a href="http://www.secg.org/collateral/sec2_final.pdf">secp256k1 (info on 2.7.1)</a> parameters. Public keys are generated by:</p>
+<mjax>
+
+$$ Q = dG $$
+
+</mjax>
+
+<p>where <mjax>$ Q $</mjax> is the public key, <mjax>$ d $</mjax> is the private key, and <mjax>$ G $</mjax> is a curve parameter. A public key is a 65 byte long value consisting of a leading <code>0x04</code> and X and Y coordinates of 32 bytes each.</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">curve</span> <span class="o">=</span> <span class="nx">getSECCurveByName</span><span class="p">(</span><span class="s2">&quot;secp256k1&quot;</span><span class="p">)</span> <span class="c1">//found in bitcoinjs-lib/src/jsbn/sec.js</span>
+
+<span class="c1">//convert our random array or private key to a Big Integer</span>
+<span class="kd">var</span> <span class="nx">privateKeyBN</span> <span class="o">=</span> <span class="nx">BigInteger</span><span class="p">.</span><span class="nx">fromByteArrayUnsigned</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> 
+
+<span class="kd">var</span> <span class="nx">curvePt</span> <span class="o">=</span> <span class="nx">curve</span><span class="p">.</span><span class="nx">getG</span><span class="p">().</span><span class="nx">multiply</span><span class="p">(</span><span class="nx">privateKeyBN</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">curvePt</span><span class="p">.</span><span class="nx">getX</span><span class="p">().</span><span class="nx">toBigInteger</span><span class="p">()</span>
+<span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">curvePt</span><span class="p">.</span><span class="nx">getY</span><span class="p">().</span><span class="nx">toBigInteger</span><span class="p">()</span>
+<span class="kd">var</span> <span class="nx">publicKeyBytes</span> <span class="o">=</span> <span class="nx">integerToBytes</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span> <span class="c1">//integerToBytes is found in bitcoinjs-lib/src/ecdsa.js</span>
+<span class="nx">publicKeyBytes</span> <span class="o">=</span> <span class="nx">publicKeyBytes</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">integerToBytes</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span><span class="mi">32</span><span class="p">))</span>
+<span class="nx">publicKeyBytes</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="mh">0x04</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">publicKeyHex</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">bytesToHex</span><span class="p">(</span><span class="nx">publicKeyBytes</span><span class="p">)</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">publicKeyHex</span><span class="p">)</span>
+<span class="cm">/* output:</span>
+<span class="cm">04d0988bfa799f7d7ef9ab3de97ef481cd0f75d2367ad456607647edde665d6f6</span>
+<span class="cm">fbdd594388756a7beaf73b4822bc22d36e9bda7db82df2b8b623673eefc0b7495</span>
+<span class="cm">*/</span>
+</pre></div>
+
+<p>this output can be verified with <a href="http://brainwallet.org">http://brainwallet.org</a>.</p>
+<h4 id="compressed-keys">Compressed Keys</h4>
+<p>You may have heard of Compressed keys. An excellent <a href="http://bitcoin.stackexchange.com/questions/3059/what-is-a-compressed-bitcoin-key">answer on the Bitcoin Stack Exchange</a> explains the differences:</p>
+<blockquote>
+<p>A compressed key is just a way of storing a public key in fewer bytes (33 instead of 65). There are no compatibility or security issues because they are precisely the same keys, just stored in a different way. The original Bitcoin software didn&#39;t use compressed keys only because their use was poorly documented in OpenSSL. They have no disadvantages other than that a little bit of additional computation is needed before they can be used to validate a signature.</p>
+<p>If you think of a public key as a point somewhere along a giant U, an uncompressed key is the X and Y coordinates of the point. A compressed key is how high up on the U the point is along with a single bit indicating whether it&#39;s on the left or right side. As you can visualize, they both encode precisely the same thing, but the compressed form requires half as much space plus one bit. (Of course, they&#39;re really points on elliptic curve secp256k1, but the concept is the same.)</p>
+<p>-- <cite>David Schwartz</cite></p>
+</blockquote>
+<p>There is little reason to use uncompressed keys. Let&#39;s generate a compressed public key:</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">publicKeyBytesCompressed</span> <span class="o">=</span> <span class="nx">integerToBytes</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span> <span class="c1">//x from above</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">y</span><span class="p">.</span><span class="nx">isEven</span><span class="p">())</span>
+  <span class="nx">publicKeyBytesCompressed</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="mh">0x02</span><span class="p">)</span>
+<span class="k">else</span>
+  <span class="nx">publicKeyBytesCompressed</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="mh">0x03</span><span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">publicKeyHexCompressed</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">bytesToHex</span><span class="p">(</span><span class="nx">publicKeyBytesCompressed</span><span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">publicKeyHexCompressed</span><span class="p">)</span>
+<span class="cm">/* output:</span>
+<span class="cm">03d0988bfa799f7d7ef9ab3de97ef481cd0f75d2367ad456607647edde665d6f6f</span>
+<span class="cm">*/</span>
+</pre></div>
+
+<p>You can see that this matches up to <a href="http://brainwallet.org">http://brainwallet.org</a> when <strong>Compressed</strong> is clicked.</p>
+<p>It&#39;s possible to do all of this in many shorter steps:</p>
+<div class="highlight"><pre><span class="c1">//privateKeyBytes is the private key array from the top</span>
+<span class="kd">var</span> <span class="nx">eckey</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">ECKey</span><span class="p">(</span><span class="nx">privateKeyBytes</span><span class="p">)</span> 
+<span class="kd">var</span> <span class="nx">publicKeyHex</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">bytesToHex</span><span class="p">(</span><span class="nx">eckey</span><span class="p">.</span><span class="nx">getPub</span><span class="p">())</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">publicKeyHex</span><span class="p">)</span>
+<span class="cm">/* output:</span>
+<span class="cm">04d0988bfa799f7d7ef9ab3de97ef481cd0f75d2367ad456607647edde665d6f6</span>
+<span class="cm">fbdd594388756a7beaf73b4822bc22d36e9bda7db82df2b8b623673eefc0b7495</span>
+<span class="cm">*/</span>
+
+<span class="nx">eckey</span><span class="p">.</span><span class="nx">compressed</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="kd">var</span> <span class="nx">publicKeyHexCompressed</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">bytesToHex</span><span class="p">(</span><span class="nx">eckey</span><span class="p">.</span><span class="nx">getPub</span><span class="p">())</span>
+</pre></div>
+
+<h4 id="compressed-private-keys">Compressed Private Keys</h4>
+<p>You may have noticed that when you toggle back and forth between <strong>Compressed</strong> and <strong>Uncompressed</strong> on <a href="http://brainwallet.org">http://brainwallet.org</a> that the Private Key changes as well. So, if you import a private key into your wallet, which public key will it use? Another <a href="http://bitcoin.stackexchange.com/questions/7299/when-importing-private-keys-will-compressed-or-uncompressed-format-be-used">good answer on Bitcoin Stack Exchange</a> on how to deal with this:</p>
+<blockquote>
+<p>...
+Thus, in order to support both, we must remember for each public/private keypair whether the normal or compressed encoding is to be used. As you point out, we also need this information when importing a private key. To do so, the &quot;Wallet Import Format&quot; for private keys (the base58 form, typically starting with a &#39;5&#39;), was extended. If the public key/address for a particular private key are to be derived from the compressed encoding of the public key, the private key gets an extra 0x01 byte at the end, resulting in a base58 form that starts with &#39;K&#39; or &#39;L&#39;.</p>
+<p>So to answer your question: when importing a private key into the reference client, it will use the normal encoding for public keys if the &#39;5&#39; format was used for the private key, and the compressed encoding if the &#39;K&#39;/&#39;L&#39; format was used. It doesn&#39;t make sense to try to convert one to the other: the client must use the same encoding as was used when generating the address, or the address won&#39;t match. Unfortunately, quite a lot of software doesn&#39;t support compressed public keys yet (which is a pity, as they save block chain space).</p>
+<p>-- <cite>Pieter Wuille</cite></p>
+</blockquote>
+<p>let&#39;s generate our private compressed key:</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">privateKeyBytesCompressed</span> <span class="o">=</span> <span class="nx">privateKeyBytes</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">//clone array</span>
+<span class="nx">privateKeyBytesCompressed</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mh">0x01</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">privateKeyWIFCompressed</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Address</span><span class="p">(</span><span class="nx">privateKeyBytesCompressed</span><span class="p">)</span>
+<span class="nx">privateKeyWIFCompressed</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="mh">0x80</span>
+<span class="nx">privateKeyWIFCompressed</span> <span class="o">=</span> <span class="nx">privateKeyWIFCompressed</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">privateKeyWIFCompressed</span><span class="p">)</span> <span class="c1">//KwomKti1X3tYJUUMb1TGSM2mrZk1wb1aHisUNHCQXTZq5auC2qc3</span>
+</pre></div>
+
+<p>Once again, verify it matches <a href="http://brainwallet.org">http://brainwallet.org</a>.</p>
+<h3 id="addresses">Addresses</h3>
+<p>Bitcoin uses <a href="https://en.bitcoin.it/wiki/Address">addresses</a> as a means to receive coins from someone else. An address is a <a href="https://en.bitcoin.it/wiki/Base58Check_encoding">base58</a> encoded string of a 25 byte binary address. All Bitcoin addresses start with <code>1</code>.  A person can have as many addresses as they&#39;d like. Using more than one address is said to increase anonymity. Private keys give you access to spend money associated with an address.</p>
+<p>The address is generated like the following:</p>
+<blockquote>
+<p>Version = 1 byte of 0 (zero); on the test network, this is 1 byte of 111</p>
+<p>Key hash = Version concatenated with RIPEMD-160(SHA-256(public key))</p>
+<p>Checksum = 1st 4 bytes of SHA-256(SHA-256(Key hash))</p>
+<p>Bitcoin Address = Base58Encode(Key hash concatenated with Checksum)</p>
+<p>-- <cite><a href="https://en.bitcoin.it/wiki/Protocol_specification#Addresses">Bitcoin Wiki: Addresses</a></cite> </p>
+</blockquote>
+<p>Compressed, uncompressed, zomg... yes, there are <strong>two addresses</strong> associated with each ECC private key. The procedure is exactly the same:</p>
+<div class="highlight"><pre><span class="c1">//could use publicKeyBytesCompressed as well</span>
+<span class="kd">var</span> <span class="nx">hash160</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">RIPEMD160</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">publicKeyBytes</span><span class="p">)))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hash160</span><span class="p">)</span> <span class="c1">//&quot;3c176e659bea0f29a3e9bf7880c112b1b31b4dc8&quot;</span>
+
+<span class="kd">var</span> <span class="nx">version</span> <span class="o">=</span> <span class="mh">0x00</span> <span class="c1">//if using testnet, would use 0x6F or 111.</span>
+<span class="kd">var</span> <span class="nx">hashAndBytes</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">hash160</span><span class="p">)</span>
+<span class="nx">hashAndBytes</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">version</span><span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">doubleSHA</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">hashAndBytes</span><span class="p">)))</span>
+<span class="kd">var</span> <span class="nx">addressChecksum</span> <span class="o">=</span> <span class="nx">doubleSHA</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">addressChecksum</span><span class="p">)</span> <span class="c1">//26268187</span>
+
+<span class="kd">var</span> <span class="nx">unencodedAddress</span> <span class="o">=</span> <span class="s2">&quot;00&quot;</span> <span class="o">+</span> <span class="nx">hash160</span> <span class="o">+</span> <span class="nx">addressChecksum</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">unencodedAddress</span><span class="p">)</span>
+<span class="cm">/* output</span>
+<span class="cm">  003c176e659bea0f29a3e9bf7880c112b1b31b4dc826268187</span>
+<span class="cm">*/</span>
+
+<span class="kd">var</span> <span class="nx">address</span> <span class="o">=</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Base58</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">unencodedAddress</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">address</span><span class="p">)</span> <span class="c1">//16UjcYNBG9GTK4uq2f7yYEbuifqCzoLMGS</span>
+</pre></div>
+
+<p>even easier...</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">address</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Address</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">hash160</span><span class="p">))</span>
+<span class="nx">address</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="mh">0x00</span> <span class="c1">//testnet would be 0x6F</span>
+<span class="nx">address</span> <span class="o">=</span> <span class="nx">address</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+</pre></div>
+
+<p>ok, the easiest of all...</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">address</span> <span class="o">=</span> <span class="nx">eckey</span><span class="p">.</span><span class="nx">getBicoinAddress</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span> <span class="c1">//&quot;eckey&quot; from above</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">address</span><span class="p">)</span> <span class="c1">////16UjcYNBG9GTK4uq2f7yYEbuifqCzoLMGS</span>
+
+<span class="c1">//you must generate a new one if you already called getBitcoinAddress() for the</span>
+<span class="c1">//address representing the uncompressed version</span>
+<span class="kd">var</span> <span class="nx">eckey2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">ECKey</span><span class="p">(</span><span class="nx">privateKeyBytes</span><span class="p">)</span>
+<span class="nx">eckey2</span><span class="p">.</span><span class="nx">compressed</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="kd">var</span> <span class="nx">addressForCompressed</span> <span class="o">=</span> <span class="nx">eckey2</span><span class="p">.</span><span class="nx">getBitcoinAddress</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">addressForCompressed</span><span class="p">)</span> <span class="c1">//1FkKMsKNJqWSDvTvETqcCeHcUQQ64kSC6s</span>
+</pre></div>
+
+<h3 id="double-hashing">Double Hashing</h3>
+<p>OK, you&#39;ve probably noticed it a lot. Once again, I&#39;m going to defer to the internets and the peeps smarter than me:</p>
+<p>From: <a href="http://bitcoin.stackexchange.com/questions/9202/why-does-bitcoin-use-two-hash-functions-sha-256-and-ripemd-160-to-create-an-ad">Why does Bitcoin use two hash functions (SHA-256 and RIPEMD-160) to create an address?</a></p>
+<blockquote>
+<p>RIPEMD was used because it produces the shortest hashes whose uniqueness is still sufficiently assured. This allows Bitcoin addresses to be shorter.</p>
+<p>SHA256 is used as well because Bitcoin&#39;s use of a hash of a public key might create unique weaknesses due to unexpected interactions between RIPEMD and ECDSA (the public key signature algorithm). Interposing an additional and very different hash operation between RIPEMD and ECDSA makes it almost inconceivable that there might be a way to find address collisions that is significantly easier than brute force trying a large number of secret keys.</p>
+<p>Essentially, it was a belt and suspenders approach. Bitcoin had to do something unique and rather than have to hope they got it exactly right, they overdesigned it.</p>
+<p>-- <cite>David Schwartz</cite></p>
+</blockquote>
+<p>and on the SHA256(SHA256(input)):</p>
+<blockquote>
+<p>So why does he hash twice? I suspect it&#39;s in order to prevent length-extension attacks.</p>
+<p>SHA-2, like all Merkle-Damgard hashes suffers from a property called &quot;length-extension&quot;. This allows an attacker who knows H(x) to calculate H(x||y) without knowing x. This is usually not a problem, but there are some uses where it totally breaks the security. The most relevant example is using H(k||m) as MAC, where an attacker can easily calculate a MAC for m||m&#39;. I don&#39;t think Bitcoin ever uses hashes in a way that would suffer from length extensions, but I guess Satoshi went with the safe choice of preventing it everywhere.</p>
+<p>To avoid this property, Ferguson and Schneier suggested using SHA256d = SHA256(SHA256(x)) which avoids length-extension attacks. This construction has some minor weaknesses (not relevant to bitcoin), so I wouldn&#39;t recommend it for new protocols, and would use HMAC with constant key, or truncated SHA512 instead.</p>
+<p>Answered by CodesInChaos</p>
+</blockquote>
+<h2 id="summary">Summary</h2>
+<p>Compressed keys are the preferred format now. Let&#39;s do this in one quick JS snippet to make everything stupidly simple and compatible with pretty much every Bitcoin client:</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">randArr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="c1">//create a typed array of 32 bytes (256 bits)</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="nx">randArr</span><span class="p">)</span> <span class="c1">//populate array with cryptographically secure random numbers</span>
+
+<span class="c1">//some Bitcoin and Crypto methods don&#39;t like Uint8Array for input. They expect regular JS arrays.</span>
+<span class="kd">var</span> <span class="nx">privateKeyBytes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">randArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span>
+  <span class="nx">privateKeyBytes</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">randArr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+
+<span class="kd">var</span> <span class="nx">eckey</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">ECKey</span><span class="p">(</span><span class="nx">privateKeyBytes</span><span class="p">)</span>
+<span class="nx">eckey</span><span class="p">.</span><span class="nx">compressed</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="kd">var</span> <span class="nx">address</span> <span class="o">=</span> <span class="nx">eckey</span><span class="p">.</span><span class="nx">getBitcoinAddress</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">address</span><span class="p">)</span><span class="c1">// 1FkKMsKNJqWSDvTvETqcCeHcUQQ64kSC6s</span>
+
+
+<span class="kd">var</span> <span class="nx">privateKeyBytesCompressed</span> <span class="o">=</span> <span class="nx">privateKeyBytes</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">//clone array</span>
+<span class="nx">privateKeyBytesCompressed</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mh">0x01</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">privateKeyWIFCompressed</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bitcoin</span><span class="p">.</span><span class="nx">Address</span><span class="p">(</span><span class="nx">privateKeyBytesCompressed</span><span class="p">)</span>
+<span class="nx">privateKeyWIFCompressed</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="mh">0x80</span>
+<span class="nx">privateKeyWIFCompressed</span> <span class="o">=</span> <span class="nx">privateKeyWIFCompressed</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">privateKeyWIFCompressed</span><span class="p">)</span> <span class="c1">//KwomKti1X3tYJUUMb1TGSM2mrZk1wb1aHisUNHCQXTZq5auC2qc3</span>
+</pre></div>
+
+<p>There you have it! <strong>KwomKti1X3tYJUUMb1TGSM2mrZk1wb1aHisUNHCQXTZq5auC2qc3</strong> is your private key in WIF form that allows you to send money for address <strong>1FkKMsKNJqWSDvTvETqcCeHcUQQ64kSC6s</strong>.</p>
+<h4 id="addresses-and-keys-from-a-password-or-passphrase">Addresses and Keys from a Password or Passphrase</h4>
+<p>You can generate private keys from a passphrase. One method would be to just calculate the double SHA256 hash on the user passphrase and use that as the private key.</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">password</span> <span class="o">=</span> <span class="s2">&quot;there can be only one&quot;</span>
+<span class="kd">var</span> <span class="nx">privateKeyHex</span> <span class="o">=</span> <span class="nx">Crytpo</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">SHA256</span><span class="p">(</span><span class="nx">password</span><span class="p">)))</span>
+<span class="kd">var</span> <span class="nx">privateKeyBytes</span> <span class="o">=</span> <span class="nx">Crypto</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">hexToBytes</span><span class="p">(</span><span class="nx">privateKeyHex</span><span class="p">)</span>
+</pre></div>
+
+<p>further reading:</p>
+<ul>
+<li><a href="http://www.nsa.gov/business/programs/elliptic_curve.shtml">NSA: The Case for Elliptic Curve Cryptography</a></li>
+<li><a href="http://crypto.stackexchange.com/questions/653/basic-explanation-of-elliptic-curve-cryptography">Basic Explanation of Elliptic Curve Cryptography</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Elliptic_Curve_DSA">Wikipedia: Elliptic Curve DSA</a></li>
+<li><a href="https://engineering.purdue.edu/kak/compsec/NewLectures/Lecture14.pdf">Elliptic Curve Cryptography and Digital Rights Management</a></li>
+<li><a href="https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses#How_to_create_Bitcoin_Address">How to create a Bitcoin Address</a></li>
+<li><a href="http://bitcoin.stackexchange.com/questions/3609/can-an-sha256-hash-be-used-as-an-ecdsa-private-key">Can a SHA256 hash be used as an ECDSA private key?</a></li>
+<li><a href="http://bitcoin.stackexchange.com/questions/1730/what-are-green-addresses">What are Green Addresses?</a></li>
+<li><a href="http://crypto.stackexchange.com/questions/1638/compressing-ec-private-keys">Compressing EC Private Keys</a></li>
+<li><a href="https://bitcointalk.org/?topic=2699.0">Bitcoin Talk: secp256k1</a></li>
+<li><a href="http://bitcoin.stackexchange.com/questions/7683/why-is-it-impossible-to-derive-public-key-from-address">Why is it impossible to derive the public key from the address?</a></li>
+<li><a href="http://bitcoin.stackexchange.com/questions/3600/why-are-bitcoin-addresses-hashes-of-public-keys">Why are Bitcoin Addresses Hashes of Public Keys?</a></li>
+<li><a href="https://en.bitcoin.it/wiki/List_of_address_prefixes">List of address prefixes</a></li>
+</ul>
+<p><strong>Credits:</strong> Combing through the <a href="http://brainwallet.org">http://brainwallet.org</a> was a big help.</p>
+<p>I started a new project called <a href="https://github.com/cryptocoinjs">CryptoCoinJS</a> to address the shortcomings in the BitcoinJS library. Check it out here: <a href="https://github.com/cryptocoinjs">https://github.com/cryptocoinjs</a></p>
+
+
+<!--<p>
+  If you made it this far, you should follow me on Twitter. &nbsp; <a style="margin-top: -3px" href="https://twitter.com/jprichardson" class="twitter-follow-button" data-show-count="false">Follow @jprichardson</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</p>-->
+
+<p>
+If you made it this far, you should <a href="http://twitter.com/jprichardson">follow me on Twitter</a>.
+</p>
+
+<p>
+  -JP
+</p>
+
+ <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  var disqus_shortname = 'procbits'; // required: replace example with your forum shortname
+
+  //optional url
+  
+    var disqus_url = 'http://procbits.com/2013/08/27/generating-a-bitcoin-address-with-javascript/';
+  
+
+  //optional id
+  
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    
+  </div>
+</div>
+<div id="footer">
+  <div class="container">
+    <p class="text-muted credit">Proudly built with<a href="https://github.com/skywrite"> Sky</a></p>
+  </div>
+</div>
+<div class="scripts">  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-35069840-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</div>

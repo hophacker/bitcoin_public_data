@@ -1,0 +1,605 @@
+http://www.utilities-online.info/xmltojson/
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 12:18:06 GMT
+Server: Apache/2.4.9 (Fedora) OpenSSL/1.0.1e-fips mod_fcgid/2.3.9 PHP/5.5.14
+Accept-Ranges: bytes
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	
+	<head>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>XML to JSON and JSON to XML converter online</title>
+	
+		<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18122222-4']);
+  _gaq.push(['_setDomainName', '.utilities-online.info']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+		<style type="text/css">
+
+	li {
+		padding: 5px; 
+	}
+	.ads {
+		background-color: #EEEEEE;
+		text-align: center;
+	}
+	.adsup {
+		border-bottom: 3px solid;
+	}
+	.adsdown {
+		border-top: 3px solid;
+	}
+	.body {
+		padding: 15px;
+		overflow: hidden;
+	}
+	.bravodriver {
+		background-image: url(/assets/images/bravodriver400x90.png);
+	}
+	.bravodriver:hover { 
+		cursor: pointer;
+	}
+	#epoch, #date {
+		font-weight: bold;
+	}
+	table {
+		width: 100%;	 
+	}
+	body {
+		margin: 0px;
+		padding: 0px;
+	}
+		
+</style>
+				<script src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+
+		
+		<link rel="stylesheet" type="text/css" href="/assets/css/common.css" />
+		<script type="text/javascript" src="/assets/js/common.js"></script>
+		<script type="text/javascript" src="/assets/js/ObjTree.js"></script>
+		<script type="text/javascript" src="/assets/js/jkl-dumper.js"></script>
+		<script type="text/javascript" src="/assets/js/webtoolkit.base64.js"></script>
+		
+		<script type="text/javascript">
+		
+			YUI().use("node", "event", "io", "json-parse", function (Y) {
+			
+				Y.on("domready", function (e) {
+					
+					Y.one("#example").on("click", function(e) {
+						Y.one("#xml").set("value", Y.io("example.xml", {sync: true}).responseText);
+					});
+						
+					Y.one("#tojson").on("click", function(e) {
+						var xotree = new XML.ObjTree();
+					    var dumper = new JKL.Dumper(); 
+						var tree = xotree.parseXML(Y.one("#xml").get("value"));
+						Y.one("#json").set("value", dumper.dump(tree));
+					});
+					
+					Y.one("#toxml").on("click", function(e) {
+						var xotree = new XML.ObjTree();
+						var json = eval("(" + Y.one("#json").get("value") + ")");
+						Y.one("#xml").set("value", formatXml(xotree.writeXML(json))); 
+					});
+					
+					Y.one("#save").on("click", function(e) {
+						var cfg = {
+							method: "POST",
+							sync: true,
+							headers: {"Content-Type": "application/json" },
+							data: "{ 'xml': '" + Base64.encode(Y.one("#xml").get("value")) + 
+								"', 'json': '" + Base64.encode(Y.one("#json").get("value")) + "'}"
+						};
+						var response = Y.io("/backend/share/save", cfg);
+						if (response.status == 200) {
+							var base = window.location.href.split('#')[0];
+							base = base.split('?')[0];
+							var url = base + "?save=" + response.responseText;
+							Y.one("#saveurl").setHTML(url);
+							Y.one("#saveurl").set("href", url);
+							Y.one("#savewrap").removeClass("hide");
+						} else if (response.status == 400) {
+							alert(response.responseText);
+						} else {
+							alert("Internal Server Error: " + response.responseText);
+						}
+					});
+	
+					var save = getParameterByName("save");
+					if (save != undefined) {
+						var cfg = {	sync: true };
+						var response = Y.io("/backend/share/retrieve?name=" + save, cfg);
+						if (response.status == 200) {
+							var data = Y.JSON.parse(response.responseText);
+							Y.one("#xml").set("value", Base64.decode(data.xml));
+							Y.one("#json").set("value", Base64.decode(data.json));
+						}
+					}
+					
+				});
+				
+			});
+	
+			var formatXml = function (xml) {
+		        var reg = /(>)(<)(\/*)/g;
+		        var wsexp = / *(.*) +\n/g;
+		        var contexp = /(<.+>)(.+\n)/g;
+		        xml = xml.replace(reg, '$1\n$2$3').replace(wsexp, '$1\n').replace(contexp, '$1\n$2');
+		        var pad = 0;
+		        var formatted = '';
+		        var lines = xml.split('\n');
+		        var indent = 0;
+		        var lastType = 'other';
+		        // 4 types of tags - single, closing, opening, other (text, doctype, comment) - 4*4 = 16 transitions 
+		        var transitions = {
+		            'single->single': 0,
+		            'single->closing': -1,
+		            'single->opening': 0,
+		            'single->other': 0,
+		            'closing->single': 0,
+		            'closing->closing': -1,
+		            'closing->opening': 0,
+		            'closing->other': 0,
+		            'opening->single': 1,
+		            'opening->closing': 0,
+		            'opening->opening': 1,
+		            'opening->other': 1,
+		            'other->single': 0,
+		            'other->closing': -1,
+		            'other->opening': 0,
+		            'other->other': 0
+		        };
+
+		        for (var i = 0; i < lines.length; i++) {
+		            var ln = lines[i];
+		            var single = Boolean(ln.match(/<.+\/>/)); // is this line a single tag? ex. <br />
+		            var closing = Boolean(ln.match(/<\/.+>/)); // is this a closing tag? ex. </a>
+		            var opening = Boolean(ln.match(/<[^!].*>/)); // is this even a tag (that's not <!something>)
+		            var type = single ? 'single' : closing ? 'closing' : opening ? 'opening' : 'other';
+		            var fromTo = lastType + '->' + type;
+		            lastType = type;
+		            var padding = '';
+
+		            indent += transitions[fromTo];
+		            for (var j = 0; j < indent; j++) {
+		                padding += '\t';
+		            }
+		            if (fromTo == 'opening->closing')
+		                formatted = formatted.substr(0, formatted.length - 1) + ln + '\n'; // substr removes line break (\n) from prev loop
+		            else
+		                formatted += padding + ln + '\n';
+		        }
+
+		        return formatted;
+		    };
+			
+		</script>
+		
+		<style type="text/css">
+			
+			.cols {
+				width: 48%;
+				float: left;
+				text-align: center;
+			}
+			
+			.cols a {
+				float: right;
+			}
+			
+			.cols p {
+				width: 90%;
+			}
+			
+			.colmid {
+				width: 4%; 
+				position: relative; 
+				top: 180px;
+			}
+			
+			.colmid input {
+				text-align: center;
+				width: 100%;
+			}
+			
+			div > p {
+				margin-bottom: 0px;
+			}
+			
+			.share {
+				font-size: 80%;
+				color: gray;
+				margin-top: 15px;
+				float: left;
+			}
+			
+			.footer {
+				font-size: 80%;
+				color: gray;
+				margin-top: 15px;
+				float: left;
+				clear: left;
+			}
+			
+		</style>
+		
+	</head>
+	
+	<body>
+	
+		
+	
+	
+	<div class="ads adsup">
+		<script type="text/javascript"><!--
+		google_ad_client = "pub-5143316162165507";
+		/* Utilities-online 728x90 */
+		google_ad_slot = "3638137680";
+		google_ad_width = 728;
+		google_ad_height = 90;
+		//-->
+		</script>
+		<script type="text/javascript"
+		src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+		</script>
+	</div>
+
+
+
+
+	
+		<div class="body">
+
+			<style type="text/css">
+	
+	a:link, a:visited {
+		text-decoration: none;
+	}
+	
+	#title {
+		border-bottom: 1px dotted black;
+	    color: #333333;
+	    font-style: italic;
+	    text-align: center;
+	}
+	
+	#titletext {
+		vertical-align: super;
+		font-size: 30px;
+	}
+	
+	#logo {
+		width: 75px;
+	}
+	
+	.addthis_toolbox a iframe {
+		height: 20px !important;
+		width: 120px !important;
+	}
+	
+	a { 
+		cursor: pointer; 
+		color: blue; 
+	}
+	
+	a:hover, a.hover { 
+		text-decoration: underline; 
+	}
+	
+	.hide {
+		display: none;
+	}
+
+</style>
+
+<h1 id="title">
+
+	<div style="text-align: center; vertical-align: middle; height: 143px; display: block;">
+		<a href="http://www.utilities-online.info"><img id="logo" src="/assets/images/logo.png"></img><span id="titletext">utilities-online.info</span></a>
+		<span style="font-style: normal;">engineered by</span>
+		<a href="http://www.osys.it"><img id="logoosys" src="/assets/images/osys-logo.png"></img></a>
+	<div>
+	
+	<!-- AddThis Button BEGIN -->
+	<div style="display: block; text-align: center; margin: auto; width: 440px;">
+		<div class="addthis_toolbox addthis_default_style" style="display: block;">
+			<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+			<a class="addthis_button_tweet"></a>
+			<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+			<a class="addthis_counter addthis_pill_style"></a>
+		</div>
+	</div>
+	
+	<script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
+	<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4dbc6cbb3828eb6c"></script>
+	
+	<!-- AddThis Button END -->
+
+</h1>
+
+		
+
+
+
+<style type="text/css">
+	
+	#menu_hor {
+		list-style: none;
+		font-family: arial;  
+		background-color: #BBBBBB;
+	}
+	
+	#menu_hor li {
+		display: inline;
+		border-right: 2px solid;
+		color: black;
+		font-weight: bold;
+		padding: 0px;
+		white-space: nowrap;
+		margin-right: 3px;
+	}
+	
+	#menu_hor li:last-child {	
+		border-right: none;
+	}
+	
+	#menu_hor li a {
+		width: 100px;
+		padding: 0px;
+		margin-right: 10px;
+		text-decoration: none;
+	}
+	
+	#menu_hor li a:hover {
+		background-color: aqua;
+	}
+	
+</style>
+
+<script type="text/javascript">
+	//  Call the "use" method, passing in "node-menunav".  This will load the
+    //  script and CSS for the MenuNav Node Plugin and all of the required
+    //  dependencies.
+
+    YUI({
+        modules: {
+            "node-menunav-core-css": {
+                type: "css",
+                path: "node-menunav/assets/node-menunav-core.css"
+            },
+            "custommenunavskin": {
+                type: "css",
+                fullpath: "../assets/node-menunav/example7.css",
+                supersedes: ['skin-sam-node-menunav']
+            }
+        }
+
+    }).use('node-menunav', "node-menunav-core-css", "custommenunavskin", function(Y, result) {
+
+        var menu = Y.one("#utilitiesonlinemenu");
+        menu.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
+        menu.removeClass("hide");
+        
+    });
+	
+</script>
+
+<div id="utilitiesonlinemenu" class="yui3-menu yui3-menu-horizontal yui3-splitbuttonnav hide">
+	<div class="yui3-menu-content">
+        <ul class="first-of-type">
+            <li>
+            	<span class="yui3-menu-label">
+                    <a href="/myip/">My IP</a>
+                </span>
+            </li>
+            <li>
+            	<span class="yui3-menu-label">
+                    <a href="/email/">Temporary free email service</a>
+                </span>
+            </li>
+            <li>
+            	<span class="yui3-menu-label">
+                    <a href="/epochtime/">Unix Epoch Time converter</a>
+                </span>
+            </li>
+            <li>
+                <span class="yui3-menu-label">
+                    <a href="#xml-options">XML Tools</a>
+                    <a href="#xml-options" class="yui3-menu-toggle">XML Options</a>
+                </span>
+                <div id="xml-options" class="yui3-menu">
+                    <div class="yui3-menu-content">
+                        <ul>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/xsdvalidation/">XML Schema validation</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/xsltransformation/">XSL Transformation</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/xpath/">XPath evalutation</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/foprender/">FOP Render</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <span class="yui3-menu-label">
+                    <a href="#conversion-options">Conversion/Encoding Tools</a>
+                    <a href="#conversion-options" class="yui3-menu-toggle">Conversion Options</a>
+                </span>
+                <div id="conversion-options" class="yui3-menu">
+                    <div class="yui3-menu-content">
+                        <ul>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/xmltojson/">JSON to XML and XML to JSON conversion</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/base64/">Base64 encode/decode</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/urlencode/">URL escape/unescape</a></li>
+                            <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="/uritemplate/">RFC 6570 URI Template parser</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <span class="yui3-menu-label">
+                    <a href="/articles/">Articles</a>
+                </span>
+            </li>
+            <li>
+                <span class="yui3-menu-label">
+                    <a href="/links.shtml">Other off-site resources</a>
+                </span>
+            </li>
+            
+            <li>
+            	 <span class="yui3-menu-label">
+	            	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+						<input type="hidden" name="cmd" value="_s-xclick">
+						<input type="hidden" name="hosted_button_id" value="BSAKANLU4XULL">
+						<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+					</form>
+				 </span>
+			</li>
+			
+			<li>
+				 <span class="yui3-menu-label">
+					<script src="http://coinwidget.com/widget/coin.js"></script>
+					<script>
+					CoinWidgetCom.go({
+						wallet_address: "1EUxVzGfPLVQMpu6mX7EK2v9dS48VVz8qW"
+						, currency: "bitcoin"
+						, counter: "count"
+						, alignment: "bc"
+						, qrcode: true
+						, auto_show: false
+						, lbl_button: "Donate"
+						, lbl_address: "My Bitcoin Address:"
+						, lbl_count: "donations"
+						, lbl_amount: "BTC"
+					});
+					</script>
+				</span>
+			</li>
+
+        </ul>
+    </div>
+</div>
+		    
+		
+
+	
+
+			<h3>XML to JSON and JSON to XML converter online</h3>
+			<p>In this page you can convert an xml to json and viceversa.</p>
+			<div>
+				<div class="cols">
+					<p>XML<a id="example">get example xml</a></p>
+					<div class="textareacontainer">
+						<img alt="fullscreen" src="/assets/images/fullscreen.png">
+						<textarea id="xml" rows="20" cols="20" wrap="off"></textarea>
+					</div>
+				</div>
+				<div class="cols colmid">
+					<input id="tojson" type="button" value="--&gt;" />
+					<input id="toxml" type="button" value="&lt;--" />
+				</div>
+				<div class="cols">
+					<p>JSON</p>
+					<div class="textareacontainer">
+						<img alt="fullscreen" src="/assets/images/fullscreen.png">
+						<textarea id="json" rows="20" cols="20" wrap="off"></textarea>
+					</div>
+				</div>
+			</div>
+
+			<div class="share">
+				<input id="save" type="button" value="Share or Save this example" />
+				<span id="savewrap" class="hide">
+					Url: <a id="saveurl" href=""></a>
+				</span>
+			</div>
+			
+			<div class="footer">Thanks to <a href="http://www.kawa.net">Yusuke Kawasaki</a> for ObjTree.js library.</div>
+			
+		</div>		
+
+		
+<span>Last modify on Thursday October 03, 2013</span>
+
+
+<div class="ads adsdown">
+
+	
+	
+		<script type="text/javascript"><!--
+		google_ad_client = "pub-5143316162165507";
+		/* Utilities-online 728x90 */
+		google_ad_slot = "3638137680";
+		google_ad_width = 728;
+		google_ad_height = 90;
+		//-->
+		</script>
+		<script type="text/javascript"
+		src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+		</script>
+	
+	
+		
+	<hr/>
+	<br/>
+	<br/>
+	
+	<!-- START: Livefyre Embed -->
+	<div id="livefyre-comments" style="width: 450px; margin: auto;"></div>
+	<script type="text/javascript" src="http://zor.livefyre.com/wjs/v3.0/javascripts/livefyre.js"></script>
+	<script type="text/javascript">
+	(function () {
+	    var articleId = fyre.conv.load.makeArticleId(null);
+	    fyre.conv.load({}, [{
+	        el: 'livefyre-comments',
+	        network: "livefyre.com",
+	        siteId: "313984",
+	        articleId: articleId,
+	        signed: false,
+	        collectionMeta: {
+	            articleId: articleId,
+	            url: fyre.conv.load.makeCollectionUrl(),
+	        }
+	    }], function() {});
+	}());
+	</script>
+	<!-- END: Livefyre Embed -->
+            
+	<br/>
+	<br/>
+	<span style="font-size: 80%;">		
+		<span xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">
+			<a href="http://www.utilities-online.info">utilities-online.info</a>
+		</span> 
+		by 
+		<a xmlns:cc="http://creativecommons.org/ns#" href="http://www.linkedin.com/in/dometec" property="cc:attributionName" rel="cc:attributionURL">Domenico Briganti</a> 
+		is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribuzione 3.0 Unported License</a>.
+		<br />
+		Permissions beyond the scope of this license may be available at <a xmlns:cc="http://creativecommons.org/ns#" href="mailto:dometec@gmail.com" rel="cc:morePermissions">dometec@gmail.com</a>.
+		<p>
+			<a rel="license" href="http://creativecommons.org/licenses/by/3.0/" style="display: inline;">
+				<img alt="Licenza Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" />
+			</a>
+		</p>		
+		<p>Domenico Briganti - VAT Number  IT 04835710965</p>
+	</span>
+	
+</div>
+
+	</body>
+
+</html>

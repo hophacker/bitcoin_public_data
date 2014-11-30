@@ -1,0 +1,176 @@
+http://bergie.iki.fi/blog/yubikey-simple_approach_to_authentication_tokens/
+HTTP/1.1 200 OK
+Server: GitHub.com
+Date: Thu, 24 Jul 2014 02:33:12 GMT
+Content-Type: text/html; charset=utf-8
+Connection: close
+Last-Modified: Wed, 07 May 2014 14:12:21 GMT
+Expires: Thu, 24 Jul 2014 02:43:12 GMT
+Cache-Control: max-age=600
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Vary: Accept-Encoding
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Yubikey - simple approach to authentication tokens - Henri Bergius</title>
+    <link rel="stylesheet" href="/style/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/style/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="/style/css/bergie-2012.css" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/style/img/favicon/favicon_144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/style/img/favicon/favicon_114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/style/img/favicon/favicon_72.png" />
+    <link rel="apple-touch-icon-precomposed" href="/style/img/favicon/favicon_57.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Fbergie.iki.fi%2Fblog%2Fyubikey-simple_approach_to_authentication_tokens%2F&amp;user_id=bergie" type="text/html" />
+    <link rel="bitcoin" href="bitcoin:13SqhsZN78KVrJFYdac4WX2edoRrSys5qu" />
+    <meta name="google-site-verification" content="ge5GAC0xnAgFKsZdHP3DD9KbNYPM0d4F5SpK0ivCJtg" />
+    <meta property="fb:admins" content="722463139" />
+    
+    <link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Henri Bergius feed" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-75936-2']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body class="post ">
+    <div class="container">
+            <article vocab="http://schema.org/" about="/blog/yubikey-simple_approach_to_authentication_tokens/" typeof="BlogPosting" class="span8 offset1">
+        <header class="span9">
+          <div>
+            <h1 property="headline">Yubikey - simple approach to authentication tokens</h1>
+          </div>
+        </header>
+        <div class="span8">
+          <div property="articleBody">
+            <p><img src="/files/_press_yubikeys_creditcard.jpg" height="210" width="240" border="0" align="right" hspace="6" vspace="4" alt="Yubikey and a credit card" title="Yubikey and a credit card" />
+<a href="http://josefsson.org/">Simon Josefsson</a> was giving a talk on <a href="http://openid.net/">OpenID</a> in the <a href="http://www.fscons.org/">Scandinavian Free Software Conference</a>. OpenID is a lightweight single sign-on and auto-registration system for web applications. In concept it is quite similar to <a href="http://en.wikipedia.org/wiki/Shibboleth_(Internet2)">Shibboleth</a> but easier to deploy.</p>
+
+<p>Since <a href="http://openid.net/what/">OpenID can solve a lot of issues</a> with registration to social web services, <a href="http://www.midgard-project.org/">Midgard</a> has been <a href="http://bergie.iki.fi/blog/midgard_supports_openid/">supporting it since last August</a>. However, OpenID has one major security problem: as the cross-site redirections are controlled by the site user is visiting, OpenID has quite a <a href="http://simonwillison.net/2007/Jan/19/phishing/">high potential for phishing attacks</a>. One way to reduce that risk is to use <a href="http://en.wikipedia.org/wiki/One-time_password">one-time password</a>s with OpenID instead of the usual username/passphrase combination.</p>
+
+<p><span style="font-size:14pt;"><strong>Enter Yubikey</strong></span></p>
+
+<p>The problem with OTP is that disposable password lists are a lot of hassle. <a href="http://en.wikipedia.org/wiki/SecurID">RSA's SecurID</a> device has been one approach to solve that by having a simple device to generate the one-time passwords that user can then enter on their computer. But SecurIDs are expensive and manually typing the number sets is tedious.</p>
+
+<p>Simon's company <a href="http://yubico.com/">Yubico</a> has approached the problem from a bit different direction: their <a href="http://www.yubico.com/products/index">Yubikey</a> is a small, <a href="http://www.yubico.com/products/order">cheap</a> USB dongle that the computer sees as a "keyboard". Insert the key, press the button, and the one-time password will be entered.</p>
+
+<p>I was given a key and have been <a href="http://dev.yubico.com/start-here">testing it a bit</a> today to authenticate via <a href="http://bergie.iki.fi/">my OpenID identity</a> to various websites, and it really was <a href="http://dev.yubico.com/start/openid">as easy as advertised</a>. Now my OpenID <a href="http://dev.yubico.com/technology/review">is secure</a>.</p>
+
+<p><img src="/files/_press_yubikey_hand_comp.jpg" height="174" width="240" border="0" align="left" hspace="6" vspace="4" alt="Yubikey usage" title="Yubikey usage" />
+In addition to OpenID, Yubikey authentication is supported via RADIUS and PAM, and <a href="http://dev.yubico.com/apis/start">libraries are available</a> for integrating it with other authentication systems.</p>
+
+<p><strong>Yubikey is not without problems</strong>, unfortunately. While authentication client libraries are open source, the actual authentication server is proprietary and operated by Yubico, <a href="http://www.yubico.com/about/people">a small start-up</a>. If Yubico's network goes down, the whole authentication system becomes unusable.</p>
+
+<p>I'd love to use Yubikeys for <a href="http://www.nemein.com/en/">my company</a> and several of my customers. Therefore, I really hope Yubico will be able to either release the server sources directly, or at least make a pledge to release them in case of going out of business. Only these options would make Yubikey a really viable secure authentication option.</p>
+
+<p style="text-align:right;font-size:10px;">Technorati Tags: <a href="http://www.technorati.com/tag/authentication" rel="tag">authentication</a>, <a href="http://www.technorati.com/tag/openid" rel="tag">openid</a>, <a href="http://www.technorati.com/tag/securid" rel="tag">securid</a>, <a href="http://www.technorati.com/tag/yubikey" rel="tag">yubikey</a></p>
+
+
+          </div>
+          <div class="metadata">
+            
+            <a rel="author" href="http://bergie.iki.fi/#me"></a>
+            
+            <span property="datePublished" content="2007-12-08T00:00:00-08:00">08 December 2007</span>
+            
+            <span property="wordCount" content="360"></span>
+          </div>
+          
+        
+        
+          
+          
+            <hr />
+            <aside class="category midgard">
+  <h2>About Midgard</h2>
+  <p><a href="http://midgard-project.org/midgard2/">Midgard2</a> is a content repository library that can be used in both web and desktop applications. It is built as by <a href="http://midgard-project.org/">Midgard Project</a>, an international free software community. I've been an active part of the group since its beginnings in late 90s.</p>
+
+  <p>Thanks to <a href="https://live.gnome.org/GObjectIntrospection/Users">GObject Introspection</a>, the Midgard2 content repository can be used from almost any programming language, including PHP, Python, and JavaScript.</p>
+</aside>
+
+            <p><a href="/blog/category/midgard/">Read more Midgard posts</a>.<p>
+          
+          
+        
+        
+        
+                <div class="instapaper_ignore">
+          <hr />
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname = 'bergie';
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
+        </div>
+
+        </div>
+      </article>
+
+    </div>
+    <footer>
+            <div class="container">
+        <div vocab="http://schema.org/" id="me" about="http://bergie.iki.fi/#me" typeof="Person" class="card span8 offset1">
+          <div class="avatar instapaper_ignore">
+            <div class="switcher">
+              <div class="image photo"></div>
+              <div class="image drawing" id="bergie_drawn"></div>
+            </div>
+          </div>
+          <div class="details">
+            <p>
+            <strong><span property="givenName">Henri</span> <span property="familyName">Bergius</span></strong> is an occasional adventurer living in <span rel="homeLocation" typeof="City"><span property="name">Berlin</span></span> and working on decoupled software systems, content repositories and free software.
+            </p>
+            <p>
+            You can reach him by <a rel="email" href="mailto:henri.bergius@iki.fi">email</a> or <a href="xmpp:henri.bergius@gmail.com">instant messaging</a>. Besides writing on this blog, he is also available on <a href="http://twitter.com/bergie">Twitter</a>, <a href="https://plus.google.com/100751105859582805241/?rel=author">Google+</a>, and <a href="http://www.linkedin.com/in/bergie">LinkedIn</a>. Most of Henri's recent code can be found from <a href="https://github.com/bergie">GitHub</a>. <a href="/about/">&raquo;</a>
+            </p>
+          </div>
+        </div>
+        <div class="span8 offset1 hidden-phone">
+          <ul class="nav nav-pills nav-wide">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About Henri</a></li>
+            <li><a href="/blog/category/bestof/">Best Of</a></li>
+            <li><a href="http://www.flickr.com/photos/bergie/">Photos</a></li>
+            <li><a href="/talks/">Talks</a></li>
+            <li><a href="/colophon/">Colophon</a></li>
+          </ul>
+        </div>
+        <div class="span8 pull-left visible-phone">
+          <ul class="nav nav-pills nav-narrow">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About Henri</a></li>
+            <li><a href="/blog/category/bestof/">Best Of</a></li>
+          </ul>
+        </div>
+      </div>
+      <script type="application/javascript">
+        var avatar = document.getElementById('bergie_drawn');
+        avatar.addEventListener('click', function () {
+          if (avatar.className.indexOf('transparent') === -1) {
+            avatar.className = avatar.className + ' transparent';
+            return;
+          }
+          avatar.className = avatar.className.replace(/\b transparent\b/,'');
+        });
+      </script>
+
+    </footer>
+    
+  </body>
+</html>
+

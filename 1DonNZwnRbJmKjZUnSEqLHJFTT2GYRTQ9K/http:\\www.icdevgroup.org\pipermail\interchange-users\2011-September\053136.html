@@ -1,0 +1,154 @@
+http://www.icdevgroup.org/pipermail/interchange-users/2011-September/053136.html
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 08:07:21 GMT
+Server: Apache
+Last-Modified: Fri, 16 Sep 2011 23:24:25 GMT
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 1965
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ic] {Spam?} Re: Simple Bitcoin exchange rate calculator - UPDATE
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:interchange-users%40icdevgroup.org?Subject=Re%3A%20%5Bic%5D%20%7BSpam%3F%7D%20Re%3A%20Simple%20Bitcoin%20exchange%20rate%20calculator%20-%20UPDATE&In-Reply-To=%3C1316105093.11532.120.camel%40thor%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="053125.html">
+   <LINK REL="Next"  HREF="053142.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ic] {Spam?} Re: Simple Bitcoin exchange rate calculator - UPDATE</H1>
+    <B>Rick Bragg</B> 
+    <A HREF="mailto:interchange-users%40icdevgroup.org?Subject=Re%3A%20%5Bic%5D%20%7BSpam%3F%7D%20Re%3A%20Simple%20Bitcoin%20exchange%20rate%20calculator%20-%20UPDATE&In-Reply-To=%3C1316105093.11532.120.camel%40thor%3E"
+       TITLE="[ic] {Spam?} Re: Simple Bitcoin exchange rate calculator - UPDATE">lists at gmnet.net
+       </A><BR>
+    <I>Thu Sep 15 16:44:53 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="053125.html">[ic] {Spam?} Simple Bitcoin exchange rate calculator.
+</A></li>
+        <LI>Next message: <A HREF="053142.html">[ic] Simple Bitcoin exchange rate calculator - UPDATE
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#53136">[ date ]</a>
+              <a href="thread.html#53136">[ thread ]</a>
+              <a href="subject.html#53136">[ subject ]</a>
+              <a href="author.html#53136">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Here is an update to the bitcoin exchange rate calculator.  
+I made it a bit more accurate, and it now checks to see if the value of
+BTC has tanked! ;)
+
+Again it basically just checks the <A HREF="http://bitcoinexchangerate.net">http://bitcoinexchangerate.net</A>
+website and returns the value of a given USD in BTC.
+
+Thanks
+Rick
+
+
+# Copyright (C) 2011 by Rick Bragg, Green Mountain Network, www.GreenMountainNetwork.com
+#
+# Author: Rick Bragg &lt;<A HREF="http://www.icdevgroup.org/mailman/listinfo/interchange-users">rbragg at gmnet.net</A>&gt;
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# Simple bitcoin exchange rate calculator based on <A HREF="http://bitcoinexchangerate.net.">http://bitcoinexchangerate.net.</A>
+# Returns the ammount in BTC from USD.  If for some reason the site is down, or the 
+# exchange rate has tanked, it will return nothing.
+# useage example: [bitcoinexchange usd=&quot;100&quot;]
+#
+# If you like this code, please send a few bit cents to 1DonNZwnRbJmKjZUnSEqLHJFTT2GYRTQ9K
+
+UserTag bitcoinexchange Order usd
+UserTag bitcoinexchange addAttr
+UserTag bitcoinexchange Routine &lt;&lt;EOR
+
+use WWW::Mechanize;
+use Math::Round;
+
+sub {
+my ($usd) = @_;
+ my $url = '<A HREF="http://bitcoinexchangerate.net">http://bitcoinexchangerate.net</A>';
+ my $browser = WWW::Mechanize-&gt;new();
+
+ $browser-&gt;get($url);
+ if ($browser-&gt;success()){
+    my $text = $browser-&gt;content( format =&gt; 'text' );
+    my @values = split('USD', $text);
+    my $val = @values[0];
+    $val =~ s/1 Bitcoin =//;
+    $val =~ s/[A-Za-z]//g;
+    $val =~ s/ //g;
+    if ($val =~ /^-?(?:\d+(?:\.\d*)?|\.\d+)$/ ) {
+      #It's a number.&quot;;
+      if ($val &gt; 0){
+          #It has not tanked!&quot;;
+          return nearest (.00000001, ($usd / $val));
+      }else{
+        return;
+      }
+    } else {
+       return;
+    }
+  }else{
+    return;
+ }  
+}
+EOR
+
+
+
+
+
+
+
+</PRE>
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="053125.html">[ic] {Spam?} Simple Bitcoin exchange rate calculator.
+</A></li>
+	<LI>Next message: <A HREF="053142.html">[ic] Simple Bitcoin exchange rate calculator - UPDATE
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#53136">[ date ]</a>
+              <a href="thread.html#53136">[ thread ]</a>
+              <a href="subject.html#53136">[ subject ]</a>
+              <a href="author.html#53136">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.icdevgroup.org/mailman/listinfo/interchange-users">More information about the interchange-users
+mailing list</a><br>
+</body></html>
+

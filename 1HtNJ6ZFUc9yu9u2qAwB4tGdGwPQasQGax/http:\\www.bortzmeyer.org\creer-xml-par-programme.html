@@ -1,0 +1,274 @@
+http://www.bortzmeyer.org/creer-xml-par-programme.html
+HTTP/1.1 200 OK
+Date: Thu, 24 Jul 2014 02:31:35 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Sat, 14 Jun 2014 14:27:34 GMT
+ETag: "2374c-35f9-4fbcc984e2180"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Link: <http://www.gnu.org/copyleft/fdl.html>; rel="license"; title="GFDL"
+Content-Length: 5096
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="fr" lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Generated on ludwigVII.sources.org on 2014-06-14T16:27 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="print.css" media="print"/>
+<link rel="openid2.provider" href="https://openid.stackexchange.com/openid/provider">
+<link rel="openid2.local_id" href="https://openid.stackexchange.com/user/ce28a43a-5060-423a-8574-25e24a8f096e">
+<!-- TODO: add META tags from the text of the entry, for instance keywords ? -->
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - summaries" href="feed.atom" />
+<link rel="alternate" type="application/atom+xml" title="Atom syndication feed - full content" href="feed-full.atom" />
+<link rel="search"
+           type="application/opensearchdescription+xml" 
+           href="http://www.bortzmeyer.org/others/add-search-engine.xml"
+           title="Blog Bortzmeyer" />
+<link rel="author" href="http://www.bortzmeyer.org/static/moi.html"/>
+<link rel="privacy-policy" href="/privacy-policy.html"/>
+<title>
+Blog Stéphane Bortzmeyer: Créer des documents XML depuis un programme
+
+</title>
+</head>
+
+<body>
+
+<div id="page-container">
+<div id="masthead">
+<div class="inside">
+			<h1><a href="index.html">Mon blog</a></h1>
+			<hr class="hide" />
+</div>
+</div>
+<div id="outer-column-container">
+<div id="inner-column-container">
+<div id="source-order-container">
+<div id="left-column">
+<div id="leftmenu" class="inside">
+<h3>Autres trucs</h3>
+<p><a href="index.html">Accueil</a></p>
+<p><a href="rfcs.html">Seulement les RFC</a></p>
+<p><a href="ficheslecture.html">Seulement les fiches de lecture</a></p>
+<p><a href="http://echoping.sourceforge.net/">echoping</a></p>
+<p><a href="http://www.demaziere.fr/eve/">Ève</a></p>
+<form action="/search"><p>Recherche dans ce blog : <input type="text" name="pattern" style="width:100%"/>
+</p>
+</form>
+</div>
+</div> <!-- End of left-column -->
+<div id="middle-column">
+<div class="inside">
+
+
+<h2 xml:lang="fr">Créer des documents XML depuis un programme</h2><p>Première rédaction de cet article le 9 octobre 2006<br/>Dernière mise à jour le 19 novembre 2008<br/></p><hr/><div xml:lang="fr">
+<div class="para"><p>On trouve sur le Web beaucoup plus de textes expliquant comment
+analyser du <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Extensible%20Markup%20Language" title="Consultez l'article &quot;Extensible Markup Language&quot; de l'encyclopédie libre Wikipedia">XML</a></b> que de textes expliquant
+comment le produire depuis un programme. D'un côté, c'est logique :
+produire le XML est bien plus facile et ne mérite pas forcément de
+longues documentations. D'un autre côté, cela pousse certains
+programmeurs à ne pas faire attention et à écrire des programmes qui
+finissent par produire du XML mal formé.</p></div>
+<div class="para"><p>La méthode la plus évidente pour produire du XML est d'exploiter le
+fait que XML est un format basé sur le texte et d'écrire donc
+simplement (les exemples ici sont en <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Python%20(langage)" title="Consultez l'article &quot;Python (langage)&quot; de l'encyclopédie libre Wikipedia">Python</a></b> et en <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/C%20(langage)" title="Consultez l'article &quot;C (langage)&quot; de l'encyclopédie libre Wikipedia">C</a></b> mais le raisonnement est valable pour
+tous les autres langages de programmation) :
+</p><pre>
+
+print "&lt;foo&gt;%i&lt;/foo&gt;" % val
+
+</pre><p>
+Cela fonctionne, mais cela présente plusieurs inconvénients :
+</p><ul>
+<li>Comme on traite le XML comme du texte, il est très facile de
+produire involontairement du XML mal formé et rien ne permet de le
+détecter : <code>
+print "&lt;foo&gt;%i&lt;foo&gt;" % val
+</code> passera inaperçu si on ne vérifie pas le XML produit (ce
+qui serait de toute façon une très bonne idée).
+</li>
+<li>Ici, le format d'expansion de <code>val</code> est
+<code>%i</code>, ce qui se limite aux nombres. Mais si c'était
+<code>%s</code>, qui permet n'importe quelle chaîne de
+caractères, on pourrait avoir des problèmes si la chaîne contenait un
+caractère utile à XML comme le <code>&lt;</code> ou bien un
+caractère non <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/American%20Standard%20Code%20for%20Information%20Interchange" title="Consultez l'article &quot;American Standard Code for Information Interchange&quot; de l'encyclopédie libre Wikipedia">ASCII</a></b> qu'il faudrait penser à
+encoder proprement, en conformité avec la déclaration XML.</li>
+</ul></div>
+<div class="para"><p>Il est donc en général préférable de produire le XML à partir d'une
+structure de donnés de plus haut niveau que la chaîne de
+caractères. Une méthode évidente est d'utiliser
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Document%20Object%20Model" title="Consultez l'article &quot;Document Object Model&quot; de l'encyclopédie libre Wikipedia">DOM</a></b>, ici pour produire du <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Extensible%20HyperText%20Markup%20Language" title="Consultez l'article &quot;Extensible HyperText Markup Language&quot; de l'encyclopédie libre Wikipedia">XHTML</a></b> :
+</p><pre>
+
+from xml.dom.ext.reader import Sax2
+from xml.dom.ext import PrettyPrint
+from xml import xpath
+from xml.dom import getDOMImplementation
+...
+    blurb = u"&lt;attention aux caractères spéciaux"
+    ...
+    html_result = getDOMImplementation().createDocument(
+        None,
+        "html",
+        getDOMImplementation().createDocumentType(
+           "html",
+           "-//W3C//DTD XHTML 1.0 Strict//EN",
+           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"))
+    head = html_result.documentElement.appendChild(html_result.createElement('head'))
+    title = head.appendChild(html_result.createElement('title'))
+    title.appendChild(html_result.createTextNode("My site: %s" % \
+                                     (blurb)))
+    ...
+    PrettyPrint(html_result) 
+
+</pre><p> On crée un mémoire un arbre DOM et on l'affiche avec
+<code>PrettyPrint</code>. Par construction, il sera bien formé
+(mais pas forcément valide). Et DOM se chargera de l'échappement des
+caractères spéciaux XML. Les caractères non-ASCII seront proprement
+représentés (<code>PrettyPrint</code> semble imposer
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/UTF-8" title="Consultez l'article &quot;UTF-8&quot; de l'encyclopédie libre Wikipedia">UTF-8</a></b> en sortie mais d'autres méthodes DOM
+comme <code>toprettyxml()</code> permettent <a href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/157358">d'autres
+représentations</a>).</p></div>
+<div class="para"><p><b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Document%20Object%20Model" title="Consultez l'article &quot;Document Object Model&quot; de l'encyclopédie libre Wikipedia">DOM</a></b> n'est pas très pythonien. Cette norme
+est en effet conçue pour être indépendante du langage de programmation
+utilisé et certaines constructions sont donc plutôt déroutantes en
+Python, par exemple, pour créer un simple attribut, ici
+<code>href</code> :
+</p><pre>
+            link = html_result.createElement("a")
+            url = html_result.createAttribute("href")
+            url.nodeValue = "http://www.ietf.org/rfc/rfc%i.txt" % int(rfcnum)
+            link.setAttributeNode(url)
+            link.appendChild(html_result.createTextNode("RFC %i" % int(rfcnum)))
+</pre><p>.</p></div>
+<div class="para"><p><a href="http://docs.python.org/lib/module-xml.etree.ElementTree.html">ElementTree</a>
+peut donc être préféré. ElementTree, désormais intégré à la
+bibliothèque standard de Python, permet de manipuler (lire et écrire)
+du XML de manière plus pythonesque et donc plus natutrelle au
+programmeur <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Python%20(langage)" title="Consultez l'article &quot;Python (langage)&quot; de l'encyclopédie libre Wikipedia">Python</a></b>. En
+contrepartie, il n'a rien de standard, contrairement à DOM et il
+faudra donc tout réapprendre si on passe à un autre langage comme
+<b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/Perl%20(langage)" title="Consultez l'article &quot;Perl (langage)&quot; de l'encyclopédie libre Wikipedia">Perl</a></b>.</p></div>
+<div class="para"><p>Voici un exemple analogue en ElementTree :
+</p><pre>
+
+
+blurb = u"&lt;attention aux caractères spéciaux"
+
+import elementtree.ElementTree as ET
+
+html = ET.Element("html")
+
+head = ET.SubElement(html, "head")
+
+title = ET.SubElement(head, "title")
+title.text = "Mon site: %s" % blurb
+
+body = ET.SubElement(html, "body")
+
+link = ET.SubElement(body, "a")
+link.text = "Internet Engineering Task Force"
+link.attrib["href"] = "http://www.ietf.org/"
+
+print ET.tostring(html, encoding="UTF-8")
+
+# elementtree.SimpleXMLWriter is an alternative, if we just want to
+# write the XML. See http://effbot.org/zone/xml-writer.htm
+
+</pre></div>
+<div class="para"><p>Il existe bien sûr d'autres méthodes (par exemple, <a href="http://www.xml.com/pub/a/2003/10/15/py-xml.html">pour
+Python</a>) mais je crois avoir déjà couvert trois possibilités
+intéressantes.</p></div>
+<div class="para"><p>Et pour <b><a class="wikipedia" hreflang="fr" href="http://fr.wikipedia.org/wiki/C%20(langage)" title="Consultez l'article &quot;C (langage)&quot; de l'encyclopédie libre Wikipedia">C</a></b> ? Voici un
+exemple avec la <a href="http://xmlsoft.org/">libxml</a>. On
+n'utilise pas une seule fois la syntaxe XML, c'est la routine
+<code>xmlDocDumpFormatMemory</code> qui se chargera de
+produire du XML légal :
+</p><pre>
+
+#include &lt;libxml/parser.h&gt;
+
+int
+main(void)
+{
+
+  xmlNodePtr root, node;
+  xmlDocPtr doc;
+  xmlChar *xmlbuff;
+  int buffersize;
+  
+  /* Create the document. */
+  doc = xmlNewDoc(BAD_CAST "1.0");
+  root = xmlNewNode(NULL, BAD_CAST "root");
+
+  /* Create some nodes */
+  node = xmlNewChild(root, NULL, BAD_CAST "node", NULL);
+  node = xmlNewChild(node, NULL, BAD_CAST "inside", NULL);
+  node = xmlNewChild(root, NULL, BAD_CAST "othernode", NULL);
+
+  /* Put content in a node: note there are special characters so 
+     encoding is necessary! */
+  xmlNodeSetContent(node, 
+                xmlEncodeSpecialChars(doc, BAD_CAST "text con&amp;tent and &lt;tag&gt;"));
+
+  xmlDocSetRootElement(doc, root);
+
+  /* Dump the document to a buffer and print it for demonstration purposes. */
+  xmlDocDumpFormatMemory(doc, &amp;xmlbuff, &amp;buffersize, 1);
+  printf((char *) xmlbuff);
+
+}
+
+</pre><p>
+Compilé avec <code>gcc -Wall -I/usr/include/libxml2 -c create-xml.c &amp;&amp; gcc -lxml2 -o create-xml create-xml.o</code>, ce programme va afficher :
+</p><pre>
+
+% ./create-xml   
+&lt;?xml version="1.0"?&gt;
+&lt;root&gt;
+  &lt;node&gt;
+    &lt;inside/&gt;
+  &lt;/node&gt;
+  &lt;othernode&gt;text con&amp;amp;tent and &amp;lt;tag&amp;gt;&lt;/othernode&gt;
+&lt;/root&gt;
+
+</pre></div>
+<div class="para"><p>Un programme C qui produit du XML plus complexe ? Il y a par
+exemple <a class="local-file" href="files/traceroute-nanog-xml.c" title="Récupérez le fichier &quot;traceroute-nanog-xml.c&quot;">mon implémentation</a>
+du <a href="5388.html" class="rfc" title="Consultez l'analyse du RFC 5388">RFC 5388</a>.</p></div>
+<div class="para"><p>Pour C, il existe également d'autres bibliothèques comme <a href="http://www.tbray.org/ongoing/When/200x/2004/02/20/GenxStatus">GenX</a>
+ou <a href="http://www.minixml.org/">Mini-XML</a>.</p></div>
+
+</div>
+
+
+
+
+<p id="get-pdf" class="verysmall"><a href="creer-xml-par-programme.pdf" rel="noindex,nofollow">Version PDF de cette page</a> (mais vous pouvez aussi imprimer depuis votre navigateur, il y a une feuille de style prévue pour cela)</p>
+<p id="get-source" class="verysmall"><a href="creer-xml-par-programme.xml" rel="nofollow">Source XML de cette page</a> (cette 
+page est distribuée sous les termes de la licence <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a>)</p>
+</div>
+</div><!-- End of middle-column -->
+</div><!-- End of source-order-container -->
+</div><!-- End of inner-column-container -->
+</div><!-- End of outer-column-container -->
+<div class="clear-columns"><!-- do not delete --></div>
+<div id="footer">
+<div class="inside">
+<hr class="hide" />
+<p>Si vous aimez, vous pouvez payer avec <a href="/flattr.html">Flattr</a> <a href="https://flattr.com/submit/auto?user_id=bortzmeyer&url=http%3A%2F%2Fwww.bortzmeyer.org%2Fcreer-xml-par-programme.html" target="_blank"><img src="/images/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a> ou avec <a href="/bitcoin-blog.html">Bitcoin</a> : adresse <code>1HtNJ6ZFUc9yu9u2qAwB4tGdGwPQasQGax</code> (ou voyez le <a href="/images/bitcoin-qrcode.png">code QR</a>). Pour toute remarque sur ce blog, s'adresser à
+Stéphane Bortzmeyer <code>&lt;stephane+blog@bortzmeyer.org&gt;</code>. Je suis <a href="http://sl4.org/crocker.html">les règles de Crocker</a> donc pas besoin de faire des excès de diplomatie. Ce blog est strictement personnel et les opinions exprimées ici n'engagent donc que moi, et notamment pas mon employeur présent ou mes employeurs passés.</p>
+<a href="http://prefetch.validatorsearch.verisignlabs.com"></a><!-- See http://validatorsearch.verisignlabs.com/ -->
+</div>
+</div><!-- End of footer -->
+</div><!-- End of page-container -->
+</body>
+</html>
+
+

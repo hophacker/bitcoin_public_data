@@ -1,0 +1,294 @@
+http://woboq.com/blog/qmap_qhash_benchmark.html
+HTTP/1.1 200 OK
+Server: nginx/1.4.1
+Date: Tue, 22 Jul 2014 07:19:02 GMT
+Content-Type: text/html
+Last-Modified: Fri, 16 May 2014 09:36:30 GMT
+Connection: close
+Vary: Accept-Encoding
+Expires: Tue, 22 Jul 2014 08:19:02 GMT
+Cache-Control: max-age=3600
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>QMap vs. QHash: A small benchmark</title>
+<meta property="og:title" content="QMap vs. QHash: A small benchmark" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+<link rel="alternate" type="application/rss+xml" title="feed" href="http://feeds.woboq.com/woboq" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<meta name="ttw" content="fx0x1hr" />
+<meta name="readability-verification" content="8cVtwR4m8tLdt48rULfdRczTnXVgTEzcyL9sufwX"/>
+<meta name="google-site-verification" content="wW70cT0EDInE-bqP2hzyzJuMafIheUVmy2jpreJmim8" />
+<style type="text/css">
+/* <![CDATA[ */
+body { background-color: #d8d8d8; color: #282828; font-family: Helvetica,sans-serif; padding: 0 1ex; font-size: 115%;}
+a { color: #037; border: none; text-decoration: none }
+a:hover{  text-decoration: underline }
+h1, h3, h2 { color: #050505; }
+h2 { margin-top: 2.5ex; }
+img { border:none; }
+ul { padding-left: 1ex; list-style-position: inside }
+code, tt { background-color: #fbfbfb; border: 1px dashed #f1f1f1;  }
+.syntaxhighlighter code { background-color:transparent; border:none }
+span.sm { border:1px solid #ccc; padding: 15px; margin: 15px; min-width: 180px; min-height: 60px; display:block; text-align: center }
+#woboqlogo { text-align:center; display:block; margin:0px auto; }
+div#main { margin:1em auto; max-width:100ex;  padding: 1px 2.5em;
+        border-left: 1px solid #aaa; border-right: 1px solid #aaa; background-color: white;
+        box-shadow: 0px 0px 5px #037; border-radius: 14px;
+}
+div#main p { text-align:justify; }
+#woboq_header { text-align:center; font-size:x-large; margin-bottom: 4ex; margin-top:2ex;}
+#woboq_header a { margin:8px;  padding:5px 8px;   }
+#imprint-footer { margin-top:2em; line-height: 2 }
+#imprint-footer a { padding:.2ex .5ex; margin: 0 0.5ex }
+#imprint-text { font-size:x-small; }
+#imprint-links { text-align: center; padding-top:1em;padding-bottom:1em;}
+
+#woboq_header a, #imprint-links a { background-color:#D8D8D8; color: #151515; border-radius: 6px; box-shadow: 1px 2px 1px #678; }
+#woboq_header a:hover, #imprint-links a:hover { text-decoration:none; box-shadow: 1px 1px 1px #678; 
+                                                 position: relative; top: 1px; color: #333; background-color: #cfcfcf }
+
+
+.blog-index-entry h2 { font-size: larger; font-weight: normal; margin-bottom:0px; padding-bottom:0px; }
+.blog-index-entry h3, .blog-entry > h3 { font-size: smaller; margin: 0 0 .5ex 0; font-weight:normal; color:#444 }
+.blog-index-entry p:last-child { text-align: right; }
+#blog-subscribe-call { margin:20px 0;}
+#blog-navigation {font-size: smaller; text-align: center; margin: 6ex;}
+#blog-subscribe-call img { vertical-align: middle; margin: 0 0.5ex; }
+#adv { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px }
+#adv2 { margin: 4ex auto; text-align:center; border: 1px dashed #bbe; border-radius: 6px;
+    float: right;  position: relative; left: 200px; margin: 1ex 1ex 1ex -200px;}
+
+.side_box { background-color:#D8D8D8; float:right; padding:1ex; border-radius:6px; margin:2ex; margin-left: 2em; text-align: center; box-shadow: 1px 2px 2px #678;}
+
+pre.code { font-size:95%; }
+
+
+#logo_container
+{
+    height:194px;
+    width:508px;
+    position:relative;
+    text-align:center; display:block; margin:0px auto;
+}
+#logo_container a {
+  color: inherit;
+}
+#woboqlogo_subtitle
+{
+    z-index:100;
+    position:absolute;
+    font-size:24px;
+    /*font-weight:bold;*/
+    left:20px;
+    top:140px;
+    font-style:italic;
+    color: #111;
+}
+
+.product-small-screenshot {
+    float:right; margin:1em;
+    box-shadow: 1px 2px 2px #678;
+}
+.screenshot { margin:0.5ex; box-shadow: 1px 1px 2px 2px #ccc; }
+
+/* ]]> */
+</style>
+<link rel="canonical" href="http://woboq.com/blog/qmap_qhash_benchmark.html"/>
+</head>
+
+<body>
+<div id="main">
+
+<div id="logo_container">
+<a href="/"><img id="woboqlogo" src="/woboq.png" alt="Woboq Logo" width="508" height="194" />
+<p id="woboqlogo_subtitle">We create software.</p>
+</a>
+</div>
+
+<div id="woboq_header">
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Hire Us</a>
+<a href="/products.html">Products</a>
+
+<a href="/blog/">Blog</a>
+<!--<a href="/imprint.html">Imprint</a> -->
+</div>
+
+
+<div id="adv2">
+    <script type="text/javascript">//<!--
+		google_ad_client = "ca-pub-5892035981328708";
+		/* Woboq blog vertical */
+		google_ad_slot = "2526105442";
+		google_ad_width = 120;
+		google_ad_height = 600;
+		//-->
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">/* */</script>
+</div>
+<div class="blog-entry">
+    <h1>
+        QMap vs. QHash: A small benchmark
+    </h1>
+    <h3>Posted by Olivier Goffart
+ on 19 February 2013
+    </h3>
+    <div class="blog-body">
+        <div class="intro">
+    <p>While working on my Qt developer days 2012 presentation <a href="http://www.youtube.com/watch?v=vixQxXCVR10">(QtCore in depth)</a>, 
+I made a benchmark comparing QMap and QHash. I thought it would be nice to share the results in this short blog entry.
+</p>
+</div>
+<h2>Under The Hood</h2>
+<p>The Qt 4 containers are well explained by <a href="http://doc.qt.digia.com/qq/qq19-containers.html">this old Qt Quarterly article</a>.
+</p>
+<p>
+    <code>QHash</code> is implemented using a <a href="http://en.wikipedia.org/wiki/Hash_table">Hash Table</a> 
+and <code>QMap</code> was implemented using a <a href="http://en.wikipedia.org/wiki/Skip_list">Skip list</a> in Qt4.</p>
+<p>
+In Qt 5, the implementation of the containers have changed a bit, but the concepts are still the same. Here are the main differences:</p>
+<ul>
+    <li>
+        <code>QVector</code>, <code>QString</code> and <code>QByteArray</code> now share the same implementation 
+(<a href="http://code.woboq.org/qt5/qtbase/src/corelib/tools/qarraydata.h.html#QArrayData">
+            <code>QArrayData</code>
+        </a>). 
+    The main difference is that there is now an <code>offset</code> which might allow in the future to reference external data.</li>
+    <li>
+        <a href="http://code.woboq.org/qt5/qtbase/src/corelib/tools/qmap.h.html#QMap">QMap implementation</a> has totally changed. It is no longer a skip list, but a <a href="http://en.wikipedia.org/wiki/Red-black_tree">red-black tree</a>.</li>
+</ul>
+<h2>The Benchmark</h2>
+<p>The benchmark is simple and is doing lots of look-ups in a loop during one second and count the number of iterations.<br/>
+It is not really scientific. The goal is only to show the shape of the curves. </p>
+<p>The source: <a href="qmap_qhash_benchmark/benchmark.cc.html">benchmark.cc</a>
+</p>
+<h2>The Result</h2>
+<p>Run on my computer, gcc 4.7.
+Higher is better.   The number of element is on a logarithmic scale.
+For QHash, one should expect it not to change with the number of elements, and for QMap it should be <code>O(log N)</code>: a straight line on a logarithmic scale.
+
+</p>
+<h3>Qt 4.8</h3>
+<img src="qmap_qhash_benchmark/bench-48.png"/>
+<p>QMap performs slightly slower than std::map. QMap lookup is faster than in a QHash for less than about 10 elements.</p>
+<h3>Qt 5</h3>
+<img src="qmap_qhash_benchmark/bench-5.png"/>
+<p>It was a good idea to change from a skip list to a red-black tree. 
+The performance of the Qt containers compared to the STL are about the same.
+QMap is faster than QHash if there is less than about 20 elements.</p>
+<p>If you compare the number between Qt5 and Qt4 you see that Qt5 performs better. That might be related by the changes in QString.</p>
+<h2>Conclusion</h2>
+<p>The typical rule is: Use QMap only if you need the items to be sorted or if you know that you always have a very small amount of items in your map.</p>
+
+    </div>
+    <div id="blog-subscribe-call">
+        <p>
+            <a title="Submit on reddit" rel="nofollow" href="http://www.reddit.com/submit?url=http://woboq.com/blog/qmap_qhash_benchmark.html">
+                <img width="19" height="15" alt="Submit on reddit" src="/button_reddit.gif"/>
+            </a>
+            <a title="Submit on hackernews" rel="nofollow" href="https://news.ycombinator.com/submitlink?u=http://woboq.com/blog/qmap_qhash_benchmark.html">
+                <img width="20" height="20" alt="Submit on reddit" src="/button_hn.gif"/>
+            </a>
+            <a title="Tweet about it" rel="nofollow" href="http://twitter.com/home?status=http://woboq.com/blog/qmap_qhash_benchmark.html">
+                <img width="20" height="20" alt="Tweet about it" src="/button_twitter.png"/>
+            </a>
+            <a title="Share on Facebook" href="http://www.facebook.com/share.php?u=http://woboq.com/blog/qmap_qhash_benchmark.html">
+                <img width="20" height="20" alt="Share on Facebook" src="/button_facebook.png"/>
+            </a>
+            <a title="Post on Google+" rel="nofollow" href="https://plus.google.com/share?url=http://woboq.com/blog/qmap_qhash_benchmark.html">
+                <img width="16" height="16" alt="Post on Google+" src="/button_gp.png"/>
+            </a>
+        </p>
+        <p>If you like this blog and want to read similar articles, consider <b>subscribing</b>
+            <a href="http://feeds.woboq.com/woboq">via our RSS feed</a>,
+<a href="http://feedburner.google.com/fb/a/mailverify?uri=woboq">by e-mail</a>
+or <a href="http://twitter.com/woboq">follow us on twitter</a>
+or <a href="https://plus.google.com/102813873464455130791">add us on G+</a>..
+</p>
+        <p>
+You can also <a href="http://flattr.com/thing/452314/Woboq-Blog" target="_blank">
+                <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"/>
+            </a>
+blog posting or 
+<a href="http://tiptheweb.org/tip/">
+                <img src="data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%3D%00%00%00%18%08%02%00%00%00%C6ab%3B%00%00%04%ECIDATX%85%D5%97Kl%13W%14%86%CF%F5%83%F8%11'%8E%3D8c3~%90%97%D4%E2%08H%00))q%14Z7-U%9D%80%8A%40%20%D1M%BBa%DF%8A%15%CB%EE%8A%84%D8%B4%CB%2C*Pi%17%05J%1B%A4%24M(%10%A0%8Ab%0A8%A4%40mjl%E3%0C%89%ED%C4%B1g%3A%F7%DE.%26Ll%C7qy%A94%BF%EE%E2%BE%CE9%DF%3DsF3%17%09%82%00kP%AA%D7%0D%F0%82%D2(%BDyaa%E4%AF%E1%B1%F8%A5%D7HSA%3E%7BW%8Fs%97%A9%AAZ%1E%22%A5N%CE%DE%3B%5B%AD%D7%F7x%7C%AF%8F%AD%92F%C2c%0B%B9%5C%A0)%20%0F%97%EBd%2C~%C9%E7%DE%89)%F9%7F6%9F%7Bga-h%0A%CFD(%5Ey%D0%A9%3B%D3%B7o%86%FE%B8%7B%FF%C9%CC%13e%D2%E9%E668%1D%DBvlu7%B8%5Eqb%9FM%C5%DC%84%14%0E%EF%DE%99%FE%E1%FB%1F%81%A0%DE%DE%DE%EE%B7z%3C%1E%8F%B2%14%0E%87%83%C1%E0%A9%81%EF%0C%D5%BA%7D%87%F6%D6%B3%B6%FF%06WQ%117.%C8wp%E2%D6%B93%17%02%81%40ww7%C68%1E%8FOMM%C9K%94RQ%14%FD~%7F__%DF%E0%E0%E0%F1%2FN%EE%FF%F8%A3%CDm%DE%E7%0A%9C%13s%D1%B9G%F6Z%7B%B5%CE%F8%B2%DC%84.%E5%7B%3At%EF%DC%99%0BG%8F%1E%B5X%2C%18%E3d2%B9%B0%B0%20%13%03%00B%E8%FA%F5%EB%2C%CB%CE%CD%CDutt%B4%B5%B5%1D%3Bv%CC%C62%F5%F62Y%3F%7D%F5%CC%95%7BWJ%26%BD%1BZ%DF%D9%D4s%E2%E2%C9O%BB%3FiumzYn%FC%94%7B%E8%A7_%0E%1E%3CXWW%97%CDf%8DF%23%C6K%CF%01!%24%D3%3B%1C%8EX%2Cf%B1X%92%C9%A4%D5j%ED%EF%EF%1F%B98%B6%EF%F0%DE%95%01%F6%B4%F7%F7m%ED%03%80%AF%87%BFJ%E7%E7%3F%DF%FD%99%ECG%A3U%7Fy%E08RQ%25%E8Kp%93%25%BEG%0Fc%ED%ED%ED%B3%B3%B3%1A%8DF%10%84%BA%BA%BA%C2%7C%8B%A2%18%8DF%1B%1A%1A%E4%CD%3C%CFwvv%0E%5E%FCY1%2F%94J%8DTj%15%00%A8%D5j%15Rk%B4j%00%00%A0%0F%F9%C87WN%ED%DD%B6%A7%D9%DEt%FA%EA%B7y1%B7q%FD%C6%B1%BB%97%9A%D9f%BF%F7m%AB%C9Z%99%BB%E8%7B%89%81%C8M%1Ef2%99X%2C%861F%08%99%CDfe%5B8%1C%F6%FB%FD555%94RI%920%C6%26%93)%B7%98W%CC%0B%9B%04X%02I%02I%C6%95%FB%12%60%09%E3%99%F9%19%11%8B%18H6%97%9D%8AO%E7%25%E1%C3-%81%C9%877%87n%8F%94u%B5j%BEIq%C2%0C%06%83%C9dR%AB%D5%91H%04!%A4%14wKKK%3A%9DN%A5RN%A7%93RZUUU%D6%BCD%94%16%ED%91%DF%25J%97fl5%F5%BB7%BFO(%FD%ED%C1%8DP%3C%84%89%84%00U%F0V%BE%BE%E5d%5B%2C%16%9E%E7%09!z%BD%3E%9DN%CB%7C2%BDN%A7K%A5R%18c%8E%E3X%96%E5y%BE%C4%7C5re%0F%05%99%9BbJ(P%40%90%95%B2%00%00%08t%1A%3D%A1%14%80V%F0UT'%84%60%B9%E9%0C%BA%89%89%09%95J%C50%0C%C6X%AB%D52%0CC%08%11%04A%AF%D7%8B%A2%98H%248%8E%F3x%3C.%97K%A7%D3%5D%BE%7C%99u%D6%2B%E6e%5BI%08L%97%E8%E5%A5%F9%DC%7C%7C6%F68%FD%F8%3E%FF%C0%CB%B5V%F0P.%DFOkh%9B%AFmhh%88a%18%97%CB%C5%B2%AC%20%08%F9%7C%5E%AB%D5...J%92d%B3%D9%1C%0E%87%D1h4%18%0C%99Lf%7C%7C%7Cxx%F8%83C%EF%95%94%60i%B6%8BCPJ%00%80P%8A%81PJU%08%8D%86~%0D%C5B%D6jfGc%7BeW%A5%DC%CA%99%DA%7D%5B%D2%B3%A9%81%81%81%DE%DE%5E%8F%C7c6%9B%CDfsmm%AD%B2S%92%A4T*%95H%24%82%C1%E0%E8%E8%E8%F6%5Dm%AEf%AEr%7D%1F%F1%1FA%A0%9A%13xy%E8d%B8%13%87Nd%C4%8CH%F2%00%60%AC2%1E%EE%3AL0Y%A7%D1%A6%C5TeW%A5%DC%B8%E0%3B%DF%1D%F0Y%ED%B7%CF_8%CFX%98%C6%C6F%8E%E3%18%86%91%DFN%84P4%1A%9D%99%99%99%9C%9CD%1Axw%FF.w%8B%1B%93%7F%C9%D0%93%1C_%1C%2B%9F%97%12r%9F%02%A5%00%A9%FC%2C%02%A0%7FWvS%8E%9B%14%3F%9D7%B7%BF%D1%D4%DA%14%99%8E%FC%19%8A%5C%BBqM%C8-%DF%8Cl%1B%D63%0EkW%7F%A7%BB%C5%B5%D2%F0yu%A0%E3%00%20%24B%FE%D9MJ%F2-%95%2C%AB%D7%A1%06%AF%A7%C1%EBY%CD~%A5%C9%0BH%40%04(*%FB7%BA%9A%96%B9%7D%F6%AE%E0%E3%DF%BD%B6%E7%FB%3Dz%25%C2%CF%40%7C%2By%CBg%EFR%86%CB%F7%9D%B5zO%5B%5BZ%AB%F7%F9%7F%00%D7%BFl9%8C%F4i%22%00%00%00%00IEND%AEB%60%82"/>
+            </a>
+it
+or <a href="bitcoin:1En85shTXaVMt7FAVawq6qSXijjEUT89EU">
+                <img src="/banner_bitcoin_donate.png"/>
+            </a>!</p>
+    </div>
+    <div id="blog-navigation">
+        &laquo; Previous: <a href="qthread-you-were-not-doing-so-wrong.html">You were not doing so wrong.</a> | Next: <a href="iquassel-now-also-for-iphone.html">iQuassel for iPhone and iPod</a> &raquo;
+    </div>
+    <div id="adv">
+        <script type="text/javascript">
+            <!--
+google_ad_client = "ca-pub-5892035981328708";
+/* woboq blog above comments */
+google_ad_slot = "0806550814";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+        </script>
+        <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+//
+</script>
+    </div>
+    <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'woboq'; 
+    var disqus_url = 'http://woboq.com/blog/qmap_qhash_benchmark.html';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the comments</noscript>
+
+</div>
+
+
+<div id="imprint-footer" >
+<div id="imprint-links"> 
+<a href="/">Home</a>
+<a href="/about.html">About</a>
+<a href="/software-services.html">Services</a>
+<a href="/products.html">Products</a>
+
+<a href="/quassel.html">Quassel&nbsp;Hosting</a>
+<a href="/codebrowser.html">Code&nbsp;Browser</a>
+<a href="/blog/">Blog</a>
+<a href="/imprint.html">Imprint</a>
+</div>
+
+</div>
+
+</div>
+
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-221649-10']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,128 @@
+https://www.kitten-technologies.co.uk/project/ugarit/tktview?name=dae5e21ffc
+HTTP/1.0 200 OK
+Status: 200 OK
+X-Frame-Options: SAMEORIGIN
+Cache-control: no-cache
+Content-Type: text/html; charset=utf-8
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Content-Length: 3061
+Connection: close
+Date: Fri, 11 Jul 2014 21:39:11 GMT
+Server: lighttpd/1.4.32
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ugarit: View Ticket</title>
+<link rel="alternate" type="application/rss+xml" title="RSS Feed"
+      href="/project/ugarit/timeline.rss" />
+<link rel="meta" type="application/rdf+xml" title="DOAP"
+      href="/project/ugarit/doc/trunk/METADATA.rdf" />
+<link rel="shortcut icon" type="image/png" href="https://www.kitten-technologies.co.uk/favicon.png" />
+<link rel="stylesheet" href="https://www.kitten-technologies.co.uk/kitten-technologies.css" type="text/css"
+      media="screen" />
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <a href="https://www.kitten-technologies.co.uk/"><img src="https://www.kitten-technologies.co.uk/kt_logo.png" alt="logo" /></a>
+  </div>
+  <div class="title"><small>Ugarit</small><br />View Ticket</div>
+  <div class="status">Not logged in</div>
+</div>
+<div class="mainmenu">
+<a href="https://www.kitten-technologies.co.uk/">Kitten Technologies</a> |
+<a href='/project/ugarit/doc/trunk/README.wiki'>Home</a>
+<a href='/project/ugarit/doc/trunk/DOWNLOAD.wiki'>Download</a>
+<a href='/project/ugarit/timeline'>Timeline</a>
+<a href='/project/ugarit/reportlist'>Tickets</a>
+<a href='/project/ugarit/wiki'>Wiki</a>
+ | <a href='/project/ugarit/login'>Login</a>
+</div><div class="submenu">
+<a class="label" href="/project/ugarit/tktview/dae5e21ffc?plaintext">Plaintext</a>
+</div>
+<div class="content">
+<script>
+function gebi(x){
+if(/^#/.test(x)) x = x.substr(1);
+var e = document.getElementById(x);
+if(!e) throw new Error("Expecting element with ID "+x);
+else return e;}
+</script>
+<table cellpadding="5" class="tktview">
+<tr><td class="tktDspLabel">Ticket&nbsp;UUID:</td>
+<td class="tktDspValue" colspan="3">dae5e21ffcd3d517e021d8b855fb86ff7d9a271a</td></tr>
+<tr><td class="tktDspLabel">Title:</td>
+<td class="tktDspValue" colspan="3">
+Archival mode
+
+</td></tr>
+<tr><td class="tktDspLabel">Status:</td><td class="tktDspValue">
+Open
+</td>
+<td class="tktDspLabel">Type:</td><td class="tktDspValue">
+Feature_Request
+</td></tr>
+<tr><td class="tktDspLabel">Severity:</td><td class="tktDspValue">
+UNSPECIFIED
+</td>
+<td class="tktDspLabel">Priority:</td><td class="tktDspValue">
+2_Medium
+</td></tr>
+<tr><td class="tktDspLabel">Subsystem:</td><td class="tktDspValue">
+Archival_Frontend
+</td>
+<td class="tktDspLabel">Resolution:</td><td class="tktDspValue">
+Open
+</td></tr>
+<tr><td class="tktDspLabel">Last&nbsp;Modified:</td><td class="tktDspValue">
+2012-05-04 10:35:07
+</td>
+
+</tr>
+<tr><td class="tktDspLabel">Version&nbsp;Found&nbsp;In:</td>
+<td colspan="3" valign="top" class="tktDspValue">
+
+</td></tr>
+<tr><td>Description &amp; Comments:</td></tr>
+<tr><td colspan="4" class="tktDspValue">
+Currently, I have been implementing Ugarit's backup facility through its "snapshot" mode, but it's meant to be a backup *and archival* system.
+
+<p>Whereas snapshot mode takes a filesystem tree and adds it to a chain of snapshots of the same tree rooted at a tag, archival mode takes a filesystem tree and inserts it into a differently-structured thing called a library, also rooted at a tag.
+
+<p>A library is implemented as a chain of snapshot-like blocks, each of which refers to the previous library in the chain, has a small amount of metadata, and points to a contents block, However, the contents is an s-expression stream of metadata entries. Each metadata entry has a hash (pointing to the root block of the archived filesystem tree, which may often be a raw file rather than a directory), then an alist mapping metadata keys to values.
+
+<p>The metadata for a given archived filesystem tree may be superceded by later libraries in the chain, in which case the earlier metadata is ignored.
+
+<p>The library metadata should be cached by the front-end, in an SQLite database, all keyed on the tag name. The hash of the latest library is stored in the cache, so that whenever the archive is opened, it can be compared to the current state of the library tag and the chain followed (processing updates as we go) until the previous point is found, thereby only importing the latest changes. The metadata of a given filesystem tree in the library is the metadata attached to it by the library entry, plus any metadata attached to the top-level library block itself, which is inherited to all metadata created in that library.
+
+<p>The default virtual filesystem presented by the <code>explore</code> command, when it finds a library tag, can present the library chain like a snapshot chain, but the virtual filesystem provided by 9P/NFS/WebDAV/FUSE mode can be configurable to provide multiple views on the archive.
+
+<p>One that comes to mind is to specify a number of metadata keys. The virtual filesystem then has a directory level per metadata key, within which all filesystem trees with the given set of values, matching a global filter restriction, are found. By setting a global restriction of <code>type</code>=<code>music</code>, and giving the directory keys as <code>artist</code>, <code>album</code> and <code>title</code>, we get a nice music browser. Further extensions might be to extend the syntax for directory keys from single symbols that select a metadata key to constructs like <code>(track-number "-" title)</code> to generate compound strings at each level, and configuring what to do with filesystem trees that lack the metadata key in question (the options being to ignore that filesystem tree, or to provide a default value such as <code>"Unknown"</code>).
+
+<hr /><p><i>alaric added on 2012-04-16 13:20:06 UTC:</i><br />
+It would be useful to record the exact absolute path and hostname a file tree came from when it goes into an archive, as that can be useful metadata in figuring out what it is later.
+
+<p>Now, when we import a file into the archive by snapshotting it and then introducing a metadata record about it into an archive delta, we must check to see if the file already exists in that archive, so as to not overwrite previous rich metadata with naff initial auto-generated metadata. However, it might be nice to read in the previous metadata and append a new "archived from" entry specifying the hostname, location, and time. As the metadata is an alist, it will be easy to do this as long as "archived from" is a single property, so we can tie together the hostname/location/time triple as a single item.
+
+<hr /><p><i>alaric added on 2012-05-04 10:35:07 UTC:</i><br />
+I should also like to add that the "location archived from" should be represented (for convenience) as four components: hostname, absolutely directory path, filename, and extension.
+
+<p>So the metadata alist of a file might include one or more of:
+
+<pre class='verbatim'>(archived-from "2011-04-32 22:45:01" "anger" "/home/alaric/projects/foo" "backup" "tar.gz")</pre>
+
+<p>One would hope that the extension would be the same (modulo case?) for all the archives, but we can never be sure :-)
+
+<p>When building search queries, it would therefore be nice to be able to say <tt>(second archived-from)</tt> to extract the second field from <tt>archived-from</tt> - or maybe even to define a table of aliases so we can say <tt>archived-from-hostname</tt>.
+
+</td></tr>
+</table>
+</div>
+<div class="footer">
+Please support my open source work with a Bitcoin donation: <a href="bitcoin:1KittenrqNfd78FnM5k3R5qxdEqV4iQ8G7">1KittenrqNfd78FnM5k3R5qxdEqV4iQ8G7</a>. Thanks!<br />
+Fossil version 1.28 [1762a72f0e] 2014-04-10 08:36:18
+</div>
+</body></html>
+

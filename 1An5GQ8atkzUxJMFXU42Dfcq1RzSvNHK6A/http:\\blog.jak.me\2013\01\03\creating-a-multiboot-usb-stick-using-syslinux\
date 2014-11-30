@@ -1,0 +1,760 @@
+http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 23:35:45 GMT
+Server: Apache
+X-Powered-By: PHP/5.3.28
+X-Pingback: http://blog.jak.me/xmlrpc.php
+Link: <http://wp.me/p3hRjn-4b>; rel=shortlink
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html lang="en-US" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creating a multiboot USB stick using syslinux | blogOfJak();</title>
+<meta name="author" content="Jak Gibb">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="http://blog.jak.me/xmlrpc.php">
+
+
+<!-- SEO Ultimate (http://www.seodesignsolutions.com/wordpress-seo/) -->
+	<meta name="description" content="How to boot multiple operating systems from a USB stick using Syslinux." />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Creating a multiboot USB stick using syslinux" />
+	<meta property="og:description" content="How to boot multiple operating systems from a USB stick using Syslinux." />
+	<meta property="og:url" content="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/" />
+	<meta property="article:published_time" content="2013-01-03" />
+	<meta property="article:modified_time" content="2014-03-17" />
+	<meta property="article:author" content="http://blog.jak.me/author/jd/" />
+	<meta property="article:section" content="Linux" />
+	<meta property="og:site_name" content="blogOfJak();" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="robots" content="noarchive" />
+<!-- /SEO Ultimate -->
+
+<link rel="alternate" type="application/rss+xml" title="blogOfJak(); &raquo; Feed" href="http://blog.jak.me/feed/" />
+<link rel="alternate" type="application/rss+xml" title="blogOfJak(); &raquo; Comments Feed" href="http://blog.jak.me/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="blogOfJak(); &raquo; Creating a multiboot USB stick using syslinux Comments Feed" href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/feed/" />
+<link rel='stylesheet' id='jetpack-subscriptions-css'  href='http://blog.jak.me/wp-content/plugins/jetpack/modules/subscriptions/subscriptions.css?ver=3.8.3' type='text/css' media='all' />
+<link rel='stylesheet' id='jetpack-widgets-css'  href='http://blog.jak.me/wp-content/plugins/jetpack/modules/widgets/widgets.css?ver=20121003' type='text/css' media='all' />
+<link rel='stylesheet' id='hexa-style-css'  href='http://blog.jak.me/wp-content/themes/hex/style.css?ver=3.8.3' type='text/css' media='all' />
+<link rel='stylesheet' id='hexa-source-sans-pro-css'  href='http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A300%2C400%2C700%2C300italic%2C400italic%2C700italic&#038;ver=3.8.3' type='text/css' media='all' />
+<link rel='stylesheet' id='hexa-genericons-css'  href='http://blog.jak.me/wp-content/themes/hex/genericons/genericons.css?ver=3.0.3' type='text/css' media='all' />
+<script type='text/javascript' src='http://blog.jak.me/wp-includes/js/jquery/jquery.js?ver=1.10.2'></script>
+<script type='text/javascript' src='http://blog.jak.me/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+<script type='text/javascript' src='http://blog.jak.me/wp-includes/js/comment-reply.min.js?ver=3.8.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jak.me/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jak.me/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Configuring Firefox for enhanced privacy and security' href='http://blog.jak.me/2012/10/18/configuring-firefox-for-enhanced-privacy-and-security/' />
+<link rel='next' title='Disabling PHP functions on a per virtual host basis' href='http://blog.jak.me/2013/03/25/disabling-php-functions-on-a-per-virtual-host-basis/' />
+<meta name="generator" content="WordPress 3.8.3" />
+<link rel='canonical' href='http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/' />
+<link rel='shortlink' href='http://wp.me/p3hRjn-4b' />
+	<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+			<style type="text/css" id="hexa-custom-background-css">
+							body.custom-background,
+				.custom-background .wp-caption {
+					background-color: #1b1b1b				}
+				.custom-background img.alignleft,
+				.wp-caption.alignleft,
+				img.alignright,
+				.wp-caption.alignright,
+				.author-archives-img,
+				.comment-author .avatar-wrapper {
+					border-top-color: #1b1b1b;
+					border-bottom-color: #1b1b1b;
+				}
+								</style>
+	</head>
+
+<body class="single single-post postid-259 single-format-standard custom-background">
+<div id="page" class="hfeed site">
+			<div id="menu-toggle-nav" class="panel">
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+			<div class="menu"><ul><li ><a href="http://blog.jak.me/">Home</a></li></ul></div>
+		</nav><!-- #site-navigation -->
+	</div>
+			<div id="sidebar-toggle-nav" class="panel">
+	<div class="widget-areas">
+					<div class="widget-area">
+				<aside id="search-2" class="widget widget_search"><form role="search" method="get" class="search-form" action="http://blog.jak.me/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Search">
+</form>
+</aside>		<aside id="recent-posts-2" class="widget widget_recent_entries">		<h1 class="widget-title">Recent Posts</h1>		<ul>
+					<li>
+				<a href="http://blog.jak.me/2014/02/06/part-two-creating-a-custom-arch-linux-live-usb/">Part Two:  Creating a custom Arch Linux live USB</a>
+						</li>
+					<li>
+				<a href="http://blog.jak.me/2013/03/28/arch-linux-arm-native-install-on-n900/">Arch Linux ARM (native) install on N900</a>
+						</li>
+					<li>
+				<a href="http://blog.jak.me/2013/03/25/disabling-php-functions-on-a-per-virtual-host-basis/">Disabling PHP functions on a per virtual host basis</a>
+						</li>
+					<li>
+				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/">Creating a multiboot USB stick using syslinux</a>
+						</li>
+					<li>
+				<a href="http://blog.jak.me/2012/10/18/configuring-firefox-for-enhanced-privacy-and-security/">Configuring Firefox for enhanced privacy and security</a>
+						</li>
+				</ul>
+		</aside><aside id="recent-comments-2" class="widget widget_recent_comments"><h1 class="widget-title">Recent Comments</h1><ul id="recentcomments"><li class="recentcomments">rainman on <a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-1111">Creating a multiboot USB stick using syslinux</a></li><li class="recentcomments">achilleas.k on <a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-320">Creating a multiboot USB stick using syslinux</a></li><li class="recentcomments">Jak on <a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-318">Creating a multiboot USB stick using syslinux</a></li><li class="recentcomments">achilleas.k on <a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-311">Creating a multiboot USB stick using syslinux</a></li><li class="recentcomments">Jak on <a href="http://blog.jak.me/2011/09/07/creating-a-custom-arch-linux-live-usb/#comment-272">Creating a custom Arch Linux live USB</a></li></ul></aside><aside id="archives-2" class="widget widget_archive"><h1 class="widget-title">Archives</h1>		<ul>
+			<li><a href='http://blog.jak.me/2014/02/'>February 2014</a></li>
+	<li><a href='http://blog.jak.me/2013/03/'>March 2013</a></li>
+	<li><a href='http://blog.jak.me/2013/01/'>January 2013</a></li>
+	<li><a href='http://blog.jak.me/2012/10/'>October 2012</a></li>
+	<li><a href='http://blog.jak.me/2012/05/'>May 2012</a></li>
+	<li><a href='http://blog.jak.me/2012/04/'>April 2012</a></li>
+	<li><a href='http://blog.jak.me/2011/09/'>September 2011</a></li>
+		</ul>
+</aside><aside id="categories-2" class="widget widget_categories"><h1 class="widget-title">Categories</h1>		<ul>
+	<li class="cat-item cat-item-2"><a href="http://blog.jak.me/category/arch-linux/" title="View all posts filed under Arch Linux">Arch Linux</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://blog.jak.me/category/archiso/" title="View all posts filed under archiso">archiso</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://blog.jak.me/category/forensics/" title="View all posts filed under Forensics">Forensics</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://blog.jak.me/category/java/" title="View all posts filed under Java">Java</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://blog.jak.me/category/linux/" title="View all posts filed under Linux">Linux</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://blog.jak.me/category/n900/" title="View all posts filed under N900">N900</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="http://blog.jak.me/category/privacy/" title="View all posts filed under Privacy">Privacy</a>
+</li>
+	<li class="cat-item cat-item-9"><a href="http://blog.jak.me/category/programming/" title="View all posts filed under Programming">Programming</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://blog.jak.me/category/screenshot/" title="View all posts filed under Screenshot">Screenshot</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://blog.jak.me/category/security/" title="View all posts filed under Security">Security</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://blog.jak.me/category/web-development/" title="View all posts filed under Web Development">Web Development</a>
+</li>
+		</ul>
+</aside><aside id="meta-2" class="widget widget_meta"><h1 class="widget-title">Meta</h1>			<ul>
+						<li><a href="http://blog.jak.me/wp-login.php">Log in</a></li>
+			<li><a href="http://blog.jak.me/feed/" title="Syndicate this site using RSS 2.0">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://blog.jak.me/comments/feed/" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>						</ul>
+</aside>			</div>
+							</div>
+</div>			<div id="search-toggle-nav" class="panel">
+		<div class="search-wrapper">
+			<form role="search" method="get" class="search-form" action="http://blog.jak.me/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Search">
+</form>
+		</div>
+	</div>
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-header-wrapper">
+			<div class="site-branding">
+				<h1 class="site-title"><a href="http://blog.jak.me/" rel="home">blogOfJak();</a></h1>
+				<h2 class="site-description">Geeky ramblings of an insomniac</h2>
+			</div>
+			<div class="toggles">
+			<div id="menu-toggle" class="toggle" title="Menu">
+				<span class="screen-reader-text">Menu</span>
+			</div><!-- #menu-toggle -->
+							<div id="sidebar-toggle" class="toggle" title="Widgets">
+					<span class="screen-reader-text">Widgets</span>
+				</div><!-- #sidebar-toggle -->
+									<div id="search-toggle" class="toggle" title="Search">
+				<span class="screen-reader-text">Search</span>
+			</div><!-- #search-toggle -->
+		</div><!-- .toggles -->
+		</div>
+	</header><!-- #masthead -->
+	<div id="content" class="site-content">
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-259" class="post-259 post type-post status-publish format-standard hentry category-linux">
+	<header class="entry-header">
+					<span class="entry-format"></span>
+				<h1 class="entry-title">Creating a multiboot USB stick using syslinux</h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license"><img style="border-width: 0;" alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a></p>
+<p style="text-align: right;"><img class="aligncenter size-full wp-image-276" alt="aLive Multiboot USB" src="http://blog.jak.me/wp-content/uploads/2013/01/splasheg1.png" width="510" height="144" /></p>
+<p style="text-align: right;"><strong>Outcome:</strong> To create a USB stick that contains multiple GNU/Linux (Linux) distributions using syslinux as the boot loader.</p>
+<p style="text-align: right;"><strong>Last Update: 18th February 2014</strong></p>
+<p>I love to play around with different Linux distributions; I find certain ones to be better suited at certain tasks, but having to switch between, and carry around, a key chain full of USB stick is not really practical, or something I can afford.</p>
+<p>Thankfully, syslinux allows me to easily create a single, multi distribution USB stick, which is my little geeky life saver: whenever I&#8217;m asked to do a bit of repair work on a friends computer, I can bring along a single stick full of maintenance goodness; and also, if I&#8217;m away from home and don&#8217;t have my laptop with me, I can boot up my beloved, live version of Arch Linux customised with all my usual programs and files (<a href="http://blog.jak.me/creating-a-custom-arch-linux-live-usb/">see my &#8216;howto&#8217; if you&#8217;re interested</a>).</p>
+<p><span id="more-259"></span></p>
+<h1>How To</h1>
+<p>I&#8217;m going to assume that you are sitting in front of an Arch Linux box to create the USB; however, these instructions will, well should, work no matter what operating system you are using (read: *nix); I will try to point out any OS specific points.<br />
+The process is quite simple. It basically amounts to: formatting the stick, installing syslinux and the MBR, copying the distribution over, and creating a configuration file.</p>
+<p>First, install syslinux with your package manager to your OS. We are not installing syslinux <em>to</em> the disk, just grabbing the files so we have them to hand. The mtools package is also required.</p>
+<p><span style="color: #339966;"><code>Arch Linux (root)#: pacman -S syslinux mtools</code></span><br />
+<span style="color: #339966;"><code>Debian (root)#: apt-get install mtools<br />
+</code></span></p>
+<p>The syslinux files will be installed to /usr/lib/syslinux/bios/, some distributions may install them to /usr/lib/syslinux/, or /lib/syslinux.<br />
+For this tutorial, I&#8217;ll assume they are located within /usr/lib/syslinux/bios.</p>
+<p>Next, plug in your USB stick. You&#8217;ll want to completely format it, and create at least one partition with FAT32, marked &#8216;bootable&#8217;, which is where the distros shall live (I&#8217;ve not had much luck with ext, yet).<br />
+If you create more than one partition, make sure that this FAT32 distro partition is the first.<br />
+On my 8GiB USB, I&#8217;ve created two partitions: the first being a 4GB FAT to hold the distros, and the second being an encrypted (Luks+Ext4)  partition where I can hold my private data.</p>
+<p>I&#8217;ll assume you are aware on how to partition a disk using *nix tools such as fdisk and cfdisk.<br />
+If not, gparted and qtparted makes the process quite simple, but if you get stuck just leave a comment.</p>
+<p>Once complete, mount the first partition of the USB and create a directory called &#8220;syslinux&#8221; at the root of it.</p>
+<p><span style="color: #339966;"><code>(root)#: mount /dev/sdX1 /mnt/<br />
+(root)#: mkdir /mnt/syslinux<br />
+</code></span></p>
+<p>Install syslinux to the first partition of the USB:</p>
+<p><span style="color: #339966;"><code>(root)#: syslinux -d syslinux -i /dev/sdbX1<br />
+</code></span></p>
+<p>Now install the MBR (Master Boot Record) to the USB itself (not the partition. ie. don&#8217;t add a number after sdX).<br />
+The MBR file we need is located in the same place where syslinux was installed earlier (either: /usr/lib/syslinux/mbr.bin, or /usr/lib/syslinux/bios/mbr.bin, or /lib/syslinux/mbr.bin):</p>
+<p><span style="color: #339966;"><code>(root)#: dd conv=notrunc bs=440 count=1 if=/usr/lib/syslinux/bios/mbr.bin of=/dev/sdX</code></span></p>
+<p>That takes care of syslinux, well for the most part. Now you want to copy over the Linux distributions you want.<br />
+I&#8217;ll assume you&#8217;ve downloaded some Linux ISOs.<br />
+Once you have, you&#8217;ll want to mount the ISO somewhere so you can get to it&#8217;s files. I&#8217;ll assume here that distro.iso is the distribution you&#8217;ve downloaded, and /media will be the mount point.</p>
+<p><span style="color: #339966;"><code>(root)#: mount -t iso9660 -o loop,ro distro.iso /media<br />
+</code></span></p>
+<p>If you take a look in /media, you&#8217;ll see the contents of the ISO file. Now here is where it starts to get a <em>little</em> tricky.<br />
+Each distribution will have their own way of laying out the files. Normally you will have a folder which contains OS files (such as the kernel, initrd, and the filesystem(s) in a squashfs format), and a folder which contains all the syslinux/isolinux related files.</p>
+<p>Create a new directory at the root of your USB with a brief name of the OS your are going to copy over, for example for BackTrack:</p>
+<p><span style="color: #339966;"><code>(root)#: mkdir /mnt/backtrack</code></span></p>
+<p>Now copy over everything from mounted ISO file, to this newly created folder.<br />
+If there is a syslinux or isolinux folder at the root of the mounted ISO you can ignore copying that over, but if you are unsure just copy  everything, so, again using BackTrack as an example:</p>
+<p><span style="color: #339966;"><code>(root)#: cp -r /media/* /mnt/backtrack</code></span></p>
+<p>Do this process for all the distributions: creating a new directory at the root of the USB, mount the ISO, and copy the files over.</p>
+<p>All that is required now is to create a syslinux.cfg file which is the configuration file for the menu you see when you boot the USB.<br />
+You can either have a basic command line based boot loader (probably not what you want), or a pretty GUI so you can easily select the distribution to boot.</p>
+<p>There are a number of other files which syslinux depends on, so I strongly recommend you copy everything from the syslinux directory to the USB (you can copy just the ones you need if you know which). Again, these files may be located in /usr/lib/syslinux, /usr/lib/syslinux/bios, or /lib/syslinux/, so adjust the command as necessary.</p>
+<p><span style="color: #339966;"><code>(root)#: cp /usr/lib/syslinux/bios/*  /mnt/syslinux</code></span></p>
+<p>Next, we need to create the syslinux.cfg file which holds all the entries for the distributions on the USB. You can use<a href="http://pastebin.ca/raw/2298863"> this one</a> (obtained from the Arch Linux Wiki) as a good starting point.<br />
+Save this to the syslinux directory on the USB (/mnt/syslinux/syslinux.cfg).</p>
+<p>What you need to do is copy the relevant syslinux entries from all ISOs, paste it into the syslinux.cfg you&#8217;ve just placed on the USB, and modify the paths slightly.</p>
+<p>For some distributions, this is a straight forward process, for others, if they use complex syslinux menus, it can require a bit of searching and thought.</p>
+<p>When you mount the ISO, have a look for a syslinux/isolinux directory. It can sometimes be located within a boot folder, or sometimes, as in the case of BackTrack, at the root.<br />
+Once you&#8217;ve found it, you&#8217;ll then want to look for the relevant file which has the menu entries.<br />
+Again, for some distributions, such as BackTrack, the syslinux.cfg will be what you are looking for; others maybe using isolinux so you&#8217;ll have to look for an isolinux.cfg file; for others, there may be many files and it may be unclear as to which ones contain the menu entries.<br />
+You will need to go through all the *.cfg files and look for the entries that is responsible booting the system, and contain references to the kernel (normally called vmlinuz), and the inital RAM disk (normally called initrd).</p>
+<p>For BackTrack, the syslinux.cfg has multiple entries for booting into different modes (normal, fallback, stealth, etc).<br />
+Copy one, or all if you want them, of the entries to the the syslinux.cfg file on your USB (/mnt/usb/syslinux.cfg).<br />
+As we have created multiple directories on the USB to hold each distribution, you&#8217;ll want to modify the paths to the lines calling the kernel, initrd (and any thing else it expects) to fit in with our layout.<br />
+This will normally just amount to appending a forward slash &#8216;/ along with the name of the directory you created to the beginning of the kernel and initrd paths.</p>
+<p>For example. With BackTrack, this is one of the entries from the original syslinux.cfg that came from the mounted ISO:</p>
+<blockquote><p>label DEFAULT<br />
+menu label BackTrack Text &#8211; Default Boot Text Mode<br />
+kernel /casper/vmlinuz<br />
+append  file=/cdrom/preseed/custom.seed boot=casper initrd=/casper/initrd.gz text splash vga=791&#8211;</p></blockquote>
+<p>As all the files for BackTrack are now stored within the new folder (&#8216;backtrack), all references to the files it needs has to be changed.<br />
+Here&#8217;s the working, modified version:</p>
+<blockquote><p>label DEFAULT<br />
+menu label BackTrack Text &#8211; Default Boot Text Mode<br />
+kernel <strong>/backtrack</strong>/casper/vmlinuz<br />
+append live-media-path=/backtrack/casper boot=casper initrd=<strong>/backtrack</strong>/casper/initrdf.gz text splash vga=791&#8211;</p></blockquote>
+<p>Note here that I&#8217;ve added an extra line (&#8220;live-media-path&#8221;), you will not need to add this most distribution; BackTrack (and some other Debian based ones) are a little picky in the way they boot, and that is just a quick fix.<br />
+Do the same process for each distribution: mount the ISO, find the syslinux entries, and copy them to your syslinux.cfg.</p>
+<p>That should be it. Reboot your machine with the USB stick in, make sure your BIOS is set to boot from it, and all should work.</p>
+<p>If not, feel free to post a comment and I&#8217;ll give you a hand.</p>
+<p>Spare change? <img src="http://blog.jak.me/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /><br />
+Bitcoin: <strong>1An5GQ8atkzUxJMFXU42Dfcq1RzSvNHK6A</strong><br />
+Litecoin: <strong>LSERj49g1ywBTCFcNhxrsPPcHBcehSN8EB</strong><br />
+DOGE: <strong>DP9gA9xkSz1ZR6Wh9UjN1WcLaoDuFJhgfg</strong></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-meta">
+		<span class="post-date"><a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/" title="4:27 am" rel="bookmark"><time class="entry-date" datetime="2013-01-03T04:27:07+00:00">January 3, 2013</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="http://blog.jak.me/author/jd/" title="View all posts by Jak" rel="author">Jak</a></span></span>					</footer><!-- .entry-meta -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h1 class="screen-reader-text">Post navigation</h1>
+		<div class="nav-links">
+			<div class="nav-previous"><a href="http://blog.jak.me/2012/10/18/configuring-firefox-for-enhanced-privacy-and-security/" rel="prev"><span class="meta-nav screen-reader-text">&larr;</span></a></div><div class="nav-next"><a href="http://blog.jak.me/2013/03/25/disabling-php-functions-on-a-per-virtual-host-basis/" rel="next"><span class="meta-nav screen-reader-text">&rarr;</span></a></div>		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			17 thoughts on &ldquo;<span>Creating a multiboot USB stick using syslinux</span>&rdquo;		</h2>
+
+		
+		<ol class="comment-list">
+			
+	<li id="comment-118" class="comment even thread-even depth-1 parent">
+		<article id="div-comment-118" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://1.gravatar.com/avatar/7211f30bda269e0e1a02b2e621184847?s=60&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">J</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Hey thanks so much for the How To&#8230; I just need help with the last section&#8230; This is what I have so far</p>
+<p>LABEL<br />
+MENU TEST<br />
+KERNEL TEST123/file.bss<br />
+APPEND</p>
+<p>When I try to boot the file.bss it start loading the files but it can&#8217;t find them because is looking for the files inside the root of the usb but all the files are inside another folder (test123) how can I tell the file.bss to look/load the file from that particular folder? is more than 1 file that it need to load</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=118#respond' onclick='return addComment.moveForm("div-comment-118", "118", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-118">
+					<time datetime="2013-01-09T21:02:00+00:00">
+						<span class="post-date">January 9, 2013 at 9:02 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	<ul class="children">
+
+	<li id="comment-121" class="comment odd alt depth-2">
+		<article id="div-comment-121" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/cc8d57df0650e31175d423c249a206b3?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn"><a href='http://blog.jakgibb.com' rel='external nofollow' class='url'>Jak</a></cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Hey, you need to add a forward slash / to the beginning of the path, so:<br />
+TEST123/file.bss will become /TEST123/file.bss.</p>
+<p>If you leave off the forward slash, syslinux will look for the files within the current directory (which will be where syslinux is located); the forward slash tells it to look at the root of the USB.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=121#respond' onclick='return addComment.moveForm("div-comment-121", "121", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-121">
+					<time datetime="2013-01-18T00:34:53+00:00">
+						<span class="post-date">January 18, 2013 at 12:34 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+	<li id="comment-119" class="comment even thread-odd thread-alt depth-1">
+		<article id="div-comment-119" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/60882ab039d2e846931b9c93fa3ae230?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Mike Cloaked</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>This looks like a nice guide &#8211; I have been having a problem trying to make a bootable usbkey to run a firmware update for Crucial mSATA SSD from the page at <a href="http://www.crucial.com/uk/help/ssd/index.aspx?source=web" rel="nofollow">http://www.crucial.com/uk/help/ssd/index.aspx?source=web</a> (select mSATA SSD from the pulldown list) &#8211; I have been trying to make a bootable key from the downloaded iso using several different methods including running unetbootin &#8211; but nothing I have tried gets booted on my machine (an Intel DQ77KB motherboard) &#8211; though a bootable Parted Magic iso made into a usbkey using unetbootin works fine!  So I presume there is something oddball about the firmware update iso &#8211; which has memdisk and a floppy image as a .img file in it.</p>
+<p>I have been tearing my hair out trying to get it to work but maybe your method might lead to a usbkey that will boot on my system!</p>
+<p>Thanks for any advice.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=119#respond' onclick='return addComment.moveForm("div-comment-119", "119", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-119">
+					<time datetime="2013-01-14T16:06:23+00:00">
+						<span class="post-date">January 14, 2013 at 4:06 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-120" class="comment odd alt thread-even depth-1 parent">
+		<article id="div-comment-120" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/60882ab039d2e846931b9c93fa3ae230?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Mike Cloaked</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>I ran through the technique you described &#8211; (from my arch linux laptop) &#8211; but I either did the specifications wrong in my syslinux.cfg or maybe put the paths wrong to link into the directory where the copy of the files from the iso went &#8211; either way it fails to do anything at all when I boot the key!  Yes on the same machine the archiso usbkey written with dd boots just fine! So I will await any useful hints and tips!</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=120#respond' onclick='return addComment.moveForm("div-comment-120", "120", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-120">
+					<time datetime="2013-01-14T18:19:50+00:00">
+						<span class="post-date">January 14, 2013 at 6:19 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	<ul class="children">
+
+	<li id="comment-122" class="comment even depth-2">
+		<article id="div-comment-122" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/cc8d57df0650e31175d423c249a206b3?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn"><a href='http://blog.jakgibb.com' rel='external nofollow' class='url'>Jak</a></cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>After a bit of trail and error I&#8217;ve managed to get the firmware update to boot, here&#8217;s how:<br />
+-Assuming a freshly formatted USB stick with one partition using FAT32 **marked as bootable**:</p>
+<p>1) Mount the USB and the ISO image some where (I&#8217;ll assume /mnt/usb and /mnt/iso)</p>
+<p>2) Follow the first three commands above to create the syslinux directory, install it, and install the MBR</p>
+<p>3) Create the folder &#8220;crucial&#8221; on the root of the USB.</p>
+<p>4) Now copy everything from within the isolinux directory in the ISO to BOTH the &#8220;crucial&#8221; and &#8220;syslinux&#8221; directory on the USB, (you may only need to copy the boot2880.img &amp; memdisk files to the &#8220;crucial&#8221; folder, but I haven&#8217;t tested this, just copy everything to both locations to be safe). So:<br />
+&#8212;cp /mnt/iso/boot/isolinux/* /mnt/usb/crucial/<br />
+&#8212;cp /mnt/iso/boot/isolinux/* /mnt/usb/syslinux/</p>
+<p>5) Within /mnt/usb/syslinux, move (rename) the &#8220;isolinux.cfg&#8221; file to &#8220;syslinux.cfg&#8221;<br />
+&#8211;This could be where you had a mishap. Some images will use a variant of SYSLINUX called ISOLINUX.<br />
+They are essentially the same thing, but the differ in where they store the boot information.</p>
+<p>6) Now edit the syslinux.cfg (/mnt/usb/syslinux/syslinux.cfg) file, and append &#8220;/crucial/&#8221; to the initrd path.<br />
+&#8211;The file should now look like this; <a href="http://codepad.org/YireZGsQ" rel="nofollow">http://codepad.org/YireZGsQ</a></p>
+<p>Hope that helps, it booted find on my system, just don&#8217;t forget to make the partition bootable.<br />
+If you need any more help just let me know.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=122#respond' onclick='return addComment.moveForm("div-comment-122", "122", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-122">
+					<time datetime="2013-01-18T11:41:18+00:00">
+						<span class="post-date">January 18, 2013 at 11:41 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+	<li id="comment-123" class="comment odd alt thread-odd thread-alt depth-1 parent">
+		<article id="div-comment-123" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/60882ab039d2e846931b9c93fa3ae230?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Mike Cloaked</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Thanks for the additional hints &#8211; I will try it in a few days &#8211; I have had to build a new system as a relative&#8217;s computer had a hard disk failure yesterday so it will take a few days to sort that out.</p>
+<p>One additional thing that I discovered that may be an issue for me is that I have learned that some bioses don&#8217;t see the usb key during boot as in the same mode as on other machines!  There are apparently 4 different modes &#8211; usb-hdd, usb-fdd, usb-zip and usb-cdrom.  I have only just discovered this and I don&#8217;t know much about it &#8211; but apparently this can lead to a usbkey which boots perfectly well on one machine not booting at all on another where the bios is buggy!  Anyway once I can get back to this I will try your method and see if I can glean any more information about these strange usb connection modes. I have seen some methods for making sure that the largest number of bioses will see the drive as usb-hdd and boot it but I have not had time to look into that.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=123#respond' onclick='return addComment.moveForm("div-comment-123", "123", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-123">
+					<time datetime="2013-01-18T14:52:54+00:00">
+						<span class="post-date">January 18, 2013 at 2:52 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	<ul class="children">
+
+	<li id="comment-124" class="comment even depth-2">
+		<article id="div-comment-124" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/cc8d57df0650e31175d423c249a206b3?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn"><a href='http://blog.jakgibb.com' rel='external nofollow' class='url'>Jak</a></cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Ouch. You should give SpinRite a try (<a href="https://www.grc.com/spinrite.htm" rel="nofollow">https://www.grc.com/spinrite.htm</a>); it&#8217;s extremely good at recovering from even the worst hard disk failures to recover data and get the system bootable. It&#8217;s not free, but you can find it on some torrent sites to see if it works before you buy.</p>
+<p>I&#8217;ve noticed the same thing on some BiOSes (as with my own), and it&#8217;s never been an issue; the USB flash drive is recognised and boots as a USB-HDD.<br />
+I&#8217;ve only had the issue of one of my flash drives not booting on a BIOS like this and that was a fairly modern PC.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=124#respond' onclick='return addComment.moveForm("div-comment-124", "124", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-124">
+					<time datetime="2013-01-18T16:53:59+00:00">
+						<span class="post-date">January 18, 2013 at 4:53 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+	<li id="comment-125" class="comment odd alt thread-even depth-1">
+		<article id="div-comment-125" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/60882ab039d2e846931b9c93fa3ae230?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Mike Cloaked</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Actually the system that broke was an old Fedora system and the new system is Arch Linux &#8211; so the only files from the old system were some user files that were kept on backup, and a few config files which were also in backup. So nothing needs retrieving from the old machine &#8211; though I have had a total disk failure before where, just like this occasion, the disk problem prevents the system firing up at all until the old disk is removed and a new fresh HD put in to replace it! So it is just a question of time building the new system and then copying back the user files that are needed into the user area concerned.</p>
+<p>Hard drives sometimes last up to 10 years but others only 2 or 3 years. I guess that in the past decade I have had 3 or 4 occasions where the HD has totally failed &#8211; always 7200rpm drives and different Brands. So it is pot luck as to how long drives seem to last!  Having regular backups is the only really safe way to work!</p>
+<p>I will get back to the SSD boot issues within the next week or so I hope.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=125#respond' onclick='return addComment.moveForm("div-comment-125", "125", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-125">
+					<time datetime="2013-01-18T18:05:00+00:00">
+						<span class="post-date">January 18, 2013 at 6:05 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-126" class="comment even thread-odd thread-alt depth-1">
+		<article id="div-comment-126" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/60882ab039d2e846931b9c93fa3ae230?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Mike Cloaked</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>After spending some time away to build the new system I mentioned I finally had some time to revisit the bootable key issue &#8211; it turns out that in the interim since I was last working on this Intel has released a BIOS update to my motherboard. Tonight when I checked the Intel website tonight for BIOS updates it turns out that, between when I built the machine and today, Intel released a BIOS update that fixed a whole tranche of bugs including &#8221; Updated VBIOS to fix issue where there is no display in DOS.&#8221;</p>
+<p>So I downloaded the BIOS update file &#8211; and updated the motherboard BIOS.  Then I put the Crucial SSD firmware update file onto a bootable usbkey &#8211; and booted the system, selecting the usbkey for the boot &#8211; it DID boot perfectly well into the Crucial SSD firmware update just fine &#8211; so both my SSDs now have the current latest firmware&#8230;.. so all the problems I had failing to update the SSD drives was due to a BIOS bug that is now fixed! So now I will not be subject to the infamous 9000 hour SSD failure!</p>
+<p>I think that your method for making the key is just fine &#8211; and so are alternative methods &#8211; but whatever I did would have failed until I updated the motherboard BIOS since the SSD update firmware runs DOS!</p>
+<p>Thanks for your replies previously.<br />
+Mike</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=126#respond' onclick='return addComment.moveForm("div-comment-126", "126", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-126">
+					<time datetime="2013-01-27T23:06:22+00:00">
+						<span class="post-date">January 27, 2013 at 11:06 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-127" class="comment odd alt thread-even depth-1">
+		<article id="div-comment-127" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://1.gravatar.com/avatar/38a19bcbd573ea5cd869ffc7969167d8?s=60&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Shaun</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Jak, thank you for your tutorial, I managed to get various Debian 7.1.0 installers to boot using syslinux. However, when it went to mount the cd in the installer, it would give a &#8220;incorrect cd-rom&#8221; error. I isolated this to when I copy the iso to the folder on the usb. There are symbolic links on the original iso that are not getting copied (it says &#8220;operation not permitted&#8221;. I figured these were only the documentation not being copied, but it is infact /debian and /dists/stable symbolic links that aren&#8217;t being copied. These appear to be important links for the install process, either that, or them missing causes the md5sum check to fail (I&#8217;m not sure how linux installers handle this). In any case, it all comes back to symbolic links not being supported on the file system on the usb (thats what thunar tells me when I tried to copy the symbolic links using a rooted thunar window). Important to note, I am running Debian 7.1.0 as a guest in VirtualBox on a Win 7 host. Any advice you have for me would be much appreciated. Thank you.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=127#respond' onclick='return addComment.moveForm("div-comment-127", "127", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-127">
+					<time datetime="2013-07-01T06:56:46+00:00">
+						<span class="post-date">July 1, 2013 at 6:56 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-128" class="pingback even thread-odd thread-alt depth-1">
+		<div class="comment-body">
+			Pingback: <a href='http://wp1050794.server-he.de/test/wordpress2/?p=11' rel='external nofollow' class='url'>Multiboot USB-Stick erstellen | TEST WP</a> 		</div>
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-129" class="pingback odd alt thread-even depth-1">
+		<div class="comment-body">
+			Pingback: <a href='http://wp1050794.server-he.de/test/wordpress3/multiboot-usb-stick-erstellen/' rel='external nofollow' class='url'>Multiboot USB-Stick erstellen | WP3</a> 		</div>
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-130" class="pingback even thread-odd thread-alt depth-1">
+		<div class="comment-body">
+			Pingback: <a href='http://ubuntu.jamesnsheri.com/2013/10/23/problem-with-setting-up-multiboot-iso-usb-using-syslinux/' rel='external nofollow' class='url'>problem with setting up multiboot ISO usb using syslinux | Ubuntu InfoUbuntu Info</a> 		</div>
+
+	</li><!-- #comment-## -->
+
+	<li id="comment-311" class="comment odd alt thread-even depth-1 parent">
+		<article id="div-comment-311" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/8074784996c8b9d1bc94e4534af94d05?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">achilleas.k</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>I managed to get it to work on an ext2 partition with extlinux.<br />
+See here for differences <a href="http://www.syslinux.org/wiki/index.php/EXTLINUX" rel="nofollow">http://www.syslinux.org/wiki/index.php/EXTLINUX</a></p>
+<p>I didn&#8217;t add a extlinux.cfg file, which makes it default to syslinux.cfg</p>
+<p>I wanted to use ext2 instead of fat32 because some distros (e.g., Debian) use symlinks in their image. After a bit of fighting with the &#8220;append&#8221; options, I managed to get Debian working with the following config:</p>
+<p><code><br />
+LABEL debian<br />
+    MENU LABEL Debian Linux<br />
+    LINUX /debian/live/vmlinuz<br />
+    INITRD /debian/live/initrd.img<br />
+    APPEND live-media-path=/debian/live cdrom-detect/try-usb=true noprompt boot=live live-config<br />
+</code></p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=311#respond' onclick='return addComment.moveForm("div-comment-311", "311", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-311">
+					<time datetime="2014-03-13T22:30:40+00:00">
+						<span class="post-date">March 13, 2014 at 10:30 pm</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	<ul class="children">
+
+	<li id="comment-318" class="comment byuser comment-author-jd bypostauthor even depth-2 parent">
+		<article id="div-comment-318" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/c9d27cfbf9050c04dd93defe91691dc5?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">Jak</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>Thanks for posting the information.</p>
+<p>I&#8217;ll give it a shot in my free time. <img src="http://blog.jak.me/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=318#respond' onclick='return addComment.moveForm("div-comment-318", "318", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-318">
+					<time datetime="2014-03-14T00:51:15+00:00">
+						<span class="post-date">March 14, 2014 at 12:51 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	<ul class="children">
+
+	<li id="comment-320" class="comment odd alt depth-3">
+		<article id="div-comment-320" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/8074784996c8b9d1bc94e4534af94d05?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">achilleas.k</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>I also managed to add Kali Linux with the same options as Debian after I posted that.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=320#respond' onclick='return addComment.moveForm("div-comment-320", "320", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-320">
+					<time datetime="2014-03-14T01:27:25+00:00">
+						<span class="post-date">March 14, 2014 at 1:27 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+	<li id="comment-1111" class="comment even thread-odd thread-alt depth-1">
+		<article id="div-comment-1111" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<span class="avatar-wrapper"><img alt='' src='http://0.gravatar.com/avatar/c41b8585d31a53ed7cab66f55459a2b6?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' /></span>					<cite class="fn">rainman</cite> <span class="says">says:</span>				</div><!-- .comment-author -->
+
+							</footer><!-- .comment-meta -->
+
+			<div class="comment-content">
+				<p>and now just please the entries for arch &#8211; the system you brought this up with.. because the syslinux.cfg i found refers to lot of other files.<br />
+when i put this entry:<br />
+&#8220;CONFIG /multibootusb/archlinux-2014.03.01-dual//isolinux/isolinux.cfg<br />
+APPEND /multibootusb/archlinux-2014.03.01-dual//isolinux&#8221;<br />
+ which works for kali btw. quite pretty, i get:<br />
+&#8220;Unknown keyword in configuration file: PATH<br />
+boot/syslinux/whichsys.c32: not a COM32R image&#8221;</p>
+<p>So, where to go next? Thanks in advance.</p>
+			</div><!-- .comment-content -->
+
+			<div class="comment-metadata">
+				<div class="reply"><a class='comment-reply-link' href='/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/?replytocom=1111#respond' onclick='return addComment.moveForm("div-comment-1111", "1111", "respond", "259")'>Reply</a></div>				<a href="http://blog.jak.me/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#comment-1111">
+					<time datetime="2014-03-31T00:14:14+00:00">
+						<span class="post-date">March 31, 2014 at 12:14 am</span>
+					</time>
+				</a>
+							</div><!-- .comment-metadata -->
+		</article><!-- .comment-body -->
+
+	</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+		
+	
+	
+									<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2013/01/03/creating-a-multiboot-usb-stick-using-syslinux/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://blog.jak.me/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">Your email address will not be published. Required fields are marked <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes:  <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="Post Comment" />
+							<input type='hidden' name='comment_post_ID' value='259' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="2850ceeefb" /></p><p class="comment-subscription-form"><input type="checkbox" name="subscribe_comments" id="subscribe_comments" value="subscribe" style="width: auto; -moz-appearance: checkbox; -webkit-appearance: checkbox;" /> <label class="subscribe-label" id="subscribe-label" for="subscribe_comments">Notify me of follow-up comments by email.</label></p><p class="comment-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto; -moz-appearance: checkbox; -webkit-appearance: checkbox;" /> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog">Notify me of new posts by email.</label></p>					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+
+	</div><!-- #content -->
+	<footer id="colophon" class="site-footer" role="contentinfo">
+		<div class="site-info">
+						<a href="http://wordpress.org/" rel="generator">Proudly powered by WordPress</a>
+			<span class="sep"> | </span>
+			Theme: Hexa by <a href="http://automattic.com/" rel="designer">Automattic</a>.		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+	<div style="display:none">
+	<div class="grofile-hash-map-7211f30bda269e0e1a02b2e621184847">
+	</div>
+	<div class="grofile-hash-map-cc8d57df0650e31175d423c249a206b3">
+	</div>
+	<div class="grofile-hash-map-60882ab039d2e846931b9c93fa3ae230">
+	</div>
+	<div class="grofile-hash-map-38a19bcbd573ea5cd869ffc7969167d8">
+	</div>
+	<div class="grofile-hash-map-8074784996c8b9d1bc94e4534af94d05">
+	</div>
+	<div class="grofile-hash-map-c9d27cfbf9050c04dd93defe91691dc5">
+	</div>
+	<div class="grofile-hash-map-c41b8585d31a53ed7cab66f55459a2b6">
+	</div>
+	</div>
+<div id="su-footer-links" style="text-align: center;"></div><script type='text/javascript' src='http://s0.wp.com/wp-content/js/devicepx-jetpack.js?ver=201430'></script>
+<script type='text/javascript' src='http://s.gravatar.com/js/gprofiles.js?ver=2014Julaa'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jak.me/wp-content/plugins/jetpack/modules/wpgroho.js?ver=3.8.3'></script>
+<script type='text/javascript' src='http://blog.jak.me/wp-content/themes/hex/js/menus.js?ver=20120206'></script>
+<script type='text/javascript' src='http://blog.jak.me/wp-content/themes/hex/js/skip-link-focus-fix.js?ver=20130115'></script>
+
+	<script src="http://stats.wordpress.com/e-201430.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	st_go({v:'ext',j:'1:2.9.3',blog:'48585517',post:'259',tz:'0'});
+	var load_cmc = function(){linktracker_init(48585517,259,2);};
+	if ( typeof addLoadEvent != 'undefined' ) addLoadEvent(load_cmc);
+	else load_cmc();
+	</script>
+</body>
+</html>

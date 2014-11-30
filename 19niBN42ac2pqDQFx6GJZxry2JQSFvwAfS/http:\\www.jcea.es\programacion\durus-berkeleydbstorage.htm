@@ -1,0 +1,1313 @@
+http://www.jcea.es/programacion/durus-berkeleydbstorage.htm
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 09:41:35 GMT
+Server: Zope/(2.13.22, python 2.7.7, sunos5) ZServer/1.1
+Expires: Wed, 23 Jul 2014 10:41:35 GMT
+Last-Modified: Wed, 23 Jul 2014 09:41:35 GMT
+Cache-Control: max-age=3600
+Content-Type: text/html; charset=utf-8
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 14116
+Connection: close
+
+<html>
+
+<head>
+<title>Berkeley DB Backend Storage Engine for DURUS</title>
+<link rel="alternate" type="application/rss+xml" title="Últimos cambios en mi página web" href="/ultimos_cambios.xml">
+
+<linkOLD rel="openid.server" href="http://server.myid.net/server" />
+<linkOLD rel="openid.delegate" href="http://jcea.myid.net/" />
+<metaOLD http-equiv="X-XRDS-Location" content="http://jcea.myid.net/xrds" />
+
+<linkOLD rel="openid.server" href="http://www.myopenid.com/server" />       <!-- For delegating OpenID v1.x-->
+<linkOLD rel="openid.delegate" href="http://jcea.myopenid.com/" />       <!-- For delegating OpenID v1.x-->
+<linkOLD rel="openid2.local_id" href="http://jcea.myopenid.com" />
+<linkOLD rel="openid2.provider" href="http://www.myopenid.com/server" />
+<metaOULD http-equiv="X-XRDS-Location" content="http://www.myopenid.com/xrds?username=jcea.myopenid.com" />        <!-- For delegating OpenID v2.x-->
+
+<link href="http://certifi.ca/_serve" rel="openid.server" />
+<link href="http://certifi.ca/jcea" rel="openid.delegate" />
+</head>
+
+<body>
+
+<!-- ESTO ES EL BANNER DE LA INTERNET DEFENSE LEAGUE -->
+<script type="text/javascript">
+    window._idl = {};
+    _idl.variant = "banner";
+    (function() {
+        var idl = document.createElement('script');
+        idl.type = 'text/javascript';
+        idl.async = true;
+        idl.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'members.internetdefenseleague.org/include/?url=' + (_idl.url || '') + '&campaign=' + (_idl.campaign || '') + '&variant=' + (_idl.variant || 'banner');
+        document.getElementsByTagName('body')[0].appendChild(idl);
+    })();
+</script>
+
+<table valign="top" align="center" border="0" width="100%">
+<tr>
+<td width="160" rowspan="2" align="center" valign="top"><a href="http://getfirefox.com/"
+title="Get Firefox - Take Back the Web"><img
+src="http://sfx-images.mozilla.org/affiliates/Buttons/firefox3/110x32_get_ffx.png"
+width="110" height="32" border="0" alt="Get Firefox"></a>
+
+<p/><a href="http://internetdefenseleague.org"><img src="http://internetdefenseleague.org/images/badges/final/side_bar_badge.png" alt="Member of The Internet Defense League" /></a>
+</td>
+<td align="center">
+<!--<a href="http://swpat.ffii.org/index.es.html"><img src="http://proinnova.hispalinux.es/imagenes/banners/nopatentessw.png" border=0 alt="Di NO a las patentes de Software" title="Di NO a las patentes de Software"></a>-->
+<!--<a href="http://stopsoftwarepatents.org/"><img src="http://stopsoftwarepatents.wdfiles.com/local--files/logo/logo2.png" border=0 alt="Di NO a las patentes de Software" title="Di NO a las patentes de Software"></a>-->
+<a href="http://petition.stopsoftwarepatents.eu/551003580597/"><img src="http://petition.stopsoftwarepatents.eu/banner/551003580597/ssp-468-96.gif" alt="stopsoftwarepatents.eu petition banner" width="468" height="96" /></a>
+</td>
+<td align="center">
+<a href="http://culturalibre.org/"><img src="http://www.republicainternet.com/img/manifiesto.gif" border=0 alt="Manifiesto por la liberación de la cultura" title="Manifiesto por la liberación de la cultura"></a>&nbsp;<br><a href="http://www.ciberpunk.info/no-a-la-traza-privada"><img src="http://www.ciberpunk.info/desvan/boton_traza_88x31.png" border=0 alt="No a la traza privada" title="No a la traza privada"></a>
+</td>
+<td width="125" align="center">
+<a href="/ultimos_cambios.xml">
+<img src="/feed-icon-28x28.png" border="0" alt="Últimos cambios" title="Últimos Cambios"></a>
+<br><b><i>Últimos Cambios</i></b></td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://rejectinspire.publicgeodata.org/"><img src="http://blog.pedrocustodio.com/wp-content/uploads/2006/03/publicgeodata.png" border=0 alt="Vote for Public Maps - Reject INSPIRE!" title="Vote for Public Maps - Reject INSPIRE!"></a>
+</td>
+<td align="center" colspan="2">
+<a href="http://es.wikipedia.org/wiki/Geocaching"><img src="http://img.geocaching.com/stats/img.aspx?uid=6c9b2a99-0c9e-4324-9068-4e2e8921c511&txt=Estad%C3%ADsticas+de+Geocaching" border="0" alt="Geocaching" title="Geocaching"></a>
+</td>
+</tr>
+<tr>
+<td colspan="4" align="center">
+<a href="https://twitter.com/jcea"><img src="http://blog.jcea.es/twitter.png" style="vertical-align:middle"/></a>
+<font size=-1><i><a href="http://blog.jcea.es/">Blog personal: El hilo del laberinto</a></i></font>
+</td></tr>
+</table>
+
+
+
+
+<h1 align=center>Berkeley DB Backend Storage Engine for DURUS</h1>
+<p align=center> <i>Última Actualización:
+03 de mayo de 2007 - Jueves</i>
+
+<p>This code provides a new storage engine for
+<a href="http://www.mems-exchange.org/software/durus/">DURUS</a>, an
+excellent persistence system for the
+<a href="http://www.python.org/">Python</a> programming language.
+
+<p>The <i>README</i> included in the distribution:
+
+<p><i><b>$Id: README 332 2007-02-20 20:23:49Z jcea $</b></i>
+
+<p><b>WHAT IS "DURUS-BERKELEYDBSTORAGE"?</b>
+
+<p>"Durus-berkeleydbstorage" is a backend storage module
+for <a href="http://www.mems-exchange.org/software/durus/">Durus</a>,
+a persistence system for <a href="http://www.python.org/">Python</a>.
+As its name indicates,"Durus-berkeleydbstorage" uses Berkeley DB as the storage
+technology.
+
+<p>Some advantages compared to Durus standard FileStorage:
+
+<ul>
+<p><li>Startup time is negligible.
+
+<p><li>You don't need an in-memory index, so your repository size
+  is only limited by storage space, not RAM.
+
+<p><li>If you change existing objects, your storage size doesn't
+  increase.
+
+<p><li>If you delete objects, those objects are garbage collected
+  in background, slowly, without performance degradation.
+
+<p><li>You can still do a full fast collection, if you need it.
+  While this collection is in progress, Durus still serves
+  objects.
+
+<p><li>Garbage collection doesn't increase storage size. Neither
+  RAM usage.
+
+<p><li>Garbage collection deletes objects using nondurable
+  transactions, very efficiently. If the collection is aborted
+  abruptly (program or machine crashes), the collection will
+  continue where it was working. If the GC finishes without
+  problems, that state is durable.
+
+<p>Any object store in the storage will commit a durable
+  transaction, including all objects released in the
+  background garbage collector, along the way.
+
+<p><li>Garbage collection time is proportional to garbage, not
+  repository size.
+</ul>
+
+<p>There are some disadvantages, nevertheless:
+
+<ul>
+<p><li><b><i>IMPORTANT:</i></b> This backend uses reference counting to decide when
+  an object is garbage and can be collected. So, if you have
+  cycles in your data structures, you <b><i>**MUST*BREAK**</i></b> them before
+  releasing the objects.
+
+<p>Failing to do that will leak diskspace. It is possible that
+  in a future release we can collect cycles, but try to avoid
+  that pattern.
+
+<p>Leaking objects will grow the diskspace, but <b><i>**NO**</i></b> corruption
+  or malfunction will happen. No other secondary effect.
+
+<p><li>Although this code could work on Windows, I haven't checked it.
+  Absolutely no garantee!.
+
+<p><li>Don't use this storage backend over NFS, at least you know
+  what is going on.
+
+<p><li>RAM usage is proportional to the number of garbage objects
+  still not collected. This size should be small, actually.
+
+<p><li>Since we are using Berkeley DB as the backend:
+
+<ul>
+<p><li>You should be experienced with Berkeley DB deployments.
+
+<p><li>Beware when updating Python or Berkeley DB. In particular,
+    Berkeley DB is known by breaking (but they DOCUMENT!) binary
+    compatibility between versions. In this case, they ALWAYS
+    document the procedure to do a controlled upgrade, so
+    don't worry. But take note of the risk.
+
+<p><li>To do a trustable backup, you should follow instructions in
+    Berkeley DB documentation:
+
+<p><a href="http://www.sleepycat.com/docs/ref/transapp/reclimit.html">http://www.sleepycat.com/docs/ref/transapp/reclimit.html</a>
+<br><a href="http://www.sleepycat.com/docs/ref/transapp/archival.html">http://www.sleepycat.com/docs/ref/transapp/archival.html</a>
+<br><a href="http://www.sleepycat.com/docs/utility/db_hotbackup.html">http://www.sleepycat.com/docs/utility/db_hotbackup.html</a>
+
+<p><li>In Python you can use the standard "bsddb" or the
+    up-to-date "bsddb3" bindings (which will be included in new
+    python versions). This product will try to use always
+    the more recent Berkeley DB bindings. Be careful about
+    Berkeley DB version changes when you update the bindings.
+
+<p><li>Since Berkeley DB files are binary structures, a corrupt
+    database can be unrecoverable. Be diligent and careful
+    with your backups.
+
+</ul>
+
+<p><li>This Storage Backend doesn't support the HistoryConnection
+  class added in Durus 3.4.
+
+</ul>
+
+<p>You can use this product both as a normal (local) filestorage,
+or a server (remote) storage system, just like the usual Durus
+FileStorage.
+
+<p><b>HOW IS "DURUS-BERKELEYDBSTORAGE" USED?</b>
+
+<p><b><i>IMPORTANT: The PATH you specify in the storage MUST BE
+an already existant directory. The database files will be
+created inside.</i></b>
+
+<p>You can use this engine in two ways:
+
+<ol type=a>
+
+<p><li><b>Local access:</b>
+
+<p>The program is the only user of the storage, since local access is exclusive.
+
+<p>In your code simply put:
+
+<blockquote><pre>
+from berkeleydb_storage import BerkeleyDBStorage
+connection = Connection(BerkeleyDBStorage("PATH"))
+</pre></blockquote>
+
+<p>where "PATH" is the path to already existant directory.
+The database will reside inside that directory.
+
+<p>After doing that, you use the connection like any other
+Durus connection. See "test3.py" as a reference
+implementation:
+
+<blockquote><pre>
+from durus.btree import BTree
+from durus.connection import Connection
+from berkeleydb_storage import BerkeleyDBStorage
+
+connection = Connection(BerkeleyDBStorage("db"))
+
+root=connection.get_root()
+root[0]=BTree()
+connection.commit()
+
+for i in xrange(65536) :
+  root[0][i]=0
+connection.commit()
+
+for i in xrange(0,65536,2) :
+  del root[0][i]
+connection.commit()
+
+print len(root[0])
+</pre></blockquote>
+
+<p><li><b>Remote access:</b>
+
+<p>Clients are "normal" Durus clients.
+
+<p>The Durus server must use this engine. The file "server.py" is
+a reference implementation. Example:
+
+<blockquote><pre>
+import sys
+import socket
+from optparse import OptionParser
+from durus.storage_server import DEFAULT_PORT, DEFAULT_HOST, StorageServer
+from durus.logger import log, logger, direct_output
+
+def start() :
+  logfile = sys.stderr
+  direct_output(logfile)
+
+  from berkeleydb_storage import BerkeleyDBStorage
+  storage = BerkeleyDBStorage("db")
+  host=DEFAULT_HOST
+  port=DEFAULT_PORT
+  log(20, 'host=%s port=%s', host, port)
+  StorageServer(storage, host=host, port=port).serve()
+
+if __name__=="__main__" :
+  start()
+</pre></blockquote>
+</ol>
+
+<p>Additionally, you can specify options when you instanciate
+a Berkeley DB Storage. The options are passed as optional
+parameters in the instance constructor:
+
+<ul>
+<p><li><b>directoryname</b>
+
+<p>The directory path where the storage resides. This directory
+<b>MUST</b> exist before trying to create a new storage.
+
+<p>This parameter is <b>MANDATORY</b>.
+
+<p><li><b>type</b> (default: "hash")
+
+<p>When creating a new storage database, we can choose
+between "hash" or "btree" schema.
+
+<p>Performance differences are noticeable only when the
+database size is in the multigigabyte/terabyte range, and
+depend also of access patterns in the application
+(for example, reference locality).
+
+<p>Remember also that client caching will bias considerably
+the access patterns that hit the disk, so your best bet would
+be to test both configurations in your environment under your
+normal usage.
+
+<p>When the database already exists, this parameter has no effect.
+
+<p><li><b>cachesize</b> (default: 16MB)
+
+<p>Berkeley DB can use a cache MMAPed file to improve performance.
+You don't usually touch this value.
+
+<p>You can see the hit ratio of the cache with the "db_stat"
+Berkeley DB tool.
+
+<p>This value is only used when creating the storage first time,
+or after a "db_recover". In other cases, just ignored.
+
+<p><li><b>log_buffer_size</b> (default: 256KB)
+
+<p>Berkeley DB uses a log buffer to store in-progress transaction
+data. If your buffer size is big, you waste RAM. If the size
+is too low, Berkeley DB will need to flush it frequently,
+affecting performance.
+
+<p>So you can tune this parameter according to your transaction
+(write) size. You can see if the buffer is too small using
+the "db_stat" Berkeley DB tool.
+
+<p>This value is only used when creating the storage first time,
+or after a "db_recover". In other cases, just ignored.
+
+<p><li><b>do_recover</b> (default: related to "read_only". See description)
+
+<p>Using this parameter, you can request a "db_recover" operation
+explicitly. Remember, nevertheless, that this Storage backend
+could decide to do an implicit "db_recover" if it thinks that
+it is neccesary.
+
+<p>"do_recover" constructor parameter default value changes
+according to "read_only" parameter. If the storage is
+opened read/write, "do_recover" default value will be
+True. If the storage is opened "read only", the "do_recover"
+default value will be False.
+
+<p>You can't do a database recovery if you opened it as "read only".
+
+<p><li><b>durable</b> (default: True)
+
+<p>This Storage backend complies with ACID semantics (Atomic,
+Consistent, Isolated and Durable). The Durable part incurs
+in a performance penalty because it requires a syncronous
+disk write.
+
+<p>In some environments, it may be desirable to trade off
+durability vs. write performance. You risk, nevertheless,
+losing your last committed transactions. In some environments
+that might be acceptable.
+
+<p>You lose committed transactions if your machine crashes or it is
+rebooted without warning, or if the storage application
+crashes in some critical functions. You can also lose latest
+committed transactions if you do a database "recover", or it
+is done internally because the storage feels it is necessary.
+
+<p>In any case, you are garanteed to keep always ACI semantic. That
+is, any transaction will be applied entirely or no changes at all,
+no data corruption, etc. Also, no transaction <i>X</i> will be visible if
+transaction <i>X-1</i> was "lost" because durability was disabled, so your
+data will be chronologically correct.
+
+<p><li><b>async_log_write</b> (default: True)
+
+<p>If the storage instance has durable=True, this flag is ignored.
+
+<p>If durable=False, this flag allow:
+
+<ul>
+<p><li>If False: Transaction log will be keep in memory. The transaction
+log will be flushed when doing a checkpoint, data cache full,
+transaction log full, etc.
+
+<p><li>If True: When a transaction commits, the storage backend will
+write the transaction log to disk lazily, in an asynchronous way.
+We can't be sure that the log reached the disk, if something
+goes wrong, but durability is improved paying a fairly small
+penalty: an asynchronous write. This flag can be very useful
+in "non durable" environments, when doing a database recovering,
+since you will "lose" fewer transactions.
+</ul>
+
+<p>Remember that this flag is only considered if you explicitelly
+demanded a "non durable" storage. So you get what you asked for.
+
+<p><li><b>read_only</b> (default: False)
+
+<p>Open the Storage database in "read only" mode. The Storage must be
+initialized previously, and should have some data on it.
+
+<p>In this mode, write attempts raise an exception.
+
+<p>In this mode, several applications can share the storage
+simultaneously.
+
+<p><li><b>checkpoint_method</b> (default: related to "read_only". See description)
+
+<p>This parameter defines the policy used to do database checkpointing.
+
+<p>The default value depends of "read_only" flags:
+
+<ul>
+<p><li>If False: The default value is "berkeleydb_storage.checkpoint_thread".
+This policy does DB checkpointing in background, in a separate thread.
+
+<p<li>If True: The default value is "berkeleydb_storage.checkpoint_noop".
+This policy does nothing. It is a "no operation".
+</ul>
+
+<p><li><b>garbage_collection_method</b> (default: related to "read_only". See description)
+
+<p>This parameter defines the policy used to do garbage collection.
+
+<p>The default value depends of "read_only" flags:
+
+<ul>
+<p><li>If False: The default value is
+"berkeleydb_storage.garbage_collection_inline_prefetch". This policy
+does the garbage collection inline, but being sure the data is
+prefetched first. So, the deletion operation will be fast.
+
+<p><li>If True: The default value is "berkeleydb_storage.garbage_collection_noop".
+This policy does nothing. It is a "no operation". Actually, this policy
+doesn't do any garbage collection, but it updates the garbage info if
+necessary, for other policy objects activable in the future.
+</ul>
+
+<p><li><b>validate_garbage</b> (default: False)
+
+<p>Opening the storage with this flag set can be a fairly slow
+operation, with time proportional to the number of objects in the
+storage. This option should be done only when upgrading this
+storage and the previous version had any issue related to garbage
+collection.
+
+<p>Remember also that this option can takes a lot of memory, proportional
+to the number of objects in the storage.
+
+<p>If set, this parameter instructs the storage to do, at init time, a
+reachability analysis to determine garbage consistency and possible
+leaks. We print the number of previously unknown unreachable objects.
+
+<p>Reference cycles are not detected, nor collected.
+
+<p>This parameter use reduces the "to be collected" objects to the a
+minimum garbage root set. From there, the garbage collector should
+be able to detect and collect all garbage not involved in
+reference cycles.
+
+<p>If the storage was opened in "read only" mode, no change will be
+actually done to the storage.
+
+<p>NOTE: It is usual to find new garbage when initiating a storage several
+times with this parameter set. This is normal, and do not indicate any
+kind of problem. The usual garbage collection process would discover
+those unreachable objects automatically. In general, only use this
+parameter once, when upgrading this storage engine and previous version
+had any kind of problem with garbage collection.
+</ul>
+
+<p><b>CHECKPOINT POLICY</b>
+
+<p>Releases since 20061016 allow to specify an object in the storage
+constructor to set a database checkpointing policy.
+
+<p>Programmers can create new arbitrary policy objects/factories using
+"berkeleydb_storage.checkpoint_interface" interface-like class as
+a blueprint. Any future interface change will be documented in the
+UPGRADING document.
+
+<p>Currently implemented policies are:
+
+<ul>
+
+<p><li>"berkeleydb_storage.checkpoint_thread": Do DB checkpointing in
+a separate thread, in background.
+
+<p>This is the default policy.
+
+<p>Since this policy does DB checkpointing while the storage is
+doing additional transactions, we could have <i>temporary</i> more
+database logging files in the environment that necessary. This
+is a temporal issue, automatically resolved.
+
+<p><li>"berkeleydb_storage.checkpoint_thread_final_checkpoint": Same than
+previous one, but doing a "forced" checkpoint when closing the
+storage.
+
+<p>So, this policy slowdowns storage shutdowns but the storage
+initializacion will be faster if we do a database recover.
+
+<p><li>"berkeleydb_storage.checkpoint_inline": Do DB inlining checkpointing,
+like previous backend releases. You shouldn't use it unless you
+actually need it.
+
+<p><li>"berkeleydb_storage.checkpoint_noop": Do not do DB checkpointing.
+Useful if checkpointing is managed externally.
+</ul>
+
+<p><b>GARBAGE COLLECTION POLICY</b>
+
+<p>Releases since 20070220 allow to specify an object in the storage
+constructor to set a garbage collection policy.
+
+<p>Currently, the interface used as a blueprint is subject to change.
+DO NOT IMPLEMENT new policy objects. They can break without notice
+when upgrading this storage backend. When the API be stable enough
+to freely implement new policies, you will be notified.
+
+<p>Currently implemented policies are:
+
+<ul>
+
+<p><li>"berkeleydb_storage.garbage_collection_inline": Collect
+a garbage object everytime we access the storage. This
+was the policy used when this backend storage didn't
+support configurable garbage collection policies.
+You shouldn't use it unless you actually need it.
+
+<p><li>"berkeleydb_storage.garbage_collection_inline_prefetch":
+Like the previous policy, this one collects a garbage
+object per storage access. But here, a separate thread
+"prefetches" the garbage object and the reference counters
+that it updates, to be sure the deletion is going to be
+fast, without stopping the storage waiting for the disk.
+
+<p>This is the default policy.
+
+<p><li>"berkeleydb_storage.garbage_collection_noop": Do not do
+garbage collection. If the storage knows about new
+garbage, the "to be deleted" metadata will be updated,
+nevertheless.
+
+</ul>
+
+<p><b>DATASET MIGRATION</b>
+
+<p>If you already have data in a traditional Durus FileStorage, you
+can migrate it to this Storage Backend using the standard
+migration procedure: iterate over the objects in the source storage,
+send them to the destination storage and do a "commit" when you are
+done.
+
+<p>This procedure is useable if your dataset fits in RAM, but even if
+your machine is full of RAM or you have a huge SWAP space, you will
+hit addressable space limitations, if your machine is 32 bits,
+in the order of 2^30 bytes.
+
+<p>You can't do "bit sized" commits because this backend does garbage
+collection in background, and it could free stored but still not
+referenced objects.
+
+<p>To solve these issues, releases since 20060509 have a "migrate()"
+method. It has an iterable parameter, giving the original objects.
+
+<p>Example:
+
+<blockquote><pre>
+from durus.file_storage import FileStorage
+from berkeleydb_storage import BerkeleyDBStorage
+
+source=FileStorage("source",readonly=True)
+destination=BerkeleyDBStorage("destination")
+
+destination.migrate(source.gen_oid_record())
+</pre></blockquote>
+
+<p><hr>
+<p><b>DOWNLOADS:</b>
+
+<p>"durus-berkeleydbstorage" is released under GNU Public License,
+version 2.
+
+<ul>
+<p><li><b><a href="durus-berkeleydbstorage-20070503.tar.gz">
+durus-berkeleydbstorage-20070503.tar.gz</a></b> (34Kbytes)
+(<a href="durus-berkeleydbstorage-20070503.tar.gz.asc">Digital Signature</a>)
+<br><font size=-1>MD5: 8a34eb0a9c9ab3950ceb3d5672873567</font>
+
+<p>This release is known to work with Berkeley DB releases 4.5.*, 4.4.* and 4.3.*.
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<ul>
+<p><li>This release REQUIRES Durus 3.7 or higher.
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20070426 - r343 - jcea@argo.es
+
+<p>Since this point, this Storage Engine requires Durus 3.7 and up.
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20070220.tar.gz</b> (34Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: bd87baf3abe1ea7bc368ba25917c531d</font>
+
+<p>This release is known to work with Berkeley DB releases 4.5.*, 4.4.* and 4.3.*.
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<ul>
+<p><li>This release does garbage collection with the help of
+  a "prefetch" thread. The point is to avoid stopping the
+  storage waiting for the disk, where possible.
+
+<p>The performance improvement is huge when deleting "cold"
+  objects (objects not in the DB cache), specially if there
+  are many inter-object references.
+
+<p>If you like or need (for example, your python deployment doesn't
+  support multithreading) the old behaviour (pure inline garbage
+  collection), you can activate it passing
+  "berkeleydb_storage.garbage_collection_inline" to the storage
+  constructor.
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20070220 - r333 - jcea@argo.es
+
+<p>"UPGRADING" and "README" documentation updates.
+
+<p><li>20070126 - r326 - jcea@argo.es
+
+<p>If a storage is opened in read only mode,
+just ignore the "pack" attempts.
+
+<p><li>20070126 - r323 - jcea@argo.es
+
+<p>Some regression bugfixes for "read only" mode
+combined con current garbage collection policy objects.
+
+<p><li>20070126 - r322 - jcea@argo.es
+
+<p>The lock file shouldn't have +x mode set.
+
+<p><li>20070126 - r321 - jcea@argo.es
+
+<p>When doing a full and explicit "pack", and the
+checkpoint is done in background, we could
+get a lot of DB "log" files, since we could
+generate transactions too fast for the cleanup
+thread.
+
+<p><li>20070126 - r316 - jcea@argo.es
+
+<p>If using the prefetch garbage collection policy,
+a full and explicit "pack" burned CPU for no purpose.
+
+<p>Solved.
+
+<p><li>20070122 - r310 - jcea@argo.es
+
+<p>Patch to avoid (temporal) GC starvation if we get new garbage
+before finishing the GC prefetch.
+
+<p>Also, this patch avoids multiple prefetch of the same object
+when new garbage arrives.
+
+<p>Finally, this simple patch should solve an "assert()"
+failure in the prefetch thread. Hope so :-).
+
+<p><li>20070108 - r308 - jcea@argo.es
+
+<p>Update the "TODO" document.
+
+<p><li>20070104 - r294 - jcea@argo.es
+
+<p>First implementation of a garbage collection policy
+object doing garbage collection inline, but with
+background prefetch.
+
+<p><li>20061219 - r291 - jcea@argo.es
+
+<p>Solve a potential corruption if
+upgrading Storage backend from version 0
+to version 2 directly.
+
+<p><li>20061219 - r289 - jcea@argo.es
+
+<p>Avoid to raise spurious exceptions with
+policy objects, if we can't instantiate
+correctly the storage. For example, because
+the storage is already locked.
+
+<p><li>20061219 - r287 - jcea@argo.es
+
+<p>Compatibility check-in in the checkpoint policy
+objects for the old Berkeley DB 4.3.
+
+<p><li>20061219 - r286 - jcea@argo.es
+
+<p>Better traceback if the checkpoint thread dies.
+
+<p><li>20061205 - r283 - jcea@argo.es
+
+<p>First implementation of the locking protocol
+in the garbage collection policy interface.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20061121.tar.gz</b> (31Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: 5f3425882bf28e14124fe7b6ea31d13e</font>
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<ul>
+<p><li>This release REQUIRES Durus 3.6 or higher.
+
+<p><li>Storage databases created with this release are not
+compatible with previous releases.
+
+<p>First time you use this release to open a storage
+database created by previous releases, it will be
+transparently "upgraded" to current format, so:
+
+<ul>
+<p><li>The storage will become incompatible with previous
+releases.
+
+<p><li>In order to be able to upgrade the storage, you can't
+open it in "read only" mode. Once upgraded, you can
+use "read only" mode freely.
+
+<p><li>The upgrade process doesn't take any RAM.
+
+<p><li>If the upgrade process is aborted (program quits, crashes,
+machine reboot, etc), the database will be stable
+and clean. That is, the upgrade process is transactional
+and SAFE.
+
+<p><li>The upgrade process will be "instantaneous".
+</ul>
+
+<p><li>A new checkpoint policy object:
+"berkeleydb_storage.checkpoint_thread_final_checkpoint".
+
+<p>This checkpoint policy does a forced checkpoint when closing
+the storage. This would slowdown storage shutdown, but
+speed up storage initializacion.
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20061117 - r275 - jcea@argo.es
+
+<p>Shy first implementation of "sync" feedback feature
+of Durus 3.6.
+
+<p>Since this point, this Storage Engine requires Durus 3.6 and up.
+
+<p><li>20061117 - r274 - jcea@argo.es
+
+<p>Full implementations of "garbage_collection_noop"
+and "garbage_collection_inline" policy objects.
+
+<p><li>20061117 - r264 - jcea@argo.es
+
+<p>A late compatibility fix for Durus 3.6.
+
+<p>This fix requires a (instantaneous) storage upgrade.
+
+<p><li>20061117 - r262 - jcea@argo.es
+
+<p>Initial support for a garbage collection policy objects.
+
+<p><li>20061116 - r257 - jcea@argo.es
+
+<p>A new checkpoint policy object:
+"berkeleydb_storage.checkpoint_thread_final_checkpoint".
+
+<p><li>20061116 - r251 - jcea@argo.es
+
+<p>More gentle database closing if the program closes
+the storage handle and then dies without giving an
+oportunity to the garbage collector.
+
+<p><li>20061116 - r250 - jcea@argo.es
+
+<p>The storage did a database recover even if asked to
+not do it.
+
+<p><li>20061116 - r246 - jcea@argo.es
+
+<p>Do some minor changes for compatibility with
+just released Durus 3.6.
+
+<p><li>20061116 - r245 - jcea@argo.es
+
+<p><a href="../artic/know_how-durus-3_6.htm">"KNOW_HOW-DURUS"</a> updated to Durus 3.6.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20061023.tar.gz</b> (30Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: ebf73a26b377b1cdf9f9398d5751e8b3</font>
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<ul>
+<p><li>This release does Berkeley DB database checkpointing in a separate
+thread by default. This backend no more become irresponsible
+for a couple of seconds while it is busy doing a checkpoint
+to recycle database logging space.
+
+<p>If you like or need (for example, you python deployment doesn't
+support multithreading) the old behaviour (inline checkpointing),
+you can activate it passing "berkeleydb_storage.checkpoint_inline"
+to the storage constructor.
+
+<p><li>"do_recover" constructor parameter default value changes
+according to "read_only" parameter. If the storage is
+opened read/write, "do_recover" default value will be
+True. If the storage is opened "read only", the "do_recover"
+default value will be False.
+
+<p>Of course, you can overwrite these defaults if you wish
+and you know what are you doing.
+
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20061023 - r238 - jcea@argo.es
+
+<p>Document <a href="../artic/know_how-durus-3_5.htm">"KNOW_HOW-DURUS"</a> updated to Durus 3.5.
+
+<p><li>20061018 - r235 - jcea@argo.es
+
+<p>UPGRADING and README documentation updates.
+
+<p><li>20061016 - r233 - jcea@argo.es
+
+<p>If the checkpointing thread dies, notify the calling thread.
+
+<p><li>20061010 - r230 - jcea@argo.es
+
+<p>Be able to do the database checkpointing in the background.
+
+<p><li>20061005 - r229 - jcea@argo.es
+
+<p>"do_recover" constructor parameter default value changes
+according to "read_only" parameter. If the storage is
+opened read/write, "do_recover" default value will be
+True. If the storage is opened "read only", the "do_recover"
+default value will be False.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20061005.tar.gz</b> (29Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: e1e5d4f5327a717e3e3bbe6b5cd7b20e</font>
+
+<p><i><b>NOTE: Although documentation is not yet updated, this release
+works just fine under Durus 3.5 release.</b></i>
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<ul>
+<p><li>"do_recover" constructor parameter default value changed
+from "False" to "True". Better play safe than sorry. Of
+course you can do "do_recover=False" if you know what are
+you doing.
+
+<p>If you are opening the storage "read_only", you must set
+this flag to False.
+
+<p><li>This release adds an optional "async_log_write" parameter
+to storage instance constructor. This option is only
+relevant when you use "non durable" storages. You can now
+choose between "in memory" and "async write" transaction
+logging.
+
+<p>If you are using "non durable" storages, and you want to
+keep the previous behaviour, you MUST use
+"async_log_write=False". The new default will use
+asynchronous writes for the transactional logging.
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20061005 - r217 - jcea@argo.es
+
+<p>"do_recover" constructor parameter default value changed
+from "False" to "True".
+
+<p><li>20061003 - r215 - jcea@argo.es
+
+<p><a href="../artic/know_how-durus-3_4.htm">"KNOW_HOW-DURUS"</a> updated to document a sort of persistent
+weak reference pattern.
+
+<p><li>20061003 - r214 - jcea@argo.es
+
+<p><a href="../artic/know_how-durus-3_4.htm">"KNOW_HOW-DURUS"</a> updated to document BTree abilities.
+
+<p><li>20060927 - r205 - jcea@argo.es
+
+<p>New "in use" flag inside the database storage. If a storage
+is opened and that flag is set, a database recovery is done.
+
+<p>That flag is cleared when the storage instance destructor
+is called.
+
+<p>This flag is not used if the database is opened in read only mode.
+
+<p><li>20060927 - r202 - jcea@argo.es
+
+<p>When the storage is opened read/write and non durable,
+the storage instance destructor will try to (synchronously) flush the
+transaction log.
+
+<p>This last flush can't be garanteed, nevertheless.
+
+<p><li>20060927 - r200 - jcea@argo.es
+
+<p>Add a new optional parameter to the constructor: "async_log_write".
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20060629.tar.gz</a></b> (27Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: ef40b75e661cb622969e69dd2d693cb3</font>
+
+<ul>
+<p><li><b>Upgrade Instructions:</b>
+
+<p>Storage databases created with this release are not
+compatible with previous releases.
+
+<p>First time you use this release to open a storage
+database created by previous releases, it will be
+transparently "upgraded" to current format, so:
+
+<ul>
+<p><li>The storage will become incompatible with previous
+  releases.
+
+<p><li>In order to be able to upgrade the storage, you can't
+  open it in "read only" mode. Once upgraded, you can
+  use "read only" mode freely.
+
+<p><li>The upgrade process can be a bit slow, since the
+  backend needs to analyze the entire database. So, if
+  your database size is 1 Gigabyte and your hard disk
+  can push 50MB/s, the upgrade process will take about
+  20 seconds to finish.
+
+<p><li>While upgrading, the database will NOT serve requests.
+
+<p><li>The upgrade process doesn't take any RAM.
+
+<p><li>If the upgrade process is aborted (program quits, crashes,
+  machine reboot, etc), the database will be stable
+  and clean. That is, the upgrade process is transactional
+  and SAFE.
+</ul>
+
+<p>Also, in previous backend releases there was a bug in
+the garbage collection code that would skip over
+"to be deleted" objects, leaving some garbage behind.
+
+<p>So with this release you have three options:
+
+<ul>
+<p><li>Ignore the issue: This release will not leak new garbage,
+  but garbage already leaked will remain there. You lose
+  some diskspace. No other side effect.
+
+<p><li>Do a dump+load migration, using the storage backend
+  "migrate" method. Your diskspace requirement will
+  double (temporaly), since you need space for the
+  source and the destination databases. The migration
+  will copy garbage, but this new backend release can
+  cope with it and it will be freed. You don't need
+  extra RAM to do this process, even if your database
+  is in the petabyte range :-).
+
+<p><li>Initialize the storage with the "validate_garbage"
+  parameter sets to "True": This option will force
+  a full sweep over the database, to examine
+  cross-object links and locate garbage. This scan
+  is done in-place, so you don't need extra diskspace.
+  It is transactional, so it is SAFE if something
+  goes wrong.
+
+<p>It takes RAM proportional to object count
+  in your storage, so beware if you have a huge
+  database.
+
+<p>Of course you only need to pass this parameter
+  once, to catch garbage leaked by previous releases.
+</ul>
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20060629 - r191 - jcea@argo.es
+
+<p>Document the upgrade process.
+
+<p><li>20060620 - r188 - jcea@argo.es
+
+<p>"get_size()" is very costly. With current implementation,
+the storage must access all the database. I can implement a manual
+counter or migrate to btree and use DB_RECNUM:
+
+<blockquote>
+<p><a href="http://www.sleepycat.com/docs/api_c/db_stat.html">http://www.sleepycat.com/docs/api_c/db_stat.html</a>
+<br><a href="http://www.sleepycat.com/docs/api_c/db_set_flags.html#DB_RECNUM">http://www.sleepycat.com/docs/api_c/db_set_flags.html#DB_RECNUM</a>
+</blockquote>
+
+<p>Finally we implement a manually managed counter. Now "get_size()"
+is instantaneous, but it require an storage upgrade. So, you can't
+use previous backend versions.
+
+<p><li>20060620 - r184 - jcea@argo.es
+
+<p>When creating a new storage database, be able to
+choose between "btree" and "hash" schema.
+
+<p><li>20060620 - r183 - jcea@argo.es
+
+<p>Document <a href="../artic/know_how-durus-3_4.htm">"KNOW_HOW-DURUS"</a>
+updated to Durus 3.4.
+
+<p><li>20060524 - r157 - jcea@argo.es
+
+<p>We add a new "validate_garbage" optional parameter to the
+storage constructor. If that parameter is True, the storage will
+do a garbage check. Read the documentation in the README file
+for details.
+
+<p><li>20060523 - r156 - jcea@argo.es
+
+<p>If the storage was stopped before garbage
+collection was completed, the storage could leak
+some unreachable objects.
+
+<p>Solving this issue, we make sure also that the garbage
+collection makes progress even if the storage is stopped
+repeatly before garbage collection completion. That is,
+we store partial state to avoid to try to clean
+already collected objects.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20060522.tar.gz</b> (24Kbytes)
+(Digital Signature)
+<br><font size=-1>MD5: 546d5e8fb57e612f659ce493f3c4ad41</font>
+
+<ul>
+<p><li><b>Upgrade Instructions:</b> Nothing special.
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20060509 - r140 - jcea@argo.es
+
+<p>Since some foreign code seems to
+depent on it, I implement a "pack()"
+method in the storage.
+
+<p><li>20060509 - r138 - jcea@argo.es
+
+<p>Implements a "migrate()" method to
+migrate huge storages without hitting memory
+in a hard way. With this method you only
+need memory for an object, not the entire
+repository in RAM. So, this is imprescindible
+if your address space (in 32 bits) is
+small compared with your storage size.
+
+<p><li>20060509 - r137 - jcea@argo.es
+
+<p>File <a href="../artic/know_how-durus-3_3.htm">"KNOW_HOW-DURUS"</a> contains a lot of
+info about Durus internals and advanced usage.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20060418.tar.gz</b> (15Kbytes)
+
+<ul>
+<p><li><b>Upgrade Instructions:</b> Nothing special.
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20060418 - r90 - jcea@argo.es
+
+<p>Solved an object leak when you commit a transaction
+having unreferenced objects. That is, you commit
+objects that are ALREADY garbage.
+
+<p>You usually don't do that, but it can be a very helpful
+pattern to break object cycles when deleting objects.
+
+<p>You could hit this bug if you keep around references
+to persistent objects between transactions, a big NO NO.
+You could "resurrect" a deleted object, and that object,
+and the object graph from there, would became inmortal.
+
+<p><li>20060418 - r85 - jcea@argo.es
+
+<p>"gen_oid_record()" implementation. This
+implementation has the same limitations that
+the standard Durus one. In particular, you
+shouldn't commit transactions while iterating
+over the storage, and this method can return
+already deleted objects, not yet collected.
+These "issues" are already present in the stock
+Durus implementation.
+
+<p>The usual use of this method is migrating
+class names of already stored objects.
+
+<p><li>20060411 - r79 - jcea@argo.es
+
+<p>"Read Only" mode implemented.
+
+<p><li>20060411 - r74 - jcea@argo.es
+
+<p>"D" in ACID is optional, if allowable,
+to improve performance.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20060328.tar.gz</b> (14Kbytes)
+
+<ul>
+<p><li><b>Upgrade Instructions:</b> Nothing special. The Durus server was renamed
+from "z.py" to "server.py".
+
+<p><li><b>Changes:</b>
+
+<ul>
+<p><li>20060328 - r56 - jcea@argo.es
+
+<p>Hint from Thomas Guettler.
+
+<p>There is a race condition between a client deleting
+an object and other client trying to fetch it.
+Previous versions of the code would kill the server
+with an assertion.
+
+<p>Current code will signal the issue to the caller. If
+we are using the server storage, the client will receive
+a "ReadConflictError" exception, just like stock Durus,
+if you do a garbage collection between the object deletion
+in a client and the object retrieval in the other one.
+
+<p><li>20060328 - r55 - jcea@argo.es
+
+<p>When instancing a BerkeleyDBStorage, we run
+Berkeley DB "DB_RECOVER" if:
+
+<p><ol type="a">
+<li>The constructor caller requests it explicitelly.
+<li>The environment opening requires a recovery.
+<li>If previous use of the storage left unfinished
+transactions behind. For example, machine reboot.
+</ol>
+
+<p><li>20060323 - r48 - jcea@argo.es
+
+<p>Improved checkpointing, especially when forcing
+a full collection. But remember that you don't need
+to do a full collection unless you REALLY need it.
+The backend automatically does garbage collection
+in background. With this change we have a 10% speed penalty,
+more or less, when doing a full collection.
+
+<p>Very improved database logging files removal. Now you
+can expect a maximum of three logging files (30 Mbytes)
+in the storage.
+
+<p><li>20060323 - r47 - jcea@argo.es
+
+<p>When we create a new Berkeley DB storage, first time, we can
+configure log buffer size and cache size using constructor
+parameters. If the storage is already created, those parameters
+are ignored.
+
+<p><li>20060323 - r39 - jcea@argo.es
+
+<p>When doing a commit, instead of loading the reference counting
+of all referenced objects, do the incremental adjust without
+database access, all in RAM, and then access and modify ONLY
+the objects with changed reference counters.
+
+<p>The code is simpler, faster and eats less RAM, when you
+update heavily linked objects.
+
+<p><li>20060317 - r31 - jcea@argo.es
+
+<p>Cope with different combinations of bssdb/bssdb3
+instalations and missing instalations.
+
+</ul>
+</ul>
+
+<p><li><b>durus-berkeleydbstorage-20060316.tar.gz</b> (11Kbytes)
+
+<p>First public release. Production ready.
+</ul>
+
+<p><hr>
+<h3>Procesos a realizar cuando se publica una actualización</h3>
+
+<p>Esto es solo útil para mí :-).
+<ul>
+<p><li>Poner el número de versión correcto en "CHANGES", "UPGRADING" y "berkeleydb_storage.py".
+
+<p><li>Mover el "release" a un tag SVN propio.
+
+<p><li>Dar acceso de lectura público a dicho tag en el SVN, para proyectos como
+<a href="../wikis/cpif/PaginaDeEntrada">cpif</a>. Es conveniente añadir el "release",
+dejando los anteriores activos también. De esta forma evitamos retirar el acceso a
+directorios que ya son públicos.
+
+<p><li>Exportar ese "release" concreto del SVN.
+
+<p><li>Crear el "tar.gz" y la firma digital, y subirlo a esta web.
+
+<p><li>Actualizar la documentación en esta web.
+
+<p><li>Actualizamos la sindicación de contenidos (RSS) de esta web.
+
+<p><li>Publicar la actualización en <a href="http://freshmeat.net/projects/durus-berkeleydb/">freshmeat</a>.
+
+<p><li>Publicar la actualización en <a href="http://cheeseshop.python.org/pypi/BerkeleyDB%20Backend%20Storage%20Engine%20for%20DURUS">Python's CheeseShop Pypi</a>.
+
+<p><li>Enviar notificaciones sobre la librería y la documentación "KNOW_HOW-DURUS"
+a las siguientes listas de correo: <a href="http://mail.mems-exchange.org/durusmail/durus-users/">Durus Users</a>,
+<a href="https://lists.sourceforge.net/lists/listinfo/pybsddb-users">pybsddb users</a>
+and <a href="http://listas.aditel.org/listinfo/python-es">python-es</a>.
+</ul>
+
+<p><hr>
+<h3>Historia</h3>
+<ul>
+<p><li>22/mar/06: Primera versión de esta página.
+</ul>
+
+<p>
+<hr>
+<ul>
+<li><a href="index.htm">
+<b>Programacion</b></a>
+<li><a href="../artic/index.htm">
+<b>Artículos</b></a>
+<li><a href="../index.htm">
+<b>La Página de Jesús Cea Avión</b></a>
+</ul>
+
+<hr>
+<p align="center"><font size=-1>Donación BitCoin: 19niBN42ac2pqDQFx6GJZxry2JQSFvwAfS</font>
+<br><img src="/bitcoin_qr.png" width="128" height="128" /></p>
+
+<p><a href="https://affiliates.mozilla.org/link/banner/42333"><img src="https://affiliates.mozilla.org/media/uploads/banners/db77c71cfb37d0d70d1cb90aaf411db07ad2d20f.png" alt="Actualizar" align="right" border="0"/></a>
+
+<a href="http://www.python.org/" title="Python">
+<img src="http://www.python.org/images/python-logo.gif"
+width="211" height="71" border=0 alt="Python" align="right"></a>
+
+<a href="http://www.zope.org/" title="Zope">
+<img src="/zpowered.jpg"
+width="115" height="50" border=0 alt="Zope" align="right"></a>
+
+<i><a href="mailto:jcea@jcea.es">&#169;2006-2007
+jcea@jcea.es</a></i>
+
+</body>
+</html>
+

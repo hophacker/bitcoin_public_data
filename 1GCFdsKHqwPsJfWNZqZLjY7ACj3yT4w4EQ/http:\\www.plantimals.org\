@@ -1,0 +1,522 @@
+http://www.plantimals.org/
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Wed, 23 Jul 2014 01:38:20 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d31bfe54042ab1f6d6c4e0b20b11136b51406079500412; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.plantimals.org; HttpOnly
+Last-Modified: Mon, 12 May 2014 06:09:34 GMT
+CF-RAY: 14e4286d98500f0f-IAD
+Content-Encoding: gzip
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Archetypal</title>
+<meta name="author" content="Rob Long">
+<meta name="description" content="Many people who do bioinformatics (the field seems to have settled on &#8220;bioinformatician&#8221;, but I like &#8220;bioinformaticist&#8221; &hellip;">
+ 
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="http://archetyp.al/">
+<link href="/favicon.png" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script src="/javascripts/modernizr-2.0.js"></script>
+<script src="/javascripts/ender.js"></script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+<link href="http://feeds.feedburner.com/Archetypal" rel="alternate" title="Archetypal" type="application/atom+xml">
+ 
+<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+<script type="text/javascript">
+  var GoSquared = {};
+  GoSquared.acct = "GSN-443010-S";
+  (function(w){
+    function gs(){
+      w._gstc_lt = +new Date;
+      var d = document, g = d.createElement("script");
+      g.type = "text/javascript";
+      g.src = "//d1l6p2sc9645hc.cloudfront.net/tracker.js";
+      var s = d.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(g, s);
+    }
+    w.addEventListener ?
+      w.addEventListener("load", gs, false) :
+      w.attachEvent("onload", gs);
+  })(window);
+</script>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-33156626-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+<header role="banner"><hgroup>
+<style type="text/css">#headerDiv{vertical-align:middle;float:left;}</style>
+<div id="headerDiv" class="headerTitleBackground">
+<div class="headerContent">
+<h1><a href="/">Archetypal</a></h1>
+<h2>looking for patterns in the patterns</h2>
+</div>
+</div>
+</hgroup>
+</header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+<li><a href="http://feeds.feedburner.com/Archetypal" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+<fieldset role="search">
+<input type="hidden" name="q" value="site:archetyp.al"/>
+<input class="search" type="text" name="q" results="0" placeholder="Search"/>
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/other_pages/care.html">Cellular Automata</a></li>
+<li><a href="/blog/archives">Archives</a></li>
+<li><a href="http://github.com/arrogantrobot">Github</a></li>
+<li><a href="http://twitter.com/plantimals"><div><img style="vertical-align:middle" src="/images/twitter.svg"/><span vetical-algin="middle"> Twitter</span></div></a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+<div class="blog-index">
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2014/05/05/biowordcount-a-brief-introduction-to-hadoop-for-the-bioinformatics-practicioner/">BioWordCount: A Brief Introduction to Hadoop for the Bioinformatics Practitioner</a></h1>
+<p class="meta">
+<time datetime="2014-05-05T22:09:00-05:00" pubdate data-updated="true">May 5<span>th</span>, 2014</time>
+</p>
+</header>
+<div class="entry-content"><p>Many people who do bioinformatics (the field seems to have settled on &#8220;bioinformatician&#8221;, but I like &#8220;bioinformaticist&#8221; better) find themselves dealing with large data sets and long running processes, arranged in myriad pipelines. In our time, this inevitably demands distributed computing. Life innovated during the <a href="https://en.wikipedia.org/wiki/Cambrian_explosion" title="Cambrian Explosion">Cambrian explosion</a> by going from single cells to colonies of cells. Life found a way to distribute and parallelize its processes. In order for us to properly focus our analytical microscopes on life, we imitate life in this strategy and distribute our processes across multiple CPU&#8217;s.</p>
+<p>There are many strategies for distributing computation across multiple cores, processors, or physical computers, but this writeup will only cover the solutions provided by the <a href="https://hadoop.apache.org/" title="Hadoop">Hadoop</a> ecosystem, as packaged by <a href="http://www.cloudera.com/content/cloudera/en/home.html" title="Cloudera">Cloudera</a>. It is the case that as it is widely used now, the Hadoop system of distributed computation and storage does not provide the best solution for long running computations that input or output little data. Even tasks which do use lots of data like sequence alignment, can resist parallelization such that the benefits of Hadoop are negated. Hadoop shines when inputs and or outputs are large in scale, but made of many independent records. Why is this?</p>
+<p>Hadoop is a series of services, which when taken together, provide an environment for distributed computation. Each computer in a Hadoop cluster is referred to as a node. A Hadoop environment contains one or more nodes. The majority of the nodes in a multi-node cluster are known as &#8220;DataNodes&#8221;, which store the data and do most of the computation. There are usually at least &#8220;NameNodes&#8221;, which serve to maintain the state of the Hadoop distributed filesystem, but not the contents of any of the files on that filesystem, just the directory structure and the locations of the blocks that make up the files in it.</p>
+<h2>The Hadoop Ecosystem</h2>
+<p>HDFS is the conceptual core of Hadoop. This is the part that, once understood, can unlock one&#8217;s view of the whole picture. The key concept is that instead of pushing data to where computations are happening, the computation is pushed to where the data lives. A good example of this is <a href="http://www-03.ibm.com/systems/technicalcomputing/platformcomputing/products/lsf/" title="Platform LSF">Platform LSF</a> or <a href="https://en.wikipedia.org/wiki/Oracle_Grid_Engine" title="Sun Grid Engine">Sun Grid Engine</a>, where the state of the art is to have NFS mounts on your compute nodes, such that when a job lands on that node, it then fetches the required inputs over the network, then does computation on them. Hadoop inverts this order of things by breaking each file up into chunks, default chunk size is 64MB, and distributing these chunks to the DataNodes. The NameNodes track which DataNode has which chunk of which file.</p>
+<p>In order to do some computation on those distributed chunks, the MapReduce paradigm enters the picture. When computation needs to be done on a particular file, the required executables (jar files in this case) are sent to those DataNodes hosting at least one chunk of the file. The results of these computations are then gathered in HDFS, and potentially grouped by some key value. This is why large files, containing millions of small, homogeneous records are best for this paradigm. Each chunk is processed, line by line, with the results being aggregated for the whole.</p>
+<p>From these two components, HDFS and MapReduce, the other services can be inferred or constructed. There is a distributed column-store database called <a href="https://hbase.apache.org/" title="HBase">HBase</a>, there is a workflow manager called <a href="https://oozie.apache.org/" title="Oozie">Oozie</a>, there is an indexer/search service provided by <a href="https://cwiki.apache.org/confluence/display/solr/SolrCloud" title="SolrCloud">SolrCloud</a>.</p>
+<p>It is doubtful that any bioinformatics shop will entirely rely on Hadoop for all its distributed computing needs. It&#8217;s more and more plausible every day, with projects like <a href="http://bowtie-bio.sourceforge.net/crossbow/index.shtml" title="Crossbow">Crossbow, for bowtie alignment</a> and <a href="http://sourceforge.net/apps/mediawiki/contrail-bio/index.php?title=Contrail" title="Contrail">Contrail for assembly</a>. But in order to really learn how Hadoop works, I suggest an example problem.</p>
+<p>I have selected the problem of calculating the mutational spectrum, as it is trivial to understand the mechanics of, is somewhat biologically relevant, and mimics exactly the flow of the classic <a href="https://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html" title="WordCount tutorial">Word Count MapReduce example</a>.</p>
+<p>In short, <a href="https://en.wikipedia.org/wiki/Mutation_rate#Mutational_spectrum" title="Mutational Spectrum">mutational spectrum</a> is rate at which different types of mutations occur. Transitions are changes from a pyramidine base to another pyramidine, or a purine to another purine. A transversion is the substitution of a purine for a pyramidine, or vice versa.</p>
+<p>My goal will be to generate a list of mutations, <code>A -&gt; C</code>, <code>A -&gt; G</code>, etc, with the associated number of occurences in a VCF file. The result will be several lines of text output.</p>
+<h2>BioWordCount: The MapReduce Job</h2>
+<p>The task of parsing each line of the VCF will be accomplished by a mapreduce job, which will be fed from an input in HDFS, and output an answer to HDFS as well. Begin by creating an empty maven project. There is an excellent tutorial on <a href="http://blog.cloudera.com/blog/2012/08/developing-cdh-applications-with-maven-and-eclipse/" title="maven tutorial">how to generate an empty maven project with the hadoop libraries at Cloudera&#8217;s website</a>. Follow this, and you will end up with a project ready for our java files. Begin in the <code>src/main/java/al/archetyp/biowordcount</code> directory, replacing the archetyp.al namespace for one of your choosing (preferably the one you used when creating your project).</p>
+<p>The first class we create will be the BioWordCount class, which will hold both our mapper and reducer class. For a project of any size, the practice of putting the mapper and reducer in the same class that contains our Main, would be unwise. However, my goal with this demo is to push the complexity down low enough that one can concentrate purely on what mapreduce is and how one might use it.</p>
+<p>The mapper class will look like this:</p>
+<figure class='code'><figcaption><span>BioWordCount</span><a href='https://github.com/plantimals/biowordcount/blob/master/src/main/java/al/archetyp/biowordcount/BioWordCount.java'>link to github</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Map</span> <span class="kd">extends</span> <span class="n">Mapper</span><span class="o">&lt;</span><span class="n">LongWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">LongWritable</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;#&quot;</span><span class="o">))</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">VcfLine</span> <span class="n">vcfLine</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VcfLine</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>        <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">titv</span> <span class="o">:</span> <span class="n">vcfLine</span><span class="o">.</span><span class="na">getTiTv</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">titv</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>The four type parameters to the Mapper class that we extend are important. The first type, LongWritable, describes the type of the input key, in this case it will be an offset into the file, a line number. The second type is the value of the input. Text is a Hadoop specific type for passing around lines of text from a file. The next two types are the key and value types of the output of the mapper. For the purposes of the biowordcount app, the text key will be something like &#8220;A -> C&#8221; and the value, the IntWritable, will always be one, as each line that is processed will only yield a single transition or transversion.</p>
+<p>Very simply, for each line of our input file, in this case <a href="http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41" title="VCF format">a VCF</a>, the <code>void map(...)</code> function above will be called. The magic of hadoop is that it doesn&#8217;t matter if that VCF is 100 lines long or 100 million lines long. This class will be distributed to each node where a portion of the file is stored and executed on the lines of the file contained therein.</p>
+<p>Each line of the header is skipped by simply returning without writing something to the output context if the line received starts with <code>#</code>. Then we see a helper class I created for this project to contain the parsing of VCF lines. The relevant parts of the VcfLine class are:</p>
+<figure class='code'><figcaption><span>VcfLine</span><a href='https://github.com/plantimals/biowordcount/blob/master/src/main/java/al/archetyp/biowordcount/VcfLine.java'>link to github</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">VcfLine</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">StringTokenizer</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">vcfFields</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">vcfFields</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">setChrom</span><span class="o">(</span><span class="n">vcfFields</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">setPos</span><span class="o">(</span><span class="k">new</span> <span class="n">Long</span><span class="o">(</span><span class="n">vcfFields</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">)));</span>
+</span><span class='line'>    <span class="n">setRef</span><span class="o">(</span><span class="n">vcfFields</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">3</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">alts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">vcfFields</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">4</span><span class="o">).</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)));</span>
+</span><span class='line'>    <span class="n">isIndel</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">&quot;INDEL&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getTiTv</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">answer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">isIndel</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">alt</span> <span class="o">:</span> <span class="n">getAlts</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">answer</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">getRef</span><span class="o">()+</span><span class="s">&quot; -&gt; &quot;</span><span class="o">+</span><span class="n">alt</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>The constructor method pulls in a row from a VCF file and parses out each column so we can interrogate the variant in our mapper, finding which <a href="https://en.wikipedia.org/wiki/Transition_(genetics)" title="transition">transition</a> and or <a href="https://en.wikipedia.org/wiki/Transversion" title="transversion">transversion</a> to report. Returning to the Map class, each single nucleotide variation (SNV) is written to the context. This is where the magic happens. We are writing a key/value pair. In this example, the key is the mutation type, &#8220;A -> C&#8221; for example, and the value will be one. The value is meant to represent a count of the mutations enountered that match the value.</p>
+<p>At this point, each SNV is represented as a key value pair in flight between the mapper and the reducer. The <code>void reduce()</code> method of the reducer class will receive a collection containing all those key/value pairs with identical keys. For the purpose of counting the number of like mutations, these collections will be iterated over and summed up, providing a total count of the number of each mutation type.</p>
+<figure class='code'><figcaption><span>BioWordCount</span><a href='https://github.com/plantimals/biowordcount/blob/master/src/main/java/al/archetyp/biowordcount/BioWordCount.java'>link to github</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Reduce</span> <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&lt;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">IntWritable</span><span class="o">&gt;</span> <span class="n">values</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span><span class="o">)</span>
+</span><span class='line'>            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">IntWritable</span> <span class="n">val</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">sum</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="n">sum</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>The last line of the <code>void reduce()</code> function is vital, this is where the aggregated results are written out to the output directory. In order to inspect the complete project with the setup code, the mapper and reduce, along with the VCF parser, <a href="https://github.com/plantimals/biowordcount" title="BioWordCount github">have a look at the github repo</a>.</p>
+<h2>Compile and Run</h2>
+<p>Once these components are all put together, go to the root of the project folder where the <code>pom.xml</code> file lives. From here, run the command <code>mvn install</code>. This will run for a little while, compiling your java into bytecode and packaging everything into a jar, which should land in the <code>target</code> subdirectory. This jar is what will need to be sent into the Cloudera VM in order to run the job.</p>
+<h3>The Cloudera VM</h3>
+<p>In order to encapsulate the complexity of installing the Hadoop components on your dev machine, grab the <a href="http://www.cloudera.com/content/support/en/downloads/download-components/download-products.html?productID=F6mO278Rvo&amp;version=2" title="Cloudera VM">Cloudera QuickStart Vm (CDH 4.6)</a>, and download it. I am using Virtual Box, but they also provide vmware and KVM versions of the virtual machine, if those suit your setup better. Cloudera also includes some parts of their own making, like Cloudera Manager, which similarly wraps the complexity of administering the services of hadoop. So all you have to do in order to start using these services, is download the vm and start it up. This step saves hours, if not days, of setup time.</p>
+<p>Once you have downloaded the VM and started it, go dig around. It should start up with firefox open to a page that links you to Cloudera Manager. Go to CM and click on the &#8220;services&#8221; menu on the toolbar at the top, then select &#8220;all services&#8221;. It is possible to stop, start, and restart all the services here. For our purposes, you will need to start, in this order, zookeeper, hdfs, and mapreduce.</p>
+<p>I chose to create a shared directory to transfer data and jars between the host system and the guest Cloudera VM. Once the VM is setup and the shared directory created and used, or the jar and vcf data have been scp&#8217;d into the guest machine, it is time to run the compiled jar. Once the jar and source data are on the VM, open a terminal or ssh into the VM. The first step to running this example will be to put the source data into HDFS, so that it will be available when the mapreduce job is executed. <code>hadoop fs -mkdir data</code> then <code>hadoop fs -put data/mydata.vcf</code> and <code>hadoop fs -mkdir output</code> should do the trick. Then execute the job by running the command:</p>
+<figure class='code'><figcaption><span>BioWordCount</span><a href='https://github.com/plantimals/biowordcount/blob/master/src/main/java/al/archetyp/biowordcount/BioWordCount.java'>link to github</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">hadoop</span> <span class="n">jar</span> <span class="n">BioWordCount</span><span class="o">.</span><span class="na">jar</span> <span class="n">al</span><span class="o">.</span><span class="na">archetyp</span><span class="o">.</span><span class="na">biowordcount</span><span class="o">.</span><span class="na">BioWordCount</span> <span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">cloudera</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">mydata</span><span class="o">.</span><span class="na">vcf</span> <span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">cloudera</span><span class="o">/</span><span class="n">output</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>At this point, the jar is sent to those nodes that hold chunks of mydata.vcf. Those nodes then run the various compoenents of the mapreduce process and the final result is deposited in /user/cloudera/output. This can be accessed by the command <code>hadoop fs -cat /user/cloudera/output/part-r-00000</code>, which should produce similar results to those shown below.</p>
+<p>Here&#8217;s what the results look like.</p>
+<figure class='code'><figcaption><span>BioWordCount</span><a href='https://github.com/plantimals/biowordcount/blob/master/src/main/java/al/archetyp/biowordcount/BioWordCount.java'>link to github</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">A</span> <span class="o">-&gt;</span> <span class="o">.</span>   <span class="mi">78509</span>
+</span><span class='line'><span class="n">A</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">14752</span>
+</span><span class='line'><span class="n">A</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">62310</span>
+</span><span class='line'><span class="n">A</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">610</span>
+</span><span class='line'><span class="n">C</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">96966</span>
+</span><span class='line'><span class="n">C</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">14675</span>
+</span><span class='line'><span class="n">C</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">989</span>
+</span><span class='line'><span class="n">C</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">62729</span>
+</span><span class='line'><span class="n">G</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">96803</span>
+</span><span class='line'><span class="n">G</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">63172</span>
+</span><span class='line'><span class="n">G</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">795</span>
+</span><span class='line'><span class="n">G</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">14519</span>
+</span><span class='line'><span class="n">T</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">79135</span>
+</span><span class='line'><span class="n">T</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">696</span>
+</span><span class='line'><span class="n">T</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">62786</span>
+</span><span class='line'><span class="n">T</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">14491</span>
+</span><span class='line'><span class="n">a</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">33572</span>
+</span><span class='line'><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">6954</span>
+</span><span class='line'><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">29519</span>
+</span><span class='line'><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">107</span>
+</span><span class='line'><span class="n">c</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">38822</span>
+</span><span class='line'><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">6981</span>
+</span><span class='line'><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">172</span>
+</span><span class='line'><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">29764</span>
+</span><span class='line'><span class="n">g</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">38282</span>
+</span><span class='line'><span class="n">g</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">29399</span>
+</span><span class='line'><span class="n">g</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">151</span>
+</span><span class='line'><span class="n">g</span> <span class="o">-&gt;</span> <span class="n">T</span>    <span class="mi">7010</span>
+</span><span class='line'><span class="n">t</span> <span class="o">-&gt;</span> <span class="o">.</span>    <span class="mi">33106</span>
+</span><span class='line'><span class="n">t</span> <span class="o">-&gt;</span> <span class="n">A</span>    <span class="mi">113</span>
+</span><span class='line'><span class="n">t</span> <span class="o">-&gt;</span> <span class="n">C</span>    <span class="mi">29760</span>
+</span><span class='line'><span class="n">t</span> <span class="o">-&gt;</span> <span class="n">G</span>    <span class="mi">6951</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>The sum total of sites is 954600, which matches exactly the number of non-header lines in the input VCF. While this does not prove the correctness of this approach, it certainly suggests that there are no gross errors where data is added or lost. It&#8217;s always a good idea to look for ways to check your thinking at each stage of the process. Disproving assumptions can be difficult, but is more likely to result in good work.</p>
+<p>I decided to leave in those sites that did not contain variants, <code>X -&gt; .</code>, so that the information would be present in the results. Again, the right course of action always depends upon the context, but I do like to leave in as much data as possible as far into the process as possible, so that the user can decide if it is relevant or not. There are different records for cases where the reference was a capital letter and when the reference was lower case. This is also information I decided to leave in the results. A lowercase letter represents a reference of the genome which lies in the repeatmaker regions, or regions of low complexity.</p>
+<p>I used my own data for this project, which was obtained from <a href="https://www.23andme.com/" title="23andme">23andme</a> in the raw format and then converted to VCF via the <a href="http://archetyp.al/blog/2012/08/13/convert-your-23andme-raw-data-into-vcf-format/" title="23andme2vcf archetyp.al">23andme2vcf conversion script described here</a>.</p>
+<h2>Conclusion</h2>
+<p>Do what thou wilt. As mentioned above, bioinformatics as a field is fairly young, and bioinformatics on Hadoop is even younger. The distributed, mapreduce paradigm is a valuable tool. It is not the only tool, but let&#8217;s not allow the fact that it doesn&#8217;t do everything get in the way of letting Hadoop do something, those things that it does well. With the development of more frameworks and tools for Bioinformatics on Hadoop, more adoption will be possible and it will grow.</p>
+</div>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2013/11/26/fda-23andme-and-innovation/">FDA, 23andme, and Innovation</a></h1>
+<p class="meta">
+<time datetime="2013-11-26T09:21:00-06:00" pubdate data-updated="true">Nov 26<span>th</span>, 2013</time>
+</p>
+</header>
+<div class="entry-content"><p>I&#8217;m neither a doctor nor a lawyer, so consider my opinions appropriately. I began my career as a software developer at the <a href="http://genome.wustl.edu/" title="The Genome Institute">Genome Institute (TGI)</a> at Washington University in St.Louis. I didn&#8217;t set out to get into bioinformatics, it just happened that it was the most interesting problem to work on in <a href="http://www.articulateventures.com/articulate-blog/category/a-newcomers-view-of-st-louis-a-heroic-city" title="St.Louis">St.Louis</a> at the time I was getting my degree in computer science. So I set about learning the craft of software development and the field of bioinformatics at the same time.</p>
+<p>As many before me have noticed, biology and computers are strangely similar at their most basic level. Both decompose into some basic operations that get repeated over and over, with important results emerging at higher orders from the basic operations. Computer processors can only do simplistic operations on a few pieces of data at a time. Add two numbers. Multiply two numbers. Compare two numbers. <a href="https://en.wikipedia.org/wiki/BLAST" title="BLAST Algorithm">Algorithms</a> of enormous complexity can be implemented as a series of much smaller operations. Such is the case with biology. DNA is transcribed into RNA, which gets translated into proteins, which interact with each other in a cascading series of <a href="https://en.wikipedia.org/wiki/Insulin_signal_transduction_pathway_and_regulation_of_blood_glucose" title="Insulin Pathway">pathways</a> that in the end results in the swarm of cells that is a human being.</p>
+<p>So when I began working on the variant calling portion of the <a href="http://genome.wustl.edu/projects/category/cancer-genomics/" title="Cancer Genomics">cancer sequencing</a> pipeline at TGI, I started to see that not only are these two fields, computers and biology, deeply similar, but that they reinforce and supplement one another. Computers are to biology what the telescope was to astronomy. Both biology and astronomy existed before their defining technologies were invented, but neither would be nearly as valuable to mankind without their paradigm-shift enabling technologies.</p>
+<p>I was intimately involved in the process of taking raw genomic data from a sequencing machine and shepherding it through the pipeline of steps required to produce some actionable output. In the case of cancer sequencing, the output is mostly studies on large aggregations of tumor samples to try and discover how varieties of cancer develop and spread. But sometimes the output is meant to used for clinical sequencing. This is the sequencing of <a href="http://www.forbes.com/sites/matthewherper/2011/12/16/christopher-hitchens-and-steve-jobs-mark-limits-of-dna-sequencing-technology/" title="Christopher Hitchens and Clinical Sequencing">one specific person</a> and their tumor, to determine if the drugs we already have are good candidates for treatment. I was up to my elbows in other people&#8217;s DNA. I saw the variants in their DNA that determine their health. It was like reading the source code for a human being. So naturally I became curious about my own DNA.</p>
+<p>Enter <a href="https://www.23andme.com/" title="23andme">23andme</a>.</p>
+<p>23andme provides a personal genome service that can determine which variants an individual has at one million pre-selected sites in the genome. All you need to do is spit in a tube and mail it to them. A few weeks later they let you know when the sequencing and analysis is done, and you get to revel in the information about your source code, just like people with access to big labs, like TGI. To be sure, this is not the same as whole genome re-sequencing, where each and every base of the entire individual is determined. That is a bit more costly, but getting cheaper every day. 23andme provides answers to specific questions like &#8220;do I have the <a href="http://www.cancer.gov/cancertopics/factsheet/Risk/BRCA" title="BRCA mutations">BRCA mutations</a> which make me much more susceptible to breast cancer?&#8221; The answers you get from 23andme are answers to well studied questions.</p>
+<p>By this time, I had become more involved in the field of bioinformatics and ended up at a commercial bioinformatics software shop here in St.Louis, <a href="http://partek.com/" title="Partek Inc.">Partek Inc.</a> In order to fuel their employees&#8217; interest in genomics and spark their thinking on use cases, they paid for all of us to get sequenced by 23andme. So in the summer of 2012, we each received our results and marveled at the vast amount of detail. Each question answered by sequencing is backed up by a plethora of links to published journal articles describing the function and studies done on that particular variant.</p>
+<p>Here is how 23andme describes the state of my genome with respect to the above mentioned BRCA mutations:</p>
+<blockquote><p>No copies of the three early-onset breast and ovarian cancer mutations identifiable by 23andme. May still have a different mutation in BRCA1 or BRCA2.</p></blockquote>
+<p>You have to be familiar with how genetics works in order to properly parse this statement.</p>
+<p>Enter the <a href="http://www.fda.gov/ICECI/EnforcementActions/WarningLetters/2013/ucm376296.htm" title="FDA 23andme Letter">FDA</a>. The FDA has recently ordered 23andme to stop providing their service to consumers. One of the issues they cite, is providing BRCA data to consumers:</p>
+<blockquote><p>For instance, if the BRCA-related risk assessment for breast or ovarian cancer reports a false positive, it could lead a patient to undergo prophylactic surgery, chemoprevention, intensive screening, or other morbidity-inducing actions, while a false negative could result in a failure to recognize an actual risk that may exist.</p><footer><strong>FDA Letter</strong> <cite><a href='http://www.fda.gov/ICECI/EnforcementActions/WarningLetters/2013/ucm376296.htm'>www.fda.gov/ICECI/2013/&hellip;</a></cite></footer></blockquote>
+<p>This is an alarming point to raise. No one wants to needlessly cause &#8220;morbidity-inducing actions&#8221; or give a false sense of security. So let&#8217;s unpack both the false positive case and the false negative case.</p>
+<p>A false positive would be asserting that the customer has a specific mutation, when they do not in fact have that mutation. What are the odds of this happening? I don&#8217;t have specific data on the 23andme lab, but similar technologies result in errors on the order of 2.5 calls in 100,000. This is indeed a small probability. This is in the neighborhood of flipping a coin and getting 16 heads in a row. It&#8217;s quite unlikely, but not unthinkable. So if you get 1,000,000 variant calls from 23andme, somewhere in the neighborhood of 25 will be incorrect. There is a much deeper error model built around sequencing and variant calling, but I will only glance off the surface for today&#8217;s purpose. The FDA is concerned that &#8220;morbidity-inducing actions&#8221;, like a mastectomy, could be undertaken based on faulty evidence. However, very few customers of 23andme are going to read their results, find a BRCA positive answer, and immediately perform a self-mastectomy. At some point, the medical establishment gets involved. There are orthogonal methods of validating the BRCA carrier status. 23andme is purely an informational service, meant to be the beginning of a conversation, not the last word.</p>
+<p>The case of a false negative is on the same order of improbability as the false positive. The snag comes in the semantics of the question being answered. Does the patient have the previously identified, inherited mutations in the BRCA genes? This is like knowing a certain edition of a book has a typo in a specific word on a specific line. Science has identified several of these specific typos that are commonly inherited. 23andme tells you if you have these specific typos in your book of life. It&#8217;s also possible that you acquired a typo during your lifetime, in some other word in the BRCA chapter of your genome. Or even that you inherited a typo, but one that hasn&#8217;t been identified by science yet. These are answers that 23andme can&#8217;t give you. So while they can say you don&#8217;t have typo&#8217;s X,Y, or Z, they can&#8217;t state that you have no typos at all. 23andme even states this in the copy on their site &#8220;May still have a different mutation in BRCA1 or BRCA2.&#8221;</p>
+<p>In effect, the FDA wishes to place some barrier, either themselves or some other apparatus of medical establishment, between your genome sequence and you. They call the service that 23andme provides a &#8220;medical device.&#8221; I don&#8217;t claim that the implications of consumer genome sequencing are clear or entirely knowable at this time. I do claim that if we step in with overreaching caution and control where it is not warranted, we risk destroying a nascent industry that is going to be one of the biggest most world-shaping technologies of the next 100 years. Companies that now enjoy the freedom to innovate with new products and technologies will be forced to move elsewhere or stop.</p>
+<p>St.Louis is becoming an important center for life-sciences, with the Genome Institute, Monsanto, the <a href="http://www.danforthcenter.org/" title="Danforth Plant Science Center">Danforth Plant Science Center</a>, Partek, and even newer players like <a href="http://www.cofactorgenomics.com/index.php" title="Cofactor Genomics">Cofactor Genomics</a>. The path forward to the 21st century for these technologies does not go through slow, monolithic government bureaucracies. People free to act on their insights and recent innovations will build this industry elsewhere if we clamp down on it now.</p>
+</div>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2013/03/21/bad-mysql-install-error-2002-cannot-connect-with-local-server/">Digital Ocean Hosting: Error 2002 Can&#8217;t Connect With Local Server, and a Solution</a></h1>
+<p class="meta">
+<time datetime="2013-03-21T00:12:00-05:00" pubdate data-updated="true">Mar 21<span>st</span>, 2013</time>
+</p>
+</header>
+<div class="entry-content"><p>I have recently started using <a href="https://www.digitalocean.com/" title="Digital Ocean">Digital Ocean</a> for hosting. I was previously using the free <a href="http://www.heroku.com/" title="Heroku">Heroku</a> hosting, which I liked very much. The DNS was a bit tricky to set up, but once it got configured, it was smooth. I was able to get a one second load time for the archetyp.al index. It&#8217;s all static files, but I was still happy with Heroku, especially for free. However, I&#8217;ve been diving much deeper into web development lately, and I&#8217;ve decided I need a larger base of operations on the web, and Digital Ocean was at the top of my short list of candidates (along with dreamhost and linode). The SSD&#8217;s on every machine is what finally sold me.</p>
+<p>I&#8217;ve been working on a rails project lately, and I need a dev machine on the cloud for testing purposes. So I found myself needing to set up a rails environment on my new Digital Ocean instance. I naturally went with my friend <a href="http://excid3.com/" title="excid3">chris&#8217;s</a> excellent blog on <a href="http://excid3.com/blog/setting-up-rails-on-ubuntu-12-10-quantal-quetzal-with-ruby-node-js-nginx-passenger-and-mysql-or-postgres/#.UUqZKXGGggR" title="excid3 on rails setup">setting up rails for Ubuntu 12.10 with NginX, etc</a>. I decided to go with MySQL instead of postgres.</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2013/03/21/bad-mysql-install-error-2002-cannot-connect-with-local-server/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2013/03/06/gypsies-and-jet-setters-bruce-sterling-at-2006-sxsw/">Gypsies and Jet-setters: Bruce Sterling at 2006 SXSW</a></h1>
+<p class="meta">
+<time datetime="2013-03-06T00:04:00-06:00" pubdate data-updated="true">Mar 6<span>th</span>, 2013</time>
+</p>
+</header>
+<div class="entry-content"><p>This is the first Bruce Sterling talk that I encountered. Now I&#8217;m an inveterate Sterlingite, but at the time, 2006, I had only barely crossed intellectual paths with Sterling. I downloaded it with some long dead, precambrian cousin of google reader that lived in the swamps and estuaries of windows computers and survived by allowing the user to view RSS feeds on his desktop. Then pushed it to my equally antediluvian, single purpose device, an Archos mp3 player. I listened to this talk many times before the Archos died off. I thought this audio was lost to the bit bucket of history, until one day&#8230; <a href="http://archive.org/" title="archive dot org">archive.org</a>. These people are the new Library of Alexandria, with podcasts instead of papyrus.</p>
+<p><a href="http://archive.org/details/BruceSterlingSxswKeynoteSpeechTheStateOfTheWorld" title="Bruce Sterling Sxsw Keynote, 2006 at archive.org">The full mp3 is available here.</a></p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2013/03/06/gypsies-and-jet-setters-bruce-sterling-at-2006-sxsw/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2013/02/24/a-mental-steam-shovel-part-two-the-algorithm/">A Mental Steam Shovel Part Two: The Algorithm</a></h1>
+<p class="meta">
+<time datetime="2013-02-24T22:56:00-06:00" pubdate data-updated="true">Feb 24<span>th</span>, 2013</time>
+</p>
+</header>
+<div class="entry-content"><p>In the <a href="http://archetyp.al/blog/2013/02/14/a-mental-steam-shovel/" title="A Mental Steam Shovel">first article</a> of this series, I introduced the four in a row game concept and linked to my code for an AI to play it. I will now set about explaining how I did this.</p>
+<p>Algorithms make/help make an increasing number of decisions. How to get from <a href="http://en.wikipedia.org/wiki/Shortest_path_problem" title="shortest path">one place to another</a>, who to <a href="http://blog.ted.com/2013/02/13/a-look-at-okcupids-algorithm-getting-personal-with-ted-ed-for-valentines-day/" title="okcupid algorithm">go on a date</a> with, which <a href="http://en.wikipedia.org/wiki/Netflix_Prize" title="netflix">movie to watch</a> next, even the rapid on/off patterns of <a href="http://www.docstoc.com/docs/47562161/Fuzzy-Logic-and-Anti-Lock-Braking-Systems" title="anti-lock brakes">anti-lock brakes</a>.</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2013/02/24/a-mental-steam-shovel-part-two-the-algorithm/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2013/02/14/a-mental-steam-shovel/">A Mental Steam Shovel</a></h1>
+<p class="meta">
+<time datetime="2013-02-14T23:41:00-06:00" pubdate data-updated="true">Feb 14<span>th</span>, 2013</time>
+</p>
+</header>
+<div class="entry-content"><p>A month ago I was hanging out with my friend <a href="http://excid3.com" title="excid3.com">Chris</a>. We were having our weekly meetup, talking about our approach to our work, recent experiences, and just enjoying our <a href="http://www.thecivillifebrewingcompany.com/TheCivilLife/Welcome.html" title="civil life brewing company">surroundings</a>. I noticed a connect four game sitting in the corner, on a dark wooden ledge. The old, disjoint of additive and subtractive primary colors, blue and yellow plastic version of the game would have done the trick, but this was even better. It was a wooden version of the board. There were two wooden dowels, each half the width of the board, inserted just beneath the bottom row, which held the pieces in the board. When you draw them out, one from each side, the game is reset and the pieces fall to the bottom of the game board.</p>
+<p>“I&#8217;m sure there&#8217;s some simple heuristics to this I&#8217;ve long since forgotten.”</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2013/02/14/a-mental-steam-shovel/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2012/12/02/textruder/">Textruder</a></h1>
+<p class="meta">
+<time datetime="2012-12-02T20:04:00-06:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2012</time>
+</p>
+</header>
+<div class="entry-content"><p><a href="https://github.com/arrogantrobot/textruder" title="textruder github">Textruder</a> is the next installment in a long line of <a href="http://archetyp.al/cellular-automata-rule-explorer" title="cellular automata rule explorer">one-dimensional cellular automata implementations</a> on various platforms and various media. This adventure begins like so many, on the command line. The inspiration for this project came from reading one of <a href="http://www.stephenwolfram.com/publications/articles/ca/83-cellular/" title="wolfram 1983">Stephen Wolfram&#8217;s papers on cellular automata</a>. The original output of the programs testing the concepts of cellular automata was not graphical in the sense of directly mapping each cell to a pixel or block of pixels. Instead, they simply used the command line to emulate this behavior, printing out a new line for each iteration of the row of cells, with an &#8220;*&#8221; character representing the on cells and a space for the off cells.</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2012/12/02/textruder/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2012/09/09/automatic-mechanical-self-reproduction/">Automatic Mechanical Self Reproduction</a></h1>
+<p class="meta">
+<time datetime="2012-09-09T22:54:00-05:00" pubdate data-updated="true">Sep 9<span>th</span>, 2012</time>
+</p>
+</header>
+<div class="entry-content"><p>While reading <a href="http://www.amazon.com/gp/product/0679743898/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0679743898&amp;linkCode=as2&amp;tag=archetypal-20" title="Artificial Life">Artificial Life: A Report From the Frontier Where Computers Meet Biology</a> by Steven Levy, I came across a reference to self-reproducing structures built by <a href="http://en.wikipedia.org/wiki/Lionel_Penrose" title="Lionel Penrose">Lionel</a> and <a href="http://en.wikipedia.org/wiki/Roger_Penrose" title="Roger Penrose">Roger Penrose</a>. These structures were small plywood cutouts fitted with various shapes and levers which allowed them to link up, or not, when coming into contact with another block of the same make. See the following two part short film about this project:</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2012/09/09/automatic-mechanical-self-reproduction/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2012/08/19/iterated-prisoners-dilemma/">Iterated Prisoner&#8217;s Dilemma</a></h1>
+<p class="meta">
+<time datetime="2012-08-19T17:55:00-05:00" pubdate data-updated="true">Aug 19<span>th</span>, 2012</time>
+</p>
+</header>
+<div class="entry-content"><p>I recently decided to re-read a book I had read long ago, in order that I might filter it through the knowledge and experience I&#8217;ve accrued since I first read it. It occurred to me that so much of what I have done in the intervening years has an impact on my understanding of it, that I could scarcely hold a conversation with my past self on the topic. The book in question is <a href="http://www.amazon.com/gp/product/B000SEHIG2/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=B000SEHIG2&amp;linkCode=as2&amp;tag=archetypal-20" title="The Selfish Gene, by Richard Dawkins">The Selfish Gene</a> by <a href="http://en.wikipedia.org/wiki/Richard_Dawkins" title="Richard Dawkins">Richard Dawkins</a>.</p>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2012/08/19/iterated-prisoners-dilemma/">Read on &rarr;</a>
+</footer>
+</article>
+<article>
+<header>
+<h1 class="entry-title"><a href="/blog/2012/08/13/convert-your-23andme-raw-data-into-vcf-format/">Convert Your 23andme Raw Data Into VCF Format</a></h1>
+<p class="meta">
+<time datetime="2012-08-13T18:36:00-05:00" pubdate data-updated="true">Aug 13<span>th</span>, 2012</time>
+</p>
+</header>
+<div class="entry-content"><p>A week ago I received my results from <a href="http://www.23andme.com" title="23andme.com">23andme.com</a>. Aside from the obvious points of interest, health risks, heritage, neanderthal composition, etc., I was also interested in getting my own data in raw format. While 23andme does provide a way to download your &#8220;raw&#8221; data, they are not really providing raw data. One cannot access the image data from the microarray sequencer that they used. What they do provide is formatted as follows:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># rsid  chromosome  position    genotype
+</span><span class='line'>rs4477212   1   82154   TT
+</span><span class='line'>rs3094315   1   752566  TC
+</span><span class='line'>rs3131972   1   752721  AA
+</span><span class='line'>rs12124819  1   776546  AC
+</span><span class='line'>rs11240777  1   798959  GA
+</span><span class='line'>rs6681049   1   800007  CC</span></code></pre></td></tr></table></div></figure>
+</div>
+<footer>
+<a rel="full-article" href="/blog/2012/08/13/convert-your-23andme-raw-data-into-vcf-format/">Read on &rarr;</a>
+</footer>
+</article>
+<div class="pagination">
+<a class="prev" href="/blog/page/2/">&larr; Older</a>
+<a href="/blog/archives">Blog Archives</a>
+</div>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="/blog/2014/05/05/biowordcount-a-brief-introduction-to-hadoop-for-the-bioinformatics-practicioner/">BioWordCount: A Brief Introduction to Hadoop For The Bioinformatics Practitioner</a>
+</li>
+<li class="post">
+<a href="/blog/2013/11/26/fda-23andme-and-innovation/">FDA, 23andme, and Innovation</a>
+</li>
+<li class="post">
+<a href="/blog/2013/03/21/bad-mysql-install-error-2002-cannot-connect-with-local-server/">Digital Ocean hosting: error 2002 can&#8217;t connect with local server, and a solution</a>
+</li>
+<li class="post">
+<a href="/blog/2013/03/06/gypsies-and-jet-setters-bruce-sterling-at-2006-sxsw/">Gypsies and Jet-setters: Bruce Sterling at 2006 SXSW</a>
+</li>
+<li class="post">
+<a href="/blog/2013/02/24/a-mental-steam-shovel-part-two-the-algorithm/">A mental steam shovel part two: the algorithm</a>
+</li>
+</ul>
+</section>
+<section>
+<h1>Ƀitcoin</h1>
+<p><font size="2">1GCFdsKHqwPsJfWNZqZLjY7ACj3yT4w4EQ</font></p>
+<h1>Ripple</h1>
+<p><font size="2">rUFBrxWU3QnVBz5wJuumn4JroRUfKdgiAC</font></p>
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo"><p>
+Copyright &copy; 2014 - Rob Long -
+<span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+</footer>
+<script type="text/javascript">
+      var disqus_shortname = 'archetypal';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+<script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+<script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+</body>
+</html>
+

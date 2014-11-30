@@ -1,0 +1,593 @@
+http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/
+HTTP/1.1 200 OK
+Date: Tue, 22 Jul 2014 10:22:03 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Wed, 22-Jul-2015 10:22:03 GMT; path=/
+Set-Cookie: lw_user_sid=522c214fb8e5d2bcc633eacbf42994c6; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 11155
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-22T12:22:03Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Automatically mounting and unmounting Samba/Windows shares with CIFS - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/" class="entry-title">Automatically mounting and unmounting Samba/Windows shares with CIFS</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p><strong>Last updated on 2007-12-03@23:55.</strong> At my work the employees are in the fortunate position that they are free to choose whatever OS they want to work with. At the moment the default is still Windows XP but you are free to wipe the drive and install whatever you feel&mdash;as long as you can do your job properly. And there is work underway to roll our own distribution for internal use. You're even free to bring in your Mac (but we won't supply you with one). The only thing that's banned (unofficially) so far is Windows Vista. Server-side we run a mixture of Linux and Windows, and the thend is to replace broken Windows machines by Linux machines if possible. In such a heterogeneous environment it makes sense to share our files through Samba. It's one of the few protocols that any OS can speak.</p>
+
+<p>If you're running Windows Server 2003 then you can't use the smbfs driver that most Linux distributions ship by default. Sorry, no "Places &raquo; Connect to server" for you GNOME folk. You'll need to use the CIFS filesystem driver and you'll need to edit /etc/fstab. Adding the required fstab entries is actually quite easy as I will show below, but on Debian and it's derivative distributions you get a nasty error when you subsequently try to reboot or shutdown your machine, which hangs for about 30 seconds waiting for a timeout:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">CIFS VFS: No Response for Cmd &lt;number&gt; mid &lt;number&gt;</div></li>
+</ol></div></div>
+
+<p>It took me quite a bit of time to properly solve that one, but in the end it turned out to be quite simple. I will show you later in the article, but let's start mounting first.</p>
+
+<h4>Mounting Samba shares with CIFS</h4>
+
+<p>Editing your /etc/fstab file is the easiest way to automatically mount your Samba shares, even if you use a laptop and travel around from network to network. Here is how your fstab entry should look (other filesystems excluded):</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># /etc/fstab: static file system information.</div></li>
+<li class="li1"><div class="de1">#</div></li>
+<li class="li1"><div class="de1"># &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;</div></li>
+<li class="li1"><div class="de1">//&lt;server&gt;/&lt;share&gt; &lt;mount point&gt; cifs rw,_netdev,user=&lt;username&gt;,password=&lt;password&gt;,uid=&lt;uid&gt;,gid=&lt;gid&gt; 0 0</div></li>
+</ol></div></div>
+
+<p>Most of the options are pretty straightforward. If you are mounting shares from a Windows server, make sure that you specify the username as <tt>DOMAIN/username</tt>, where <tt>DOMAIN</tt> is your Windows domain/workgroup. For <tt>&lt;uid&gt;</tt> and <tt>&lt;gid&gt;</tt> you should specify the userid/groupid that the share should be mounted as. You can lookup the numeric IDs in <tt>/etc/passwd</tt> and <tt>/etc/group</tt>.</p>
+
+<p>Also notice that I have specified the <tt>_netdev</tt> option. CIFS doesn't know about this option and will throw a warning about it, but you should leave it in. This option ensures that the drives won't get mounted if you have no network or if you are on the wrong network. It also makes sure your shares get mounted/unmounted when you switch networks. That's because Debian's if* scripts are triggered when your network configuration changes, and they watch all the filesystems with the _netdev option and do the right thing automagically.</p>
+
+<h4>Getting rid of the &ldquo;CIFS VFS: No Response&rdquo; errors</h4>
+
+<p>If you have your Samba shares mounted through fstab like described above, you have probably come across this error when you reboot or shutdown, accompanied by a 30 second pause, waiting for a timeout:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">CIFS VFS: Server not responding</div></li>
+<li class="li1"><div class="de1">CIFS VFS: No response for cmd &amp;lt;number&amp;gt; mid &amp;lt;number&amp;gt;</div></li>
+</ol></div></div>
+
+<p>This problem has been bugging me for quite a while before I dug into it. As it turns out, cifs runs via a separate daemon process called cifsd. By the time that the shutdown/reboot init scripts start unmounting network filesystems, the daemon has already been killed by the system. And in there is a nice catch-22: All processes must be killed before you start unmounting volumes and with CIFS, you need to unmount first, then kill the process. And there was no way that I could create an exception in the "Shutting down all processes..." phase for the processes required by CIFS.</p>
+
+<p>To solve it I wrote a little script cobbled together from bits and pieces of the <tt>umountnfs.sh</tt> and <tt>sendsigs</tt> init scripts. Basically it makes a list of all your mounted CIFS filesystems, shuts down and subsequently kills all processes that are still using those filesystems, and finally unmounts the CIFS filesystems. Save it to <tt>/etc/init.d/umountcifs</tt> and make it executable. Then symlink to it from <tt>/etc/rc0.d</tt> and <tt>/etc/rc6.d</tt>. You should ensure that umountcifs runs before the K20* init scripts fire. If it runs at K20 or later, you will still get the error. Personally I symlinked from <tt>/etc/rc(0|6).d/K19umountcifs</tt>.</p>
+
+<p><strong>Updated on 2007-12-03@23:55.</strong> Neill Hogarth adds that for (K)ubuntu 7.10 the script should be symlinked as K12umountcifs. K19 seems to work on (K)ubuntu 7.04 and lower, and on Debian Etch.</p>
+
+<p>To conclude, here is the script I built (or <a href="/files/examples/umountcifs">download it here</a>):</p>
+
+<div class="geshi-wrap"><div class="bash geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"><span class="co0">#! /bin/sh</span></div></li>
+<li class="li1"><div class="de1"><span class="co0">### BEGIN INIT INFO</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Provides: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;umountcifs</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Required-Start:</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Required-Stop: &nbsp; &nbsp; umountcifs</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Should-Stop:</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Default-Start:</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Default-Stop: &nbsp; &nbsp; &nbsp;0 6</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Short-Description: Unmount all cifs filesystems and terminate all processes using them</span></div></li>
+<li class="li1"><div class="de1"><span class="co0"># Description:</span></div></li>
+<li class="li1"><div class="de1"><span class="co0">### END INIT INFO</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="re2">PATH</span>=<span class="sy0">/</span>sbin:<span class="sy0">/</span>usr<span class="sy0">/</span>sbin:<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin</div></li>
+<li class="li1"><div class="de1"><span class="re2">KERNEL</span>=<span class="st0">&quot;<span class="es4">$(uname -s)</span>&quot;</span></div></li>
+<li class="li1"><div class="de1"><span class="re2">RELEASE</span>=<span class="st0">&quot;<span class="es4">$(uname -r)</span>&quot;</span></div></li>
+<li class="li1"><div class="de1">. <span class="sy0">/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>vars.sh</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">. <span class="sy0">/</span>lib<span class="sy0">/</span>lsb<span class="sy0">/</span>init-functions</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="kw1">case</span> <span class="st0">&quot;<span class="es3">${KERNEL}</span>:<span class="es3">${RELEASE}</span>&quot;</span> <span class="kw1">in</span></div></li>
+<li class="li1"><div class="de1">&nbsp; Linux:<span class="br0">&#91;</span>01<span class="br0">&#93;</span>.<span class="sy0">*|</span>Linux:2.<span class="br0">&#91;</span>01<span class="br0">&#93;</span>.<span class="sy0">*</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">FLAGS</span>=<span class="st0">&quot;&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; Linux:2.<span class="br0">&#91;</span><span class="nu0">23</span><span class="br0">&#93;</span>.<span class="sy0">*|</span>Linux:2.4.?<span class="sy0">|</span>Linux:2.4.?-<span class="sy0">*|</span>Linux:2.4.10<span class="sy0">|</span>Linux:2.4.10-<span class="sy0">*</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">FLAGS</span>=<span class="st0">&quot;-f&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy0">*</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">FLAGS</span>=<span class="st0">&quot;-f -l&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">esac</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">do_stop <span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co0">#</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># Make list of points to unmount in reverse order of their creation</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co0">#</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">exec</span> <span class="nu0">9</span><span class="sy0">&lt;&amp;</span><span class="nu0">0</span> <span class="sy0">&lt;/</span>etc<span class="sy0">/</span>mtab</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">DIRS</span>=<span class="st0">&quot;&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">while</span> <span class="kw2">read</span> DEV MTPT FSTYPE OPTS REST</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">do</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">case</span> <span class="st0">&quot;<span class="es2">$MTPT</span>&quot;</span> <span class="kw1">in</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">/|/</span>proc<span class="sy0">|/</span>dev<span class="sy0">|/</span>dev<span class="sy0">/</span>pts<span class="sy0">|/</span>dev<span class="sy0">/</span>shm<span class="sy0">|/</span>proc<span class="sy0">/*|/</span>sys<span class="sy0">|/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>rw<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">continue</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">/</span>var<span class="sy0">/</span>run<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="kw2">yes</span> = <span class="st0">&quot;<span class="es2">$RAMRUN</span>&quot;</span> <span class="br0">&#93;</span> ; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">continue</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">/</span>var<span class="sy0">/</span>lock<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="kw2">yes</span> = <span class="st0">&quot;<span class="es2">$RAMLOCK</span>&quot;</span> <span class="br0">&#93;</span> ; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">continue</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">esac</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">case</span> <span class="st0">&quot;<span class="es2">$FSTYPE</span>&quot;</span> <span class="kw1">in</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cifs<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">DIRS</span>=<span class="st0">&quot;<span class="es2">$MTPT</span> <span class="es2">$DIRS</span>&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">esac</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">done</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">exec</span> <span class="nu0">0</span><span class="sy0">&lt;&amp;</span><span class="nu0">9</span> <span class="nu0">9</span><span class="sy0">&lt;&amp;</span>-</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$DIRS</span>&quot;</span> <span class="br0">&#93;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># Kill all processes using the cifs volumes</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">PROCESSES</span>=<span class="st0">&quot;&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">for</span> DIR <span class="kw1">in</span> <span class="re1">$DIRS</span>; <span class="kw1">do</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">PROCESS</span>=<span class="sy0">`</span><span class="kw2">fuser</span> <span class="re5">-m</span> <span class="re1">$DIR</span><span class="sy0">`</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$PROCESS</span>&quot;</span> <span class="br0">&#93;</span>; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">PROCESSES</span>=<span class="st0">&quot;<span class="es2">$PROCESS</span> <span class="es2">$PROCESSES</span>&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">done</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$PROCESSES</span>&quot;</span> <span class="br0">&#93;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">then</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; log_action_begin_msg <span class="st0">&quot;Asking all processes using cifs filesystems to terminate&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">echo</span> <span class="st0">&quot;kill -15 <span class="es2">$PROCESSES</span>&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; log_action_end_msg <span class="nu0">0</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">for</span> <span class="kw2">seq</span> <span class="kw1">in</span> <span class="nu0">1</span> <span class="nu0">2</span> <span class="nu0">3</span> <span class="nu0">4</span> <span class="nu0">5</span> ; <span class="kw1">do</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># use SIGCONT/signal 18 to check if there are</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># processes left. &nbsp;No need to check the exit code</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># value, because either killall5 work and it make</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># sense to wait for processes to die, or it fail and</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># there is nothing to wait for.</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">echo</span> <span class="st0">&quot;kill -18 <span class="es2">$PROCESSES</span> &gt; /dev/null 2&gt;&amp;1&quot;</span> <span class="sy0">||</span> <span class="kw3">break</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw2">sleep</span> <span class="nu0">1</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">done</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; log_action_begin_msg <span class="st0">&quot;Killing all remaining processes using cifs filesystems&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">echo</span> <span class="st0">&quot;kill -9 <span class="es2">$PROCESSES</span> &gt; /dev/null 2&gt;&amp;1&quot;</span> <span class="co0"># SIGKILL</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; log_action_end_msg <span class="nu0">0</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># Unmount all cifs filesystems</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$VERBOSE</span>&quot;</span> = no <span class="br0">&#93;</span> <span class="sy0">||</span> log_action_begin_msg <span class="st0">&quot;Unmounting remote and non-toplevel cifs filesystems&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw2">umount</span> <span class="re1">$FLAGS</span> <span class="re1">$DIRS</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="re2">ES</span>=<span class="re4">$?</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$VERBOSE</span>&quot;</span> = no <span class="br0">&#93;</span> <span class="sy0">||</span> log_action_end_msg <span class="re1">$ES</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">fi</span></div></li>
+<li class="li1"><div class="de1"><span class="br0">&#125;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="kw1">case</span> <span class="st0">&quot;$1&quot;</span> <span class="kw1">in</span></div></li>
+<li class="li1"><div class="de1">&nbsp; start<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co0"># No-op</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; restart<span class="sy0">|</span>reload<span class="sy0">|</span>force-reload<span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">echo</span> <span class="st0">&quot;Error: argument '$1' not supported&quot;</span> <span class="sy0">&gt;&amp;</span><span class="nu0">2</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">exit</span> <span class="nu0">3</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; stop<span class="sy0">|</span><span class="st0">&quot;&quot;</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; do_stop</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sy0">*</span><span class="br0">&#41;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">echo</span> <span class="st0">&quot;Usage: umountcifs [start|stop]&quot;</span> <span class="sy0">&gt;&amp;</span><span class="nu0">2</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">exit</span> <span class="nu0">3</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">;;</span></div></li>
+<li class="li1"><div class="de1"><span class="kw1">esac</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">:</div></li>
+</ol></div></div></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2007-07-24T00:22:00Z">2007-07-24@00:22</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/samba" rel="tag">samba</a>
+															&nbsp;<a href="http://www.jejik.com/tag/share" rel="tag">share</a>
+															&nbsp;<a href="http://www.jejik.com/tag/microsoft" rel="tag">microsoft</a>
+															&nbsp;<a href="http://www.jejik.com/tag/windows" rel="tag">windows</a>
+															&nbsp;<a href="http://www.jejik.com/tag/cifs" rel="tag">cifs</a>
+															&nbsp;<a href="http://www.jejik.com/tag/smbfs" rel="tag">smbfs</a>
+															&nbsp;<a href="http://www.jejik.com/tag/debian" rel="tag">debian</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c1" class="number" id="c1">#1</a>
+																			<a href="http://ahrenstorff.us" class="name">rodd ahrenstorff<small> (http://ahrenstorff.us)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2007-07-27@20:27
+																																			</div>
+																I run numerous W2k3 (including SP1 & SP2) servers and have no problem connecting to them using Ubuntu 7.04 with Gnome and 'Places > Connect to Server'.  Strange you cannot...
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c2" class="number" id="c2">#2</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2007-11-06@06:58
+																																			</div>
+																Neill Hogarth wrote (via e-mail):<br />
+<blockquote>I get exactly the message that you describe on unmounting. I understand the theory of your solution for mounting but am confused by:
+<blockquote>"and then symlink to it from /etc/rc0.d and /etc/rc6.d. You should ensure that umountcifs runs before the K20* init scripts fire. If it runs at K20 or later, you will still get the error. personally I symlinked from /etc/rc(0|6).d/K19umountcifs"</blockquote><br />
+Could I possibly ask for a slightly easier explanation of that part. I understand that your description is probably as clear as can be for a Linux Guru but I am not yet at that stage.<br />
+</blockquote><br />
+<br />
+There's quite a long thread on the Ubuntu forums that deals with this.<br />
+My solution is in there, alongside someone else's solution:<br />
+<br />
+<a href="http://ubuntuforums.org/showthread.php?t=293513" rel="nofollow">http://ubuntuforums.org/showthread.php?t=293513</a><br />
+<br />
+To explain the bit about the piece you quoted, you need to understand<br />
+runlevels first. Google for it. There are plenty of good resources on<br />
+it. The bit that matters is this: When you shut down your system, all<br />
+the scripts in /etc/rc0.d are run. First all the scripts named Sxx<br />
+numbers (ascending), then all the scripts with Kxx (also in ascending<br />
+order). When you reboot, all the scripts in /etc/rc6.d instead of<br />
+/etc/rc0.d are run. Those scripts together form the shutdown and reboor<br />
+sequence of your machine.<br />
+<br />
+What you need to do is put my script in those sequences. There best way<br />
+is to put my script in /etc/init.d and then create links to it from the<br />
+rc0.d and rc6.d directories. You do that with:<br />
+<br />
+<pre>
+ln -s /etc/init.d/umountcifs /etc/rc0.d/K19umountcifs
+ln -s /etc/init.d/umountcifs /etc/rc6.d/K19umountcifs
+</pre><br />
+<br />
+This means that the script will be executed after K18xxx and before<br />
+K20xxx, which is the right location for Debian Etch and Ubuntu Feisty.<br />
+From the comments in the Ubuntu forum I understand that the shutdown and<br />
+reboot sequence changed a bit for Gutsy, so if you use Gutsy then the<br />
+script needs to run sooner. For example, at K12 instead of K19.<br />
+<br />
+Just experiment. Create the links and shutdown/reboot. If you still get<br />
+the error, the script needs to run sooner. So remove the links (with<br />
+"rm") and recreate them with a lower K number. Then try again.<br />
+<br />
+Hope this helps!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c3" class="number" id="c3">#3</a>
+																			<a href="http://www.anibalnet.nl" class="name">Anibal<small> (http://www.anibalnet.nl)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-26@14:37
+																																			</div>
+																Thaks for the solution, i wonder why ubuntu dont fix this problem by default ? is anoying & is a ubuntu related bug.. on my other linux boxes running slackware, mandriva, centos & red hat this doesnt happend. when i read on the forum seems to be this exist since ubuntu 7.x <br />
+<br />
+Cheers <br />
+Anibal
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c4" class="number" id="c4">#4</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-12-27@02:08
+																																			</div>
+																@Anibal: The bug actually originates in Debian. See <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=431966" rel="nofollow">Debian Bug 431966</a>. Short story is that the maintainers of init-scripts blame smbfs and vice versa, so nobody does anything. I suggest you add more comments to that thread.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c5" class="number" id="c5">#5</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-26@12:07
+																																			</div>
+																Newbie here<br />
+<br />
+I am a bit thick, I have tried all permutations of the cifs smbfs to try and mount a windows shared folder.  The folder contains video I want to stream to my linux m/c's.<br />
+<br />
+Here are the lines I have added to /etc/fstab:<br />
+//192.168.2.5/Public /media/public smbfs guest 0 0<br />
+This mounts my NAS drive no problem.<br />
+<br />
+so I tried similar to mount my windows shared drive called 'videos', domain is workgroup, pc is called 'apwdesktoppc', my windows user name is 'Anthony Ward'<br />
+<br />
+//192.168.2.2/Videos /media/videos cifs rw,WORKGROUP,APWDESKTOPPC=Anthony Ward,password=********<br />
+<br />
+I get an error message:<br />
+mount error 22 = Invalid argument<br />
+Refer to the mount.cifs(8) manual page (e.g.man mount.cifs)<br />
+<br />
+Any suggestions as to what I am doing wrong, please?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c6" class="number" id="c6">#6</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-03-26@13:56
+																																			</div>
+																I think it's choking on the space in your username. Try wrapping your username in double quotes or escaping the space, e.g. one of these:<br />
+<br />
+//192.168.2.2/Videos /media/videos cifs rw,WORKGROUP,APWDESKTOPPC="Anthony Ward",password=********<br />
+//192.168.2.2/Videos /media/videos cifs rw,WORKGROUP,"APWDESKTOPPC=Anthony Ward",password=********<br />
+//192.168.2.2/Videos /media/videos cifs rw,WORKGROUP,APWDESKTOPPC=Anthony\ Ward,password=********
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c7" class="number" id="c7">#7</a>
+																			Randy Klein
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-06-06@15:08
+																																			</div>
+																thanks for this fix, that hang up was really bothering me.  BTW, it worked on Jaunty just fine.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c8" class="number" id="c8">#8</a>
+																			<a href="http://doepner.net/" class="name">Oliver Doepner<small> (http://doepner.net/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-09@01:51
+																																			</div>
+																You can set the symlinks for runlevel 0 and 6 like this  (include the "."):<br />
+<br />
+sudo update-rc.d umountcifs stop 19 0 6 .<br />
+<br />
+ Adding system startup for /etc/init.d/umountcifs ...<br />
+   /etc/rc0.d/K19umountcifs -> ../init.d/umountcifs<br />
+   /etc/rc6.d/K19umountcifs -> ../init.d/umountcifs
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c9" class="number" id="c9">#9</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-09@11:07
+																																			</div>
+																Thanks Oliver. By the way, note that the manpage for update-rc.d states that it is a tool for packagers and not for system administrators. They recommend against using update-rc.d directly but to use tools like 'sysv-rc-conf' or 'bum' instead.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c10" class="number" id="c10">#10</a>
+																			<a href="http://doepner.net/" class="name">Oliver Doepner<small> (http://doepner.net/)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-11@04:20
+																																			</div>
+																I want to thank you for making the script available. It solved the problem for me on Debian Lenny.<br />
+<br />
+But I had to set the numeric priority to 12 (i.e. K12umountcifs) so that it runs before K14network-manager.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c11" class="number" id="c11">#11</a>
+																			<a href="http://jinn.mine.nu" class="name">j1nn<small> (http://jinn.mine.nu)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-07-22@12:51
+																																			</div>
+																thanks a lot! it simply _works_ =]
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c12" class="number" id="c12">#12</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2010-07-18@23:17
+																																			</div>
+																another area where ubuntu clearly sucks.  this should be a check box somewhere in networking.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#c13" class="number" id="c13">#13</a>
+																			JT
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2012-07-17@01:26
+																																			</div>
+																This thread looks long dead but what the heck. I'm usings CIFS to mount a Win share in RHEL 4. I have the same fstab entry you show, mounting the share is fine I have no issues there. My problem is that the RHEL box is up 24/7 but the Win box is shut down and rebooted frequently. When the Win box is rebooted the mount is lost and does not reconnect automatically. To fix this I made a script to re-mount the share and I run it out of inittab. This causes CIFS VFS error messages to show on the main console whenever the Win box is down, I've have the script and the inittab entry setup to redirect stdout and stderr output to /dev/null but I'm still getting errors on the console screen.
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2007/07/automatically_mounting_and_unmounting_samba_windows_shares_with_cifs/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="3e063e14a23bd451836b169a8933bc10" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2007%2F07%2Fautomatically_mounting_and_unmounting_samba_windows_shares_with_cifs%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://www.malcam.me.uk/blog/?p=34">www.malcam.me.uk/blog/?p=34</a></li>
+															<li><a href="http://thecrane.wordpress.com/2009/08/02/more-fun-with-cifs-and-mounting/">thecrane.wordpress.com/2009...</a></li>
+															<li><a href="http://www.pattoncentral.org/?p=82">www.pattoncentral.org/?p=82</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

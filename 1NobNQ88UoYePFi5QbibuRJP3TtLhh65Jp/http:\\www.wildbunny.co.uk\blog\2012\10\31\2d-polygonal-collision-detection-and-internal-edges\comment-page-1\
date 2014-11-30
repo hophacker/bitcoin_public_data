@@ -1,0 +1,815 @@
+http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/
+HTTP/1.0 200 OK
+Date: Wed, 23 Jul 2014 20:06:53 GMT
+Server: Apache/2.2.15 (CentOS)
+X-Powered-By: PHP/5.3.3
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Set-Cookie: PHPSESSID=66fhd9iucklueheeocp7f9po25; path=/
+X-Pingback: http://www.wildbunny.co.uk/blog/xmlrpc.php
+Link: <http://www.wildbunny.co.uk/blog/?p=1778>; rel=shortlink
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 17894
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<title>2D polygonal collision-detection and internal edges | Wildbunny blog</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.wildbunny.co.uk/blog/wp-content/themes/twentyten/style.css?v=0" />
+<link rel="pingback" href="http://www.wildbunny.co.uk/blog/xmlrpc.php" />
+
+<!-- BEGIN Metadata added by Add-Meta-Tags WordPress plugin
+Get the plugin at: http://www.g-loaded.eu/2006/01/05/add-meta-tags-wordpress-plugin/ -->
+<meta name="description" content="Hi and welcome back to my blog! I wanted to share something I've recently discovered about the heinous problem of internal edges in 2D polygonal collision detection. It's not a full-solution, but maybe it will give some other programmers an idea or two." />
+<meta name="keywords" content="collision detection, geometry, polygons, technical, collision detection, game developement, physics, simulation" />
+<meta name="blogcatalog" content="9BC10671562" />
+<div id="ScribCode634274886"></div>
+<!-- END Metadata added by Add-Meta-Tags WordPress plugin -->
+
+<link rel="alternate" type="application/rss+xml" title="Wildbunny blog &raquo; Feed" href="http://www.wildbunny.co.uk/blog/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Wildbunny blog &raquo; Comments Feed" href="http://www.wildbunny.co.uk/blog/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Wildbunny blog &raquo; 2D polygonal collision-detection and internal edges Comments Feed" href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/feed/" />
+<link rel='stylesheet' id='bm-author-donations-style-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/bitmate-author-donations/style.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='cntctfrm_stylesheet-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/contact-form-plugin/css/style.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='cookielawinfo-style-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/cookie-law-info/css/cli-style.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='cookielawinfo-table-style-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/cookie-law-info/css/cli-tables.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='oikCSS-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/oik/oik.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='bwlinkCSS-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/oik/bwlink.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='wp125style-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/wp125/wp125.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='thsp-sticky-header-plugin-styles-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/sticky-header/css/public.css?ver=1.0.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel='stylesheet' id='featured-post-css-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/featured-post.css?ver=3.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='ws-plugin--s2member-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/s2member/s2member-o.php?ws_plugin__s2member_css=1&#038;qcABC=1&#038;ver=140105-140105-2848662513' type='text/css' media='all' />
+<link rel='stylesheet' id='mr_social_sharing-css'  href='http://www.wildbunny.co.uk/blog/wp-content/plugins/social-sharing-toolkit/style.css?ver=3.8.2' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/swfobj/swfobject.js?ver=2.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-includes/js/comment-reply.min.js?ver=3.8.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-includes/js/jquery/jquery.js?ver=1.10.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/cookie-law-info/js/jquery.cookie.js?ver=3.8.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/cookie-law-info/js/cookielawinfo.js?ver=3.8.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var StickyHeaderParams = {"show_at":"200","hide_if_narrower":"600"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/sticky-header/js/public.js?ver=1.0.0'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/social-sharing-toolkit/script.js?ver=3.8.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/social-sharing-toolkit/googleplus.js.php?lang=en_US&#038;ver=3.8.2'></script>
+<script type='text/javascript' src='http://apis.google.com/js/plusone.js?ver=3.8.2'></script>
+<script type='text/javascript' src='http://connect.facebook.net/en_US/all.js?ver=3.8.2#xfbml=1'></script>
+<script type='text/javascript' src='http://platform.twitter.com/widgets.js?ver=3.8.2'></script>
+<script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/google-analyticator/external-tracking.min.js?ver=6.2'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.wildbunny.co.uk/blog/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.wildbunny.co.uk/blog/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='How to make a multi-player game &#8211; part 1' href='http://www.wildbunny.co.uk/blog/2012/10/09/how-to-make-a-multi-player-game-part-1/' />
+<link rel='next' title='10 steps to becoming a better programmer' href='http://www.wildbunny.co.uk/blog/2012/11/01/10-steps-to-becoming-a-better-programmer/' />
+<meta name="generator" content="WordPress 3.8.2" />
+<link rel='canonical' href='http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comments' />
+<link rel='shortlink' href='http://www.wildbunny.co.uk/blog/?p=1778' />
+<script type="text/javascript" src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/js/bubble.js"></script>
+<link rel="stylesheet" type="text/css" href="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/css/style.css" />
+<style type="text/css">
+<!-- Silverlight WordPress Plugin -->
+#silverlightControlHost{height:100%;}
+</style>
+<!-- Protected by WP-SpamFree v2.1.1.2 :: JS BEGIN -->
+<script type="text/javascript" src="http://www.wildbunny.co.uk/blog/wp-content/plugins/wp-spamfree/js/wpsfv2-js.php"></script> 
+<!-- Protected by WP-SpamFree v2.1.1.2 :: JS END -->
+
+		<style type="text/css">
+			#thsp-sticky-header {
+				background-color: #181818;
+			}
+			#thsp-sticky-header,
+			#thsp-sticky-header a {
+				color: #f9f9f9 !important;
+			}
+											</style>
+	<style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #EAEAEA; }
+</style>
+<!-- Google Analytics Tracking by Google Analyticator 6.2: http://ronaldheft.com/code/analyticator/ -->
+<script type="text/javascript">window.google_analytics_uacct = "ca-pub-4897461488762721";</script>
+<script type="text/javascript">
+	var analyticsFileTypes = [''];
+	var analyticsEventTracking = 'enabled';
+</script>
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-16999711-1']);
+	_gaq.push(['_trackPageview']);
+	_gaq.push(['_trackPageLoadTime']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+</head>
+
+<body class="single single-post postid-1778 single-format-standard custom-background">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.wildbunny.co.uk/blog/" title="Wildbunny blog" rel="home">Wildbunny blog</a>
+					</span>
+				</div>
+				<div id="site-description">Developer knowledge centre</div>
+
+										<img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2011/02/bunnyWP1.gif" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+								<div class="menu-header"><ul id="menu-flowhub-header" class="menu"><li id="menu-item-272" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-272"><a href="/blog/">All articles</a></li>
+<li id="menu-item-1302" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1302"><a href="http://www.wildbunny.co.uk/blog/vector-maths-a-primer-for-games-programmers/">Vector maths</a></li>
+<li id="menu-item-319" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-319"><a href="http://www.wildbunny.co.uk/blog/contact-me/">Contact me</a></li>
+<li id="menu-item-2072" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2072"><a href="http://www.wildbunny.co.uk/blog/hire-me/">Hire me</a></li>
+<li id="menu-item-446" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-446"><a href="http://www.wildbunny.co.uk/blog/membership-sign-up-page/">Subscribe!</a></li>
+<li id="menu-item-466" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-466"><a href="http://www.wildbunny.co.uk/blog/welcome-to-our-members-area/">Members</a></li>
+<li id="menu-item-1183" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1183"><a href="/blog/buy-source-code">Buy source-code</a></li>
+<li id="menu-item-1694" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1694"><a href="http://www.wildbunny.co.uk/blog/privacy-policy/">Privacy policy</a></li>
+</ul></div>			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.wildbunny.co.uk/blog/2012/10/09/how-to-make-a-multi-player-game-part-1/" rel="prev"><span class="meta-nav">&larr;</span> How to make a multi-player game &#8211; part 1</a></div>
+					<div class="nav-next"><a href="http://www.wildbunny.co.uk/blog/2012/11/01/10-steps-to-becoming-a-better-programmer/" rel="next">10 steps to becoming a better programmer <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-1778" class="post-1778 post type-post status-publish format-standard hentry category-collision-detection-platform-game category-geometry category-polygons category-technical tag-collision-detection tag-game-developement tag-physics tag-simulation">
+					<h1 class="entry-title">2D polygonal collision-detection and internal edges</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" title="3:27 pm" rel="bookmark"><span class="entry-date">October 31, 2012</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="http://www.wildbunny.co.uk/blog/author/paulfirth/" title="View all posts by Paul Firth">Paul Firth</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<img width="150" height="47" src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure21-150x47.png" class="attachment-single-post-thumbnail wp-post-image" alt="Figure 2" />						
+				<!-- Social Sharing Toolkit v2.0.4 | http://www.marijnrongen.com/wordpress-plugins/social_sharing_toolkit/ -->
+				<div class="mr_social_sharing_wrapper"><span class="mr_social_sharing"><script type="text/javascript">
+							  reddit_url = "http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/";
+							  reddit_title = "2D polygonal collision-detection and internal edges";
+							</script>
+							<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script></span><span class="mr_social_sharing"><a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" data-count="horizontal" data-text="2D polygonal collision-detection and internal edges">Tweet</a></span><span class="mr_social_sharing"><iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=http%3A%2F%2Fwww.wildbunny.co.uk%2Fblog%2F2012%2F10%2F31%2F2d-polygonal-collision-detection-and-internal-edges%2F&amp;layout=button_count&amp;show_faces=false&amp;width=90px&amp;height=21px" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowTransparency="true"></iframe></span><span class="mr_social_sharing"><div id="fb-root"></div><fb:send href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" font=""></fb:send></span><span class="mr_social_sharing"><g:plusone size="medium" href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/"></g:plusone></span><span class="mr_social_sharing"><a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.wildbunny.co.uk%2Fblog%2F2012%2F10%2F31%2F2d-polygonal-collision-detection-and-internal-edges%2F&amp;title=2D+polygonal+collision-detection+and+internal+edges" target="_blank" class="mr_social_sharing_popup_link"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/social-sharing-toolkit/images/buttons/stumbleupon.png" alt="Submit to StumbleUpon" title="Submit to StumbleUpon"/></a></span></div><p>Hi and welcome back to my blog!</p>
+<p>I wanted to share something I&#8217;ve recently discovered about the heinous problem of internal edges in 2D polygonal collision detection. It&#8217;s not a full-solution, but maybe it will give some other programmers an idea or two. Food for thought!</p>
+<h2>What are internal edges?</h2>
+<p>In general, polygonal collision detection refers to convex polygons, because algorithms for detecting and resolving against convex polygons are well understood and documented; techniques like <a href="http://en.wikipedia.org/wiki/Separating_axis_theorem">SAT</a> and <a href="http://physics2d.com/content/gjk-algorithm">Minkowski Difference</a> are common-place.</p>
+<p>But this convexity requirement presents a problem: not all things we want to represent are convex. In to mitigate this, concave objects are broken down into convex sub-parts.</p>
+<div id="attachment_1780" style="width: 501px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure11.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure11.png" alt="" title="figure1" width="491" height="141" class="size-full wp-image-1780" /></a><p class="wp-caption-text">Figure 1</p></div>
+<p>In <em>Figure 1</em> concave object <em>A</em> is broken down into two convex sub-parts <em>B</em> and <em>C</em>. In doing so we have now created an internal edge between the two shapes shown as a thick black line.</p>
+<h2>Why are they a problem?</h2>
+<p>Internal edges start becoming a serious problem as soon as you have any object sliding along another one, like a block being pushed down a hill, or even just the player walking along (if their collision shape is an AABB for instance).</p>
+<div id="attachment_1783" style="width: 511px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure21.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure21.png" alt="" title="figure2" width="501" height="158" class="size-full wp-image-1783" /></a><p class="wp-caption-text">Figure 2</p></div>
+<p><em>Figure 2</em> shows just such an example. Block <em>P</em> is sliding down object <em>B</em> and will start to collide with <em>C</em> quite soon. Intuition says that <em>P</em> will collide with the top edge of <em>C</em> and continue sliding smoothly, however that may not be the case. If <em>P</em> is exactly on the surface of <em>B</em> as it slides, there is nothing but chance which will dictate which edge of <em>C</em> will be the collision edge. It&#8217;s just as likely to chose the left edge and produce the blue normal <em>n</em> as the collision normal. This will cause the sliding object to get stuck on the internal edge, just as if it had hit a brick wall, which is highly undesirable.</p>
+<p>As far as the collision engine is concerned <em>B</em> and <em>C</em> are totally separate objects so it must consider any possible candidate edges of <em>C</em>.</p>
+<div id="attachment_1784" style="width: 429px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure3.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure3.png" alt="" title="figure3" width="419" height="193" class="size-full wp-image-1784" /></a><p class="wp-caption-text">Figure 3</p></div>
+<p><em>Figure 3</em> shows what the collision engine sees (left) when it&#8217;s deciding which normal to return. This situation can also arise if the object is sliding along the bottom edge (as shown on the right). Here, we often end up getting stuck again, but this time it will be an opposing normal from object <em>B</em> which stops <em>P</em> in its tracks.</p>
+<h2>Speculative contacts</h3>
+<p>This whole situation is exacerbated if we&#8217;re using <a href="http://www.wildbunny.co.uk/blog/2011/03/25/speculative-contacts-an-continuous-collision-engine-approach-part-1/">Speculative Contacts</a> because then we&#8217;re always asking for the closest points on two objects, whether they&#8217;re touching or not, which will tend to pick out internal edges much more often.</p>
+<p>Lets quickly review the possible closest features between two convex polygons.</p>
+<div id="attachment_1787" style="width: 507px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure4.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure4.png" alt="" title="figure4" width="497" height="121" class="size-full wp-image-1787" /></a><p class="wp-caption-text">Figure 4</p></div>
+<p><em>Figure 4</em> shows the first two primary collision cases (where either a vertex from <em>P</em> is closest to an edge of <em>C</em>, or visa versa), and on the right the usually degenerate vertex vs vertex case. I say degenerate because generally in 2D collision detection you&#8217;re either dealing with finding where two objects just touch, or finding how far penetrated into each other they are and in both of those scenarios, the vertex vs vertex case can either be expressed as edge vs vertex or vertex vs edge, making it redundant or degenerate.</p>
+<p>However, with speculative contacts you want to find these closest features when the objects are penetrating or separated, which means this previously degenerate case is no longer degenerate.</p>
+<!-- Easy AdSense V2.79 -->
+<!-- Post[count: 1] -->
+<div class="ezAdsense adsense adsense-midtext" style="text-align:center;margin:12px; "><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- medi -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:300px;height:250px"
+     data-ad-client="ca-pub-4897461488762721"
+     data-ad-slot="9797433564"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div><p>While I was looking at this problem again from the POV of solving it somehow while still being able to use speculative contacts I noticed something interesting. All the cases I could see where there was an internal edge causing problems were in fact vertex vs vertex.</p>
+<div id="attachment_1796" style="width: 451px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure51.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure51.png" alt="" title="figure5" width="441" height="327" class="size-full wp-image-1796" /></a><p class="wp-caption-text">Figure 5</p></div>
+<p><em>Figure 5</em> shows a few cases where the collision is vertex vs vertex. The two on the left represent problem cases for the proposed technique whereas the two on the right are easily solvable.</p>
+<h2>Traditional approaches to solving this</h2>
+<p>Traditionally, this problem is mitigated by &#8216;instrumenting&#8217; your objects as a pre-process, to identify internal edges and then to have the collision system chose an adjacent edge to the internal one and return that instead using some kind of heuristic to determine which edge to chose. This is fraught with problems, not least of which is how to deal with two entirely separate objects which are butted up together and have never been part of the same object in the first place. There&#8217;s also the problem of what to do if you have two instrumented objects sliding over each other, the choice of which alternative edge to chose suddenly gets a lot more complex.</p>
+<p>I&#8217;ve personally used this technique myself and was never fully satisfied with it.</p>
+<h2>Towards a new way</h2>
+<p>Simply discarding all contacts which are vertex vs vertex will get us a long way towards a full solution.</p>
+<p>This will solve two out of the four cases I&#8217;ve illustrated in <em>Figure 5</em>, as discarding those contacts doesn&#8217;t remove any useful information. The left hand cases, however will need some attention because it&#8217;s possible the object <em>P</em> will end up embedded into <em>C</em> without an alternative contact normal to deflect it, or if <em>P</em> is travelling fast enough it could miss the collision altogether.</p>
+<div id="attachment_1791" style="width: 501px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure6.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure6.png" alt="" title="figure6" width="491" height="141" class="size-full wp-image-1791" /></a><p class="wp-caption-text">Figure 6</p></div>
+<p><em>Figure 6</em> shows the situation in this case.</p>
+<p>However, this technique does hold very significant advantages because you no longer need to instrument any objects and because of that it will deal correctly with two separate objects butted up together. Or in the case of collision detection against lines, it will deal with T-junctions.</p>
+<div id="attachment_1792" style="width: 610px" class="wp-caption aligncenter"><a href="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure7.png"><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/10/figure7.png" alt="" title="figure7" width="600" height="449" class="size-full wp-image-1792" /></a><p class="wp-caption-text">Figure 7</p></div>
+<p><em>Figure 7</em> shows a maze with T-junctions which would otherwise have caused the triangular ship to catch as it slides along the edge.</p>
+<p>I am currently using this technique in my game <a href="http://mmoasteroids.wildbunny.co.uk">mmoAsteroids</a>, which you can play by clicking the link in the side-bar if you&#8217;d like to try this out for yourself. I find it far preferable to getting stuck on edges, even taking into account the problem it has with the case illustrated. The bottom left case in <em>Figure 5</em> is extremely difficult to reproduce as you need pixel perfect alignment to trigger it, which means in practice all you deal with in the bottom right case.</p>
+<p>I&#8217;d love to hear your thoughts on whether you think this can be improved to take account of the two problem cases in <em>Figure 5</em>.</p>
+<p>That&#8217;s all for now, until next time: have fun!</p>
+<p>Cheers, Paul.</p>
+
+				<!-- Social Sharing Toolkit v2.0.4 | http://www.marijnrongen.com/wordpress-plugins/social_sharing_toolkit/ -->
+				<div class="mr_social_sharing_wrapper"><span class="mr_social_sharing"><script type="text/javascript">
+							  reddit_url = "http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/";
+							  reddit_title = "2D polygonal collision-detection and internal edges";
+							</script>
+							<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script></span><span class="mr_social_sharing"><a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" data-count="horizontal" data-text="2D polygonal collision-detection and internal edges">Tweet</a></span><span class="mr_social_sharing"><iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=http%3A%2F%2Fwww.wildbunny.co.uk%2Fblog%2F2012%2F10%2F31%2F2d-polygonal-collision-detection-and-internal-edges%2F&amp;layout=button_count&amp;show_faces=false&amp;width=90px&amp;height=21px" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowTransparency="true"></iframe></span><span class="mr_social_sharing"><div id="fb-root"></div><fb:send href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" font=""></fb:send></span><span class="mr_social_sharing"><g:plusone size="medium" href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/"></g:plusone></span><span class="mr_social_sharing"><a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.wildbunny.co.uk%2Fblog%2F2012%2F10%2F31%2F2d-polygonal-collision-detection-and-internal-edges%2F&amp;title=2D+polygonal+collision-detection+and+internal+edges" target="_blank" class="mr_social_sharing_popup_link"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/social-sharing-toolkit/images/buttons/stumbleupon.png" alt="Submit to StumbleUpon" title="Submit to StumbleUpon"/></a></span></div><span style="clear:both;display:none;"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/wp-spamfree/img/wpsf-img.php" width="0" height="0" alt="" style="border-style:none;width:0px;height:0px;display:none;" /></span>											</div><!-- .entry-content -->
+
+					<div id="entry-author-info">
+						<div id="author-avatar">
+							<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=60&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D60&amp;r=G' class='avatar avatar-60 photo' height='60' width='60' />						</div><!-- #author-avatar -->
+						<div id="author-description">
+							<h2>About Paul Firth</h2>
+							A games industry veteran of ten years, seven of which spent at Sony Computer Entertainment Europe, he has had key technical roles on triple-A titles like the Bafta Award Winning Little Big Planet (PSP), 24: The Game (PS2), special effects work on Heavenly Sword (PS3), some in-show graphics on the BBC�s version of Robot Wars, the TV show, as well as a few more obscure projects.
+&nbsp;
+Now joint CEO of Wildbunny, he is able to give himself hiccups simply by coughing.
+&nbsp;
+1NobNQ88UoYePFi5QbibuRJP3TtLhh65Jp							<div id="author-link">
+								<a href="http://www.wildbunny.co.uk/blog/author/paulfirth/">
+									View all posts by Paul Firth <span class="meta-nav">&rarr;</span>								</a>
+							</div><!-- #author-link	-->
+						</div><!-- #author-description -->
+					</div><!-- #entry-author-info -->
+
+					<div class="entry-utility">
+						This entry was posted in <a href="http://www.wildbunny.co.uk/blog/category/platform-game/collision-detection-platform-game/" title="View all posts in Collision Detection" rel="category tag">Collision Detection</a>, <a href="http://www.wildbunny.co.uk/blog/category/geometry/" title="View all posts in Geometry" rel="category tag">Geometry</a>, <a href="http://www.wildbunny.co.uk/blog/category/geometry/polygons/" title="View all posts in Polygons" rel="category tag">Polygons</a>, <a href="http://www.wildbunny.co.uk/blog/category/technical/" title="View all posts in Technical" rel="category tag">Technical</a> and tagged <a href="http://www.wildbunny.co.uk/blog/tag/collision-detection/" rel="tag">collision detection</a>, <a href="http://www.wildbunny.co.uk/blog/tag/game-developement/" rel="tag">game developement</a>, <a href="http://www.wildbunny.co.uk/blog/tag/physics/" rel="tag">physics</a>, <a href="http://www.wildbunny.co.uk/blog/tag/simulation/" rel="tag">simulation</a>. Bookmark the <a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/" title="Permalink to 2D polygonal collision-detection and internal edges" rel="bookmark">permalink</a>.											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.wildbunny.co.uk/blog/2012/10/09/how-to-make-a-multi-player-game-part-1/" rel="prev"><span class="meta-nav">&larr;</span> How to make a multi-player game &#8211; part 1</a></div>
+					<div class="nav-next"><a href="http://www.wildbunny.co.uk/blog/2012/11/01/10-steps-to-becoming-a-better-programmer/" rel="next">10 steps to becoming a better programmer <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">14 Responses to <em>2D polygonal collision-detection and internal edges</em></h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-1652">
+		<div id="comment-1652">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/1ed1b5bd39da55997b174105bb865a41?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.draknek.org/' rel='external nofollow' class='url'>Alan Hazelden</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1652">
+			October 31, 2012 at 7:34 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Disclaimer: I haven&#8217;t been doing physics engine stuff for a while, so am totally rusty.</p>
+<p>What about circles? Seems like they&#8217;d be less of a problem, but if you&#8217;re treating them as a single-vertex object with the radius subtracted from distance calculations, you do need vertex-vertex collisions.</p>
+<p>Not sure I understand the problems with the approach of marking some edges as internal and not using them, but I&#8217;ve never tried using it so that&#8217;s not too surprising.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1652#respond' onclick='return addComment.moveForm("comment-1652", "1652", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-paulfirth bypostauthor odd alt depth-2" id="li-comment-1654">
+		<div id="comment-1654">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.wildbunny.co.uk' rel='external nofollow' class='url'>Paul Firth</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1654">
+			October 31, 2012 at 10:24 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Yes, circles present more of a problem potentially, although I haven&#8217;t thought much about them yet to be honest <img src="http://www.wildbunny.co.uk/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+<p>The problem with the pre-process is that it can&#8217;t cope with objects butting up against each other which weren&#8217;t part of the same object originally.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1654#respond' onclick='return addComment.moveForm("comment-1654", "1654", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-3" id="li-comment-1655">
+		<div id="comment-1655">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/1ed1b5bd39da55997b174105bb865a41?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.draknek.org/' rel='external nofollow' class='url'>Alan Hazelden</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1655">
+			October 31, 2012 at 11:51 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Oh right, so if you&#8217;re walking on a floor of crates pushed together for example? That makes sense.</p>
+<p>Hmm, on further thought I&#8217;m not convinced that the vertex-vertex contact will always be the one found. In the bottom-right figure in (5), won&#8217;t the closest features be vertex-edge? And in the top two, you only need a small amount of penetration for vertex-edge to be the closest features.</p>
+<p>A lot of this could depend on the details of your detection system I guess.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1655#respond' onclick='return addComment.moveForm("comment-1655", "1655", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-paulfirth bypostauthor odd alt depth-4" id="li-comment-1659">
+		<div id="comment-1659">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.wildbunny.co.uk' rel='external nofollow' class='url'>Paul Firth</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1659">
+			November 1, 2012 at 10:19 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Hi alan,</p>
+<p>Actually, I you&#8217;re right about the bottom-right in figure 5, my mistake! <img src="http://www.wildbunny.co.uk/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+<p>Also, your right about penetration &#8211; as soon as you start to get some, your vertex vs vertex contacts start becoming the other two cases.</p>
+<p>Cheers, Paul.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1659#respond' onclick='return addComment.moveForm("comment-1659", "1659", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1673">
+		<div id="comment-1673">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/a0c2d0b538ba33a57cee055a97eb4546?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.metanetsoftware.com/blog' rel='external nofollow' class='url'>Raigan</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1673">
+			November 3, 2012 at 2:33 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>I&#8217;m afraid I don&#8217;t have anything to contribute in terms of suggestions, but I wanted to say that I looooove this sort of article as it&#8217;s a hard problem everyone always solves with special-case hacks, and no one really discusses, and  it&#8217;s great to try to join forces and figure out a better approach. Also your insight into ignoring the v-v cases is great!</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1673#respond' onclick='return addComment.moveForm("comment-1673", "1673", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-paulfirth bypostauthor odd alt depth-2" id="li-comment-1674">
+		<div id="comment-1674">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.wildbunny.co.uk' rel='external nofollow' class='url'>Paul Firth</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1674">
+			November 3, 2012 at 11:26 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Yeah, I agree it seems to be an rarely discussed subject, I wanted to try and change that <img src="http://www.wildbunny.co.uk/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1674#respond' onclick='return addComment.moveForm("comment-1674", "1674", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1675">
+		<div id="comment-1675">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/4bc7d9b668f8dff636e9e036fe0c11c1?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">Hamish Atkinson</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1675">
+			November 3, 2012 at 4:34 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Hi,<br />
+How do you store the vertices of the two conjoined convex polygons? It strikes me that all the conjoined shapes you have shown in your examples actually share two vertices. (The T-join in the asteroids is perhaps different)</p>
+<p>I assume that your collision detection algorithm is trying to determine the point at which the shape P sliding along shape B contacts the joined shape C (so it can correctly modify the behaviour of both shapes following the collision)?</p>
+<p>Looking at your examples, in every case the actual intersection point will be the vertex shared by the 2 conjoined shapes (i.e. it satisfies both a collision with the internal edge and the external edge). If you algorithm randomly chooses one or the other then that must be a rounding error caused by your algorithm.</p>
+<p>As I expect that these sorts of collisions are rare, can&#8217;t you just detect the cases where your algorithm indicates a collision with an internal edge and instead run a collision test with the other edges of the collided objects? In the case of concave joins, extend the edge to infinity instead of stopping it at the vertex. This should produce a collision with the correct edge.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1675#respond' onclick='return addComment.moveForm("comment-1675", "1675", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-paulfirth bypostauthor odd alt depth-2" id="li-comment-1676">
+		<div id="comment-1676">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.wildbunny.co.uk' rel='external nofollow' class='url'>Paul Firth</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1676">
+			November 3, 2012 at 4:35 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>You can, yes but the algorithm is complex in the extreme and it doesn&#8217;t deal with the case of two separate objects butted up together. That&#8217;s what this article is primarily trying to address <img src="http://www.wildbunny.co.uk/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1676#respond' onclick='return addComment.moveForm("comment-1676", "1676", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1978">
+		<div id="comment-1978">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/ceef8582ce006a341c053b87505f2b18?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">Spider</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1978">
+			February 8, 2013 at 10:29 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Hi,<br />
+I wanted to share how I solved the internal edge problem on SAT algorithm which also gave me some bonuses.<br />
+I used a visibility flag for edges. So when the normals are calculated if current edge has the visibility flag set to false I add to a list the normal axis.</p>
+<p>Now when the collision occurs there are 2 methods of dealing with it:<br />
+1. When calculating the penetration depth and is smaller than previous one, check the ignore axis list, if dot product with those axis is &gt; 1 &#8211; epsilon then ignore that axis and don&#8217;t add it to solution.<br />
+2. (I&#8217;m using this) more optimal is after choosing the collision response axis just search in the ignore axis list with a dot product, if its the same axis + epsilon then ignore that collision.<br />
+This is more optimal but feels like it can cause problems because of ignoring the collision, anyway I didn&#8217;t have any of problems and the collision response feels good.</p>
+<p>Now about bonuses:<br />
+1. If the character and platform is an AABB or platform include the axis aligned axises then using edge visibility you can create one sided platforms<br />
+2. Automatic stair behavior, just set the front side of the stair to have invisible edge, the collision routine will ignore it as soon as the character will penetrate the stair enough to make the smaller collision the upper part of the stair and snap to it.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1978#respond' onclick='return addComment.moveForm("comment-1978", "1978", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-paulfirth bypostauthor odd alt depth-2" id="li-comment-1979">
+		<div id="comment-1979">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.wildbunny.co.uk' rel='external nofollow' class='url'>Paul Firth</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1979">
+			February 8, 2013 at 10:37 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Hi Spider,</p>
+<p>Interesting set of solutions there, thanks for sharing!</p>
+<p>Did you find any problems with objects falling though each other if they are heavily inter-penetrating due to the ignored collisions?</p>
+<p>Cheers, Paul.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1979#respond' onclick='return addComment.moveForm("comment-1979", "1979", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-3" id="li-comment-1980">
+		<div id="comment-1980">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/ceef8582ce006a341c053b87505f2b18?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">Spider</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-1980">
+			February 8, 2013 at 10:59 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>I&#8217;m using visibility edges only for static objects,<br />
+I use them usually for adjacent edges,<br />
+So there is a possibility for a small object to pass thru a small platform, but to solve this, I use relative big enough boundings for characters and limited velocity. If an object has a chance to have a bigger  velocity then segmentation can be used.</p>
+<p>here is a small prototype:<br />
+<a href="http://www.sendspace.com/file/095pc9" rel="nofollow">http://www.sendspace.com/file/095pc9</a><br />
+left-right move, space jump, mouse click shot.<br />
+character is AABB, collisions are SAT<br />
+red edges are invisible edges. blue visible.<br />
+bullets uses ray-convex intersection (ignores edges visibility), mouse circle uses point-convex (take account of edge visibility and snaps to nearest visible edge if inside)</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=1980#respond' onclick='return addComment.moveForm("comment-1980", "1980", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1" id="li-comment-3649">
+		<div id="comment-3649">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/be830c0a3eeaf8a701055d816902026d?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">demented hedgehog</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-3649">
+			February 15, 2014 at 5:34 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>I suspect that the problem is that you don&#8217;t have all the information you need to make a reasonable decision in this case.   </p>
+<p>In Figure 2..  When object P gets to the bottom of the slope in real life it would collide with B and C simultaneously.   We&#8217;re being forced to handle collisions pairwise here? (well that&#8217;s the way all? of the other 2D speculative collision algos I&#8217;ve looked at seem to suggest).   </p>
+<p>I think forcing the pairwise resolution throws away useful information.  So my proposal (and cut me a bit of slack here I&#8217;ve not thought it through) is that you have to<br />
+do all combinations of possible collisions and (I&#8217;m guessing at an heuristic here -&gt;)  choose the order of collisions that gives the object P the largest change in position.</p>
+<p>So when P gets to the bottom in Figure 2 it can collide with \A,/B *xor* \A,-B.  (for each corner collision you need to fork and do an extra x2 number of detections) (notation \A is the top face of A, /B is the internal edge of B, -B is the top of B).  In the case of \A,/B the object P gets stuck on the internal edge and stops abruptly.  In the case of \A,-B the object P moves out onto the top of B.  So we calculate the distance moved in both cases and choose \A,-B because it&#8217;s greater.</p>
+<p>So that approach opens up its&#8217; own can of worms..  firstly it&#8217;s complicated to implement, then what happens when you have a particle system explosion.. how many collisions do you have to work out (lots)?  What happens when you have, say, a ring of things all hitting one another?</p>
+<p>So in brief i) does it scale too badly?  ii) what happens with multiple moving objects?  iii) does it even work?</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=3649#respond' onclick='return addComment.moveForm("comment-3649", "3649", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-3650">
+		<div id="comment-3650">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/be830c0a3eeaf8a701055d816902026d?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">demented hedgehog</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-3650">
+			February 15, 2014 at 6:06 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>I guess you&#8217;d implement my previous idea by treating each object as a node and your AABB pass would add edges to the nodes.. then for each unvisited node handle the connected subgraph of collisions with that node in it and mark every node in the subgraph as visited.   So the problems mentioned in my previous post are large subgraphs and cyclic subgraphs.</p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=3650#respond' onclick='return addComment.moveForm("comment-3650", "3650", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1" id="li-comment-3653">
+		<div id="comment-3653">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/be830c0a3eeaf8a701055d816902026d?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">blaize rhodes</cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.wildbunny.co.uk/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#comment-3653">
+			February 18, 2014 at 12:22 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>OK .. I&#8217;ve been thinking about my approach.  I wonder whether the move the player the furthest heuristic would push him down stairs!</p>
+<p>So now I reckon that if you treat the collisions as horizontal, vertical and corners then do the corner collisions after the horizontal and vertical collisions then that solves the problem?  The theoretical basis of this is that you collide with the closest edges first and because of the triangle inequality internal edges will be further away than floors under the player.</p>
+<p>Check this conversation out to..<br />
+<a href="http://www.reddit.com/r/gamedev/comments/1w92dm/2d_collision_detection_and_resolution_solving_the/" rel="nofollow">http://www.reddit.com/r/gamedev/comments/1w92dm/2d_collision_detection_and_resolution_solving_the/</a></p>
+</div>
+
+		<div class="reply">
+			<a class='comment-reply-link' href='/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/?replytocom=3653#respond' onclick='return addComment.moveForm("comment-3653", "3653", "respond", "1778")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2012/10/31/2d-polygonal-collision-detection-and-internal-edges/comment-page-1/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://www.wildbunny.co.uk/blog/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">Your email address will not be published. Required fields are marked <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes:  <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="Post Comment" />
+							<input type='hidden' name='comment_post_ID' value='1778' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+							<script type='text/javascript'>
+	<!--
+	refJS = escape( document[ 'referrer' ] );
+	document.write("<input type='hidden' name='refJS' value='"+refJS+"'>");
+	// -->
+	</script>
+	<p style="font-size:9px;clear:both;">WP-SpamFree by <a rel="nofollow" href="http://www.polepositionmarketing.com/library/wp-spamfree/" title="WP-SpamFree WordPress Anti-Spam Plugin" >Pole Position Marketing</a>
+
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">Search</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.wildbunny.co.uk/blog/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="categories-3" class="widget-container widget_categories"><h3 class="widget-title">Choose a category</h3><select name='cat' id='cat' class='postform' >
+	<option value='-1'>Select Category</option>
+	<option class="level-0" value="104">Algorithmic trading&nbsp;&nbsp;(4)</option>
+	<option class="level-0" value="7">Animal Army&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="35">AS3&nbsp;&nbsp;(19)</option>
+	<option class="level-0" value="44">Beginner&nbsp;&nbsp;(3)</option>
+	<option class="level-0" value="114">Bitcoin&nbsp;&nbsp;(4)</option>
+	<option class="level-0" value="6">Business&nbsp;&nbsp;(7)</option>
+	<option class="level-0" value="73">Chip tunes&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="71">Circles&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="40">Collision Detection&nbsp;&nbsp;(8)</option>
+	<option class="level-0" value="53">Developer love&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="117">Entity systems&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="103">Finance&nbsp;&nbsp;(6)</option>
+	<option class="level-0" value="101">Full games&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="67">Geometry&nbsp;&nbsp;(9)</option>
+	<option class="level-0" value="58">Graphics&nbsp;&nbsp;(9)</option>
+	<option class="level-0" value="100">JSON&nbsp;&nbsp;(4)</option>
+	<option class="level-0" value="42">Ladders and AI&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="96">learning-to-program&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="28">Making angry birds&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="47">Micro-transactions&nbsp;&nbsp;(3)</option>
+	<option class="level-0" value="90">Multi-player&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="72">Music&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="118">Optimisation&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="41">Parallax and Tiles&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="65">paypal&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="97">Physics&nbsp;&nbsp;(8)</option>
+	<option class="level-0" value="36">Platform game&nbsp;&nbsp;(5)</option>
+	<option class="level-0" value="68">Polygons&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="98">Portals&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="52">Promotion&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="93">Self improvement&nbsp;&nbsp;(4)</option>
+	<option class="level-0" value="66">Server side&nbsp;&nbsp;(7)</option>
+	<option class="level-0" value="99">Silverlight&nbsp;&nbsp;(5)</option>
+	<option class="level-0" value="45">Stencyl&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="5">Technical&nbsp;&nbsp;(28)</option>
+	<option class="level-0" value="1">Uncategorized&nbsp;&nbsp;(1)</option>
+</select>
+
+<script type='text/javascript'>
+/* <![CDATA[ */
+	var dropdown = document.getElementById("cat");
+	function onCatChange() {
+		if ( dropdown.options[dropdown.selectedIndex].value > 0 ) {
+			location.href = "http://www.wildbunny.co.uk/blog/?cat="+dropdown.options[dropdown.selectedIndex].value;
+		}
+	}
+	dropdown.onchange = onCatChange;
+/* ]]> */
+</script>
+
+</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="user_bio-2" class="widget-container widget_user_bio"><h3 class="widget-title"><div style="text-align:center">About the author</div></h3><div class="ub-grav" style="margin:5px 5px 0px 5px;text-align:center;"><img alt='' src='http://0.gravatar.com/avatar/e19935619bbfb2c4d003acdb0669ca46?s=128&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D128&amp;r=G' class='avatar avatar-128 photo' height='128' width='128' /></div>A games industry veteran of ten years, seven of which spent at Sony Computer Entertainment Europe, he has had key technical roles on triple-A titles like the Bafta Award Winning Little Big Planet (PSP), 24: The Game (PS2), special effects work on Heavenly Sword (PS3), some in-show graphics on the BBC�s version of Robot Wars, the TV show, as well as a few more obscure projects.
+&nbsp;
+Now joint CEO of Wildbunny, he is able to give himself hiccups simply by coughing.
+&nbsp;
+1NobNQ88UoYePFi5QbibuRJP3TtLhh65Jp
+</li><li id="widget_featured-posts-2" class="widget-container widget_featured-posts"><h3 class="widget-title">Featured Posts</h3>	
+	<ul id="yiw-featured-post">
+	   <li>
+	       <a href="http://www.wildbunny.co.uk/blog/2012/11/20/how-to-make-a-multi-player-game-part-2/" class="featured-thumb">
+	                      <img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/scripts/timthumb.php?src=http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/11/shop.png&amp;h=200&amp;w=200&amp;zc=1" class="alignleft" alt="How to make a multi-player game � part 2" />
+           
+	       	       </a>
+           
+           <h4 class="featured-title">
+	           <a href="http://www.wildbunny.co.uk/blog/2012/11/20/how-to-make-a-multi-player-game-part-2/">How to make a multi-player game � part 2</a>
+	       </h4>
+	   </li>
+	   <li>
+	       <a href="http://www.wildbunny.co.uk/blog/2011/04/20/collision-detection-for-dummies/" class="featured-thumb">
+	                      <img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/scripts/timthumb.php?src=http://www.wildbunny.co.uk/blog/wp-content/uploads/2011/04/figure111.png&amp;h=200&amp;w=200&amp;zc=1" class="alignleft" alt="Collision detection for dummies" />
+           
+	       	       </a>
+           
+           <h4 class="featured-title">
+	           <a href="http://www.wildbunny.co.uk/blog/2011/04/20/collision-detection-for-dummies/">Collision detection for dummies</a>
+	       </h4>
+	   </li>
+	   <li>
+	       <a href="http://www.wildbunny.co.uk/blog/2012/01/06/how-to-make-games/" class="featured-thumb">
+	                      <img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/scripts/timthumb.php?src=http://www.wildbunny.co.uk/blog/wp-content/uploads/2011/12/flashLogo.png&amp;h=200&amp;w=200&amp;zc=1" class="alignleft" alt="How to make games" />
+           
+	       	       </a>
+           
+           <h4 class="featured-title">
+	           <a href="http://www.wildbunny.co.uk/blog/2012/01/06/how-to-make-games/">How to make games</a>
+	       </h4>
+	   </li>
+	   <li>
+	       <a href="http://www.wildbunny.co.uk/blog/2014/03/03/what-is-a-bitcoin/" class="featured-thumb">
+	                      <img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/scripts/timthumb.php?src=http://www.wildbunny.co.uk/blog/wp-content/uploads/2014/03/Bitcoin_Mining_Farm_Logo.jpg&amp;h=200&amp;w=200&amp;zc=1" class="alignleft" alt="What is a Bitcoin?" />
+           
+	       	       </a>
+           
+           <h4 class="featured-title">
+	           <a href="http://www.wildbunny.co.uk/blog/2014/03/03/what-is-a-bitcoin/">What is a Bitcoin?</a>
+	       </h4>
+	   </li>
+	   <li>
+	       <a href="http://www.wildbunny.co.uk/blog/2012/11/01/10-steps-to-becoming-a-better-programmer/" class="featured-thumb">
+	                      <img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/featured-post-with-thumbnail/scripts/timthumb.php?src=http://www.wildbunny.co.uk/blog/wp-content/uploads/2012/11/stencylRules.png&amp;h=200&amp;w=200&amp;zc=1" class="alignleft" alt="10 steps to becoming a better programmer" />
+           
+	       	       </a>
+           
+           <h4 class="featured-title">
+	           <a href="http://www.wildbunny.co.uk/blog/2012/11/01/10-steps-to-becoming-a-better-programmer/">10 steps to becoming a better programmer</a>
+	       </h4>
+	   </li>
+	</ul>
+	
+	</li><li id="advanced-featured-page-widget-3" class="widget-container widget_advanced-featured-page-widget"><h3 class="widget-title">Tutorials with code to buy</h3><div class="post-2295 page type-page status-publish hentry"><a href="http://www.wildbunny.co.uk/blog/buy-multiplayer-asteroids-engine/" title="Buy multiplayer asteroids engine" class="alignnone"><img width="200" height="200" src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2014/05/multiplayer.jpg" class="attachment-200 by 200 image" alt="multiplayer" /></a></div><!--end post_class()-->
+
+</li><li id="advanced-featured-page-widget-2" class="widget-container widget_advanced-featured-page-widget"><div class="post-2299 page type-page status-publish hentry"><a href="http://www.wildbunny.co.uk/blog/buy-angrybirds-alike-engine/" title="Buy Angrybirds-alike engine" class="alignnone"><img width="200" height="200" src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2014/05/birds.jpg" class="attachment-200 by 200 image" alt="birds" /></a></div><!--end post_class()-->
+
+</li><li id="advanced-featured-page-widget-4" class="widget-container widget_advanced-featured-page-widget"><div class="post-2301 page type-page status-publish hentry"><a href="http://www.wildbunny.co.uk/blog/buy-platform-game-engine/" title="Buy platform game engine" class="alignnone"><img width="200" height="200" src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2014/05/platform.png" class="attachment-200 by 200 image" alt="platform" /></a></div><!--end post_class()-->
+
+</li><li id="wp125" class="widget-container wp125_write_ads_widget">
+<h3 class="widget-title">Affiliates</h3><div id="wp125adwrap_1c">
+<div class="wp125ad odd"><a href="index.php?adclick=10" title="plus500" rel="nofollow"target='_blank'><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2013/03/plus500-200x200.gif" alt="plus500" /></a></div>
+<div class="wp125ad even"><a href="https://www.cavirtex.com/Z/50680" title="cavirtex" rel="nofollow"target='_blank'><img src="http://www.wildbunny.co.uk/blog/wp-content/uploads/2014/03/caVirtex.gif" alt="cavirtex" /></a></div>
+<div class="wp125ad odd"><a href="http://www.freelancer.co.uk/affiliates/wildbunny2/" title="freelancer" rel="nofollow"target='_blank'><img src="/images/freelancer.png" alt="freelancer" /></a></div>
+<div class="wp125ad even"><a href="http://www.shareasale.com/r.cfm?b=531904&u=949687&m=41388&urllink=&afftrack=" title="wp engine" rel="nofollow"target='_blank'><img src="http://www.shareasale.com/image/41388/sas_banner_250x250.jpg" alt="wp engine" /></a></div>
+<div class="wp125ad odd"><a href="http://www.wildbunny.co.uk/blog/advertise-here/" rel="nofollow"target='_blank'><img src="http://www.wildbunny.co.uk/images/blankAdvert.png" alt="" /></a></div>
+</div>
+</li><li id="ezadswidget-4" class="widget-container ezAdsWidget"><h3 class="widget-title">My MetaTrader 5 products</h3><!-- Easy AdSense V2.79 -->
+<!-- Widg[count: 2] -->
+<div class="ezAdsense adsense adsense-widget"><div style="text-align:center;margin:0px; "><div style="width:350px">
+<a target="_blank" href="http://mql5.com/dzz" title="Download VWAP technical indicator from MQL5 Market"><img src="http://www.mql5.com/en/market/widget/925/mid" alt="Buy VWAP customer indicator in the store selling algo trading systems" width="400" height="60"></a>
+<a target="_blank" href="http://mql5.com/e08" title="Download Average Spread technical indicator from MQL5 Market"><img src="http://www.mql5.com/en/market/widget/951/mid" alt="Buy Average Spread customer indicator in the store selling algo trading systems" width="400" height="60"></a>
+<a target="_blank" href="http://mql5.com/e09" title="Download Bid Ask Volumes technical indicator from MQL5 Market"><img src="http://www.mql5.com/en/market/widget/950/mid" alt="Buy Bid Ask Volumes customer indicator in the store selling algo trading systems" width="400" height="60"></a>
+<a target="_blank" href="http://mql5.com/po9" title="Download Market Activity technical indicator from MQL5 Market"><img src="http://www.mql5.com/en/market/widget/963/mid" alt="Buy Market Activity customer indicator in the store selling algo trading systems" width="400" height="60"></a>
+<a target="_blank" href="http://mql5.com/poa" title="Download Precision Scalper trading system from MQL5 Market"><img src="http://www.mql5.com/en/market/widget/972/mid" alt="Buy Precision Scalper trading application in the store of automated robot systems" width="400" height="60"></a>
+</div></div></div></li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.wildbunny.co.uk/blog/" title="Wildbunny blog" rel="home">
+					Wildbunny blog				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://wordpress.org/"
+						title="Semantic Personal Publishing Platform" rel="generator">
+					Proudly powered by WordPress.				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+		
+		<script type="text/javascript">
+			//<![CDATA[
+			jQuery(document).ready(function() {
+				var a = '<div id="cookie-law-info-bar"><span>This website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.<a href=\"#\" id=\"cookie_action_close_header\"  class=\"medium cli-plugin-button cli-plugin-main-button\" >Accept</a> <a href=\"http://www.wildbunny.co.uk/blog/privacy-policy/\" id=\"CONSTANT_OPEN_URL\" target=\"_new\"  class=\"cli-plugin-main-link\"  >Read More</a></span></div>';
+				var b = '{"animate_speed_hide":"500","animate_speed_show":"500","background":"#fff","border":"#444","border_on":true,"button_1_button_colour":"#000","button_1_button_hover":"#000000","button_1_link_colour":"#fff","button_1_as_button":true,"button_2_button_colour":"#333","button_2_button_hover":"#292929","button_2_link_colour":"#444","button_2_as_button":false,"font_family":"inherit","notify_animate_hide":true,"notify_animate_show":false,"notify_div_id":"#cookie-law-info-bar","notify_position_horizontal":"right","notify_position_vertical":"bottom","showagain_tab":false,"showagain_background":"#fff","showagain_border":"#000","showagain_div_id":"#cookie-law-info-again","showagain_x_position":"50%","text":"#000"}';
+				cli_show_cookiebar(a,b);
+				
+							});
+			//]]>
+		</script>
+		
+		 
+			<a id="FollowMeTabLeftLg" onClick="showFollowMe()" href="#" style="border-bottom:none;"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/leftlg.gif" border="0" /></a>	
+
+<div id="FollowMeBubbleBG" style="visibility:hidden;"></div>
+<div id="FollowMeBubble" style="visibility:hidden;border-bottom:none;">
+
+
+<div class="top" style="background-image:url('http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/followme_top.gif');width:329px;height:60px;float:left;display:block;border-bottom:none;">
+<a id="close" onClick="hideFollowMe()" href="#" style="border-bottom:none"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/close.png" border="0" /> </a>
+<!-- <a id="grab" target="_blank" title="grab this" href="http://www.ignitesocialmedia.com/tools/follow-me/"><span>grab this</span></a>--></div>
+<div class="mid" style="background-image:url('http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/followme_mid.gif');width:329px;background-repeat:repeat-y;float:left;">
+<div id="stretch">
+<span><a title="
+Twitter" target="_blank" href="http://twitter.com/paul_m_firth" rel="me"><img width="32px" src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/
+twitter.png" border="0" alt="
+Twitter" /> 
+Twitter</a></span>
+<span><a title="
+Facebook" target="_blank" href="http://www.facebook.com/WildbunnyLtd" rel="me"><img width="32px" src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/
+facebook.png" border="0" alt="
+Facebook" /> 
+Facebook</a></span>
+<span><a title="
+RSS" target="_blank" href="http://wildbunny.co.uk/blog/feed" rel="me"><img width="32px" src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/
+rss.png" border="0" alt="
+RSS" /> 
+RSS</a></span>
+</div></div>
+<div class="bottom" style="background-image:url('http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/followme_bottom.gif');height:34px;width:329px;clear:both;float:left;">
+<a id="grab" target="_blank" title="grab this" style="border-bottom:none;" href="http://www.ignitesocialmedia.com/tools/follow-me/"><span>grab this</span></a>
+</div>
+<div class="grab" style="width:329px;clear:both;float:left;"><a style="border-bottom:none;" href="http://www.ignitesocialmedia.com/tools/follow-me/"><img src="http://www.wildbunny.co.uk/blog/wp-content/plugins/follow-me/images/followme_grab.gif" /></a></div>
+</div>
+
+
+
+
+
+
+
+<div id="thsp-sticky-header">
+	<div id="thsp-sticky-header-inner">
+		<div id="thsp-sticky-header-title">
+			<a href="http://www.wildbunny.co.uk/blog" title="Developer knowledge centre">Wildbunny blog</a>
+		</div>
+		
+		<ul id="thsp-sticky-header-menu" class="menu"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-272"><a href="/blog/">All articles</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1302"><a href="http://www.wildbunny.co.uk/blog/vector-maths-a-primer-for-games-programmers/">Vector maths</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-319"><a href="http://www.wildbunny.co.uk/blog/contact-me/">Contact me</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2072"><a href="http://www.wildbunny.co.uk/blog/hire-me/">Hire me</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-446"><a href="http://www.wildbunny.co.uk/blog/membership-sign-up-page/">Subscribe!</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-466"><a href="http://www.wildbunny.co.uk/blog/welcome-to-our-members-area/">Members</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1183"><a href="/blog/buy-source-code">Buy source-code</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1694"><a href="http://www.wildbunny.co.uk/blog/privacy-policy/">Privacy policy</a></li>
+</ul>	</div><!-- #thsp-sticky-header-inner -->
+</div><!-- #thsp-sticky-header --><script type='text/javascript' src='http://www.wildbunny.co.uk/blog/wp-content/plugins/s2member/s2member-o.php?ws_plugin__s2member_js_w_globals=1&#038;qcABC=1&#038;ver=140105-140105-2848662513'></script>
+</body>
+</html>
+

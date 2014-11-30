@@ -1,0 +1,2101 @@
+http://iphonesdkdev.blogspot.kr/2010/04/local-push-notification-sample-code-os.html
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Expires: Wed, 23 Jul 2014 09:50:48 GMT
+Date: Wed, 23 Jul 2014 09:50:48 GMT
+Cache-Control: private, max-age=0
+Last-Modified: Sun, 29 Jun 2014 03:06:19 GMT
+ETag: "aed69f84-9e55-4d8d-8a26-6b21ad33596d"
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Server: GSE
+Alternate-Protocol: 80:quic
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html dir='ltr' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<script type='text/javascript'>
+if (typeof iTransmogrify == 'undefined') 
+{ d = document;
+  s = d.createElement('script');
+  s.setAttribute('src','http://itransmogrify.googlecode.com/files/iTransmogrify-1.2b3.js?q=' + (new Date).getTime());
+  d.getElementsByTagName('head')[0].appendChild(s);}
+void 0;
+</script>
+<script type='text/javascript'>
+function selectCode(a)
+{
+	// Get ID of code block
+	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
+
+	// Not IE
+	if (window.getSelection)
+	{
+		var s = window.getSelection();
+		// Safari
+		if (s.setBaseAndExtent)
+		{
+			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
+		}
+		// Firefox and Opera
+		else
+		{
+			var r = document.createRange();
+			r.selectNodeContents(e);
+			s.removeAllRanges();
+			s.addRange(r);
+		}
+	}
+	// Some older browsers
+	else if (document.getSelection)
+	{
+		var s = document.getSelection();
+		var r = document.createRange();
+		r.selectNodeContents(e);
+		s.removeAllRanges();
+		s.addRange(r);
+	}
+	// IE
+	else if (document.selection)
+	{
+		var r = document.body.createTextRange();
+		r.moveToElementText(e);
+		r.select();
+	}
+}
+
+</script>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+<script type="text/javascript">(function() { var b=window,f="chrome",g="tick",k="jstiming";(function(){function d(a){this.t={};this.tick=function(a,d,c){var e=void 0!=c?c:(new Date).getTime();this.t[a]=[e,d];if(void 0==c)try{b.console.timeStamp("CSI/"+a)}catch(h){}};this[g]("start",null,a)}var a;b.performance&&(a=b.performance.timing);var n=a?new d(a.responseStart):new d;b.jstiming={Timer:d,load:n};if(a){var c=a.navigationStart,h=a.responseStart;0<c&&h>=c&&(b[k].srt=h-c)}if(a){var e=b[k].load;0<c&&h>=c&&(e[g]("_wtsrt",void 0,c),e[g]("wtsrt_","_wtsrt",h),e[g]("tbsd_","wtsrt_"))}try{a=null,
+b[f]&&b[f].csi&&(a=Math.floor(b[f].csi().pageT),e&&0<c&&(e[g]("_tbnd",void 0,b[f].csi().startE),e[g]("tbnd_","_tbnd",c))),null==a&&b.gtbExternal&&(a=b.gtbExternal.pageT()),null==a&&b.external&&(a=b.external.pageT,e&&0<c&&(e[g]("_tbnd",void 0,b.external.startE),e[g]("tbnd_","_tbnd",c))),a&&(b[k].pt=a)}catch(p){}})();b.tickAboveFold=function(d){var a=0;if(d.offsetParent){do a+=d.offsetTop;while(d=d.offsetParent)}d=a;750>=d&&b[k].load[g]("aft")};var l=!1;function m(){l||(l=!0,b[k].load[g]("firstScrollTime"))}b.addEventListener?b.addEventListener("scroll",m,!1):b.attachEvent("onscroll",m);
+ })();</script>
+<meta content='blogger' name='generator'/>
+<link href='http://iphonesdkdev.blogspot.kr/favicon.ico' rel='icon' type='image/x-icon'/>
+<link href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html' rel='canonical'/>
+<link rel="alternate" type="application/atom+xml" title="iPhone Software Development - Atom" href="http://iphonesdkdev.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="iPhone Software Development - RSS" href="http://iphonesdkdev.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="iPhone Software Development - Atom" href="http://www.blogger.com/feeds/6245963027152906987/posts/default" />
+
+<link rel="alternate" type="application/atom+xml" title="iPhone Software Development - Atom" href="http://iphonesdkdev.blogspot.com/feeds/7733424376588802160/comments/default" />
+<link href='http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s400/localpush.png' rel='image_src'/>
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>iPhone Software Development: Local Notification Sample Code (OS 4.0 only)</title>
+<link type='text/css' rel='stylesheet' href='https://www.blogger.com/static/v1/widgets/3841957138-widget_css_bundle.css' />
+<link type='text/css' rel='stylesheet' href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=6245963027152906987&zx=aed69f84-9e55-4d8d-8a26-6b21ad33596d' />
+<style id='page-skin-1' type='text/css'><!--
+/*
+* Tekka
+* style modified from glish: http://www.glish.com/css/
+*
+* Updated by Blogger Team
+*/
+/* Variable definitions
+<Variable name="mainBgColor" description="Page Background Color"
+type="color" default="#f5f5f5">
+<Variable name="mainTextColor"  description="Text Color"
+type="color" default="#000000">
+<Variable name="dateHeaderColor" description="Date Header Color"
+type="color" default="#808080">
+<Variable name="mainLinkColor" description="Link Color"
+type="color" default="#0000ff">
+<Variable name="mainVisitedLinkColor" description="Visited Link Color"
+type="color" default="#800080">
+<Variable name="sidebarBgColor" description="Sidebar Background Color"
+type="color" default="#ffffff">
+<Variable name="sidebarTextColor" description="Sidebar Text Color"
+type="color" default="#000000">
+<Variable name="sidebarTitleColor" description="Sidebar Title Color"
+type="color" default="#000000">
+<Variable name="sidebarLinkColor" description="Sidebar Link Color"
+type="color" default="#0000ff">
+<Variable name="sidebarVisitedLinkColor" description="Sidebar Visited Link Color"
+type="color" default="#800080">
+<Variable name="bodyFont" description="Text Font"
+type="font" default="normal normal 100% 'Trebuchet MS', verdana, sans-serif">
+<Variable name="startSide" description="Start side in blog language"
+type="automatic" default="left">
+<Variable name="endSide" description="End side in blog language"
+type="automatic" default="right">
+*/
+body {
+margin-top:0px;
+margin-right:0px;
+margin-bottom:0px;
+margin-left:0px;
+font-size: small;
+background-color: #f5f5f5;
+color: #000000;
+}
+#content-wrapper {
+margin-top: 0px;
+margin-right: 0px;
+margin-bottom: 0;
+margin-left: 15px;
+}
+h1 {
+font-size:400%;
+padding-left:15px;
+text-transform:uppercase;
+}
+h1 a, h1 a:link, h1 a:visited {
+text-decoration:none;
+color: #000000;
+}
+.description {
+text-align: center;
+padding-top:10px;
+}
+h2.date-header {
+border-bottom:none;
+font-size: 130%;
+text-align:left;
+margin-top:20px;
+margin-bottom:14px;
+padding:1px;
+padding-left:17px;
+color: #808080;
+font-weight: normal;
+font-family: Trebuchet MS, Verdana, Sans-serif;
+}
+.post h2 {
+font-size: 130%;
+font-weight:bold;
+line-height:50%;
+padding:0px;
+margin:0px;
+}
+.post h3 {
+font-size: 150%;
+font-weight:bold;
+color:#002E3F;
+}
+.post h3 a,
+.post h3 a:visited {
+font-size: 150%;
+color: #002E3F;
+}
+.post {
+padding-left:20px;
+margin-top:0px;
+margin-bottom:0px;
+text-indent:0px;
+padding-right:20px;
+padding-top:0px;
+padding-bottom:0px;
+line-height:18px;
+}
+.post-footer {
+margin-bottom:20px;
+margin-left:0px;
+font-size: 87%;
+}
+#comments {
+margin-left: 20px;
+}
+.feed-links {
+clear: both;
+line-height: 2.5em;
+margin-left: 20px;
+}
+#blog-pager-newer-link {
+float: left;
+margin-left: 20px;
+}
+#blog-pager-older-link {
+float: right;
+}
+#blog-pager {
+text-align: center;
+}
+#main {
+float:left;
+padding-bottom:10px;
+padding:0px;
+width:67%;
+font: normal normal 100% Verdana, sans-serif;
+word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+overflow: hidden;     /* fix for long non-text content breaking IE sidebar float */
+}
+.sidebar h2 {
+font-weight:bold;
+font-size: 150%;
+color: #000000;
+}
+a {
+text-decoration:none
+}
+a:hover {
+border-bottom:dashed 1px red;
+}
+a img {
+border: 0;
+}
+a {
+color: #0000ff;
+}
+a:hover,
+a:visited {
+color: #3D81EE;
+}
+#sidebar a {
+color: #0000ff;
+}
+#sidebar a:hover,
+#sidebar a:visited {
+color: #3D81EE;
+}
+#sidebar {
+text-transform:none;
+background-color: #ffffff;
+color: #000000;
+padding-left: 20px;
+width: 30%;
+float: right;
+font: normal normal 100% Verdana, sans-serif;
+border-left:2px dashed #000000;
+word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+overflow: hidden;     /* fix for long non-text content breaking IE sidebar float */
+}
+.sidebar .widget {
+padding-top: 4px;
+padding-right: 8px;
+padding-bottom: 0;
+padding-left: 0;
+}
+.profile-textblock {
+clear: both;
+margin-left: 0;
+}
+.profile-img {
+float: left;
+margin-top: 0;
+margin-right: 5px;
+margin-bottom: 5px;
+margin-left: 0;
+}
+.clear {
+clear: both;
+}
+.comment-footer {
+padding-bottom: 1em;
+}
+/* Code block */
+dl.codebox {
+padding: 0px;
+margin: 0px;
+background-color: #FFFFFF;
+border: 1px solid #d8d8d8;
+font-size: 1em;
+}
+dl.codebox dt {
+//	text-transform: uppercase;
+border-bottom: 1px solid #CCCCCC;
+margin-bottom: 0px;
+font-size: 0.8em;
+font-weight: bold;
+display: block;
+padding-bottom: 0px;
+}
+blockquote dl.codebox {
+margin-left: 0;
+line-height: 4px;
+color: #CCCCCC;
+}
+dl.codebox code {
+/* Also see tweaks.css */
+overflow: auto;
+word-wrap: normal;
+display: block;
+height: auto;
+max-height: 200px;
+white-space: pre;
+font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
+color: #3D81EE;
+padding-top: 5px;
+line-height: 1.3em;
+margin: 2px 0;
+}
+dl.prebox pre {
+overflow: auto;
+//        word-wrap: break-word;
+display: block;
+border-top: 1px solid #CCCCCC;
+height: auto;
+max-height: 200px;
+font: 0.7em Monaco, "Andale Mono","Courier New", Courier, mono;
+color: #000033;
+padding-top: 0px;
+line-height: 100%;
+margin: 2px 0;
+}
+dd {
+margin: 0px;
+padding: 0px;
+line-height: 100%;
+}
+.syntaxbg	{ color: #FFFFFF; }
+.syntaxcomment	{ color: #000000; }
+.syntaxdefault	{ color: #bcbcbc; }
+.syntaxhtml	{ color: #000000; }
+.syntaxkeyword	{ color: #585858; }
+.syntaxstring	{ color: #a7a7a7; }
+dl.codebox {
+background-color: #FFFFFF;
+border-color: #C9D2D8;
+}
+dl.codebox dt {
+border-bottom-color:  #CCCCCC;
+}
+dl.codebox code {
+color: #000033;
+margin-top: 0px;
+padding-top: 0px;
+}
+
+--></style>
+<meta content='width=320, user-scalable=yes, initial-scale=0.6, minimum-scale=0.6, maximum-scale=1.0' name='viewport'/>
+<script type="text/javascript">var a="indexOf",b="&m=1",e="(^|&)m=",f="?",g="?m=1";function h(){var c=window.location.href,d=c.split(f);switch(d.length){case 1:return c+g;case 2:return 0<=d[1].search(e)?null:c+b;default:return null}}var k=navigator.userAgent;if(-1!=k[a]("Mobile")&&-1!=k[a]("WebKit")&&-1==k[a]("iPad")||-1!=k[a]("Opera Mini")||-1!=k[a]("IEMobile")){var l=h();l&&window.location.replace(l)};
+</script><script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('headEnd');
+</script></head>
+<body>
+<div class='navbar section' id='navbar'><div class='widget Navbar' id='Navbar1'><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener('load',
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<div id="navbar-iframe-container"></div>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+        gapi.load("gapi.iframes:gapi.iframes.style.bubble", function() {
+          if (gapi.iframes && gapi.iframes.getContext) {
+            gapi.iframes.getContext().openChild({
+                url: 'https://www.blogger.com/navbar.g?targetBlogID\0756245963027152906987\46blogName\75iPhone+Software+Development\46publishMode\75PUBLISH_MODE_BLOGSPOT\46navbarType\75BLUE\46layoutType\75LAYOUTS\46searchRoot\75http://iphonesdkdev.blogspot.com/search\46blogLocale\75en\46v\0752\46homepageUrl\75http://iphonesdkdev.blogspot.com/\46targetPostID\0757733424376588802160\46blogPostOrPageUrl\75http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html\46vt\0755031197059993468488',
+                where: document.getElementById("navbar-iframe-container"),
+                id: "navbar-iframe"
+            });
+          }
+        });
+      </script><script type="text/javascript">
+(function() {
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = '//pagead2.googlesyndication.com/pagead/js/google_top_exp.js';
+var head = document.getElementsByTagName('head')[0];
+if (head) {
+head.appendChild(script);
+}})();
+</script>
+</div></div>
+<div id='outer-wrapper'><div id='wrap2'>
+<!-- skip links for text browsers -->
+<span id='skiplinks' style='display:none;'>
+<a href='#main'>skip to main </a> |
+      <a href='#sidebar'>skip to sidebar</a>
+</span>
+<div id='content-wrapper'>
+<div id='crosscol-wrapper' style='text-align:center'>
+<div class='crosscol section' id='crosscol'></div>
+</div>
+<div id='main-wrapper'>
+<div class='main section' id='main'><div class='widget Header' id='Header1'>
+<div id='header-inner'>
+<a href='http://iphonesdkdev.blogspot.kr/' style='display: block'>
+<img alt='iPhone Software Development' height='263px; ' id='Header1_headerimg' src='http://1.bp.blogspot.com/_3LRNVfBfliQ/ScU0RVFgiPI/AAAAAAAAArU/bzah3ng3Wqc/S1600-R/sdktitle2.png' style='display: block' width='582px; '/>
+</a>
+</div>
+</div><div class='widget AdSense' id='AdSense2'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=15;
+google_ad_format="728x15_0ads_al_s";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="000000";
+google_color_url="0000FF";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense2&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense2"));' target='configAdSense2' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget AdSense' id='AdSense5'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=90;
+google_ad_format="728x90_as";
+google_ad_type="text_image";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="000000";
+google_color_url="0000FF";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense5&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense5"));' target='configAdSense5' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget AdSense' id='AdSense6'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=90;
+google_ad_format="728x90_as";
+google_ad_type="text_image";
+google_color_border="A8DDA0";
+google_color_bg="EBFFED";
+google_color_link="0000CC";
+google_color_url="008000";
+google_color_text="6D6D6D";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense6&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense6"));' target='configAdSense6' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget AdSense' id='AdSense8'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=90;
+google_ad_format="728x90_as";
+google_ad_type="text_image";
+google_color_border="B4D0DC";
+google_color_bg="ECF8FF";
+google_color_link="0000CC";
+google_color_url="008000";
+google_color_text="6F6F6F";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense8&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense8"));' target='configAdSense8' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget AdSense' id='AdSense3'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=15;
+google_ad_format="728x15_0ads_al_s";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="000000";
+google_color_url="0000FF";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense3&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense3"));' target='configAdSense3' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget Blog' id='Blog1'>
+<div class='blog-posts hfeed'>
+<!-- google_ad_section_start(name=default) -->
+
+          <div class="date-outer">
+        
+<h2 class='date-header'><span>Saturday, April 10, 2010</span></h2>
+
+          <div class="date-posts">
+        
+<div class='post-outer'>
+<div class='post hentry uncustomized-post-template' itemprop='blogPost' itemscope='itemscope' itemtype='http://schema.org/BlogPosting'>
+<meta content='http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s400/localpush.png' itemprop='image_url'/>
+<meta content='6245963027152906987' itemprop='blogId'/>
+<meta content='7733424376588802160' itemprop='postId'/>
+<a name='7733424376588802160'></a>
+<h3 class='post-title entry-title' itemprop='name'>
+Local Notification Sample Code (OS 4.0 only)
+</h3>
+<div class='post-header'>
+<div class='post-header-line-1'></div>
+</div>
+<div class='post-body entry-content' id='post-body-7733424376588802160' itemprop='description articleBody'>
+Start a new Window-based Application Project called LocalPush<br /><br />Add an instance variable bgTask in LocalPushAppDelegate<br /><br /><code><br />@interface LocalPushAppDelegate : NSObject <UIApplicationDelegate> {<br />&nbsp;&nbsp;&nbsp;&nbsp;UIWindow *window;<br />&nbsp;&nbsp;&nbsp;&nbsp;UIBackgroundTaskIdentifier bgTask;<br />}<br /></code><br /><br />It will fire up a Local Notification to remind you one min before the event which is 2 minutes due from now <br /><br /><dl class="codebox"><dt> LocalPushAppDelegate.m  <a href="#" onclick="selectCode(this); return false;">Select all</a></dt><code><br />//<br />//  LocalPushAppDelegate.m<br />//  LocalPush<br />//<br /><br />@interface ToDoItem : NSObject  {<br /> NSInteger year;<br /> NSInteger month;<br /> NSInteger day;<br /> NSInteger hour;<br /> NSInteger minute;<br /> NSInteger second;<br /> NSString *eventName;<br />}<br /><br />@property (nonatomic, readwrite) NSInteger year;<br />@property (nonatomic, readwrite) NSInteger month;<br />@property (nonatomic, readwrite) NSInteger day;<br />@property (nonatomic, readwrite) NSInteger hour;<br />@property (nonatomic, readwrite) NSInteger minute;<br />@property (nonatomic, readwrite) NSInteger second;<br />@property (nonatomic, copy) NSString *eventName;<br /><br />@end<br /><br />@implementation ToDoItem<br /><br />@synthesize year, month, day, hour, minute, second, eventName;<br /><br />@end<br /><br />#import "LocalPushAppDelegate.h"<br /><br />@implementation LocalPushAppDelegate<br /><br />@synthesize window;<br /><br />#define ToDoItemKey @"EVENTKEY1"<br />#define MessageTitleKey @"MSGKEY1"<br /><br /><br />- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    <br /> NSLog(@"application: didFinishLaunchingWithOptions:");<br />    // Override point for customization after application launch<br /> <br /> UILocalNotification *localNotif = [launchOptions<br />            objectForKey:UIApplicationLaunchOptionsLocalNotificationKey]; <br /> <br /> if (localNotif) {<br />  NSString *itemName = [localNotif.userInfo objectForKey:ToDoItemKey]; <br />  //  [viewController displayItem:itemName]; // custom method <br />  application.applicationIconBadgeNumber = localNotif.applicationIconBadgeNumber-1; <br />  NSLog(@"has localNotif %@",itemName);<br /> }<br /> else {<br />  [[UIApplication sharedApplication] cancelAllLocalNotifications];<br />  NSDate *now = [NSDate date];<br />  NSLog(@"now is %@",now);<br />  NSDate *scheduled = [now dateByAddingTimeInterval:120] ; //get x minute after<br />  NSCalendar *calendar = [NSCalendar currentCalendar];<br /><br />  unsigned int unitFlags = NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit;<br />  NSDateComponents *comp = [calendar components:unitFlags fromDate:scheduled];<br />  <br />  NSLog(@"scheduled is %@",scheduled);<br />  <br />  ToDoItem *todoitem = [[ToDoItem alloc] init];<br />  <br />  todoitem.day = [comp day];<br />  todoitem.month = [comp month];<br />  todoitem.year = [comp year];<br />  todoitem.hour = [comp hour];<br />  todoitem.minute = [comp minute];<br />  todoitem.eventName = @"Testing Event";<br />  <br />  [self scheduleNotificationWithItem:todoitem interval:1];<br />  NSLog(@"scheduleNotificationWithItem");<br /> }<br /> [window makeKeyAndVisible];<br /> return YES;<br />}<br /><br />- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notif {<br />   NSLog(@"application: didReceiveLocalNotification:");<br /> NSString *itemName = [notif.userInfo objectForKey:ToDoItemKey];<br /> NSString *messageTitle = [notif.userInfo objectForKey:MessageTitleKey];<br />// [viewController displayItem:itemName]; // custom method <br /> [self _showAlert:itemName withTitle:messageTitle];<br /> NSLog(@"Receive Local Notification while the app is still running...");<br /> NSLog(@"current notification is %@",notif);<br /> application.applicationIconBadgeNumber = notif.applicationIconBadgeNumber-1; <br /> <br />}<br /><br />- (void) _showAlert:(NSString*)pushmessage withTitle:(NSString*)title<br />{<br /> <br /> UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:title message:pushmessage delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];<br /> [alertView show];<br /> if (alertView) { <br />  [alertView release]; <br /> }<br />}<br /><br /><br />- (void)scheduleNotificationWithItem:(ToDoItem *)item interval:(int)minutesBefore {<br />    NSCalendar *calendar = [NSCalendar autoupdatingCurrentCalendar];<br />    NSDateComponents *dateComps = [[NSDateComponents alloc] init];<br />    [dateComps setDay:item.day];<br />    [dateComps setMonth:item.month];<br />    [dateComps setYear:item.year];<br />    [dateComps setHour:item.hour];<br />    [dateComps setMinute:item.minute];<br />    NSDate *itemDate = [calendar dateFromComponents:dateComps];<br />    [dateComps release];<br /> <br /><br />    UILocalNotification *localNotif = [[UILocalNotification alloc] init];<br />    if (localNotif == nil)<br />        return;<br />    localNotif.fireDate = [itemDate dateByAddingTimeInterval:-(minutesBefore*60)];<br />  NSLog(@"fireDate is %@",localNotif.fireDate);<br />    localNotif.timeZone = [NSTimeZone defaultTimeZone];<br /> <br />    localNotif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ in %i minutes.", nil),<br />       item.eventName, minutesBefore];<br />    localNotif.alertAction = NSLocalizedString(@"View Details", nil);<br /> <br />    localNotif.soundName = UILocalNotificationDefaultSoundName;<br />    localNotif.applicationIconBadgeNumber = 1;<br />//  NSDictionary *infoDict = [NSDictionary dictionaryWithObject:item.eventName forKey:ToDoItemKey];<br />  NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:item.eventName,ToDoItemKey, @"Local Push received while running", MessageTitleKey, nil];<br />    localNotif.userInfo = infoDict;<br /> <br />    [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];<br />  NSLog(@"scheduledLocalNotifications are %@", [[UIApplication sharedApplication] scheduledLocalNotifications]);<br />    [localNotif release];<br />}<br /><br />- (NSString *) checkForIncomingChat {<br /> return @"javacom";<br />};<br /><br />- (void)applicationDidEnterBackground:(UIApplication *)application {<br />    NSLog(@"Application entered background state.");<br />    // UIBackgroundTaskIdentifier bgTask is instance variable<br />    // UIInvalidBackgroundTask has been renamed to UIBackgroundTaskInvalid<br />    NSAssert(self->bgTask == UIBackgroundTaskInvalid, nil);<br /><br />    bgTask = [application beginBackgroundTaskWithExpirationHandler: ^{<br />        dispatch_async(dispatch_get_main_queue(), ^{<br />            [application endBackgroundTask:self->bgTask];<br />            self->bgTask = UIBackgroundTaskInvalid;<br />        });<br />    }];<br /> <br />    dispatch_async(dispatch_get_main_queue(), ^{<br />        while ([application backgroundTimeRemaining] > 1.0) {<br />            NSString *friend = [self checkForIncomingChat];<br />            if (friend) {<br />                UILocalNotification *localNotif = [[UILocalNotification alloc] init];<br />                if (localNotif) {<br />                    localNotif.alertBody = [NSString stringWithFormat:<br />           NSLocalizedString(@"%@ has a message for you.", nil), friend];<br />                    localNotif.alertAction = NSLocalizedString(@"Read Msg", nil);<br />                    localNotif.soundName = @"alarmsound.caf";<br />                    localNotif.applicationIconBadgeNumber = 1;<br />      NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Your Background Task works",ToDoItemKey, @"Message from javacom", MessageTitleKey, nil];<br />      localNotif.userInfo = infoDict;<br />                    [application presentLocalNotificationNow:localNotif];<br />                    [localNotif release];<br />                    friend = nil;<br />                    break;<br />                }<br />            }<br />        }<br />        [application endBackgroundTask:self->bgTask];<br />        self->bgTask = UIBackgroundTaskInvalid;<br />    });<br />}<br /><br /> <br />- (void)dealloc {<br />    [window release];<br />    [super dealloc];<br />}<br /><br /><br />@end<br /></code></dl><br /><br /><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s1600/localpush.png"><img style="cursor:pointer; cursor:hand;width: 231px; height: 400px;" src="http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s400/localpush.png" border="0" alt=""id="BLOGGER_PHOTO_ID_5458370730615192466" /></a><br /><br />.<br />.<br />.
+<div style='clear: both;'></div>
+</div>
+<div class='post-footer'>
+<div class='post-footer-line post-footer-line-1'>
+<span class='post-author vcard'>
+</span>
+<span class='post-timestamp'>
+</span>
+<span class='reaction-buttons'>
+</span>
+<span class='star-ratings'>
+</span>
+<span class='post-comment-link'>
+</span>
+<span class='post-backlinks post-comment-link'>
+</span>
+<span class='post-icons'>
+<span class='item-control blog-admin pid-1622912842'>
+<a href='http://www.blogger.com/post-edit.g?blogID=6245963027152906987&postID=7733424376588802160&from=pencil' title='Edit Post'>
+<img alt='' class='icon-action' height='18' src='http://img2.blogblog.com/img/icon18_edit_allbkg.gif' width='18'/>
+</a>
+</span>
+</span>
+<div class='post-share-buttons goog-inline-block'>
+</div>
+</div>
+<div class='post-footer-line post-footer-line-2'>
+<span class='post-labels'>
+標籤&#65306;
+<a href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20OS%204.0' rel='tag'>iPhone OS 4.0</a>,
+<a href='http://iphonesdkdev.blogspot.kr/search/label/Local%20Notification' rel='tag'>Local Notification</a>,
+<a href='http://iphonesdkdev.blogspot.kr/search/label/Sample%20Code' rel='tag'>Sample Code</a>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-3'>
+<span class='post-location'>
+</span>
+</div>
+</div>
+</div>
+<div class='comments' id='comments'>
+<a name='comments'></a>
+<h4>19 comments:</h4>
+<div id='Blog1_comments-block-wrapper'>
+<dl class='avatar-comment-indent' id='comments-block'>
+<dt class='comment-author ' id='c2500455804129214990'>
+<a name='c2500455804129214990'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/05164846447554958784" rel="nofollow" onclick="" class="avatar-hovercard" id="av-0-05164846447554958784"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Dave">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/05164846447554958784' rel='nofollow'>Dave</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-2500455804129214990'>
+<p>
+Do you know if there&#39;s a way of having a custom repeat interval?  I see the built-in NSCalendarUnits, but I&#39;m looking for something custom, like say 45 minutes or something.  Any ideas?  Everything I try sends the phone in a constant reboot loop.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1271118346958#c2500455804129214990' title='comment permalink'>
+13 April, 2010 08:25
+</a>
+<span class='item-control blog-admin pid-1090710585'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=2500455804129214990' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c8345447559839879310'>
+<a name='c8345447559839879310'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/11866453588561211870" rel="nofollow" onclick="" class="avatar-hovercard" id="av-1-11866453588561211870"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Apple Geek">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/11866453588561211870' rel='nofollow'>Apple Geek</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-8345447559839879310'>
+<p>
+Thanks for the tutorial. A few more comments in the code would be very helpful though.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1271246046911#c8345447559839879310' title='comment permalink'>
+14 April, 2010 19:54
+</a>
+<span class='item-control blog-admin pid-670865361'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=8345447559839879310' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c1377910848258376803'>
+<a name='c1377910848258376803'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/11866453588561211870" rel="nofollow" onclick="" class="avatar-hovercard" id="av-2-11866453588561211870"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Apple Geek">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/11866453588561211870' rel='nofollow'>Apple Geek</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-1377910848258376803'>
+<p>
+Hey thanks for the great tutorial! How do you set a defined time for the alert to go off? I know this is a basic question but I would appreciate the help! Thanks
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1271246132754#c1377910848258376803' title='comment permalink'>
+14 April, 2010 19:55
+</a>
+<span class='item-control blog-admin pid-670865361'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=1377910848258376803' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c6882687708360708114'>
+<a name='c6882687708360708114'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://jeroendeleeuw.nl" rel="nofollow" onclick=""><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Jeroen de Leeuw">
+
+</a></span></div>
+<a href='http://jeroendeleeuw.nl' rel='nofollow'>Jeroen de Leeuw</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-6882687708360708114'>
+<p>
+Do you know for how long the application can remain active in the background?
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1271272886419#c6882687708360708114' title='comment permalink'>
+15 April, 2010 03:21
+</a>
+<span class='item-control blog-admin pid-2122112960'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=6882687708360708114' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c7026021840210615983'>
+<a name='c7026021840210615983'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/00635860131198691018" rel="nofollow" onclick="" class="avatar-hovercard" id="av-4-00635860131198691018"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="apiphone">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/00635860131198691018' rel='nofollow'>apiphone</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-7026021840210615983'>
+<p>
+Hello, thanks for the code. Where did you find the documentation of UILocalNotification class. There is no documentation available on iphone dev center web site. Don&#39;t know what methods/properties are there. Can you please point me to the location.<br /><br />Thanks
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1271970626147#c7026021840210615983' title='comment permalink'>
+23 April, 2010 05:10
+</a>
+<span class='item-control blog-admin pid-1634739915'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=7026021840210615983' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c1791476559132789162'>
+<a name='c1791476559132789162'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.e-zest.net" rel="nofollow" onclick=""><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Allen">
+
+</a></span></div>
+<a href='http://www.e-zest.net' rel='nofollow'>Allen</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-1791476559132789162'>
+<p>
+Amazing tutorial.What is application activation time?
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1275390929656#c1791476559132789162' title='comment permalink'>
+01 June, 2010 19:15
+</a>
+<span class='item-control blog-admin pid-1398647659'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=1791476559132789162' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c6176746929634805342'>
+<a name='c6176746929634805342'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-6176746929634805342'>
+<p>
+When I try to run this code I get an error:<br />&#39;UIInvalidBackgroundTask&#39; undeclared<br /><br />Not sure what is going on since I just copied and pasted your code.  My code base is 4.0, any ideas?  Thanks.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1276790152720#c6176746929634805342' title='comment permalink'>
+17 June, 2010 23:55
+</a>
+<span class='item-control blog-admin pid-461762416'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=6176746929634805342' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c1234080398713082665'>
+<a name='c1234080398713082665'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-1234080398713082665'>
+<p>
+That&#39;s because UIInvalidBackgroundTask has been renamed UIBackgroundTaskInvalid. Change all instances of the former to the latter and you&#39;ll be fine.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1277143853449#c1234080398713082665' title='comment permalink'>
+22 June, 2010 02:10
+</a>
+<span class='item-control blog-admin pid-536554435'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=1234080398713082665' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c4524403776637290374'>
+<a name='c4524403776637290374'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/03328356455229644921" rel="nofollow" onclick="" class="avatar-hovercard" id="av-8-03328356455229644921"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://2.bp.blogspot.com/_3oIdr9YZa4s/S8gGKqKtKMI/AAAAAAAAAdg/lOA_WdjTqoA/S45/Manoj.JPG" title="manoj">
+
+<noscript><img src="http://2.bp.blogspot.com/_3oIdr9YZa4s/S8gGKqKtKMI/AAAAAAAAAdg/lOA_WdjTqoA/S45/Manoj.JPG" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/03328356455229644921' rel='nofollow'>manoj</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-4524403776637290374'>
+<p>
+Thanks for the tutorial. A comments list would be very helpful. :)
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1277374126152#c4524403776637290374' title='comment permalink'>
+24 June, 2010 18:08
+</a>
+<span class='item-control blog-admin pid-1755438832'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=4524403776637290374' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c1716447331916522872'>
+<a name='c1716447331916522872'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/02861439581489660477" rel="nofollow" onclick="" class="avatar-hovercard" id="av-9-02861439581489660477"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="sukhi">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/02861439581489660477' rel='nofollow'>sukhi</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-1716447331916522872'>
+<p>
+when i pressed home button it shows alert view when i pressed OK application terminated and when i pressed close application remain in background but when i reopen it application again terminated ... what to do now please tell...
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1285602218295#c1716447331916522872' title='comment permalink'>
+27 September, 2010 23:43
+</a>
+<span class='item-control blog-admin pid-1403790769'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=1716447331916522872' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c593720583905209693'>
+<a name='c593720583905209693'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/16220990708712144159" rel="nofollow" onclick="" class="avatar-hovercard" id="av-10-16220990708712144159"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="intern">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/16220990708712144159' rel='nofollow'>intern</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-593720583905209693'>
+<p>
+in my application after setting some time say 5 min i want to pop up message with ok button which is already running in background task and even someone press ok button again it should display the message means someone cannot do anything after setting time in my applicaiton.please help me how can i do it
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1297835152891#c593720583905209693' title='comment permalink'>
+16 February, 2011 13:45
+</a>
+<span class='item-control blog-admin pid-1900182808'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=593720583905209693' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c8288495455351338806'>
+<a name='c8288495455351338806'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-8288495455351338806'>
+<p>
+suppose two notifications at the same time?what about popup box,is it one below another?
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1298546257868#c8288495455351338806' title='comment permalink'>
+24 February, 2011 19:17
+</a>
+<span class='item-control blog-admin pid-1382667898'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=8288495455351338806' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c3629698507711905471'>
+<a name='c3629698507711905471'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/18117584429978520653" rel="nofollow" onclick="" class="avatar-hovercard" id="av-12-18117584429978520653"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="srinu">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/18117584429978520653' rel='nofollow'>srinu</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-3629698507711905471'>
+<p>
+how can we set custom repeat interval as 2days or 3 days in schedule Notification......<br />i m using Nscalender For Getting Update date for notification firing
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1308114641259#c3629698507711905471' title='comment permalink'>
+15 June, 2011 13:10
+</a>
+<span class='item-control blog-admin pid-418769231'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=3629698507711905471' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c9197659936207592627'>
+<a name='c9197659936207592627'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-9197659936207592627'>
+<p>
+Good tutorial. In my application i want to fire local notifications only for 3 days. After 3 days i want to remove the notification. Any idea, how to set the interval only for 3 days?. Any help is highly appreciated.<br /><br />Thanks
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1308221436659#c9197659936207592627' title='comment permalink'>
+16 June, 2011 18:50
+</a>
+<span class='item-control blog-admin pid-1762640358'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=9197659936207592627' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c2592667877318995050'>
+<a name='c2592667877318995050'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-2592667877318995050'>
+<p>
+Thank&#39;s for the code...<br />You forgot to release todoitem in didFinishLaunchingWithOptions
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1317194468514#c2592667877318995050' title='comment permalink'>
+28 September, 2011 15:21
+</a>
+<span class='item-control blog-admin pid-2025664124'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=2592667877318995050' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c545383904090229865'>
+<a name='c545383904090229865'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-545383904090229865'>
+<p>
+has anybody used a solution for push notifications by Appoxee? let me know
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1331217032835#c545383904090229865' title='comment permalink'>
+08 March, 2012 22:30
+</a>
+<span class='item-control blog-admin pid-444364111'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=545383904090229865' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c8325538235691661860'>
+<a name='c8325538235691661860'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.objectfrontier.com" rel="nofollow" onclick=""><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Sukumar Jena">
+
+</a></span></div>
+<a href='http://www.objectfrontier.com' rel='nofollow'>Sukumar Jena</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-8325538235691661860'>
+<p>
+Thanks for everyone for giving your valuable information on this topic..<br /><br />Thanks to all
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1338976412036#c8325538235691661860' title='comment permalink'>
+06 June, 2012 17:53
+</a>
+<span class='item-control blog-admin pid-1430379956'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=8325538235691661860' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c8408237569298310981'>
+<a name='c8408237569298310981'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/06612459538934858268" rel="nofollow" onclick="" class="avatar-hovercard" id="av-17-06612459538934858268"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="//lh4.googleusercontent.com/-I0OUcKsRxaA/AAAAAAAAAAI/AAAAAAAAAAA/XPqYyWcAuyA/s512-c/photo.jpg" title="Mritunjay Kumar">
+
+<noscript><img src="//lh4.googleusercontent.com/-I0OUcKsRxaA/AAAAAAAAAAI/AAAAAAAAAAA/XPqYyWcAuyA/s512-c/photo.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/06612459538934858268' rel='nofollow'>Mritunjay Kumar</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-8408237569298310981'>
+<p>
+Thanks for Giving the Tutorial...
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1353874315110#c8408237569298310981' title='comment permalink'>
+26 November, 2012 04:11
+</a>
+<span class='item-control blog-admin pid-757963774'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=8408237569298310981' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c2132598686044846748'>
+<a name='c2132598686044846748'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/06626255208450607496" rel="nofollow" onclick="" class="avatar-hovercard" id="av-18-06626255208450607496"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="//lh4.googleusercontent.com/-L9Z3Fo6JEXo/AAAAAAAAAAI/AAAAAAAAABs/S4oxH5T-M38/s512-c/photo.jpg" title="Steve Paul">
+
+<noscript><img src="//lh4.googleusercontent.com/-L9Z3Fo6JEXo/AAAAAAAAAAI/AAAAAAAAABs/S4oxH5T-M38/s512-c/photo.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/06626255208450607496' rel='nofollow'>Steve Paul</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-2132598686044846748'>
+<p>
+Thanks for sharing keep it up ! <a href="http://reachplus.com/" rel="nofollow">emergency notification </a>
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html?showComment=1375532140377#c2132598686044846748' title='comment permalink'>
+03 August, 2013 20:15
+</a>
+<span class='item-control blog-admin pid-1125778267'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=6245963027152906987&postID=2132598686044846748' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+</dl>
+</div>
+<p class='comment-footer'>
+<a href='http://www.blogger.com/comment.g?blogID=6245963027152906987&amp;postID=7733424376588802160' onclick=''>Post a Comment</a>
+</p>
+<div id='backlinks-container'>
+<div id='Blog1_backlinks-container'>
+</div>
+</div>
+</div>
+</div>
+
+        </div></div>
+      
+<!-- google_ad_section_end -->
+</div>
+<div class='blog-pager' id='blog-pager'>
+<span id='blog-pager-newer-link'>
+<a class='blog-pager-newer-link' href='http://iphonesdkdev.blogspot.kr/2010/04/enable-emoji-keyboard-in-iphone.html' id='Blog1_blog-pager-newer-link' title='Newer Post'>Newer Post</a>
+</span>
+<span id='blog-pager-older-link'>
+<a class='blog-pager-older-link' href='http://iphonesdkdev.blogspot.kr/2010/04/old-versions-of-iphone-sdk.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+</span>
+<a class='home-link' href='http://iphonesdkdev.blogspot.kr/'>Home</a>
+</div>
+<div class='clear'></div>
+<div class='post-feeds'>
+<div class='feed-links'>
+Subscribe to:
+<a class='feed-link' href='http://iphonesdkdev.blogspot.com/feeds/7733424376588802160/comments/default' target='_blank' type='application/atom+xml'>Post Comments (Atom)</a>
+</div>
+</div>
+<script type="text/javascript">window.___gcfg = {'lang': 'en'};</script>
+</div><div class='widget AdSense' id='AdSense1'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-1951007607335489";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000+00032+00005";
+google_ad_width=728;
+google_ad_height=15;
+google_ad_format="728x15_0ads_al_s";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="000000";
+google_color_url="0000FF";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=AdSense&widgetId=AdSense1&action=editWidget&sectionId=main' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense1"));' target='configAdSense1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div></div>
+</div>
+<div id='sidebar-wrapper'>
+<div class='sidebar section' id='sidebar'><div class='widget HTML' id='HTML2'>
+<h2 class='title'>Support Me $5</h2>
+<div class='widget-content'>
+or <b>bitcoin</b> <a href="bitcoin:1KBiqfjdGDGEUGJTZcgajNKP3WtnUcnFEz">1KBiqfjdGDGEUGJTZcgajNKP3WtnUcnFEz</a>
+<br/><br/><br/>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input value="_s-xclick" name="cmd" type="hidden"/>
+<input value="-----BEGIN PKCS7-----MIIHsQYJKoZIhvcNAQcEoIIHojCCB54CAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYApxjbOgautHKPWjvxND4Ih1JdgIoW+mOWw+g+0r5P+9qZNzpW5DtjeVGQQTNyCU+ifdP2FYh0IXJSRh6/dvkgrkFFbyli+LH/k69OWasba+8vykG9bbwFRw+fNY+tKeybDMc6LlnrZaCq7glG4ISbhNTb4NifQ3UqczDwbS207bjELMAkGBSsOAwIaBQAwggEtBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECLZZEffGPlJEgIIBCCMP1JhZNWNgGN+78UmKUaGDek2O21ianeO2r4VwdSkxmxQxyedvHlr3OmhqVqDcB4LimaJwz4iKNfZ3Q8oikiUXK0A5Mx98j152pLC8d9SYHbZiK0q2eJLY5sBVZSVNEcz7lAsz6ys2HE4350qZOgZP1qm3Ok5E9TFLGdYijrGpudC3Zb1dAFTB/VXS6Ltx6xxuZAJY9S8jxlh7vwWkX9yc4isMsb4P3Klnycmv/5x2U6G4fQChiaczugWOz8TQsG0anuWEfIfGt2mEsuNfldQ6M1pItYGdv5T8GC2VAfVNrMS850qlO1qjaqpsGMGX3msTp3bkDSBGSrhg9uE1wKOYwBsz32e1hqCCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTA4MTAwOTAyMTQwNFowIwYJKoZIhvcNAQkEMRYEFAlD0+TlxYvZe8jBVd6Krqe+C4RdMA0GCSqGSIb3DQEBAQUABIGAtA3IsUus8QoStfGeunc5T344al1/B9bQ8g89a1+Ai4AkQBaoEsPtj8/UNqjE7U9SoLE/7Vqw/LiOzEEYpnWw5TQ0JQ0BqZ5h4nbeUumf/vdac700/TUbE3Y4gJLHHhU9XARBdZPDD+AYCvSo1Xk7QbbygrTRRyR9NYxBrwpe20I=-----END PKCS7-----
+" name="encrypted" type="hidden"/>
+<input border="0" alt="Donate $5 if you find this useful" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" type="image"/>
+<img border="0" alt="" width="1" src="https://www.paypal.com/en_US/i/scr/pixel.gif" height="1"/>
+</form>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=HTML&widgetId=HTML2&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML2"));' target='configHTML2' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget HTML' id='HTML4'>
+<h2 class='title'>iPhone Development Search Engine</h2>
+<div class='widget-content'>
+<form id="cse-search-box" action="http://www.google.com/cse">
+  <div>
+    <input value="partner-pub-1951007607335489:wcf491-4i73" name="cx" type="hidden"/>
+    <input value="ISO-8859-1" name="ie" type="hidden"/>
+    <input name="q" size="31" type="text"/>
+    <input value="Search" name="sa" type="submit"/>
+  </div>
+</form>
+<script src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en" type="text/javascript"></script>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=HTML&widgetId=HTML4&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML4"));' target='configHTML4' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget BlogArchive' id='BlogArchive1'>
+<h2>Blog Archive</h2>
+<div class='widget-content'>
+<div id='ArchiveList'>
+<div id='BlogArchive1_ArchiveList'>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2014-01-01T00:00:00%2B08:00&amp;updated-max=2015-01-01T00:00:00%2B08:00&amp;max-results=2'>2014</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2014_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2013-01-01T00:00:00%2B08:00&amp;updated-max=2014-01-01T00:00:00%2B08:00&amp;max-results=3'>2013</a>
+<span class='post-count' dir='ltr'>(3)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2013_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2013_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2012-01-01T00:00:00%2B08:00&amp;updated-max=2013-01-01T00:00:00%2B08:00&amp;max-results=4'>2012</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2012_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2012_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2012_03_01_archive.html'>March</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2012_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2011-01-01T00:00:00%2B08:00&amp;updated-max=2012-01-01T00:00:00%2B08:00&amp;max-results=5'>2011</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2011_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2011_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2011_05_01_archive.html'>May</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2011_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2010-01-01T00:00:00%2B08:00&amp;updated-max=2011-01-01T00:00:00%2B08:00&amp;max-results=10'>2010</a>
+<span class='post-count' dir='ltr'>(10)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2010_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2010_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(4)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2010_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='posts'>
+<li><a href='http://iphonesdkdev.blogspot.kr/2010/04/mfmessagecomposeviewcontroller-sample.html'>MFMessageComposeViewController Sample Code (OS 4.0...</a></li>
+<li><a href='http://iphonesdkdev.blogspot.kr/2010/04/enable-homescreen-wallpaper-in-iphone.html'>Enable Homescreen Wallpaper in iPhone Simulator OS...</a></li>
+<li><a href='http://iphonesdkdev.blogspot.kr/2010/04/enable-emoji-keyboard-in-iphone.html'>Enable Emoji Keyboard in iPhone Simulator OS 4.0 b...</a></li>
+<li><a href='http://iphonesdkdev.blogspot.kr/2010/04/local-push-notification-sample-code-os.html'>Local Notification Sample Code (OS 4.0 only)</a></li>
+<li><a href='http://iphonesdkdev.blogspot.kr/2010/04/old-versions-of-iphone-sdk.html'>Old versions of iPhone SDK</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2009-01-01T00:00:00%2B08:00&amp;updated-max=2010-01-01T00:00:00%2B08:00&amp;max-results=36'>2009</a>
+<span class='post-count' dir='ltr'>(36)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_08_01_archive.html'>August</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_07_01_archive.html'>July</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_05_01_archive.html'>May</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(6)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_03_01_archive.html'>March</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2009_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(10)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/search?updated-min=2008-01-01T00:00:00%2B08:00&amp;updated-max=2009-01-01T00:00:00%2B08:00&amp;max-results=26'>2008</a>
+<span class='post-count' dir='ltr'>(26)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(4)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(7)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_08_01_archive.html'>August</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_07_01_archive.html'>July</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://iphonesdkdev.blogspot.kr/2008_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogArchive1"));' target='configBlogArchive1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget HTML' id='HTML1'>
+<h2 class='title'>Countdown to iOS Firmware 8.0</h2>
+<div class='widget-content'>
+<center><span id="tzcd" style="font-size:200%">
+<script type="text/javascript">
+
+////////// CONFIGURE THE COUNTDOWN SCRIPT HERE //////////////////
+
+var month = '9';     //  '*' for next month, '0' for this month or 1 through 12 for the month 
+var day = '4';       //  Offset for day of month day or + day  
+var hour = 0;        //  0 through 23 for the hours of the day
+var tz = +8;         //  Offset for your timezone in hours from UTC
+var lab = 'tzcd';    //  The id of the page entry where the timezone countdown is to show
+
+function start() {displayTZCountDown(setTZCountDown(month,day,hour,tz),lab);}
+
+// ** The start function can be changed if required **
+window.onload = start;
+
+////////// DO NOT EDIT PAST THIS LINE //////////////////
+
+function setTZCountDown(month,day,hour,tz) 
+{
+var toDate = new Date();
+if (month == '*')toDate.setMonth(toDate.getMonth() + 1);
+else if (month > 0) 
+{ 
+if (month <= toDate.getMonth())toDate.setYear(toDate.getYear() + 1);
+toDate.setMonth(month-1);
+}
+if (day.substr(0,1) == '+') 
+{var day1 = parseInt(day.substr(1));
+toDate.setDate(toDate.getDate()+day1);
+} 
+else{toDate.setDate(day);
+}
+toDate.setHours(hour);
+toDate.setMinutes(0-(tz*60));
+toDate.setSeconds(0);
+var fromDate = new Date();
+fromDate.setMinutes(fromDate.getMinutes() + fromDate.getTimezoneOffset());
+var diffDate = new Date(0);
+diffDate.setMilliseconds(toDate - fromDate);
+return Math.floor(diffDate.valueOf()/1000);
+}
+function displayTZCountDown(countdown,tzcd) 
+{
+if (countdown < 0) document.getElementById(tzcd).innerHTML = "Download from iTunes now!"; 
+else {var secs = countdown % 60; 
+if (secs < 10) secs = '0'+secs;
+var countdown1 = (countdown - secs) / 60;
+var mins = countdown1 % 60; 
+if (mins < 10) mins = '0'+mins;
+countdown1 = (countdown1 - mins) / 60;
+var hours = countdown1 % 24;
+var days = (countdown1 - hours) / 24;
+document.getElementById(tzcd).innerHTML = days + " day" + (days == 1 ? '' : 's') + ' <br/> ' +hours+ 'h : ' +mins+ 'm : '+secs+'s';
+setTimeout('displayTZCountDown('+(countdown-1)+',\''+tzcd+'\');',999);
+}
+}
+</script></span></center>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=HTML&widgetId=HTML1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML1"));' target='configHTML1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget HTML' id='HTML3'>
+<div class='widget-content'>
+<!-- Site Meter -->
+<script src="http://s34.sitemeter.com/js/counter.js?site=s34tungchingkai" type="text/javascript">
+</script>
+<noscript>
+<a href="http://s34.sitemeter.com/stats.asp?site=s34tungchingkai" target="_top">
+<img border="0" alt="Site Meter" src="http://s34.sitemeter.com/meter.asp?site=s34tungchingkai"/></a>
+</noscript>
+<!-- Copyright (c)2006 Site Meter -->
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=HTML&widgetId=HTML3&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML3"));' target='configHTML3' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget LinkList' id='LinkList1'>
+<h2>iPhone Open Source Projects</h2>
+<div class='widget-content'>
+<ul>
+<li><a href='http://github.com/omz/AppSales-Mobile/'>AppSales Mobile</a></li>
+<li><a href='http://www.idsoftware.com/wolfenstein3dclassic/'>wolfenstein3dclassic</a></li>
+<li><a href='http://code.google.com/p/cookbooksamples/downloads/list'>iPhone Developer's Cookbook sample source</a></li>
+<li><a href='http://stefan.hafeneger.name/2008/06/03/iphone-datamatrix-reader/'>iPhone DataMatrix Reader</a></li>
+<li><a href='http://www.sunsetlakesoftware.com/2008/10/02/molecules-source-code-now-available'>Molecules Source code</a></li>
+<li><a href='http://www.appsamuck.com/'>31 days of iPhone Apps</a></li>
+<li><a href='http://iphone.wordpress.org/2008/07/24/version-11-and-beyond/'>Wordpress (iPhone SDK firmware 2.0 source)</a></li>
+<li><a href='http://code.google.com/p/tris/'>tris</a></li>
+<li><a href='http://www.iamas.ac.jp/~aka/iphone/'>aka iPhone</a></li>
+<li><a href='http://code.google.com/p/mobilezipcodes/'>Mobile Zipcodes</a></li>
+<li><a href='http://code.google.com/p/icountdown/'>iCountDown</a></li>
+<li><a href='http://www.zdziarski.com/projects/nesapp/'>NES</a></li>
+<li><a href='http://code.google.com/p/weisms/'>iSMS</a></li>
+</ul>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=LinkList&widgetId=LinkList1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("LinkList1"));' target='configLinkList1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget Label' id='Label1'>
+<h2>Labels Index</h2>
+<div class='widget-content list-label-widget-content'>
+<ul>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Android%20SDK'>Android SDK</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/ARM'>ARM</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Calendar'>Calendar</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/class-dump'>class-dump</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/cocos2d'>cocos2d</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Codesign%20error'>Codesign error</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Cycript'>Cycript</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/cydia'>cydia</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Decrypted%20IPA'>Decrypted IPA</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Drag%20and%20Drop'>Drag and Drop</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Email%20Signature'>Email Signature</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Emoji'>Emoji</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Foundation%20Framework'>Foundation Framework</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/git'>git</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Google%20Wave'>Google Wave</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/hardware%20info'>hardware info</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/helloworld'>helloworld</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iAd'>iAd</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iCloud'>iCloud</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Inline%20Assembler'>Inline Assembler</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iOS6'>iOS6</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPad'>iPad</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/ipagod'>ipagod</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone'>iPhone</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20GCC'>iPhone GCC</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20LLVM'>iPhone LLVM</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20OS%202.2.1%20and%203.0%20compatible'>iPhone OS 2.2.1 and 3.0 compatible</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20OS%203.0'>iPhone OS 3.0</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20OS%204.0'>iPhone OS 4.0</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iPhone%20SDK'>iPhone SDK</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/iTunes%20Connect%20Mobile'>iTunes Connect Mobile</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/javacom'>javacom</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/ldid'>ldid</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Local%20Notification'>Local Notification</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Makefile'>Makefile</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/MFMessageComposeViewController'>MFMessageComposeViewController</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/MMS'>MMS</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/mobilesubstrate'>mobilesubstrate</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Objective%20C%202.0'>Objective C 2.0</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/odcctools'>odcctools</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/OpenCL'>OpenCL</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/OpenGL%20ES'>OpenGL ES</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/p2p%20bluetooth'>p2p bluetooth</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Provisioning%20Profile'>Provisioning Profile</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Push%20Notification%20Service'>Push Notification Service</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/re-codesign'>re-codesign</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Sample%20Code'>Sample Code</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/SDK'>SDK</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Settings'>Settings</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/SmartScreen%20Widget'>SmartScreen Widget</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/SMS'>SMS</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/subversion'>subversion</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Tethering'>Tethering</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Thank%20you'>Thank you</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/theos'>theos</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/toolchain'>toolchain</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/toolchain%202.0'>toolchain 2.0</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Touch%20Fighter'>Touch Fighter</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Ubuntu'>Ubuntu</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/UIAccelerometer'>UIAccelerometer</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/UIKit'>UIKit</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Virtual%20PC%202007'>Virtual PC 2007</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/weak%20linking'>weak linking</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/Xcode'>Xcode</a>
+</li>
+<li>
+<a dir='ltr' href='http://iphonesdkdev.blogspot.kr/search/label/XCode%204%20Template'>XCode 4 Template</a>
+</li>
+</ul>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=6245963027152906987&widgetType=Label&widgetId=Label1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("Label1"));' target='configLabel1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div></div>
+</div>
+<!-- spacer for skins that want sidebar and main to be the same height-->
+<div class='clear'>&#160;</div>
+</div>
+<!-- end content-wrapper -->
+</div></div>
+<!-- end outer-wrapper -->
+<script type='text/javascript'>
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type='text/javascript'>
+try {
+var pageTracker = _gat._getTracker("UA-9085958-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('widgetJsBefore');
+</script><script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/2423294629-widgets.js"></script>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type='text/javascript'>
+if (typeof(BLOG_attachCsiOnload) != 'undefined' && BLOG_attachCsiOnload != null) { window['blogger_templates_experiment_id'] = "templatesV1";window['blogger_blog_id'] = '6245963027152906987';BLOG_attachCsiOnload('item_'); }_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d6245963027152906987','//iphonesdkdev.blogspot.kr/2010/04/local-push-notification-sample-code-os.html','6245963027152906987');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '6245963027152906987', 'bloggerUrl': 'http://www.blogger.com', 'title': 'iPhone Software Development', 'pageType': 'item', 'postId': '7733424376588802160', 'url': 'http://iphonesdkdev.blogspot.kr/2010/04/local-push-notification-sample-code-os.html', 'canonicalUrl': 'http://iphonesdkdev.blogspot.com/2010/04/local-push-notification-sample-code-os.html', 'canonicalHomepageUrl': 'http://iphonesdkdev.blogspot.com/', 'homepageUrl': 'http://iphonesdkdev.blogspot.kr/', 'blogspotFaviconUrl': 'http://iphonesdkdev.blogspot.kr/favicon.ico', 'enabledCommentProfileImages': true, 'adultContent': false, 'disableAdSenseWidget': false, 'analyticsAccountNumber': '', 'searchLabel': '', 'searchQuery': '', 'pageName': 'Local Notification Sample Code (OS 4.0 only)', 'pageTitle': 'iPhone Software Development: Local Notification Sample Code (OS 4.0 only)', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'languageDirection': 'ltr', 'feedLinks': '\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42iPhone Software Development - Atom\42 href\75\42http://iphonesdkdev.blogspot.com/feeds/posts/default\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/rss+xml\42 title\75\42iPhone Software Development - RSS\42 href\75\42http://iphonesdkdev.blogspot.com/feeds/posts/default?alt\75rss\42 /\76\n\74link rel\75\42service.post\42 type\75\42application/atom+xml\42 title\75\42iPhone Software Development - Atom\42 href\75\42http://www.blogger.com/feeds/6245963027152906987/posts/default\42 /\76\n\n\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42iPhone Software Development - Atom\42 href\75\42http://iphonesdkdev.blogspot.com/feeds/7733424376588802160/comments/default\42 /\76\n', 'meTag': '', 'openIdOpTag': '', 'postImageThumbnailUrl': 'http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s72-c/localpush.png', 'postImageUrl': 'http://2.bp.blogspot.com/_3LRNVfBfliQ/S8AHQoK1O5I/AAAAAAAAAyg/_2FE5t0QfGg/s400/localpush.png', 'latencyHeadScript': '\74script type\75\42text/javascript\42\76(function() { var b\75window,f\75\42chrome\42,g\75\42tick\42,k\75\42jstiming\42;(function(){function d(a){this.t\75{};this.tick\75function(a,d,c){var e\75void 0!\75c?c:(new Date).getTime();this.t[a]\75[e,d];if(void 0\75\75c)try{b.console.timeStamp(\42CSI/\42+a)}catch(h){}};this[g](\42start\42,null,a)}var a;b.performance\46\46(a\75b.performance.timing);var n\75a?new d(a.responseStart):new d;b.jstiming\75{Timer:d,load:n};if(a){var c\75a.navigationStart,h\75a.responseStart;0\74c\46\46h\76\75c\46\46(b[k].srt\75h-c)}if(a){var e\75b[k].load;0\74c\46\46h\76\75c\46\46(e[g](\42_wtsrt\42,void 0,c),e[g](\42wtsrt_\42,\42_wtsrt\42,h),e[g](\42tbsd_\42,\42wtsrt_\42))}try{a\75null,\nb[f]\46\46b[f].csi\46\46(a\75Math.floor(b[f].csi().pageT),e\46\0460\74c\46\46(e[g](\42_tbnd\42,void 0,b[f].csi().startE),e[g](\42tbnd_\42,\42_tbnd\42,c))),null\75\75a\46\46b.gtbExternal\46\46(a\75b.gtbExternal.pageT()),null\75\75a\46\46b.external\46\46(a\75b.external.pageT,e\46\0460\74c\46\46(e[g](\42_tbnd\42,void 0,b.external.startE),e[g](\42tbnd_\42,\42_tbnd\42,c))),a\46\46(b[k].pt\75a)}catch(p){}})();b.tickAboveFold\75function(d){var a\0750;if(d.offsetParent){do a+\75d.offsetTop;while(d\75d.offsetParent)}d\75a;750\76\75d\46\46b[k].load[g](\42aft\42)};var l\75!1;function m(){l||(l\75!0,b[k].load[g](\42firstScrollTime\42))}b.addEventListener?b.addEventListener(\42scroll\42,m,!1):b.attachEvent(\42onscroll\42,m);\n })();\74/script\076', 'mobileHeadScript': '', 'adsenseClientId': 'pub-1951007607335489', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/76f25a6f2e06af76', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sf': 'n', 'tf': ''}}, {'name': 'skin', 'data': {'vars': {'sidebarBgColor': '#ffffff', 'mainVisitedLinkColor': '#3D81EE', 'sidebarTitleColor': '#000000', 'mainTextColor': '#000000', 'bodyFont': 'normal normal 100% Verdana, sans-serif', 'sidebarVisitedLinkColor': '#3D81EE', 'dateHeaderColor': '#808080', 'endSide': 'right', 'startSide': 'left', 'sidebarLinkColor': '#0000ff', 'sidebarTextColor': '#000000', 'mainBgColor': '#f5f5f5', 'mainLinkColor': '#0000ff'}, 'override': ''}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\75classic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\75flipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\75magazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\75mosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\75sidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\75snapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\75timeslide'}}}]);
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML2', 'sidebar', null, document.getElementById('HTML2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML4', 'sidebar', null, document.getElementById('HTML4'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML3', 'sidebar', null, document.getElementById('HTML3'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1', 'sidebar', null, document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LabelView', new _WidgetInfo('Label1', 'sidebar', null, document.getElementById('Label1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1', 'navbar', null, document.getElementById('Navbar1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'main', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense2', 'main', null, document.getElementById('AdSense2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense5', 'main', null, document.getElementById('AdSense5'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense6', 'main', null, document.getElementById('AdSense6'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense8', 'main', null, document.getElementById('AdSense8'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense3', 'main', null, document.getElementById('AdSense3'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/1845872262-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/2392111094-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense1', 'main', null, document.getElementById('AdSense1'), {}, 'displayModeFull'));
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+http://jaxbot.me/articles/syncing_desktop_laptop_working_directories_quickly_with_unison_7_21_2013
+HTTP/1.1 200 OK
+Server: cloudflare-nginx
+Date: Tue, 22 Jul 2014 09:17:51 GMT
+Content-Type: text/html
+Connection: close
+Set-Cookie: __cfduid=d5a8da34b6050f3fa3ae2af6831fd78831406020671042; expires=Mon, 23-Dec-2019 23:50:00 GMT; path=/; domain=.jaxbot.me; HttpOnly
+Last-Modified: Tue, 22 Jul 2014 01:55:31 GMT
+Vary: Accept-Encoding
+CF-RAY: 14de8c2a0c1d086e-IAD
+Content-Encoding: gzip
+
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/Article">
+<head>
+<meta charset='utf-8'>
+<base href="http://jaxbot.me/">
+<title>Syncing Desktop, Laptop working directories quickly with Unison</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link rel="alternate" type="application/rss+xml" title="Jaxbot.me" href="http://jaxbot.me/rss"/>
+<link rel="stylesheet" href="img/style.css?i">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,700,400italic" type="text/css">
+<meta property="og:title" itemprop="name" content="Syncing Desktop, Laptop working directories quickly with Unison"/>
+<meta property="og:image" itemprop="image" content="http://jaxbot.me/pics/unisonscript.png"/>
+<meta property="og:description" itemprop="description" content="I now have a laptop to accompany my main development desktop. I rarely use it, but when I do, I like to be able to grab it and go, keeping my exact working state from my desktop synced with it."/>
+<script src="img/tile.js?a"></script>
+<script src="https://platform.twitter.com/widgets.js" async></script>
+<script type="text/javascript">
+	var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-10561014-2"]);_gaq.push(["_trackPageview"]);
+	(function() {
+		var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true;
+		ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";
+		var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);
+	})();
+	(function() {
+		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+		po.src = 'https://apis.google.com/js/platform.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	  })();
+	</script>
+</head>
+<body>
+<header class="nav" itemscope itemtype="http://schema.org/Person">
+<a href="." class="me">
+<img src="http://www.gravatar.com/avatar/58f983b2bd87f6b27de05b07223c1efb.png?s=200" alt="Jonathan Warner avatar" itemprop="image">
+</a>
+<h1 itemprop="name">Jonathan Warner</h1>
+<b>@jaxbot</b>
+<p>
+Developer, UCF student, maker of <a href="https://github.com/search?q=%40jaxbot+vim">Vim plugins</a>, <a href="http://okaysass.com" target="_blank">OkaySass</a>, <a href="https://sparklr.me/" target="_blank">Sparklr</a>, other projects.
+</p>
+<a href="https://twitter.com/jaxbot" class="big icon-twitter" target="_blank"></a>
+<a href="https://plus.google.com/+JonathanWarnerJaxbot?rel=author" class="big icon-googleplus" target="_blank"></a>
+<a href="https://github.com/jaxbot" class="big icon-github" target="_blank"></a>
+<a href="img/email.png" class="big icon-mail" target="_blank"></a>
+<div class="footer">
+<div>
+<script data-gittip-username="Jaxbot" data-gittip-widget="button" src="//gttp.co/v1.js"></script>
+</div>
+<div>
+16TQ2WtfNEUSZ5e2NfC2VtNuMD8e4J29eA
+</div>
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/80x15.png"/></a>
+</div>
+</header>
+<section>
+<div class='postwrapper'>
+<div class='post'>
+<h1>Syncing Desktop, Laptop working directories quickly with Unison</h1>
+<time>07-21-13</time>
+<p><img src='pics/unisonscript.png'></p>
+<p>I now have a laptop to accompany my main development desktop. I rarely use it, but when I do, I like to be able to grab it and go, keeping my exact working state from my desktop synced with it.</p>
+<p>Originally, I had planned to use SkyDrive/Dropbox/Google Drive to accomplish this. I thought I could put all my workspace files into the synced folder, and with no effort, my files would be safely synced across my devices.</p>
+<p>That was the expectation. In reality, there was a huge problem, as I use Git for all my major projects. As a result, the object stores can easily grow to contain hundreds or thousands of files, which takes <em>hours</em> to sync on any commercial cloud sync service. Even worse, the services tend handle conflict resolution very poorly, renaming and duplicating files that do not match across machines.</p>
+<p>In other words, using Dropbox, GDrive, SkyDrive, etc., is a great way to corrupt your repositories, and a poor, slow way to sync your working directories.</p>
+<h2 id="enter-unison">Enter Unison</h2>
+<p>I had played with Unison before. It&#39;s like rsync, but subjectively better. It&#39;s also freaking fast.</p>
+<p>Syncing files from machine A to machine B is really simple, and the getting started can tell you that in a second. But my setup required something a little different. I&#39;m going to be using my laptop and desktop on a dorm network, which means I cannot directly connect my two machines over the network. Bluetooth or other local connection options seemed like a poor choice. Instead, I added a third player: my hosted VPS.</p>
+<p>This is actually really beneficial. For one, I can keep my files backed up safely on a private server. For two, I can push and pull from the server at any time, regardless of the state of the other machine.</p>
+<h2 id="the-setup">The setup</h2>
+<p>I created a simple batch file containing the following:</p>
+<pre><code>unison c:\users\jaxbot\www\ ssh://<a class="__cf_email__" href="http://www.cloudflare.com/email-protection" data-cfemail="cea4a1a0afbaa6afa08ea4afb6aca1bae0a3ab">[email&nbsp;protected]</a><script type="text/javascript">
+/* <![CDATA[ */
+(function(){try{var s,a,i,j,r,c,l,b=document.getElementsByTagName("script");l=b[b.length-1].previousSibling;a=l.getAttribute('data-cfemail');if(a){s='';r=parseInt(a.substr(0,2),16);for(j=2;a.length-j;j+=2){c=parseInt(a.substr(j,2),16)^r;s+=String.fromCharCode(c);}s=document.createTextNode(s);l.parentNode.replaceChild(s,l);}}catch(e){}})();
+/* ]]> */
+</script>/workspace/
+\ -sshargs &quot;-C&quot; -auto -sshcmd ssh2plink.bat -ignore &quot;Name config.js&quot;</code></pre>
+<p>Let&#39;s break it down. There are some additional curveballs here, since my machines are Windows based, which makes this a little more complicated. If you&#39;re lucky enough to be able to use *nix full time, give yourself a pat on the back.</p>
+<p><strong>Windows stuff:</strong> For one, the latest Unison executable needs to be in your PATH. Two, I&#39;m using Putty with Pageant and Plink to handle SSH certificate authentication, which allows a passwordless sync. </p>
+<p>If you want to use Plink, you have to grab ssh2plink.bat from <a href="https://github.com/thailyn/unison-config/blob/master/ssh2plink.bat">here</a> and also place it in your path, with Plink. If you want passwordless authentication on Windows, look up some tutorials on Pageant. Otherwise, password authentication works fine.</p>
+<p>The additional flags are just for customization; -C turns on SSH compression, -auto enables Unison to make judgments on its own, and -ignore stops it from syncing my project config files, which differ from machine to machine.</p>
+<h2 id="the-result">The result</h2>
+<p>I click on my batch file. Unison fires up, connects to my server with Plink, does an evaluation, and informs me of any conflicts, allowing me to choose which file to keep. The entire sync of my 2,777 files across 753 folders takes... about 4-7 seconds. Dear cloud sync providers: <strong>implement this.</strong></p>
+<p>I can now set a schedule to automatically sync my files, add some triggers, etc. That was easy.</p>
+<p><strong>tl;dr</strong>: Unison is a very, very fast, stable, solid syncing program that works cross-platform. Use it directly between machines, or use a central hub to duplicate your working state perfectly.</p>
+<div class='postfooter'>
+<script data-gittip-username="Jaxbot" data-gittip-widget="button" src="//gttp.co/v1.js"></script>
+<script id='fbbaa9b'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=Jaxbot&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fbbaa9b');</script>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_donations">
+<input type="hidden" name="business" value="jaxbot@societyofcode.com">
+<input type="hidden" name="lc" value="US">
+<input type="hidden" name="item_name" value="Jonathan Warner">
+<input type="hidden" name="no_note" value="0">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_SM.gif:NonHostedGuest">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<div class='sidebuttons'>
+<a href="https://twitter.com/share" class="twitter-share-button" data-related="jaxbot" data-via="jaxbot" data-lang="en" data-size="large" data-count="none">Tweet</a>
+<a href="https://twitter.com/jaxbot" class="twitter-follow-button" data-show-count="false" data-size="large" data-show-screen-name="false">Follow @jaxbot</a><br>
+<div class="g-plusone" data-annotation="none"></div>
+</div>
+<div>
+BTC: 16TQ2WtfNEUSZ5e2NfC2VtNuMD8e4J29eA
+</div>
+</div>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+			var disqus_shortname = 'societyofcode';
+			/* * * DON'T EDIT BELOW THIS LINE * * */
+
+			(function() {
+				var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+				dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+		</script>
+</div>
+</div>
+</section>
+</body>
+</html>
+

@@ -1,0 +1,736 @@
+http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/
+HTTP/1.1 200 OK
+Date: Sun, 13 Jul 2014 01:26:30 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.4-14
+X-Pingback: http://www.jejik.com/pingback
+Set-Cookie: lw_user_data=a%3A2%3A%7Bs%3A7%3A%22user_id%22%3Bi%3A1%3Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3B%7D; expires=Mon, 13-Jul-2015 01:26:30 GMT; path=/
+Set-Cookie: lw_user_sid=9ba04e101eb41a9a6457fb8538078910; path=/
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 12351
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--
+			<rdf:RDF 
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://web.resource.org/cc/">
+				<cc:Work>
+					<dc:creator>Stichting Lone Wolves</dc:creator>
+					<dc:title>Lone Wolves - Web, game, and open source development</dc:title>
+					<dc:description>A blog about web development and open source game programming, home of Hearts for GNOME</dc:description> 
+					<dc:date>2014-07-13T03:26:30Z</dc:date>
+					<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+				</cc:Work>
+				<cc:License>
+					<cc:requires rdf:resource="http://web.resource.org/cc/Notice" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/Attribution" />
+					<cc:requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/Distribution" />
+					<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+				</cc:License>
+			</rdf:RDF>
+		-->
+		<title>Easily develop and deploy web applications from subversion - Lone Wolves - Web, game, and open source development</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta name="keywords" content="lone, wolves, game, web, open source, gnome, hearts, development, linux" />
+		<meta name="author" content="Sander Marechal"/>
+		<meta name="description" content="A blog about web development and open source game programming, home of Hearts for GNOME" />
+		<style type="text/css" media="screen">@import "/main.css";</style>
+		<style type="text/css" media="screen">@import "/geshi.css";</style>
+				<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (full)" href="/feeds/full/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (articles)" href="/feeds/articles/atom.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Lone Wolves Atom 1.0 (blurb)" href="/feeds/blurb/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (full)" href="/feeds/full/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (articles)" href="/feeds/articles/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title="Lone Wolves RSS 2.0 (blurb)" href="/feeds/blurb/rss.xml" />
+		<link rel="pingback" href="http://www.jejik.com/pingback" />
+		<link href="http://www.jejik.com/" rel="home" />
+		<!--[if IE]><style type="text/css" media="screen">@import "/ie.css";</style><![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body>
+				<div id="wrapper">
+			<div id="header">
+				<h1><a href="/" rel="home">Lone Wolves</a></h1>
+				<h2>Web, game, and open source development</h2>
+				<span id="skip_to_menu"><a href="#menu_start">Skip to menu</a></span>
+			</div>			<div id="article">
+				<div class="article hentry">
+											<h2><a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/" class="entry-title">Easily develop and deploy web applications from subversion</a></h2>
+						<address class="vcard">by <a href="http://www.jejik.com/authors/sander_marechal/" class="url fn">Sander Marechal</a></address>
+						<div class="entry-content"><p><strong>Updated 2008-28-10.</strong> Proper version control is a must for everyone who programs more than a few lines of code. Even if you develop your applications all by yourself it is very handy to be able to branch and merge your code, be able to roll back to previous versions or undo changes you made in the past. It works great for regular applications, but managing web applications or websites is a tad harder for two reason: You need a webserver to get your application going and you usually have to manage database revisions as well.</p>
+
+<p>Keeping database revisions in sync with your code revisions is a complex subject that I will leave until another time. In this article I will show you how you can configure your own computer or development server in such a way that checking out or deploying a web application is just as easy as any other piece of code.</p>
+
+<p>First I will show you how to <a href="#apache">configure Apache</a> on your development server so that it picks up your checked out working copies as separate subdomains. Using this, you can simply make a checkout of your project and it will automagically be up and running. No need to touch the Apache configuration. After that I will show you how to use <a href="#dnsmasq">dnsmasq</a> so you can achieve the same effect on your own development machine. That way you can develop your web applications locally and you won't need a central development server. In my examples I will be assuming you use subversion for your version control, but it works virtually the same with other version control packages, such as git or bazaar.</p>
+
+<h4 id="apache">Creating subdomains for every working copy</h4>
+
+<p>Here is what we want to achieve. Suppose that you have a development server at <tt>http://dev.example.org</tt> where you develop your websites. We want that every working copy is it's own subdomain on that server. If I check out a working copy and name it &ldquo;foobar&rdquo; then it should be available on <tt>http://foobar.dev.example.org</tt>. In order for this to work, you need a <a href="http://en.wikipedia.org/wiki/Wildcard_DNS_record">wildcard DNS entry</a> so that all subdomains of <tt>dev.example.org</tt> go to your development server. I won't cover how you do that. If you do not run your own DNS server, ask your network administrator about it or use dnsmasq as explained in <a href="#dnsmasq">the second part of this article</a>.</p>
+
+<p>Start by creating a directory where all your working copies will live. For this article I will assume that this is <tt>/home/checkout</tt>. Every directory under this directory will become a subdomain on your development server. Create a <tt>trunk</tt> directory under the checkouts directory (<tt>/home/checkout/trunk</tt>). This is where the main <tt>dev.example.org</tt> domain will go to. When a subdomain does cannot resolve to a directory under /home/checkouts we want to show an error page. I created <tt>/home/checkouts/error.html</tt> containing some useful information, but you could also redirect it to a 404 error if you want.</p>
+
+<p>Then create a new virtual host configuration for Apache.</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&lt;<span class="kw3">VirtualHost</span> *:<span class="nu0">80</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">DocumentRoot</span> /home/checkout/trunk</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerName</span> dev.example.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerAlias</span> *.dev.example.org</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">LogLevel</span> warn</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ErrorLog</span> /var/log/apache2/error.log</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">CustomLog</span> /var/log/apache2/access.log combined</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerSignature</span> <span class="kw2">On</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&lt;/<span class="kw3">VirtualHost</span>&gt;</div></li>
+</ol></div></div>
+
+<p>We will use mod_rewrite to tell Apache about all the subdomains. The following mod_rewrite rules extract the subdomain from the request, see if a directory exists in <tt>/home/checkout</tt> that matches the subdomain and then redirects the request to that directory (hat-tip to <a href="http://muffinresearch.co.uk/archives/2006/08/20/redirecting-subdomains-to-directories-in-apache/">Stuart</a>).</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteEngine</span> <span class="kw2">On</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># If the request contains a subdomain and the directory exists, redirect</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> /home/checkout/%1 -d</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteRule</span> ^(.*) /home/checkout/%1/$<span class="nu0">1</span> [L]</div></li>
+</ol></div></div>
+
+<p>Next, we add some more rules to redirect any non-existing subdomains to the error page:</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Redirect non-existing subdomains to the error page</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteRule</span> ^(.*) /home/checkout/error.html [L]</div></li>
+</ol></div></div>
+
+<p><strong>Update:</strong> Kevin points out in <a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#18">this comment</a> that using the <tt>VirtualDocumentRoot</tt> directive is an even nicer solution than these rewrite rules.</p>
+
+<p>Finally we want to hide the .svn directories that subversion creates when you make a new checkout. If you use a different version control system such as git, then replace .svn with .git in the configuration below:</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Hide .svn directories in checkouts</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;<span class="kw3">Directory</span> ~ <span class="st0">&quot;/<span class="es0">\.</span>svn/&quot;</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">order</span> <span class="kw1">allow</span>,<span class="kw1">deny</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">deny</span> <span class="kw1">from</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;/<span class="kw3">Directory</span>&gt;</div></li>
+</ol></div></div>
+
+<p>Restart Apache and you're done. Now you can simply log into the development server, make a new checkout in the <tt>/home/checkout</tt> directrory and you can immediately browse to it. After executing the example below, you can simply browse to <tt>http://my-working-copy.dev.example.org</tt> and see your website.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">$ ssh dev.example.org</div></li>
+<li class="li1"><div class="de1">Last login: Wed Aug &nbsp;6 09:36:33 2008 from 10.0.0.99</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">dev$ cd /home/checkout</div></li>
+<li class="li1"><div class="de1">dev$ svn checkout https://svn.example.org/project/trunk my-working-copy</div></li>
+</ol></div></div>
+
+<p>The full Apache configuration file now looks like this (<a href="/files/examples/apache-subdomains.conf">download</a>):</p>
+
+<div class="geshi-wrap"><div class="apache geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">&lt;<span class="kw3">VirtualHost</span> *:<span class="nu0">80</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">DocumentRoot</span> /home/checkout/trunk</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerName</span> dev.example.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerAlias</span> *.dev.example.org</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">LogLevel</span> warn</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ErrorLog</span> /var/log/apache2/error.log</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">CustomLog</span> /var/log/apache2/access.log combined</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">ServerSignature</span> <span class="kw2">On</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteEngine</span> <span class="kw2">On</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># If the request contains a subdomain and the directory exists, redirect</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> /home/checkout/%1 -d</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteRule</span> ^(.*) /home/checkout/%1/$<span class="nu0">1</span> [L]</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Redirect non-existing subdomains to the error page</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteCond</span> %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">RewriteRule</span> ^(.*) /home/checkout/error.html [L]</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Hide .svn directories in checkouts</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;<span class="kw3">Directory</span> ~ <span class="st0">&quot;/<span class="es0">\.</span>svn/&quot;</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">order</span> <span class="kw1">allow</span>,<span class="kw1">deny</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">deny</span> <span class="kw1">from</span> <span class="kw1">all</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &lt;/<span class="kw3">Directory</span>&gt;</div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li1"><div class="de1">&lt;/<span class="kw3">VirtualHost</span>&gt;</div></li>
+</ol></div></div>
+
+<h4 id="dnsmasq">Developing locally with dnsmasq</h4>
+
+<p>Developing your websites on a central development server works, but most often it's easier to develop on your local machine instead. It's usually faster and there are quite a few handy tools out there that don't work transparently over an ssh connection. When you have a Linux desktop or laptop it's dead easy to do. Simply install Apache, PHP, MySQL or whatever server-side tools you need on your desktop, copy the configuration files from the server and modify them.</p>
+
+<p>The only problem with using the above Apache configuration locally is the DNS wildcard. Unless your desktop is assigned a hostname by your network's DNS server and you can set the wildcard there, you will have to make do with your localhost address. You can install <a href="http://www.thekelleys.org.uk/dnsmasq/doc.html">dnsmasq</a> to act as a local caching DNS server and put the wildcard on your own machine. As a bonus, the DNS caching can also speed up your web browsing (hat-tip to <a href="http://ubuntu.wordpress.com/2006/08/02/local-dns-cache-for-faster-browsing/">Carthik</a>). If you want, you can replace localhost with another name (like your hostname) in the commands below. The commands below are for Debian Lenny, but should be similar on other distributions. Let's start my installing dnsmasq.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># apt-get install dnsmasq</div></li>
+</ol></div></div>
+
+<p>Now we edit <tt>/etc/dnsmasq.conf</tt> So that it listens on 127.0.0.1 for our DNS requests and tell it to point all subdomains of <tt>localhost</tt> to 127.0.0.1. Near line 92 you will find the <tt>listen-address</tt> configuration, which tells dnsmasq to listen for DNS requests. Add the following line:
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">listen-address=127.0.0.1</div></li>
+</ol></div></div>
+
+<p>You can force domains to resolve to a certain IP with the <tt>address</tt> directive, which you find near line 63. Add the following line to make localhost have all it's subdomains pointing to 127.0.0.1:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">address=/localhost/127.0.0.1</div></li>
+</ol></div></div>
+
+<p>Most likely your machine connects to the network via DHCP and gets it's nameservers from the DHCP server. We need to configure DHCP so that it always asks the local dnsmasq server first before trying the other DNS servers. Open up <tt>/etc/dhcp3/dhclient.conf</tt> and uncomment the following line:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">prepend domain-name-servers 127.0.0.1;</div></li>
+</ol></div></div>
+
+<p>The next time you connect to the network, the DHCP client will add 127.0.0.1 as a nameserver to <tt>/etc/resolv.conf</tt>, before the other nameservers. If you do not want to reconnect to the network to get this change, you can add it manually for now. Open up <tt>/etc/resolv.conf</tt> and add the following line before the <tt>nameserver</tt> directives, but after the <tt>search</tt> directive:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1">nameserver 127.0.0.1</div></li>
+</ol></div></div>
+
+<p>Restart dnsmasq for the changes to take effect:</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># /etc/init.d/dnsmasq restart</div></li>
+<li class="li1"><div class="de1">Restarting DNS forwarder and DHCP server: dnsmasq.</div></li>
+</ol></div></div>
+
+<p>Now you can configure Apache according to the <a href="#apache">first part of this article</a>, replacing <tt>dev.example.org</tt> with <tt>localhost</tt>. Do not forget to remove Apache's default virtual host, which also listens on localhost.</p>
+
+<div class="geshi-wrap"><div class="text geshi" style="font-family:monospace;"><ol><li class="li1"><div class="de1"># rm /etc/apache2/sites-enabled/001-default</div></li>
+</ol></div></div>
+
+<p>Reload Apache and now you can simply make a checkout of your website to your local machine and immediately view it in your browser by going to <tt>my-working-copy.localhost</tt>. Happy coding!
+
+<h4>References</h4>
+<ol>
+<li><a href="http://en.wikipedia.org/wiki/Wildcard_DNS_record">http://en.wikipedia.org/wiki/Wildcard_DNS_record</a></li>
+<li><a href="http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html">http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html</a></li>
+<li><a href="http://muffinresearch.co.uk/archives/2006/08/20/redirecting-subdomains-to-directories-in-apache/">http://muffinresearch.co.uk/archives/2006/08/20/redirecting-subdomains-to-directories-in-apache/</a></li>
+<li><a href="http://ubuntu.wordpress.com/2006/08/02/local-dns-cache-for-faster-browsing/">http://ubuntu.wordpress.com/2006/08/02/local-dns-cache-for-faster-browsing/</a></li>
+</ol></div>
+										<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="cc"><img src="/images/icons/cc.png" alt="Creative Commons Attribution-ShareAlike" /></a>
+					<div class="postinfo">
+						Posted on <abbr class="updated" title="2008-08-06T22:38:00Z">2008-08-06@22:38</abbr>
+						<img src="/images/icons/permalink.png" alt="" /> <a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/" rel="bookmark">Permalink</a>
+																			<br />
+							Tags:
+															&nbsp;<a href="http://www.jejik.com/tag/apache" rel="tag">apache</a>
+															&nbsp;<a href="http://www.jejik.com/tag/dnsmasq" rel="tag">dnsmasq</a>
+															&nbsp;<a href="http://www.jejik.com/tag/subversion" rel="tag">subversion</a>
+															&nbsp;<a href="http://www.jejik.com/tag/git" rel="tag">git</a>
+															&nbsp;<a href="http://www.jejik.com/tag/php" rel="tag">php</a>
+																		</div>
+				</div>
+				<div id="comments">
+					<h3>Comments</h3>
+																		<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c1" class="number" id="c1">#1</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-07@21:04
+																																			</div>
+																We would definitely like to hear more on sync your database with SVN. It is interesting to not that we may not sync the data or records but need to maintain master data with the structure in the SVN.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c2" class="number" id="c2">#2</a>
+																			xyz
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-08@07:16
+																																			</div>
+																i have configured virtual hostsin weblogic server9.2 as follows:<br />
+1. one standalone managed server with channel name<br />
+2. virtual host name with network access point name as same as channel name of server and targetted to managed server.<br />
+3. in c:/windows/system32/etc/hosts i have given my host name like www.son.com<br />
+4.deployed application on virtual hosts,the error i am getting is---comments:None of the targets for this Deployment are running. No test points possible<br />
+<br />
+plz find a solution for this, whether i have to configure apache for this to work so that i can deploy application on virtual host.<br />
+<br />
+by,<br />
+xyz
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c3" class="number" id="c3">#3</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-08@09:51
+																																			</div>
+																I have absolutely no idea xyz. I haven't used Windows seriously since Windows 98. The only reason I ever touch it is to test a webdesign I made (and I prefer to use IE on Wine for that). I case you didn't notice, this website is about Free and Open Source Software, not Windows :-)
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c4" class="number" id="c4">#4</a>
+																			Who
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-08@22:09
+																																			</div>
+																"I case you didn't notice, this website is about Free and Open Source Software, not Windows" Seriously! This website is about open source software... That much I understand but your comment makes the assumption that open source software does not or should not work on windows which is far from the case. If you don't know the answer it is just as simple as saying so and leave it at that don't you think? I don't mean to sound harsh but it is getting very old hearing the windows bashing everywhere and it all boils down to a lame excuse from someone who just does not have the answer.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c5" class="number" id="c5">#5</a>
+																			Anon
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-08@22:23
+																																			</div>
+																Other than that it was a great article though. Also I will add that this was helpful when combined with http://svn.spears.at/ in getting SVN 1.4.6 working with apache 2.2.4 on windows XP SP2
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c6" class="number" id="c6">#6</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-08-08@23:01
+																																			</div>
+																@who: I'm not bashing Windows. I'm merely stating that I haven't used it since Windows 98 was all hip 'n cool. And I do think that a FOSS blog is a strange place to as for help with deploying Weblogic Windows hosts.<br />
+<br />
+@Anon: If you're interested in running Subversion under Apache, you might like my older article: <a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/" rel="nofollow">Apache and Subversion authentication with Microsoft Active Directory</a>. It not only explains how to make Subversion go under Apache, but also explains how you can authenticate Subversion users through Active Directory.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c7" class="number" id="c7">#7</a>
+																			<a href="http://cssgallery.info" class="name">dan<small> (http://cssgallery.info)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-10@22:29
+																																			</div>
+																hi<br />
+I would like to know an "easy" solution for hosted development environments, where i cannot alter the apache configuration. Thank you.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c8" class="number" id="c8">#8</a>
+																			<a href="http://wee.extend.ws" class="name">Lo c Hoguin<small> (http://wee.extend.ws)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-11@01:13
+																																			</div>
+																That's an interesting approach. I'll save it for later. Thank you.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c9" class="number" id="c9">#9</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-11@01:34
+																																			</div>
+																<blockquote>I would like to know an "easy" solution for hosted development environments, where i cannot alter the apache configuration.</blockquote><br />
+<br />
+Well, you could ask the hosting company to change the Apache configuration for you. All they would need to do is change the ServerAlias line and put the "*." in front of the domain name. You could put all the other stuff in a .htaccess file in the DocumentRoot directory.<br />
+<br />
+But if you're serious about web development then you should really get your own development server to play with. It doesn't have to cost any money. You don't even need an internet connection. Get any old Pentium III or better (you can find those for free. Lots of people throw these old machines out) then install Linux and hook it into your home network.<br />
+<br />
+You can make the checkouts and do all your development on your home server. No internet required! Then once in a while you make a checkout and (s)ftp it to your shared hosting account to update your production website.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c10" class="number" id="c10">#10</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-11@03:46
+																																			</div>
+																I dont understand the need for dnsmasq, just another service to have running. You can do it all via /etc/hosts (or the Windows equiv c:/windows/system32/etc/hosts)<br />
+<br />
+So lets say I am working on a site for acme, I will use the standard form of "acme.local" for the domain, the /etc/hosts syntax is<br />
+<br />
+127.0.0.1 acme.local<br />
+<br />
+Then I configure my Apache/nginx/lighttpd vhost to listen for "acme.local" and boom, you're done.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c11" class="number" id="c11">#11</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-11@10:05
+																																			</div>
+																<blockquote>I dont understand the need for dnsmasq</blockquote><br />
+<br />
+That won't work with the above setup. Your /etc/hosts file does not support wildcards. If you put "127.0.0.1 acme.local" in your hosts file then "trunk.acme.local" or "my-branch.acme.local" will not resolve to 127.0.0.1. That's why you need dnsmasq. You need to be able to resolve "*.acme.local".
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c12" class="number" id="c12">#12</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-27@14:35
+																																			</div>
+																This is exactly what I need - Thanks!<br />
+<br />
+Question - I would like a request to: project1.example.org not to go to /home/checkout/project1 but to /home/checkout/project1/web<br />
+<br />
+I am having trouble getting this to work - I don't have a lot of experience with mod_rewrite<br />
+<br />
+Any Help?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c13" class="number" id="c13">#13</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-27@15:09
+																																			</div>
+																I think I figured it out - I changed the line:<br />
+<br />
+RewriteRule ^(.*) /home/checkout/%1/$1 [L]<br />
+<br />
+to<br />
+<br />
+RewriteRule ^(.*) /home/checkout/%1/web/$1 [L]<br />
+<br />
+This seems to work.  What I am trying to do is get a symfony framework project working...  Since symfony does its own Rewrite I think I am putting it into an infinite rewrite loop or something.  I get a "500 Internal Server Error" when I try to test the project (sf_sandbox.example.com which redirects to /home/checkout/sf_sandbox/web) - When I look in apache's error log I see this error:<br />
+<br />
+[Mon Oct 27 10:03:02 2008] [error] [client 10.0.2.15] Request exceeded the limit of 20 internal redirects due to probable configuration error. Use 'LimitInternalRecursion' to increase the limit if necessary. Use 'LogLevel debug' to get a backtrace.<br />
+<br />
+Any idea what I can do? Do you have any experience with getting a symfony project to work with this configuration?
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c14" class="number" id="c14">#14</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-27@17:29
+																																			</div>
+																Hi Kevin,<br />
+<br />
+I haven't used Symphony before. I donwloaded their source code and looked at the .htaccess file in the /web/ directory. There is a commented out "RewriteBase /" directive there. Did you try uncommenting that?<br />
+<br />
+If that doesn't work then you can also modify Symphony's .htaccess file to point to the correct location. However, when you do that then it will only work on your development server. When you deploy to some different server somewhere else then you need to modify the .htaccess again. If you want to try it, replace this:<br />
+<br />
+<pre>  # no, so we redirect to our front web controller
+  RewriteRule ^(.*)$ index.php [QSA,L]</pre><br />
+<br />
+With this:<br />
+<br />
+<pre>  # no, so we redirect to our front web controller
+  RewriteCond %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org
+  RewriteRule ^(.*)$ /home/checkout/%1/index.php [QSA,L]
+</pre><br />
+<br />
+Note: I haven't tested this, but I *think* it should do the trick. Let me know if you still have problems with it.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c15" class="number" id="c15">#15</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-27@18:34
+																																			</div>
+																Hi Sander,<br />
+<br />
+Thanks for the quick reply!<br />
+<br />
+Uncommenting the "RewriteBase /" seems to have done the trick!<br />
+<br />
+What exactly did this do?  Was I correct in assuming it was in an endless rewrite loop?<br />
+<br />
+I really appreciate your help!<br />
+<br />
+-Kevin
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c16" class="number" id="c16">#16</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-27@19:20
+																																			</div>
+																One other thing...  I need an alias /sf available to all projects - ie project1.example.com/sf and project2.example.com/sf should both point to: /usr/share/php/data/symfony/web/sf<br />
+<br />
+I placed "Alias /sf /usr/share/php/data/symfony/web/sf" in the VHost file but it doesn't seem to work - any ideas?<br />
+<br />
+This is almost coming together.<br />
+<br />
+Kevin
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c17" class="number" id="c17">#17</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-28@00:35
+																																			</div>
+																<blockquote>What exactly did this do? Was I correct in assuming it was in an endless rewrite loop</blockquote><br />
+<br />
+Yes. Remember that when you rewrite an URL to a different directory with .htaccess, all the rewrite rules are applied *again*. So when the request got rewritten to index.php then the rewrite deployment script would kick in again, and then the .htaccess again, etcetera, etcetera.<br />
+<br />
+<blockquote>One other thing... I need an alias /sf available to all projects. I placed "Alias /sf /usr/share/php/data/symfony/web/sf" in the VHost file but it doesn't seem to work - any ideas?</blockquote><br />
+<br />
+I am guessing that the alias happens before the rewrite rules are applied. So, /usr/share/php/data/symfony/web/sf gets rewritten to /home/checkout/your-checkout/sf/ again. There are multiple ways to solve this. You could make /sf a symlink on your filesystem to the correct directory. Alternatively, you could add a RewriteRule that catches the /sf before any of the other rules so. Try adding something like this after the "RewriteEngine" on in the virtual host configuration (leave the Alias in place):<br />
+<br />
+<pre>RewriteRule ^/sf$ - [L,QSA]</pre><br />
+<br />
+That should catch any request to /sf do nothing with it and stop processing the other rules.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c18" class="number" id="c18">#18</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-28@14:03
+																																			</div>
+																Hi Sander,<br />
+<br />
+I am not able to get this to work without a symlink...<br />
+<br />
+I have the Alias right before the "RewriteEngine On" and "RewriteRule ^/sf$ - [L,QSA]" directly after.<br />
+<br />
+I did find another way of doing it with VirtualDocumentRoot.  Does it in one line "VirtualDocumentRoot /home/checkout/%1/web/" and the Alias works.<br />
+<br />
+Any reason I shouldn't be using this?<br />
+<br />
+Thanks,<br />
+Kevin
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c19" class="number" id="c19">#19</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-28@22:48
+																																			</div>
+																None that I can think off. I dare say that's an even nicer solution than the RewriteRules in the apache configuration. Go for it!
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c20" class="number" id="c20">#20</a>
+																			Kevin
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-29@14:25
+																																			</div>
+																Only problem I really see if I don't have the error checking from your solution and the default 'trunk'.  When I go to dev.example.org it gives me an error - I had to make a second VirtualHost that handles it.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c21" class="number" id="c21">#21</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2008-10-29@14:45
+																																			</div>
+																You can still use the RewriteRule to catch non-existing subdomains if you want. Something like this:<br />
+<br />
+<pre>
+        # Redirect non-existing subdomains to the error page
+        RewriteEngine on
+        RewriteCond %{HTTP_HOST} ^([^\.]+)\.dev\.example\.org
+        RewriteCond /home/checkout/%1 !-d
+        RewriteRule ^(.*) /home/checkout/error.html [L]
+</pre><br />
+<br />
+That should only catch non-existing subdomains, leaving the existing subdomains to be handled by VirtualDocumentRoot.
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c22" class="number" id="c22">#22</a>
+																			<a href="http://sean.gravener.net" class="name">Sean Gravener<small> (http://sean.gravener.net)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2009-01-28@19:06
+																																			</div>
+																Beautiful!  Worked perfectly the first go on RHEL 5.2
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c23" class="number" id="c23">#23</a>
+																			Anonymous Coward
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-18@13:27
+																																			</div>
+																Hello Sander,<br />
+<br />
+thanks for the article! I'm stuck at the following point "Then create a new virtual host configuration for Apache." Where do all those changes need to be applied? Which Files?<br />
+<br />
+Kind regards,<br />
+one who is ashamed of not knowing APACHE and his new Ubuntu 10.10. that well....
+							</div>
+													<div class="comment">
+								<h4>
+									<a href="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#c24" class="number" id="c24">#24</a>
+																			<a href="http://www.jejik.com" class="name">Sander Marechal<small> (http://www.jejik.com)</small></a>
+																		
+																	</h4>
+								<div class="postinfo">
+									Posted on 2011-02-18@16:31
+																																			</div>
+																@Anonymous: Under Ubuntu/Debian, virtual hosts go into separate files placed under <tt>/etc/apache2/sites-available</tt>. Then you activate your new virtual host using the <tt>a2ensite</tt> command or by symlinking your file from <tt>/etc/apache2/sites-enabled</tt>. Don't forget to reload Apache (using <tt>apache2ctl graceful</tt>)!
+
+							</div>
+																										<form method="post" action="http://www.jejik.com/articles/2008/08/easily_develop_and_deploy_web_applications_from_subversion/#newcomment" id="newcomment">
+								<input type="hidden" name="preview_token" value="f89cc22550eb9cf920c4793af05711f9" />
+																<fieldset>
+									<legend>Post a new comment</legend>
+																			<p>
+											Registration is not required to post comments, but cookies must be enabled. One of the 
+											advantages of registration is that you can edit your comments later on <em>(editing not yet implemented)</em>. You can <a href="/login.php">register or login here</a>. 
+										</p>
+										
+										<label for="name"><u>N</u>ame <span class="required">(required)</span></label> <input type="text" name="comment_name" id="name" value="Anonymous Coward" acceskey="n" /><br />
+										<label for="email"><u>E</u>-mail address</label> <input type="text" name="comment_email" id="email" acceskey="e" value="" /><br />
+			
+										<label for="website"><u>W</u>ebsite URL</label> <input type="text" name="comment_website" id="website" acceskey="w" value="http://" /><br />
+																		
+									<label for="message">Your <u>c</u>omment <span class="required">(required)</span></label> <textarea name="comment_text" id="message" acceskey="c" cols="50" rows="8">Your comment here</textarea>
+                                    									<p class="explanation">
+										Your e-mail address will not be published, but your website URL will. All links that you post
+										will tagged rel=&quot;nofollow&quot; to throw off spammers. You are allowed to use the following XHTML tags in your comment:
+										&lt;em&gt; &lt;strong&gt; &lt;u&gt; &lt;b&gt; &lt;i&gt; &lt;strike&gt; &lt;blockquote&gt; &lt;big&gt; &lt;small&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;a href=""&gt; &lt;pre&gt; &lt;code&gt; &lt;tt&gt; &lt;br&gt;. Please allow up to 60 second processing time after you post a comment. Our spam filters may take some time.
+									</p>
+									<input class="submit" type="submit" name="preview" value="Preview" />
+                                    								</fieldset>
+							</form>
+															</div>
+			</div>					<div id="right">
+			<div id="menu">				
+				<div class="menu">
+					<h3>Menu</h3>
+					<ul>
+						<li><img src="/images/icons/home.png" alt="" />&nbsp;<a name="menu_start" id="menu_start" href="/" rel="home">Home</a></li>
+						<li><img src="/images/icons/archives.png" alt="" />&nbsp;<a href="/archives/">Blog &nbsp;archives</a></li>
+						<li><img src="/images/icons/webdev.png" alt="" />&nbsp;<a href="/pages/webdevelopment/">Web&nbsp;development</a>
+							<ul>
+								<li><img src="/images/icons/work.png" alt="" />&nbsp;<a href="/pages/pastwork/">Past work</a></li>
+								<!-- <li><img src="/images/icons/money.png" alt="" />&nbsp;<a href="#">Hire&nbsp;us</a></li> -->
+							</ul>
+						</li>
+						<li><img src="/images/icons/projects.png" alt="" />&nbsp;<a href="/pages/projects/">Projects</a>
+							<ul>
+																	<li><img src="/images/icons/hearts.png" alt="" />&nbsp;<a href="/gnome-hearts/">Gnome Hearts</a></li>
+																									<li><img src="/images/icons/odf-xslt.png" alt="" />&nbsp;<a href="/odf-xslt/">ODF-XSLT Generator</a></li>
+																<li><img src="/images/icons/officeshots.png" alt="" />&nbsp;<a href="http://www.officeshots.org/">Officeshots.org <img src="/images/icons/external.png" /></a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/resources.png" alt="" />&nbsp;<a href="/pages/resources/">Resources</a>
+							<ul>
+								<li><img src="/images/icons/buggie.png" alt="" />&nbsp;<a href="http://bugzilla.jejik.com">Bugzilla</a></li>
+								<li><img src="/images/icons/subversion.png" alt="" />&nbsp;<a href="http://svn.jejik.com">Subversion</a></li>
+								<li><img src="/images/icons/lists.png" alt="" />&nbsp;<a href="http://lists.jejik.com">Mailing&nbsp;lists</a></li>
+								<li><img src="/images/icons/book.png" alt="" />&nbsp;<a href="/api/">API References</a></li>
+							</ul>
+						</li>
+						<li><img src="/images/icons/about-us.png" alt="" />&nbsp;<a href="/pages/about_us/">About&nbsp;us</a></li>
+						<li><img src="/images/icons/contact.png" alt="" />&nbsp;<a href="/contact.php">Contact</a></li>
+						<li><img src="/images/icons/pillar.png" alt="" />&nbsp;<a href="/pages/old_stuff/">Old&nbsp;stuff</a></li>
+													<li><img src="/images/icons/login.png" alt="" />&nbsp;<a href="/login.php?ref=%2Farticles%2F2008%2F08%2Feasily_develop_and_deploy_web_applications_from_subversion%2F">Your&nbsp;account</a></li>
+												<li><img src="/images/icons/rss.png" alt="" />&nbsp;<a href="/pages/feeds/">Feeds</a></li>
+					</ul>
+				</div>
+                <div class="menu bitcoin">
+                    <h3>Donate!</h3>
+                    <p>Please consider donating if my work has been useful to you.</p>
+                    <img src="/images/other/blockchain-address.png" />
+                    <p>Bitcoin address:</p>
+                    <tt>1PAXiscvKoGRJ5XxMZvri3CMNeKYYb8wMQ</tt>
+                </div>
+				
+								
+									<div class="menu">
+						<h3>Pingbacks</h3>
+						<ul id="pingbacks">
+															<li><a href="http://www.jejik.com/articles/2008/12/keeping_sugarcrm_under_subversion_control/">www.jejik.com/articles/2008...</a></li>
+													</ul>
+					</div>
+				
+									<div class="menu">
+						<h3>Latest comments</h3>
+						<ul id="latest_comments">
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c171">sag47: I found that if you kill...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c170">domoarrigato: Your comment hereHi,...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c169">Sander Marechal: os.dup2 should be...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c168">domoarrigato: Hi, like a number of...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/06/apache_and_subversion_authentication_with_microsoft_active_directory/#c175">Alex: I am writing because I used...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c167">hagak: Actually I was wondering why...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c166">Sander Marechal: @jiamo: Are you...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c2">Sander Marechal: You can install it...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/#c165">jiamo: Why this init can't work?...</a></li>
+																							<li><img src="/images/icons/comments.png" alt="" />&nbsp;&nbsp;<a href="http://www.jejik.com/articles/2012/11/injecting_custom_classes_in_jejik_mt940/#c1">Richard van Wingerden: How to install...</a></li>
+													</ul>
+					</div>
+								
+								
+								
+									<div class="menu">
+						<h3>Links</h3>
+						<ul>
+							<li><img src="/images/sites/lxer.png" alt="" />&nbsp;<a href="http://lxer.com">LXer Linux News</a></li>
+							<li><img src="/images/sites/groklaw.png" alt="" />&nbsp;<a href="http://www.groklaw.net">Groklaw</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.consortiuminfo.org/standardsblog/">Consortium info</a></li>
+							<li><img src="/images/icons/planetodf.png" alt="" />&nbsp;<a href="http://planet.opendocumentformat.org/">Planet ODF</a></li>
+							<li><img src="/images/sites/alistapart.png" alt="" />&nbsp;<a href="http://www.alistapart.com">A List Apart</a></li>
+							<li><img src="/images/sites/theregister.png" alt="" />&nbsp;<a href="http://www.theregister.co.uk">The Register</a></li>
+							<li><img src="/images/sites/userfriendly.png" alt="" />&nbsp;<a href="http://www.userfriendly.org">Userfriendly</a></li>
+							<li><img src="/images/sites/gamedev.png" alt="" />&nbsp;<a href="http://www.gamedev.net">Gamedev.net</a></li>
+							<li><img src="/images/icons/document.png" alt="" />&nbsp;<a href="http://www.savetheinternet.com/">Save the internet</a></li>
+						</ul>
+						<a style="border: none;" href="http://stopsoftwarepatents.eu/401001004810/"><img src="http://stopsoftwarepatents.eu/banner/401001004810/ssp-181-30.gif" alt="stopsoftwarepatents.eu petition banner" /></a> 
+					</div>
+							</div>	
+			</div>
+					<div id="footer">
+				<p>
+					Copyright&copy; 2003-2014 Stichting Lone Wolves
+					[ <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
+					| <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
+					| <a href="http://www.w3.org/WAI/WCAG1AA-Conformance" title="Explanation of Level Double-A Conformance">WAI-AA</a>
+					| <a href="http://www.section508.gov/" title="">508</a>
+					| <a href="/pages/privacy">Privacy policy</a> ]
+				</p>
+			</div>
+		</div>
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+			_uacct = "UA-1746114-1";
+			urchinTracker();
+		</script>
+	</body>
+</html>

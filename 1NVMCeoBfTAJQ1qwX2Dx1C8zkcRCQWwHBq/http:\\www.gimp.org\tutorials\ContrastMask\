@@ -1,0 +1,362 @@
+http://www.gimp.org/tutorials/ContrastMask/
+HTTP/1.1 200 OK
+Date: Wed, 23 Jul 2014 20:22:27 GMT
+Server: Apache/2.2.15 (Red Hat)
+Accept-Ranges: bytes
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<!-- $Id$ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>GIMP - Creating a Contrast Mask</title>
+<!-- $Id$ -->
+<!-- $Id$ -->
+<!-- placeholder for page layout definitions -->
+
+<!-- $Id$ -->
+<style type="text/css">
+@import url("/style/wgo.css");
+</style>
+<!--[if lt IE 8]>
+<link rel="stylesheet" type="text/css" href="/style/ie-nastiness.css" />
+<![endif]-->
+<link rel="icon" href="/images/wilber16.png" type="image/png" />
+
+<!-- $Id: wgo-scripts.xhtml 795 2007-07-04 11:01:43Z jimmac $ -->
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<!--[if lt IE 8]>
+<script type="text/javascript" src="/includes/excanvas.pack.js"></script>
+<![endif]-->
+<script type="text/javascript" src="/includes/jquery.corner.js"></script>
+<script type="text/javascript" src="/includes/jqbrowser.js"></script>
+<script type="text/javascript" src="/includes/wgo.js"></script>
+
+<!-- code for the flattr button counter -->
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */</script>
+
+
+<!-- placeholder for site navigation -->
+
+
+<!-- $Id$ -->
+</head>
+<body id="wwwgimporg">
+<div id="header">
+  <div id="title"><a href="/" style="display: block; height: 60px; text-decoration: none; color: white;"><span style="display: block; padding: 15px;">GNU Image Manipulation Program</span></a></div>
+</div>
+
+<div id="maincontainer">
+
+<div id="menu">
+  <p><a href="#main">Skip to page contents</a></p>
+  <span>[</span>
+  <a href="/">News</a><span> | </span>
+  <a href="/screenshots/">Screenshots</a><span> | </span>
+  <a href="/features/">Features</a><span> | </span>
+  <a href="/downloads/">Downloads</a><span> | </span>
+  <a href="/docs/">Documentation</a><span> | </span>
+  <a href="/develop/">Get Involved</a>
+  <span>]</span><br /><span>[</span>
+  <a href="http://registry.gimp.org">Plug-in Registry</a><span> | </span>
+  <a href="http://wiki.gimp.org">GIMP Development</a>
+  <span>]</span><br />
+
+  <span>[</span>
+  <a href="/donating/">Donations</a>
+  <span>]</span><br />
+  
+  <span>[</span>
+  <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://www.gimp.org/"></a>
+  <noscript><a href="http://flattr.com/thing/707850/GIMP-is-the-GNU-Image-Manipulation-Program" target="_blank">
+  <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript><span> | </span>
+  <a href="bitcoin:1NVMCeoBfTAJQ1qwX2Dx1C8zkcRCQWwHBq?label=GIMP%20Donation"><img src="/donating/bitcoin-button.png" alt="Donate with Bitcoin" title="Donate with Bitcoin" border="0" /></a>
+  <span>]</span>
+</div>
+
+<div id="main">
+
+
+<h1>Creating a Contrast Mask</h1>
+<p>
+  Text and images Copyright (C) 2002 <a href="mailto:ericNOSPAM@redskiesatnight.com">Eric R. Jeschke</a> and may not be used without permission of the author.
+</p>
+
+<h2>Intention</h2>
+<p class="images">
+  <img alt="" src="before.jpg" />
+  <img alt="" src="after.jpg" />
+</p>
+<p>
+  In this tutorial I'll show you how to do create a contrast mask for your image in GIMP. A contrast mask allows you to reduce overall contrast, 
+  simultaneously bringing out more detail in highlights and shadows. This may be necessary to obtain a decent print, because prints on paper do not 
+  have as much dynamic range as a monitor; if you don't control the contrast, detail in the highlights may blow out and detail in the shadows can block 
+  up and become muddy or even black. You can of course modify your image directly in GIMP to decrease contrast, but the advantage of the contrast mask 
+  technique is that it allows you much more precise control, and gives better results.
+</p>
+<p>
+  The basic technique is to create a layer above the image that contains a B&amp;W negative of the image. The images are combined in overlay mode: dark parts with light, 
+  light parts with dark. All the while your original image remains blissfully unchanged on its layer.
+</p>
+<p>
+  Giving credit where credit is due: I did not come up with this method. I adapted it for GIMP from a Photoshop tutorial on 
+  the <a href="http://www.luminous-landscape.com/">luminous-landscape.com web site</a> (great photography web site BTW; I recommend it).
+</p>
+<p>
+  The contrast mask technique does some similar things for the exposure as the digital split ND filter and the blended exposures techniques. 
+  If you feel your image has exposure problems you might want to consider those techniques as well. Each one has different strengths. 
+  Occasionally this technique gives unacceptable color shifts in certain images. Sometimes it is just the ticket. 
+  Experiment to see if it can work for your particular image.
+</p>
+
+<h2>The Procedure</h2>
+<p class="images">
+  <img alt="" src="original.jpg" />
+</p>
+<p>
+  Here is the original example image, loaded into GIMP. 
+  The red leaves are a little too dark to make out the detail; if printed, the result would be pretty dark and muddy. 
+  At the same time, the yellow flowers have a couple of specular highlights that would probably blow out the detail if printed.
+</p>
+<p>
+  We want to brighten the dark areas a little and darken the light areas a little. In other words, reduce contrast.
+</p>
+
+<h2>Step 1</h2>
+<p class="images">
+  <img alt="" src="layers2.jpg" />
+</p>
+<p>
+  Open the Layers dialog. Right-click on the Background layer and select Duplicate (there is also a button for this in the bottom button bar of the Layers dialog.
+</p>
+
+<h2>Step 2</h2>
+<p class="images">
+  <img alt="" src="editlayerattr.jpg" />
+  <img alt="" src="layers3.jpg" />
+</p>
+<p>
+  Now double-click on the duplicate layer and rename the new layer "Contrast Mask". (This step is not strictly necessary, 
+  but it is helpful to prevent confusion about what is on each layer, especially if you add some additional layers for other editing purposes).
+</p>
+
+<h2>Step 3</h2>
+<p class="images">
+  <img alt="" src="image2.jpg" />
+</p>
+<p>
+  Select the Contrast Mask layer. Go to the image window and right-click, 
+  selecting <span class="filter">&lt;Image&gt; Image -&gt; Colors -&gt; Desaturate</span>. 
+  The image should look B&amp;W.
+</p>
+
+<h2>Step 4</h2>
+<p class="images">
+  <img alt="" src="image3.jpg" />
+</p>
+<p>
+  Right-click and select <span class="filter">&lt;Image&gt; Image -&gt; Colors -&gt; Invert</span>. 
+  You now have a B&amp;W negative image of your original. 
+  We're going to combine this with the original (light with dark, dark with light) to reduce the overall contrast.
+</p>
+
+<h2>Step 5</h2>
+<p class="images">
+  <img alt="" src="layers4.jpg" />
+  <img alt="" src="image4.jpg" />
+</p>
+<p>
+  Go back to the Layers dialog and in the "Mode" drop-down box, select "Overlay". The result may look better in terms of contrast, but degraded in terms of overall sharpness. 
+  <br /><br />
+  Don't worry, we're not done yet.
+</p>
+
+<h2>Step 6</h2>
+<p class="images">
+  <img alt="" src="original.jpg" />
+  <img alt="" src="image5.jpg" />
+</p>
+<p>
+  Go back to the image window and right click, selecting <span class="filter">&lt;Image&gt; Filters -&gt; Blur -&gt; Gaussian Blur</span>. 
+  You will need to experiment to find the best value, 
+  but typically a value between 10 and 30 will do nicely. After blurring the contrast mask the overall image should now look much sharper.
+  <br /><br />
+  Click on the "eye" next to the Contrast Mask layer in the Layers dialog to rapidly compare the image with and without the mask. 
+  Similarly, turn off the Background layer if you want to view the mask to do further work on it.
+  <br /><br />
+  The image at top left is the original, the top right is with the contrast mask.
+</p>
+
+<h2>Step 7</h2>
+<p class="images">
+  <img alt="" src="contrastdialog.jpg" />
+  <img alt="" src="imagewtypcontrastreduction.jpg" />
+</p>
+<p>
+  It is informative to see how this technique compares to the conventional technique of using the contrast dialog to adjust contrast. 
+  I've tried to adjust the contrast to have the leaves appear about the same. I think the image with the contrast mask has a lot more pop! 
+  This one looks kind of flat by comparison.
+</p>
+
+<h2>Step 8</h2>
+<p class="images">
+  <img alt="Histogram-Before" src="histogram-before.jpg" />
+  <img alt="Histogram-After" src="histogram-after.jpg" />
+  <img alt="Historgram-Contrast-Reduction" src="histogram-typcontrastreduction.jpg" />
+</p>
+<p>
+  To see why this is so, compare the histograms of the images. The top one is for the original image, the middle is for the image with the contrast mask, 
+  and the bottom one is for the original image with the conventional contrast adjustment.
+  <br /><br />
+  Note how the typical contrast adjustment has lost a lot of values at both ends, but the mask technique basically preserved the entire scale.
+</p>
+
+<h2>Step 9</h2>
+<p class="images">
+  <img alt="" src="layers5.jpg" />
+</p>
+<p>
+  You'll have to flatten the image if you are saving it to a typical image format like TIFF or JPEG (but not if you are saving to GIMP's native XCF format). 
+  To do that, right-click on the image and select <span class="filter">&lt;Image&gt; Layers -&gt; Flatten Image</span>.
+</p>
+
+<h2>Fine Tuning</h2>
+<p>
+  Now that your contrast mask is created, it's time to fine tune it. Here are some things you can do:
+</p>
+<ul>
+  <li>Use the "Opacity" slider in the Layers dialog to decrease the effect of the contrast mask overall.</li>
+  <li>Apply Levels or Curves to the contrast mask to open up the shadows or reduce the highlights further.</li>
+  <li>Apply the dodge and burn tools to the contrast mask.</li>
+  <li>Apply a layer mask to the contrast mask and use it to select only parts of the contrast mask; e.g. if you only want 
+  the contrast mask to apply to certain areas of the image (see my example of this below).</li>
+</ul>
+
+<h2>Tips</h2>
+<ul>
+  <li>See <a href="http://www.vinberg.nu/photography/articles/contrast_masking.htm">this article</a> for some informative tests 
+  on the effects of the Gaussian Blur step on the contrast mask.</li>
+</ul>
+
+<h2>Other Examples</h2>
+<p class="images">
+  <img alt="" src="tree.jpg" />
+  <img alt="" src="treewcmask.jpg" />
+</p>
+<p>
+  With a contrast mask as described above. Notice how the sky has recovered some blue, and the detail visible under the tree!
+</p>
+<p class="images">
+  <img alt="" src="nd-original-1.jpg" />
+  <img alt="" src="utsunset-wcmask.jpg" />
+</p>
+<p>
+  Here's an example of how this technique overlaps with the digital split ND filter approach. Which do you prefer?
+</p>
+<p class="images">
+  <img alt="" src="nd-filter-1.jpg" />
+  <img alt="" src="utsunset-whmask.jpg" />
+</p>
+<p>
+  With a digital split ND filter. (left image)
+  <br />
+  With a contrast mask as described above, plus a layer mask with a gradient fill, so the contrast mask is mostly applied to the area below the cliffs. (right image)
+</p>
+<p>
+  Note particularly the change in the color of the cliffs and the light part of the sky just above the cliffs, in the image using the full contrast mask (upper right). 
+  This shows how a contrast mask affects all parts of the image, unless you selectively disable part of the mask, as I did in the lower right. 
+  Note also that with the split nd filter (lower left) I was able to brighten the foreground more; I could apply a general levels tweak to the contrast mask to achieve the same thing, 
+  but it seems like more work. This illustrates a general point for me: the digital split ND filter technique is the easier approach when you're already satisfied with half of the image, 
+  whereas the contrast mask is a better starting point if the overall image needs contrast reduction on both the dark and light sides.
+</p>
+
+<p>
+  The original tutorial (possibly with updated information) may be found <a href="http://www.gimpguru.org/">here</a>.
+</p>
+<!-- $Id$ -->
+</div><!-- main -->
+</div><!-- maincontainer -->
+
+<div id="bottommenu">
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/features/">Features</a></li>
+	  <li><a href="/release-notes/">Release Notes</a></li>
+	  <li><a href="http://wiki.gimp.org/index.php/Main_Page">Wiki</a></li>
+	  <li><a href="https://plus.google.com/u/0/b/116634837115748851709/+gimp/">Google+ page</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/screenshots/">Screenshots</a></li>
+	  <li class="mainlink"><a href="/downloads/">Downloads</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/docs/">Documentation</a></li>
+	  <li><a href="/docs/userfaq.html">FAQ</a></li>
+	  <li><a href="/books/">Books</a></li>
+	  <li><a href="/tutorials/">Tutorials</a></li>
+	  <li><a href="/mail_lists.html">Mailing Lists</a></li>
+	  <li><a href="/irc.html">IRC</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/about/">About GIMP</a></li>
+	  <li><a href="/about/splash/">Splash Archive</a></li>
+	  <li><a href="/links/">Links</a></li>
+	</ul>
+  </div>
+  <div class="bottomlinks">
+	<ul>
+	  <li class="mainlink"><a href="/develop/">Get Involved</a></li>
+	  <li><a href="/donating/">Donating</a></li>
+	  <li><a href="/bugs/">Bug Reports</a></li>
+	  <li><a href="/about/merchandise.html">GIMP Goods</a></li>
+	</ul>
+  </div>
+  <br style="clear: both; display: block; height: 200px;" />
+</div>
+
+<div id="linkbar">
+  <div>
+    <div>&copy; 2001-2013 <a href="/team.html">The GIMP Team</a> <span style="padding: 0px 10px;">&nbsp;</span>
+    <a href="http://gimp.org/news.rdf">GIMP News Feed</a> | 
+    <a href="/webmasters.html">Contacting Us</a>
+    </div>
+  </div>
+</div>
+
+
+    <div>
+      <span id="footerleft">
+        Tutorial &copy; 2002 <a href="http://redskiesatnight.com/">Eric R. Jeschke</a>
+      </span>
+      <span id="footerright">
+        <a href="mailto:ericNOSPAM@redskiesatnight.com">eric@redskiesatnight.com</a>
+      </span>
+    </div>
+<!-- $Id$ -->
+<div style="clear: both; margin: 0; width: 100%; "></div>
+<!-- div>
+  <a style="clear: both; font-size: xx-small;" href="http://validator.w3.org/check/referer">Validate XHTML</a>
+</div -->
+</body>
+</html>
+
+
